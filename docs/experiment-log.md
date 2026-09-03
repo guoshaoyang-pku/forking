@@ -3843,3 +3843,27 @@ pass 2 起 CE 在归一化优化器（AdamW/RMSProp：步长不随梯度缩小�
 预测：(P1) 关掉/加大 backbone wd 改变晚期斜率与平台（wd 是唯一反向力）；(P2) backbone 换 SGD → log 型凹增长；
 (P3) train/val logit 尺度随 step 线性增长（需在 diag 中加记录，零成本）；(P4) 表行方向 cos(e,e+1)≈1、只长范数（需边界快照）；
 (P5) shuffled replay 去掉台阶但不改斜率。以上均未做，属下一批 planned。
+
+## §49 · 零 GPU：val 伤害 vs Good-Turing 缺失质量——「覆盖率是原罪，训练动态是放大器」（2026-09-03）
+
+**问题**（用户）：gap 是否全由「val 中 train 未见过/权重错的 continuation」构成？train 见得少的 context 是否更「偏执」？重复看数据本身有无意义，还是覆盖率是原罪、多 epoch 只是训练动态？
+**方法**：bigram 分支（2-token context）。本地 `data/freq_index.npz` 的 trigram keys 即每个 bigram context 的 continuation 计数 → 离线算每个精确 f 的 Good-Turing 缺失质量 M_f=N1/f 与经验条件熵 H_f（token 加权）。
+从 `nglab1x_{input,nogram}_v5_128x_freq10_fd_fixed/exact_freq_loss.jsonl` 在 pass 边界取 val 伤害 d_e(f)=L_val^input(f)−L_val^nogram(f)。
+脚本 `docs/plot_scripts/analyze_v5_val_damage_vs_missing_mass.py` → `docs/figs/theory/fig_v5_val_damage_vs_missing_mass_bigram.png`。
+1x shard：3.54M 个 bigram context / 49.7M token；整体 GT 缺失质量 0.278（val 中 27.8% 的 (context,next) 三元组在 train 未出现）；f=1 context 占 token 3.5%。
+
+| pass | d_e/M_f @ f=1 | f∈[2,320) 中位数 A_e | CV | f∈[560,1000) | f∈[5600,10⁴) |
+|---|---|---|---|---|---|
+| 1 (337) | 2.3 | −0.18 | — | −6.2 | −7.3 |
+| 2 (674) | 3.5 | 2.15 | 0.57 | 0.5 | 3.1 |
+| 3 (1010) | 5.1 | 4.79 | 0.15 | 5.6 | 11.7 |
+| 4 (1350) | 6.3 | 7.25 | 0.06 | 9.2 | 20.3 |
+| 5 (1680) | 7.4 | 8.90 | 0.04 | 12.2 | 27.5 |
+| 6 (2000) | 8.2 | 10.57 | 0.06 | 15.7 | 36.3 |
+
+**判决**：
+1. **不更偏执**：pass ≥3 时 d_e(f)/M_f 在 f∈[2,320) 两个数量级内恒定（CV 4–6%）——见 3 次和见 300 次的 context，每单位缺失质量受到同样伤害。f=1 反而略低（GT 在 f=1 处 N1/f=1 高估真缺失质量，部分是估计偏差）。**gap 的 f 形状 = 数据覆盖统计 M_f，训练只贴一个全局幅度 A_e**（与 kernel rescale 的 vertical collapse 一致）。
+2. **幅度 A_e 随 pass 线性**：2.10 nats/pass（e≥2），与 §48 的 step 线性增长同源；val 伤害在 **pass 1 已出现**（f≤4 处 d/M>0，此时无任何重复），train 侧则必须重见样本才显现。重复本身不引入新机制。
+3. **高 f 剩余项**：f>10³ 处 M_f<0.07 但 d_e 不归零，平台 ≈2 nats（pass 6）→ 缺失质量之外的「已见但权重错」(sampling error ~S_eff/f，H-KAPPA 的 V 项) 与/或 backbone 泛化被共适应拖累；本数据不能拆分二者（需按 f 的 freeze_backbone 分解）。
+4. **方法注记**：以 2-token 经验条件熵 H_f 定义「记忆分数」不成立——backbone 用 2048-token context，pass 1 时 f≳100 的 train loss 已低于 H_f；不作图。
+**结论**：novel continuation 与 wrong-weight continuation 是同一件事（p̂_c 相对 p_c 的采样误差，前者是 p̂=0 的条目），二者被同一 A_e 放大故「平等」；覆盖率决定 what/shape，训练步数（归一化优化器下线性）决定 how much。多 epoch = 在有限样本上继续走步，是训练动态现象。
