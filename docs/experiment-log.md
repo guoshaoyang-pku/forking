@@ -3817,3 +3817,29 @@ val 主指标（evaluate_val 本就 bf16）与训练路径完全不变 → 新 r
 
 **提速**：eval block ~21 s → ~1.5 s（-93%）；2000 步 run 77 min → 10–19 min（4–7×）。
 后续所有 freq=10 run 默认走该管线。
+
+## §48 · 零 GPU：gap-vs-pass 动力学分解——推翻「表一次写完 / backbone 逐 pass 衰减写入」（2026-09-01）
+
+**问题**（用户）：gap 为什么和 pass 数绑定？「pass」定义要明确；「backbone 逐 pass 衰减写入」听起来是 trivial 时间漂移。
+**定义**：pass e = 对固定 train shard 的第 e 次完整顺序遍历（1x = 337 device steps，`fixed` replay，batch 顺序每 pass 相同）。
+pass e 内任意 step 的 online batch 恰有 e−1 次先前曝光，且距上次曝光恒为 337 步（staleness 常数，不构成 pass 内 confound）。
+`theory_backbone_lr_epoch_points.csv` 的 `pass` 列 = step/337（连续量）。
+
+**数据源**（全部权威、seed 42、128×）：`nglab1x_input_v5_128x_freq10_fd_fixed` 的 `train_log.jsonl`/`table_norm.jsonl`；
+20ep 长 replay（`s1_epoch_long_replay_points.csv`，trigram-only − nogram）；§42 blrabs（绝对 table LR 锁 0.0768）；§38 causalv5m3 freeze 臂。
+脚本 `docs/plot_scripts/plot_v5_epoch_dynamics_decomposition.py` → `docs/figs/theory/fig_v5_epoch_dynamics_decomposition.png`。
+
+| 判决 | 数据 | 结论 |
+|---|---|---|
+| ① 增长在哪：边界跳变 vs pass 内漂移 | input 臂 pass 2–6：边界跳 +0.35/+0.43/+0.40/+0.22/+0.18；pass 内漂移 +0.95/+1.02/+0.76/+0.70/+0.71；四分位剖面每 pass 单调上升 +0.54–0.72 | **72% 的增长发生在 pass 内部**、连续且不衰减；边界离散分量仅 28% 且随 pass 衰减。「逐 pass 写入」只描述了次要分量 |
+| ② 是否饱和 | 20ep net gap 每 pass 增量 e2–e5 均 1.16 → e6–e12 0.72 → e13–e20 0.60；e5–e20 线性拟合斜率 0.664/pass，R²=0.9976 | **e5 起在 step 时间上线性、无饱和迹象**。「衰减写入 → 平台」被证伪（与 §42 判决③一致） |
+| ③ 谁在长：train 还是 val | blrabs lr 3e-4/6e-4/1e-3：train_benefit 在 pass ~10 饱和于 ≈2.5 且三条 LR 曲线重合；val_penalty 持续增长且携带全部 LR 依赖（e29: 6e-4 臂 10.61） | 晚期增长 **100% 是 val 被伤害**、train 已无增益。这是「logit 尺度/margin 持续放大」的指纹：train CE 已饱和 ~0，val 上错误 residual 被同一尺度线性放大 |
+| ④ 表是否一次写完 | trigram table RMS pass 1→6：0.80/1.49/2.01/2.41/2.73/3.01（×3.8，增量 0.69→0.28）；bigram 同型 | **否**，表范数持续增长（无 wd）。但 freeze_table@e2 保留 94% gap（5.386 vs 5.733）、freeze_table@e1@1000 甚至更大（3.452 vs 2.724）→ 表的后续增长对 gap **无关甚至略负**；放大发生在 backbone 侧（freeze_backbone@e1 → 1.585） |
+| ⑤ pass 数是否独立于 dose | 固定 pass 6：gap 2.99(6e-5)/3.51(1e-4)/4.70(3e-4)/5.43(6e-4)/5.83(1e-3)/5.77(2e-3)，~η^0.18 且 ≥1e-3 饱和；匹配 dose D=5.925：8.5/11.5/13.1/14.7（pass 9→59） | 两组同时被「每步增量 h(η) 随 η 饱和、对 step 累加」解释：固定 pass ⇒ 弱 η 依赖；固定 dose=N·η ⇒ gap=D·h(η)/η 随 η 降而升。**不需要 pass 特有机制**；§42 判决②应改述为「gap 是 step 累加量，不是 dose 累加量」 |
+
+**重新表述的动力学**（可证伪）：表在 pass 1 为每个 train context 提供私有 key，使 train 集对 backbone「可分」；
+pass 2 起 CE 在归一化优化器（AdamW/RMSProp：步长不随梯度缩小）下持续放大 train margin，速率≈常数/step，
+不与 pass 数绑定；epoch 结构只通过 (i) 泄漏开启时刻（pass 2 起点）、(ii) 28% 的边界刷新项进入。
+预测：(P1) 关掉/加大 backbone wd 改变晚期斜率与平台（wd 是唯一反向力）；(P2) backbone 换 SGD → log 型凹增长；
+(P3) train/val logit 尺度随 step 线性增长（需在 diag 中加记录，零成本）；(P4) 表行方向 cos(e,e+1)≈1、只长范数（需边界快照）；
+(P5) shuffled replay 去掉台阶但不改斜率。以上均未做，属下一批 planned。
