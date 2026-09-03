@@ -3867,3 +3867,20 @@ pass 2 起 CE 在归一化优化器（AdamW/RMSProp：步长不随梯度缩小�
 3. **高 f 剩余项**：f>10³ 处 M_f<0.07 但 d_e 不归零，平台 ≈2 nats（pass 6）→ 缺失质量之外的「已见但权重错」(sampling error ~S_eff/f，H-KAPPA 的 V 项) 与/或 backbone 泛化被共适应拖累；本数据不能拆分二者（需按 f 的 freeze_backbone 分解）。
 4. **方法注记**：以 2-token 经验条件熵 H_f 定义「记忆分数」不成立——backbone 用 2048-token context，pass 1 时 f≳100 的 train loss 已低于 H_f；不作图。
 **结论**：novel continuation 与 wrong-weight continuation 是同一件事（p̂_c 相对 p_c 的采样误差，前者是 p̂=0 的条目），二者被同一 A_e 放大故「平等」；覆盖率决定 what/shape，训练步数（归一化优化器下线性）决定 how much。多 epoch = 在有限样本上继续走步，是训练动态现象。
+
+## §50 · 表写入 cosine 轨迹 + seen/novel/margin 分解（step-for-step replay，2026-09-03）
+
+**问题**（用户）：测一下表写入的 cosine/写入强度；gap 增长是否来自「对 train continuation 信心增强 → novel token 概率被压得更低」的动力学。
+**方法**：`docs/plot_scripts/analyze_v5_table_cosine_decomp.py` 在 ophis 上对三个权威 run 做**逐位同序 replay**（同数据顺序/优化器/schedule，seed 42，128×，2022 步）：input（=nglab1x_input_v5_128x_freq10_fd）、nogram、freeze_backbone_e1（=causalv5m3）。pass 边界（337k）快照 bigram/trigram 表权重（fp16，`data/runs_theory/<run>_snap/rows_*.npy`，19GB 留在集群），并在 fixed val pool 上按 context f 聚合 seen/novel 损失与 margin（logit(train-dominant continuation) − logit(true novel token)；seen/novel 由 1x shard 的 trigram keys 离线判定，dominant = train 中该 context 最高频 continuation）。后处理 `analyze_v5_cosine_margin_posthoc.py`；图 `plot_v5_table_cosine_margin.py` → `docs/figs/theory/fig_v5_table_cosine_and_margin.png`。行 hash 与 `train.py` clean-table primes 逐位一致。
+
+**A. 表不是「一次写死后只长范数」**（§48 判决④修正）：
+- cos(row@e1, row@e6) 中位数：bigram 0.52（f=2 桶）→0.76（f=10⁴ 桶）；trigram ~0.57（f 不敏感）。pass 2 后仍 0.85，pass 3 起持续旋转。
+- 每 pass 相对写入 ||ΔW||/||W||：bigram 0.91/0.52/0.48/0.45/0.41，trigram 1.15/0.58/0.43/0.38/0.36（pass 2–6）——是纯尺度增长参考（norm 比 −1）的 3–6 倍 → **持续真实重写**，不是只放大。
+- 但 §48 的因果结论不变：freeze_table@e2 保留 94% gap → 表的重写对 gap 无关紧要；表动力学是 RMSProp 无衰减、梯度不衰减下的惯性滑行（row 近似 dW/(λ+dW) 随机游走，cos(e1,e6)~1/√6≈0.41 量级吻合）。
+- bigram 低频行旋转更快（cos 0.52 vs 高频 0.76）：f 小 → 单位时间曝光少 → 相对游走更快，符合曝光计数模型。
+
+**B. gap 增长 = novel-token 抑制动力学（用户假设证实，且是 backbone 侧）**：
+- val 伤害按 continuation 身份拆开（input − nogram，pass 6，bigram 分支）：novel token（该 (context,next) 在 train 未出现）d_novel = 9.6(f=1) → 4.5(f=10⁴)；seen token d_seen = 3.5(f=1) → 2.1(f=10⁴)。pass 1 时 d_seen 在高 f 为 **−1.2**（表模型对 seen continuation 更好），pass 2 起翻正。
+- margin（train-dominant continuation 的 logit − 真实 novel token 的 logit）随 pass 单调增长：f=1 桶 1.6→3.9→5.3→5.9→6.5→7.0（pass 1–6）；f=13/100 桶同样线性增长。**freeze_backbone@e1 后 margin 基本冻结**（f=1：pass 1 的 3.3 → pass 6 仅 4.0，增量 −76%；f=100 完全平）→ 抑制由 backbone 共适应驱动，表单独做不到。
+- 机制闭环：表给每个 train context 私有 key → backbone 学会「认出 context 就输出 train continuation」→ 对任何未见 continuation 的 logit 被持续压低（CE 对可分集的 margin 最大化，归一化优化器速率恒定）→ val 上 novel token（占 token 流 ~28%，Good-Turing）损失线性上升。f 越小 margin 越大（记忆更强），与 §49 的 d/M 平坦互补：M_f 决定质量项权重，margin 决定每单位质量的伤害，二者在 f∈[2,320) 近似相互抵消成平坦。
+**遗留**：seen 侧高 f 的 2-nat 平台（sampling error vs backbone 泛化拖累）仍不可分；trigram 分支的 seen/novel 需 fourgram 计数（未做）。replay 复现口径与权威 run 的 train loss 一致（step 2022: 1.2263 vs 权威 ~1.22），但 decomp/snap 属 `data/runs_theory/` 分析产物，非新训练 run。
