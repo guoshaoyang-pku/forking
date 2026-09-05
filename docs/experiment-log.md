@@ -3896,3 +3896,32 @@ pass 2 起 CE 在归一化优化器（AdamW/RMSProp：步长不随梯度缩小�
 3. **table-direct vs backbone-carried（pass 6）**：table 直接作用 = seen **−5.5 ~ −7.7**（巨大收益，符合记忆定位）+ novel 仅在 f≤13 为正（f=1: +1.9），f≳13 转负（高频 novel 上表反而小幅有益）；**backbone-carried = +6.5 ~ +10.8，seen/novel 全 f 平坦**，是总伤害的主体（~2/3）。⚠️ 口径注意：关表前向对共适应的 backbone 是分布外输入，backbone-carried 含「共适应耦合 artifact」，是真 backbone 伤害的上界；干净归因须靠 freeze 系因果 run。
 4. **对主线故事的修正**：novel 抑制的 table-direct 部分集中在 f≤13 的低频；f 无关的伤害地板与 seen 侧普遍退化都来自 backbone 侧。「table 立锚点、backbone 锐化 margin」的定性分工不变，但定量上 backbone 项比 §50 表述的更大、更平。
 **遗留**：trigram 分支（需 fourgram 计数）；backbone-carried 的 co-adaptation artifact 分离（freeze_table 后关表前向对比）；§49 高 f 平台现在可拆 = backbone-carried 地板项。
+
+## §52 · y/v 三轴 scaling + 多层注入波次（2026-09-06，用户拍板）
+
+**Setting**：v5 极简基线（RMSProp (0,0.99) ×128、backbone 6e-4 warmup_constant(100)、bf16 no-compile、seed 42、1x shard、val 2,3,4,5,6,7,8,9,10,6542），唯一变量 = injection_position（y/v）与各轴坐标。主实验双表 R=2^20 已有（inj_fd 四臂）；scaling 轴用户拍板只做 **bigram 单表**。多层 = 每层独立 clean 表 + per-layer hash primes（`--inject_layers`，commit 5484047，CPU regression：默认口径与旧代码逐位一致）。launcher：`code/cluster/run_v5_yv_scaling.sh`（三机 md5 一致）。{1} 单层 = 现有 inj_fd y/v 主曲线，不重跑。
+
+**批2 · table-size 轴（y/v × bigram 单表 × 31 R 点，1000 步，val@337/674/1000）**：
+
+| run_id 模式 | R 点数 | 状态 |
+|---|---|---|
+| `s1v5_128_y_tbl_bi1_R{R}` | 31（1.6e4–2.35e6 + 1e4–1e0 加密低点） | 🔄 running（ophis） |
+| `s1v5_128_v_tbl_bi1_R{R}` | 31 同上 | 🔄 running（360-1） |
+
+**批3 · epoch 长度轴（y/v × bigram 单表 R=2^20，12 个 L4 倍数点 × 3ep 预算 + 1xL4_10ep）**：
+
+| run_id 模式 | 点数 | 状态 |
+|---|---|---|
+| `s1v5_128_y_ep_bi_{m}xL4_3ep` | 12（m=0.125–2.0）+ `s1v5_128_y_ep_bi_1xL4_10ep` | 🔄 running（360-2） |
+| `s1v5_128_v_ep_bi_{m}xL4_3ep` | 12 + `s1v5_128_v_ep_bi_1xL4_10ep` | 🔄 running（360-2） |
+
+**批4 · 多层主曲线（双表 R=2^20，2000 步，val/freq=10）**：
+
+| run_id | inject_layers | 状态 |
+|---|---|---|
+| `mlv5_y_L17_fd` | 1,7 | ⏳ planned（360-2，ep 后） |
+| `mlv5_y_L1357_fd` | 1,3,5,7 | ⏳ planned（360-2，ep 后） |
+| `mlv5_v_L17_fd` | 1,7 | ⏳ planned（360-2，ep 后） |
+| `mlv5_v_L1357_fd` | 1,3,5,7 | ⏳ planned（360-2，ep 后） |
+
+冒烟：`nglab_smoke_ml`（30 步 y {1,3,5,7}，ophis GPU0，0.47s/step、130GB，跳过登记）。回填：完成后逐组改 ✅ 并附 gap@1000/幂律拟合。
