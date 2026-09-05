@@ -71,6 +71,10 @@ class Config:
     enable_trigram_ve: bool = True
     enable_fourgram_ve: bool = False
     nanogpt_ngram_injection_position: str = "input"  # v | y | input
+    nanogpt_inject_layers: str = ""   # v/y only: comma layer ids for multi-layer
+                                      # injection (one independent table per layer,
+                                      # per-layer hash primes). "" = default
+                                      # (single layer ngram_layers[0]).
     # optimizer
     nanogpt_adam_lr: float = 0.004
     ngram_table_betas: tuple = (0.0, 0.99)
@@ -123,6 +127,19 @@ class Config:
 def has_ve(layer_idx: int, n_layer: int) -> bool:
     """Alternating VE layers."""
     return layer_idx % 2 == (n_layer - 1) % 2
+
+
+def _parse_inject_layers(config) -> "set[int] | None":
+    """--inject_layers for v/y multi-layer injection; None = default layout."""
+    s = getattr(config, "nanogpt_inject_layers", "") or ""
+    if not s.strip():
+        return None
+    if config.nanogpt_ngram_injection_position not in {"v", "y"}:
+        raise ValueError("--inject_layers only applies to v/y injection")
+    layers = {int(t) for t in s.split(",") if t.strip()}
+    if not layers or min(layers) < 0 or max(layers) >= config.n_layer:
+        raise ValueError(f"--inject_layers out of range [0,{config.n_layer}): {s!r}")
+    return layers
 
 
 # ---------------------------------------------------------------------------
@@ -204,11 +221,16 @@ class CausalSelfAttention(nn.Module):
         self.ve_gate_channels = 32
         use_ngram = config.enable_nanogpt_ngram_ve
         use_layer_ve = has_ve(layer_idx, config.n_layer)
-        ve_layers = sorted(i for i in range(config.n_layer) if has_ve(i, config.n_layer))
-        trigram_layers = (
-            {ve_layers[0], ve_layers[-2], ve_layers[-1]}
-            if len(ve_layers) >= 2 else {ve_layers[-1]}
-        )
+        inject = _parse_inject_layers(config)
+        if inject is not None:
+            bigram_gate_layers = trigram_gate_layers = inject
+        else:
+            ve_layers = sorted(i for i in range(config.n_layer) if has_ve(i, config.n_layer))
+            bigram_gate_layers = set(ve_layers)
+            trigram_gate_layers = (
+                {ve_layers[0], ve_layers[-2], ve_layers[-1]}
+                if len(ve_layers) >= 2 else {ve_layers[-1]}
+            )
         # gates only needed when injection is v or y (input injection has no gate)
         need_gate = use_ngram and config.nanogpt_ngram_injection_position in {"v", "y"}
         self.ve_gate = (
@@ -217,11 +239,11 @@ class CausalSelfAttention(nn.Module):
         )
         self.bigram_gate = (
             nn.Linear(self.ve_gate_channels, self.n_head, bias=False)
-            if need_gate and config.enable_bigram_ve and use_layer_ve else None
+            if need_gate and config.enable_bigram_ve and layer_idx in bigram_gate_layers else None
         )
         self.trigram_gate = (
             nn.Linear(self.ve_gate_channels, self.n_head, bias=False)
-            if need_gate and config.enable_trigram_ve and layer_idx in trigram_layers else None
+            if need_gate and config.enable_trigram_ve and layer_idx in trigram_gate_layers else None
         )
         self.fourgram_gate = None  # fourgram not supported in minimal version
 
@@ -373,6 +395,10 @@ class NanoGPT(nn.Module):
             self.bigram_table_size = config.vocab_size * config.table_mult
             self.bigram_ve_layers = set()
             self.bigram_K = 2
+        _inject = _parse_inject_layers(config)
+        if _inject is not None and self.bigram_ve_layers:
+            # multi-layer v/y: one independent clean table per inject layer
+            self.bigram_ve_layers = set(_inject)
         half_dim = config.n_embd // 2
         _bp = expand_bigram_hash_primes(_BASE_BIGRAM_PRIMES, len(ngram_layers))
         self.bigram_hash_primes_per_layer = {}
@@ -409,6 +435,8 @@ class NanoGPT(nn.Module):
             )
             self.trigram_table_size = config.vocab_size * config.table_mult
             self.trigram_K = 2
+        if _inject is not None and self.trigram_ve_layers:
+            self.trigram_ve_layers = set(_inject)
         _tp = _BASE_TRIGRAM_PRIMES[:max(1, len(self.trigram_ve_layers))]
         while len(_tp) < len(self.trigram_ve_layers):
             _tp.append(_tp[len(_tp) % len(_BASE_TRIGRAM_PRIMES)])
@@ -1447,6 +1475,10 @@ def main():
     parser.add_argument("--run_id", default="run")
     parser.add_argument("--injection_position", default="input",
                         choices=["v", "y", "input"])
+    parser.add_argument("--inject_layers", default="",
+                        help="v/y only: comma layer ids for multi-layer injection, "
+                             "one independent clean table per layer (e.g. '1,3,5,7'); "
+                             "empty = default single-layer layout")
     parser.add_argument("--steps", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--data_dir", default=os.environ.get("NGLAB_DATA_DIR", ""))
@@ -1601,6 +1633,7 @@ def main():
         n_embd=args.n_embd,
         sequence_len=args.sequence_len,
         nanogpt_ngram_injection_position=args.injection_position,
+        nanogpt_inject_layers=args.inject_layers,
         enable_unigram_ve=bool(args.enable_unigram),
         enable_bigram_ve=bool(args.enable_bigram),
         enable_trigram_ve=bool(args.enable_trigram),
@@ -2064,6 +2097,7 @@ def main():
     summary = {
         "run_id": args.run_id,
         "injection_position": cfg.nanogpt_ngram_injection_position,
+        "inject_layers": cfg.nanogpt_inject_layers,
         "steps": cfg.max_steps,
         "seed": cfg.seed,
         "epoch_batches": cfg.epoch_batches,
