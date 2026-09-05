@@ -3884,3 +3884,15 @@ pass 2 起 CE 在归一化优化器（AdamW/RMSProp：步长不随梯度缩小�
 - margin（train-dominant continuation 的 logit − 真实 novel token 的 logit）随 pass 单调增长：f=1 桶 1.6→3.9→5.3→5.9→6.5→7.0（pass 1–6）；f=13/100 桶同样线性增长。**freeze_backbone@e1 后 margin 基本冻结**（f=1：pass 1 的 3.3 → pass 6 仅 4.0，增量 −76%；f=100 完全平）→ 抑制由 backbone 共适应驱动，表单独做不到。
 - 机制闭环：表给每个 train context 私有 key → backbone 学会「认出 context 就输出 train continuation」→ 对任何未见 continuation 的 logit 被持续压低（CE 对可分集的 margin 最大化，归一化优化器速率恒定）→ val 上 novel token（占 token 流 ~28%，Good-Turing）损失线性上升。f 越小 margin 越大（记忆更强），与 §49 的 d/M 平坦互补：M_f 决定质量项权重，margin 决定每单位质量的伤害，二者在 f∈[2,320) 近似相互抵消成平坦。
 **遗留**：seen 侧高 f 的 2-nat 平台（sampling error vs backbone 泛化拖累）仍不可分；trigram 分支的 seen/novel 需 fourgram 计数（未做）。replay 复现口径与权威 run 的 train loss 一致（step 2022: 1.2263 vs 权威 ~1.22），但 decomp/snap 属 `data/runs_theory/` 分析产物，非新训练 run。
+
+## §51 · f × pass 全账目表（seen/novel × table-direct/backbone-carried，2026-09-06）
+
+**问题**（用户）：把所有 gap 找出来——seen-but-rare 是否也有大 gap；r(f) 的函数形式；table 直接作用与 backbone 携带作用的拆分。
+**方法**：`docs/plot_scripts/analyze_v5_f_by_pass_table.py` 聚合 §50 replay 的 `decomp.jsonl`（input/nogram/freezebb，bigram 分支，6 个 pass 边界 step，f 从 0 到 2×10⁵ 分 26 桶）。新增拆分：`table-direct = input_full − input_同一权重关表`（`_c` 列是 CleanForward 关表前向），`backbone-carried = input_关表 − nogram`。产物：`docs/figs/theory/tab_v5_f_by_pass_accounting.csv` + `fig_v5_f_by_pass_accounting.png`。
+
+**判决**：
+1. **r(f) 函数形式**：margin 每 pass 增量 r_margin(f) ≈ 1.05 − 0.077·log₂f（f=1: 1.01 → f≥2049: 0.21，log f 线性）；novel 伤害增量 r_novel(f) ≈ 1.55 − 0.05·log₂f（f=1: 1.50 → 高频: 0.95）——**有 ~0.95 nats/pass 的 f 无关地板**，margin 机制（×(1−p̂)≈0.87）只能解释 f 依赖部分，地板项是 backbone 全局漂移。f=0（train 从未见过的 context）novel 伤害增量 +1.57/pass，为全桶最高之一。
+2. **seen 侧精确形状**（修正 §50「常数退化+低频保护」的粗粒度表述）：pass 1 时 seen 伤害从 f=1 的 **+2.29** 单调下降、f≥7 转负（保护），谷底 −1.2 @ f≈100–900；每 pass 斜率则是 **f=1 最小（+0.23）→ f≥55 起平坦 +0.55**。即低频 seen 的「保护」在斜率上，但 pass-1 的环境门控首击（+2.29）太大，pass 6 时 f=1 seen（+3.45）反而是全 seen 桶里最差的。到 pass 6 所有 seen 桶全为正（+1.9 ~ +3.5）。
+3. **table-direct vs backbone-carried（pass 6）**：table 直接作用 = seen **−5.5 ~ −7.7**（巨大收益，符合记忆定位）+ novel 仅在 f≤13 为正（f=1: +1.9），f≳13 转负（高频 novel 上表反而小幅有益）；**backbone-carried = +6.5 ~ +10.8，seen/novel 全 f 平坦**，是总伤害的主体（~2/3）。⚠️ 口径注意：关表前向对共适应的 backbone 是分布外输入，backbone-carried 含「共适应耦合 artifact」，是真 backbone 伤害的上界；干净归因须靠 freeze 系因果 run。
+4. **对主线故事的修正**：novel 抑制的 table-direct 部分集中在 f≤13 的低频；f 无关的伤害地板与 seen 侧普遍退化都来自 backbone 侧。「table 立锚点、backbone 锐化 margin」的定性分工不变，但定量上 backbone 项比 §50 表述的更大、更平。
+**遗留**：trigram 分支（需 fourgram 计数）；backbone-carried 的 co-adaptation artifact 分离（freeze_table 后关表前向对比）；§49 高 f 平台现在可拆 = backbone-carried 地板项。
