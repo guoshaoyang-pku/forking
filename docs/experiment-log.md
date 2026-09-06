@@ -3905,23 +3905,33 @@ pass 2 起 CE 在归一化优化器（AdamW/RMSProp：步长不随梯度缩小�
 
 | run_id 模式 | R 点数 | 状态 |
 |---|---|---|
-| `s1v5_128_y_tbl_bi1_R{R}` | 31（1.6e4–2.35e6 + 1e4–1e0 加密低点） | 🔄 running（ophis） |
-| `s1v5_128_v_tbl_bi1_R{R}` | 31 同上 | 🔄 running（360-1） |
+| `s1v5_128_y_tbl_bi1_R{R}` | 31（1.6e4–2.35e6 + 1e4–1e0 加密低点） | ✅ done（ophis，31/31） |
+| `s1v5_128_v_tbl_bi1_R{R}` | 31 同上 | ✅ done（360-2 全量重跑，31/31；360-1 GPU7 不稳，弃用其 25 个部分结果） |
 
 **批3 · epoch 长度轴（y/v × bigram 单表 R=2^20，12 个 L4 倍数点 × 3ep 预算 + 1xL4_10ep）**：
 
 | run_id 模式 | 点数 | 状态 |
 |---|---|---|
-| `s1v5_128_y_ep_bi_{m}xL4_3ep` | 12（m=0.125–2.0）+ `s1v5_128_y_ep_bi_1xL4_10ep` | 🔄 running（360-2） |
-| `s1v5_128_v_ep_bi_{m}xL4_3ep` | 12 + `s1v5_128_v_ep_bi_1xL4_10ep` | 🔄 running（360-2） |
+| `s1v5_128_y_ep_bi_{m}xL4_3ep` | 12（m=0.125–2.0）+ `s1v5_128_y_ep_bi_1xL4_10ep` | ✅ done（360-2，13/13） |
+| `s1v5_128_v_ep_bi_{m}xL4_3ep` | 12 + `s1v5_128_v_ep_bi_1xL4_10ep` | ✅ done（360-2，13/13） |
 
 **批4 · 多层主曲线（双表 R=2^20，2000 步，val/freq=10）**：
 
 | run_id | inject_layers | 状态 |
 |---|---|---|
-| `mlv5_y_L17_fd` | 1,7 | ⏳ planned（360-2，ep 后） |
-| `mlv5_y_L1357_fd` | 1,3,5,7 | ⏳ planned（360-2，ep 后） |
-| `mlv5_v_L17_fd` | 1,7 | ⏳ planned（360-2，ep 后） |
-| `mlv5_v_L1357_fd` | 1,3,5,7 | ⏳ planned（360-2，ep 后） |
+| `mlv5_y_L17_fd` | 1,7 | ✅ done（360-2） |
+| `mlv5_y_L1357_fd` | 1,3,5,7 | ✅ done（360-2） |
+| `mlv5_v_L17_fd` | 1,7 | ✅ done（360-2） |
+| `mlv5_v_L1357_fd` | 1,3,5,7 | ✅ done（360-2） |
 
-冒烟：`nglab_smoke_ml`（30 步 y {1,3,5,7}，ophis GPU0，0.47s/step、130GB，跳过登记）。回填：完成后逐组改 ✅ 并附 gap@1000/幂律拟合。
+**结果（全部 92/92 done；图 `docs/figs/main/fig_v5_yv_scaling_three_axis.png`，脚本 `plot_v5_yv_scaling.py`）**：
+
+1. **table-size 轴（bigram 单表，gap@1000，log–log 拟合窗 R∈[1e4, 1.3e6]）**：
+   - **y: slope = 0.517 (R²=0.982)**；**v: slope = 0.680 (R²=0.984)** —— 与旧 input 版 trigram 单表 ~0.67 / 预期的 1/2、2/3 分数指数吻合。
+   - R≤4642 为噪声地板（y ~0.02–0.04，v ~0.02–0.04）；R≥2e6 时 v 仍在幂律段末端（gap 1.99），y 开始饱和（1.09 @ 2.35e6）。
+   - 对照：input 臂旧 bi2 口径（双表开、只变 bigram R）slope 0.043——trigram 固定 2^20 主导了 gap，bigram R 几乎不影响。**教训：table-size 扫描必须单表**（本次 y/v 已是单表；input 的 bi2 历史数据仅作对照，不进幂律拟合）。
+2. **epoch 长度轴（bigram 单表，固定 3 pass）**：三臂均为 U 形。y 单调平台浅 U（1.58 @0.125x → 0.82 @1x → 2.38 @2x）；v 的 U 最深（0.00 @0.125x → 1.26 @1x → 4.85 @2x，左端点 v 完全无 gap——epoch 太短 v 门控学不起来）；input 2.73–5.66。10ep 长 run：y = 4.858，v = 7.880（@3370 步，1xL4）。
+3. **多层注入（双表 R=2^20，2000 步，gap）**：y: {1}=5.328 → {1,7}=5.168 → {1,3,5,7}=5.256；v: {1}=7.806 → {1,7}=7.218 → {1,3,5,7}=7.064。**加层不增 gap 反而略降**（v −9%）——gap 不是「表多份拷贝叠加」的剂量效应，单层注入已经足够承载记忆锚点；多层把记忆分摊到多深度、略微改善 train（分母效应）。
+4. **v 臂 R≤10 时 gap≈0.02 ≠ 0**：v 注入的表几乎不贡献时 backbone 自身仍有微小 gap；v 0.125xL4 时 gap=0.000——v 门控是 gap 的瓶颈，短 epoch 下门控未打开。
+
+**事故记录**：360 集群缺 `diag_worker.py`（fast-diag 管线依赖，2026-09-01 起标准）导致首批 44 run 训完在诊断阶段崩，已清理全部 partial、补同步并核对三机 md5 后重跑；360-1 GPU7 间歇性 OOM（同卡 6 run 无声失败，nvidia-smi 无 ECC pending），已弃用该卡并在 360-2 全量重跑 v_tbl；ophis GPU0 残留冒烟进程致 R16000 OOM，已隔离补跑。冒烟 `nglab_smoke_ml`（30 步）跳过登记。
