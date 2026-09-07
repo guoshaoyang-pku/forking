@@ -56,15 +56,21 @@ case "$GROUP" in
     done
     ;;
   epfix)
-    # Corrected >1x epoch arms: real multi-shard train sets. The original ep
-    # group could not exceed the 1x shard (nested-prefix), so 1.25x-2x silently
-    # cycled the same 1x shard (extra passes, not longer epochs).
-    # Spec: run_id|steps|train_shards|freq_index|epoch_batches
-    # Batches are exact shard-union floors: 1+62=421, 1+61=505, 1+60+62=589, 1+2=670.
-    declare -A EPF_SHARDS=( [1p25x]="1,62" [1p5x]="1,61" [1p75x]="1,60,62" [2x]="1,2" )
+    # Corrected >1x epoch arms v2 (ep2): true corpus-prefix train sets with
+    # convention val sets. Shard facts (chunk-hash verified 2026-09-07):
+    #   60,62,63 are prefix slices of shard 1; 61 = first half of shard 2;
+    #   64 = first half of shard 3. New shards: 65 = first quarter of shard 2
+    #   (83 batches), 66 = first three quarters of shard 2 (249 batches).
+    # Train sets: 1.25x={1,65} 1.5x={1,61} 1.75x={1,66} 2x={1,2}.
+    # Val per dose convention (rerun_all.py): partial-2 sets -> val 3..10,6542;
+    # {1,2} -> val 4..10,6542.
+    # Spec: run_id|steps|train_shards|freq_index|val_shards|extra
+    declare -A EPF_SHARDS=( [1p25x]="1,65" [1p5x]="1,61" [1p75x]="1,66" [2x]="1,2" )
     declare -A EPF_IDX=( [1p25x]="freq_index_train1_25x" [1p5x]="freq_index_train1_5x" \
                          [1p75x]="freq_index_train1_75x" [2x]="freq_index_train2x_fine" )
-    declare -A EPF_BATCHES=( [1p25x]=421 [1p5x]=505 [1p75x]=589 [2x]=670 )
+    declare -A EPF_BATCHES=( [1p25x]=420 [1p5x]=505 [1p75x]=586 [2x]=670 )
+    declare -A EPF_VAL=( [1p25x]="3,4,5,6,7,8,9,10,6542" [1p5x]="3,4,5,6,7,8,9,10,6542" \
+                         [1p75x]="3,4,5,6,7,8,9,10,6542" [2x]="4,5,6,7,8,9,10,6542" )
     for POS in y v input; do
       for m in 1p25x 1p5x 1p75x 2x; do
         b="${EPF_BATCHES[$m]}"
@@ -72,7 +78,7 @@ case "$GROUP" in
         if [[ "$POS" != "input" ]]; then
           pos_flag="--injection_position ${POS} --enable_bigram 1 --enable_trigram 0 --bigram_clean_table 1048576 --trigram_clean_table 0"
         fi
-        SPECS+=("s1v5_128_${POS}_epf_${m}xL4_3ep|$((b * 3))|${EPF_SHARDS[$m]}|${EPF_IDX[$m]}|--epoch_batches ${b} ${pos_flag} --val_steps ${b},$((b * 2)),$((b * 3))")
+        SPECS+=("s1v5_128_${POS}_ep2_${m}L4_3ep|$((b * 3))|${EPF_SHARDS[$m]}|${EPF_IDX[$m]}|${EPF_VAL[$m]}|--epoch_batches ${b} ${pos_flag} --val_steps ${b},$((b * 2)),$((b * 3))")
       done
     done
     ;;
@@ -86,11 +92,11 @@ run_one() {
   local gpu="$1"
   local spec="$2"
   local run_id steps extra result_dir
-  local shards="1" freq=""
+  local shards="1" freq="" val="$VAL_SHARDS"
   local -a F
   IFS='|' read -ra F <<< "$spec"
-  if [[ "${#F[@]}" -eq 5 ]]; then
-    run_id="${F[0]}"; steps="${F[1]}"; shards="${F[2]}"; freq="${F[3]}"; extra="${F[4]}"
+  if [[ "${#F[@]}" -eq 6 ]]; then
+    run_id="${F[0]}"; steps="${F[1]}"; shards="${F[2]}"; freq="${F[3]}"; val="${F[4]}"; extra="${F[5]}"
   else
     run_id="${F[0]}"; steps="${F[1]}"; extra="${F[2]}"
   fi
@@ -107,11 +113,11 @@ run_one() {
   if [[ -n "$freq" ]]; then
     NGLAB_FREQ_INDEX="$OUT_DIR/../${freq}.npz" \
     NGLAB_PY="$PY" NGLAB_OUT_DIR="$OUT_DIR" bash "$SCRIPT_DIR/run_v5_clean.sh" \
-      "$gpu" "$run_id" "$shards" "$VAL_SHARDS" "$steps" \
+      "$gpu" "$run_id" "$shards" "$val" "$steps" \
       $extra
   else
     NGLAB_PY="$PY" NGLAB_OUT_DIR="$OUT_DIR" bash "$SCRIPT_DIR/run_v5_clean.sh" \
-      "$gpu" "$run_id" "$shards" "$VAL_SHARDS" "$steps" \
+      "$gpu" "$run_id" "$shards" "$val" "$steps" \
       $extra
   fi
 }
