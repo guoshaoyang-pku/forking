@@ -55,6 +55,27 @@ case "$GROUP" in
       SPECS+=("mlv5_${POS}_L1357_fd|2000|--injection_position ${POS} --inject_layers 1,3,5,7")
     done
     ;;
+  epfix)
+    # Corrected >1x epoch arms: real multi-shard train sets. The original ep
+    # group could not exceed the 1x shard (nested-prefix), so 1.25x-2x silently
+    # cycled the same 1x shard (extra passes, not longer epochs).
+    # Spec: run_id|steps|train_shards|freq_index|epoch_batches
+    # Batches are exact shard-union floors: 1+62=421, 1+61=505, 1+60+62=589, 1+2=670.
+    declare -A EPF_SHARDS=( [1p25x]="1,62" [1p5x]="1,61" [1p75x]="1,60,62" [2x]="1,2" )
+    declare -A EPF_IDX=( [1p25x]="freq_index_train1_25x" [1p5x]="freq_index_train1_5x" \
+                         [1p75x]="freq_index_train1_75x" [2x]="freq_index_train2x_fine" )
+    declare -A EPF_BATCHES=( [1p25x]=421 [1p5x]=505 [1p75x]=589 [2x]=670 )
+    for POS in y v input; do
+      for m in 1p25x 1p5x 1p75x 2x; do
+        b="${EPF_BATCHES[$m]}"
+        pos_flag=""
+        if [[ "$POS" != "input" ]]; then
+          pos_flag="--injection_position ${POS} --enable_bigram 1 --enable_trigram 0 --bigram_clean_table 1048576 --trigram_clean_table 0"
+        fi
+        SPECS+=("s1v5_128_${POS}_epf_${m}xL4_3ep|$((b * 3))|${EPF_SHARDS[$m]}|${EPF_IDX[$m]}|--epoch_batches ${b} ${pos_flag} --val_steps ${b},$((b * 2)),$((b * 3))")
+      done
+    done
+    ;;
   *)
     echo "unknown S1_GROUP=$GROUP" >&2
     exit 2
@@ -65,7 +86,14 @@ run_one() {
   local gpu="$1"
   local spec="$2"
   local run_id steps extra result_dir
-  IFS='|' read -r run_id steps extra <<< "$spec"
+  local shards="1" freq=""
+  local -a F
+  IFS='|' read -ra F <<< "$spec"
+  if [[ "${#F[@]}" -eq 5 ]]; then
+    run_id="${F[0]}"; steps="${F[1]}"; shards="${F[2]}"; freq="${F[3]}"; extra="${F[4]}"
+  else
+    run_id="${F[0]}"; steps="${F[1]}"; extra="${F[2]}"
+  fi
   result_dir="$OUT_DIR/${run_id}_fixed"
   if [[ -f "$result_dir/summary.json" ]]; then
     echo "[yv-$GROUP] skip complete $run_id"
@@ -75,10 +103,17 @@ run_one() {
     echo "[yv-$GROUP] refusing partial directory $result_dir" >&2
     return 2
   }
-  echo "[yv-$GROUP] $run_id gpu=$gpu steps=$steps"
-  NGLAB_PY="$PY" NGLAB_OUT_DIR="$OUT_DIR" bash "$SCRIPT_DIR/run_v5_clean.sh" \
-    "$gpu" "$run_id" 1 "$VAL_SHARDS" "$steps" \
-    $extra
+  echo "[yv-$GROUP] $run_id gpu=$gpu steps=$steps shards=$shards freq=$freq"
+  if [[ -n "$freq" ]]; then
+    NGLAB_FREQ_INDEX="$OUT_DIR/../${freq}.npz" \
+    NGLAB_PY="$PY" NGLAB_OUT_DIR="$OUT_DIR" bash "$SCRIPT_DIR/run_v5_clean.sh" \
+      "$gpu" "$run_id" "$shards" "$VAL_SHARDS" "$steps" \
+      $extra
+  else
+    NGLAB_PY="$PY" NGLAB_OUT_DIR="$OUT_DIR" bash "$SCRIPT_DIR/run_v5_clean.sh" \
+      "$gpu" "$run_id" "$shards" "$VAL_SHARDS" "$steps" \
+      $extra
+  fi
 }
 
 active=0
