@@ -56,8 +56,22 @@ def ep_points(summaries):
         m = re.search(r"_ep_bi_(\d+p\d*)xL4_3ep$", rid)
         if m:
             mult = float(m.group(1).replace("p", "."))
+            if mult > 1.0:
+                continue  # old >1x points carried the data-reuse bug; ep2 replaces them
             pts.append((mult, s["final_gap"]))
     return np.array(sorted(pts))
+
+
+def ep2_points(summaries):
+    """Corrected >1x epoch arms (ep2 wave, real multi-shard train sets)."""
+    pts = {}
+    for rid, s in summaries.items():
+        m = re.search(r"_(input|y|v)_ep2_(\d+p\d+)x?L4_3ep$", rid)
+        if m:
+            arm = m.group(1)
+            mult = float(m.group(2).replace("p", "."))
+            pts.setdefault(arm, []).append((mult, s["final_gap"]))
+    return {a: np.array(sorted(v)) for a, v in pts.items()}
 
 
 def fit_window(x, y, lo, hi):
@@ -89,9 +103,11 @@ def main():
         "v": tbl_points(load_summaries(SUM / "g3601/s1v5_128_v_tbl_*/summary.json")
                         | load_summaries(SUM / "g3602/s1v5_128_v_tbl_*/summary.json")),
     }
-    ep = {"input": input_ep}
+    ep = {"input": input_ep[input_ep[:, 0] <= 1.0]}  # >1x CSV points carried the reuse bug
     for pos in ("y", "v"):
         ep[pos] = ep_points(load_summaries(SUM / f"g3602/s1v5_128_{pos}_ep_*/summary.json"))
+    for arm, pts2 in ep2_points(load_summaries(SUM / "ep2/*/summary.json")).items():
+        ep[arm] = np.vstack([ep[arm], pts2])
 
     ml = load_summaries(SUM / "g3602/mlv5_*/summary.json")
     ml_gap = {rid.replace("mlv5_", "").replace("_fd", ""): s["final_gap"]
@@ -130,7 +146,9 @@ def main():
     ax.set_xscale("log")
     ax.set_xlabel("epoch length (multiple of L4 = 337 steps)")
     ax.set_ylabel("gap @ 3 passes (fixed pass count)")
-    ax.set_title("(b) epoch-length scaling @ fixed 3 passes\n(bigram single table; input arm both tables on)")
+    ax.set_title("(b) epoch-length scaling @ fixed 3 passes\n"
+                 "bigram single table; >1x = ep2 wave (true multi-shard prefix\n"
+                 "train sets, per-dose val); val-set switches at 1x->1.25x")
     ax.legend(fontsize=9)
     ax.grid(alpha=0.3, which="both")
 
