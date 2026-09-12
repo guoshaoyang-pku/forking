@@ -47,7 +47,7 @@ code{background:#f3f3f3;padding:.08em .25em;border-radius:3px}
 <p>这里 <code>D</code> 是训练 shard dose；总训练步数固定为 2000，因此 D 越大，每个样本在该预算内被 replay 的次数越少。v5 frequency-refresh 扫描（seed 42）从 <code>D=.25×</code> 的 gap 11.536 下降到 <code>D=5×</code> 的 0.084，<code>D=6×/8×</code> 为 −0.088/−0.075。它是很强的剂量/重复暴露关系，但不宜命名为一条全区间 <code>G(D)∝D^{-α}</code>：正 gap 的 5× 以内拟合斜率为 <code>−1.727</code>（R²=0.887），随后 gap 过零而 log(y) 不再定义。这说明当前曲线是 crossover 到 near-zero floor，而不是常数指数。</p>
 <figure><img src="../../figs/main/fig_v5_dose_trajectories.png" alt="v5 dose trajectories"><figcaption>v5 dose refresh：显示 12 个 dose 的 online train / fixed validation / online gap 原始轨迹；细线仅为 3 点视觉连接。</figcaption></figure>
 <h2>3. Replay exposure：保留为相邻关系，不宣称幂律</h2>
-<p>v5 的 trigram-only epoch-length 阵列只有单 seed。它用于把“频率效应”和“训练流重复暴露”并列观察；当前证据不足以写出稳定的 <code>G(L)</code> 幂律或独立因果关系。</p>
+<p>v5 的 trigram-only epoch-length 阵列只有单 seed。它用于把“频率效应”和“训练流重复暴露”并列观察；≤1×L4 段提供有限的单调趋势，&gt;1×L4 段应改读为 replay/pass 数。当前证据不足以写出稳定的 <code>G(L)</code> 幂律或独立因果关系。</p>
 <figure><img src="../../figs/main/fig_v5_s1_epoch_length_scaling.png" alt="v5 trigram-only epoch-length scaling"><figcaption>v5 epoch-length scaling：12 个 trigram-only、相对标准 <code>L4</code> 的 epoch-length 点，横轴直接使用 <code>L4</code> 倍数。</figcaption></figure><figure><img src="../../figs/main/fig_v5_s1_epoch_length_trajectories.png" alt="v5 epoch-length trajectories"><figcaption>v5 epoch-length trajectories：各 run 的原始在线 gap 与 epoch boundary 观察。</figcaption></figure>
 <details class="archive"><summary>展开历史 S1 审计（261 个 compile run、旧表架构与旧拟合；保留，不作为页首结论）</summary>
 <h2>0. 研究问题与 claim boundary</h2>

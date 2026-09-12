@@ -22,7 +22,7 @@ table 学习率和 backbone 学习率改变的是不同更新算子。`plot_v5_b
 
 “更多独立数据”和“同一数据重复更多次”不是同一变量。固定总步数会让短 epoch 产生更多 replay，固定 pass 数则会改变每次更新看到的数据量。因而任何 `F→kF` 缩放都必须同时声明：context 集合是否保持不变、验证 token 质量权重是否保持不变、总步数还是 pass 数被固定。
 
-当前 v5 S1 提供两类受控证据：clean table-size 轴在有限 R 中段给出 bigram 斜率约 0.576、trigram 斜率约 0.665；epoch-length 轴固定 3 个 epoch，12 个 L4 倍率呈 U 形，最小值在约 1×L4；L4 10-epoch 长训中 trigram gap 在 step 3370 达 8.675，而 no-gram 对照为 0.480。它们分别支持“容量改变幅度”和“epoch 长度改变暴露方式”的工作判断，但不构成跨数据分布的普适幂律。
+当前 v5 S1 提供两类受控证据：clean table-size 轴在有限 R 中段给出 bigram 斜率约 0.576、trigram 斜率约 0.665；epoch-length 轴固定 3 个 epoch，真正可比的 ≤1×L4 段随数据池增大而单调下降或持平（3.552 → 2.469），而 >1×L4 的旧点是 shard-1 wrap-around 后的 replay/pass 数，不能并入长度轴。L4 10-epoch 长训中 trigram gap 在 step 3370 达 8.675，而 no-gram 对照为 0.480。它们分别支持“容量改变幅度”和“epoch 长度/重复暴露需要分开对齐”的工作判断，但不构成跨数据分布的普适幂律。
 
 ### 6.4 容量、映射与干预收益
 

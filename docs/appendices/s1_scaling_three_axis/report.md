@@ -11,7 +11,7 @@
 | 真实 context frequency `f` → gap | 7 个宽几何 bin 的诊断摘要：bigram `G(f)∝f^-0.252746`（R²=0.997165），trigram `G(f)∝f^-0.318121`（R²=0.995548）。`hit count` 是 hash 前同一真实 n-gram context 在训练语料中出现的次数；它不是 table row load。 | 不是 table hit count；当前单 seed 的斜率不是普适常数。 |
 | clean table 大小 `R` → gap | 两条正式单表轴各 31 点，另一张表关闭。减去 no-gram floor `0.02` 后，在中间线性窗口得到 bigram `(G−0.02)∝R^0.576`（R=2e3–2e5，R²=.997）与 trigram `(G−0.02)∝R^0.665`（R=1e5–9.3e5，R²=.9997）；raw-gap 敏感性为 .501/.653。 | 不是一个把两张表绑定在一起的 `G_both(R)` 指数；小 R 塌缩区和大 R 饱和区不能混入同一条全区间幂律。 |
 | fixed-step 数据剂量 `D` → gap | **2× 批**（`nglab*_input_v5_freq10`，config `table_lr_scale=2.0`）step 2000 从 `D=.25×` 的 11.536 降至 `D=5×` 的 0.084、6× 后穿 0；**128× 批**（`nglab*_input_v5_128x_freq10`）从 10.895 降至 5× 的 0.355，6×/8× 为 −0.087/−0.055。 | 不是一条全区间幂律；正 gap 段描述斜率 2× 批 −1.727、128× 批 −1.176（见 `s1_dose_points_128x.csv`）。 |
-| epoch length `L` → gap | 12 个 trigram-only、相对标准 `L4` 的 v5 点，每个 run 完成 3 个 epoch；U 形，1.0×L4 最低 gap=2.469。 | 不拟合幂律，不作独立因果律。 |
+| epoch length `L` → gap | 12 个 trigram-only、相对标准 `L4` 的 v5 点，每个 run 完成 3 个 epoch；≤1×L4 的真实长度段随数据池增大单调下降或持平（3.552→2.469）；>1×L4 旧点是 shard-1 wrap-around replay/pass 数，不能作为长度轴。 | 不拟合幂律，不作独立因果律，也不把旧 U 形读法当作当前结果。 |
 
 > **读图规则**：频率图横轴是 exact context frequency；table 图横轴是每个 clean table 的物理行数 `R`。table occupancy / collision 是解释 `R` 效应的另一条观测轴，不能替代 `f`。
 
@@ -59,7 +59,7 @@
 
 ## 3. Replay exposure：保留为相邻关系，不宣称幂律
 
-v5 的 trigram-only epoch-length 阵列只有单 seed。它用于把“频率效应”和“训练流重复暴露”并列观察；当前证据不足以写出稳定的 `G(L)` 幂律或独立因果关系。
+v5 的 trigram-only epoch-length 阵列只有单 seed。它用于把“频率效应”和“训练流重复暴露”并列观察；≤1×L4 段提供有限的单调趋势，>1×L4 段应改读为 replay/pass 数。当前证据不足以写出稳定的 `G(L)` 幂律或独立因果关系。
 
 ![v5 epoch-length scaling](../../figs/main/fig_v5_s1_epoch_length_scaling.png)
 

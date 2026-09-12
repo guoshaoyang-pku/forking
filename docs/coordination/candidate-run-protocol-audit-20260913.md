@@ -5,7 +5,7 @@ This report uses only small remote summary.json and train_log.jsonl files recove
 | host | run_id | steps | seed | final gap | fixed probe batches | probe hash | probe mode | interval | table scale | train/val shards | log rows |
 |---|---|---:|---:|---:|---:|---|---|---:|---:|---|---:|
 | ophis-gpu | nglab1x_input_rho_v5_fixed | 2000 | 42 | 5.583336 | 4 | 38d1254a827759d6 | first | 10 | 2.0 | [1] / [2..10,6542] | 2000 |
-| 360-2 | nglab1x_input_rho_v5_fixed | 2000 | 42 | 5.583336 | 4 | 38d1254a827759d6 | first | 10 | 2.0 | [1] / [2..10,6542] | 12 |
+| 360-2 | nglab1x_input_rho_v5_fixed | 2000 (summary; incomplete log) | 42 | not established | 4 | 38d1254a827759d6 | first | 10 | 2.0 | [1] / [2..10,6542] | 12 |
 | ophis-gpu | nglab2x_input_rho_v5_fixed | 2000 | 42 | 1.248748 | 4 | 38d1254a827759d6 | first | 10 | 2.0 | [1,2] / [3..10,6542] | 2000 |
 | 360-2 | nglab2x_input_rho_v5_fixed | 2000 | 42 | 1.237259 | 4 | 38d1254a827759d6 | first | 10 | 2.0 | [1,2] / [3..10,6542] | 2000 |
 | 360-1 | nglab1x_nogram_long_v5_fixed | 8000 | 42 | 1.101865 | 0 | — | — | 10 | 2.0 (inert) | [1] / [2..10,6542] | 8000 |

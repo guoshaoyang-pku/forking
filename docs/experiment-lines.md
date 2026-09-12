@@ -114,7 +114,7 @@ run metadata 未随仓库迁入，因此作图脚本默认拒绝运行；只有�
 | table size · bigram-only | 只开启 bigram，改变其 clean table 的 physical rows `R`；trigram 关闭 | `s1v5_128_tbl_bi1_R{10000..2347000}` 与小 R 扩展 | 31 个近似 log-spaced R；1000 steps；step 337/674/1000 已保留 | ✅ done；31/31；小 R 塌缩到 no-gram floor；净 gap 分窗口 R=2e3–2e5 的 log-log slope=0.576（R²=.997，n=12），raw-gap 敏感性 0.501 |
 | table size · trigram-only | 只开启 trigram，改变其 clean table 的 physical rows `R`；bigram 关闭 | `s1v5_128_tbl_tri1_R{10000..2347000}` 与小 R 扩展 | 31 个近似 log-spaced R；1000 steps；step 337/674/1000 已保留 | ✅ done；31/31；小 R 塌缩到 no-gram floor；净 gap 分窗口 R=1e5–9.3e5 的 log-log slope=0.665（R²=.9997，n=8），raw-gap 敏感性 0.653 |
 | frequency · main | 主实验完整双支路的 frequency-bin gap | `s1v5_128_frequency_main` | 1 个主实验；bigram+trigram；1000 steps；step 337/674/1000 的 frequency-bin/exact-frequency/table-RMS 已保留 | ✅ done；final gap=2.736 |
-| epoch length · 3 epochs | 固定 3 个 epoch 时，epoch 长度是否改变 gap | `s1v5_128_ep_tri_{0p125..2p0}xL4_3ep` | 12 个 L4 倍数点；`epoch_batches=42…674`；仅 trigram；每点 3 epoch；step = `3×epoch_batches`，保留 e1/e2/e3 | ✅ done；12/12；U 形，minimum=2.469 @1×L4；0.125×=3.552、2×=5.582 |
+| epoch length · 3 epochs | 固定 3 个 epoch 时，epoch 长度是否改变 gap | `s1v5_128_ep_tri_{0p125..2p0}xL4_3ep` | 12 个 L4 倍数点；`epoch_batches=42…674`；仅 trigram；每点 3 epoch；step = `3×epoch_batches`，保留 e1/e2/e3 | ✅ done；12/12；≤1×L4 真长度段单调下降或持平（3.552→2.469）；>1×L4 旧点是 wrap-around replay/pass 数，旧 U 形读法作废 |
 | epoch length · long | L4 下 gap 随 epoch 的长期变化 | `s1v5_128_ep_tri_1xL4_10ep[_nogram]` | trigram-only + no-gram；3370 steps；10 个 epoch boundary 记录 | ✅ done；trigram=8.675、nogram=0.480 @3370；epoch 增量逐渐变缓，尚未见明确平台 |
 
 epoch 轴刻意不固定 1000 steps：每个长度都运行 3 个完整 epoch，以保持
