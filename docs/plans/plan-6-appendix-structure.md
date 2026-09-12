@@ -261,4 +261,4 @@ Appendix
 - **创建时间**：2026-09-12
 - **依据**：飞书论文初稿 v2（doc LQjudLhhpoThlQxShb8cwuGSnkb）、`docs/figs/` 278 张图片、`experiment-lines.md` v10+、`agents.md`
 - **关联计划**：plan-5（S1 三轴）、plan-3（fix-and-backfill）
-- **下次更新触发**：缺口 #1 实验完成 / 正文图号最终确定 / appendix 首节写完
+- **下次更新触发**：正文图号最终确定 / appendix 首节写完 / 严格 2×2 新实验获授权
