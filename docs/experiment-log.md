@@ -8,11 +8,11 @@
 
 | run_id | 日期 | 实验 | 状态 | gap 关键值 | 详情 |
 |---|---|---|---|---|---|
-| `blrabs_{input,nogram}_lr*_tlr0p0768_*` | 2026-08-31 | **纯 backbone LR 扫描：绝对 table LR 锁定 0.0768（14 run）** | 🔄 running（ophis GPU2/4/5） | 待测：短程高 LR 判混淆；长程拟合时间常数/准平衡 | §42 |
+| `blrabs_{input,nogram}_lr*_tlr0p0768_*` | 2026-08-31 | **纯 backbone LR 扫描：绝对 table LR 锁定 0.0768（14 run）** | ✅ done（§42 已回填） | 结果与时间常数见 §42 | §42 |
 | `blrv5_{input,nogram}_lr{0p0001..0p0040}` | 2026-08-30 | **耦合 LR 扫描（原误标 backbone-only；12 run）** | ⚠️ done but confounded | scale=128 导致绝对 table LR 0.0128→0.512；不得作纯 backbone 因果结论 | §39、§42 |
 | `s1v5_128_epfx_tri_{2p0,3p0,4p0}xL4_3ep` | 2026-08-31 | **V5 epoch 长度轴修复批（多 shard 真实池，trigram 单支路）** | ✅ done | 1.955/1.519/1.267；U 形确认为 wrap 假象 | §40 |
-| `s1v5_128_ep_tri_1xL4_20ep` / `s1v5_128_ep1xL4_20ep_{both,nogram}` | 2026-08-31 | **V5 20-epoch 长 replay 批（shard-1 池 ×20 遍，tri-only / both / nogram 三臂）** | 🔄 running | 寻长程渐进行为（10ep 递推外推平台此前未验证） | §41 |
-| `causalv5m3_hash_reseed_e2{,e3}` | 2026-08-31 | **V5 二次 reseed 判决批（2022 步 6 pass：e2 单次 vs e2+e3 双次 reseed）** | 🔄 running | 检验重对齐是否可再学、二次 reseed 是否再击落 gap | §41 |
+| `s1v5_128_ep_tri_1xL4_20ep` / `s1v5_128_ep1xL4_20ep_{both,nogram}` | 2026-08-31 | **V5 20-epoch 长 replay 批（shard-1 池 ×20 遍，tri-only / both / nogram 三臂）** | ✅ done（§41 已回填） | tri/both/nogram 20ep 边界与撤回平台外推见 §41 | §41 |
+| `causalv5m3_hash_reseed_e2{,e3}` | 2026-08-31 | **V5 二次 reseed 判决批（2022 步 6 pass：e2 单次 vs e2+e3 双次 reseed）** | ✅ done（§41 已回填） | e2/e2e3 终点与判决见 §41 | §41 |
 | `optv5h_rms_b099_s2p0_warmstart0p1` | 2026-08-26 | V5 warmup 起始倍率 · 0.1× | ✅ done | +1.504498 @1000 | §31 |
 | `optv5h_rms_b099_s2p0_warmstart0p5` | 2026-08-26 | V5 warmup 起始倍率 · 0.5× | ⚠️ failed at initialization（360-1 GPU7 CUDA launch failure） | 无结果 | §31 |
 | `optv5h_rms_b099_s2p0_warmstart0p5_r1` | 2026-08-26 | V5 warmup 起始倍率 · 0.5× retry | ⚠️ failed at initialization（GPU7 large-allocation launch failure） | 无结果 | §31 |
@@ -866,7 +866,7 @@ v2；本地 `data/runs/<run_id>/train_log.jsonl` 已补齐 12 个 run）。
 
 
 
-## 12. epoch 对齐批（同 epoch 数 × 同 LR-per-epoch 轨迹，2026-08-07 进行中）
+## 12. epoch 对齐批（同 epoch 数 × 同 LR-per-epoch 轨迹，2026-08-07；历史）
 
 > ⚠️ **勘误（2026-08-24）**：本节的**原版设计**是用 `--lr_schedule_epochs 6` 把 LR
 > 锚定到 epoch（下表 Setting 的原始记录）。但**实际落盘的 `_fixed` 批**（
@@ -907,7 +907,7 @@ v2；本地 `data/runs/<run_id>/train_log.jsonl` 已补齐 12 个 run）。
 | 6x | `nglab6x_e6` | 1..6 | 7..10,6542 | 8260 |
 | 8x | `nglab8x_e6` | 1..8 | 9,10,6542 | 10960 |
 
-### 结果（0.25x–3x 已完成；4x–8x 进行中）
+### 结果（0.25x–3x 已完成；4x–8x 未纳入当前证据，历史缺口）
 
 gap 在「6 个完整 pass 后」（epoch 7 首个 eval，lr=0.05）与「pass 6 内 mean/peak」：
 
@@ -3944,7 +3944,7 @@ pass 2 起 CE 在归一化优化器（AdamW/RMSProp：步长不随梯度缩小�
 
 **事故记录**：360 集群缺 `diag_worker.py`（fast-diag 管线依赖，2026-09-01 起标准）导致首批 44 run 训完在诊断阶段崩，已清理全部 partial、补同步并核对三机 md5 后重跑；360-1 GPU7 间歇性 OOM（同卡 6 run 无声失败，nvidia-smi 无 ECC pending），已弃用该卡并在 360-2 全量重跑 v_tbl；ophis GPU0 残留冒烟进程致 R16000 OOM，已隔离补跑。冒烟 `nglab_smoke_ml`（30 步）跳过登记。
 
-## §53 · 置信度极化探针 + 20-epoch logit-sharpening 直接验证（2026-09-12，planned→running）
+## §53 · 置信度极化探针 + 20-epoch logit-sharpening 直接验证（2026-09-12；done）
 
 **动机**：§5.2 提出 logit 锐化机制——low-frequency context 上概率质量向 train 中见过的 continuation 集中，novel continuation 被系统性压低，且随 epoch/pass 线性加剧。此前仅有 loss 侧间接证据（margin 增长、novel 伤害），缺 softmax 分布的直接观测。本实验为 §5.2 + §7 补充实验提供 per-token confidence polarization 的直接测量。
 
