@@ -33,7 +33,7 @@
 | D16 | local T8 | 8k–10k no-ngram 长程基线 | 远端 preflight 已完成；360-2 空闲但代码 MD5 不一致，待授权同步后再登记运行 | queued, code-sync gate |
 | D17 | local T9 | 固定 train probe 测 rho | 远端 preflight 已完成；同 T8 的代码同步和登记门槛 | queued, code-sync gate |
 | D18 | local T10 | 缩短 epoch 放大 gap | 只有 T8 完成且确认 backbone baseline 后允许 | blocked-by-T8 |
-| D19 | local T12、v2 §6 | causal 剩余回填 | 检查 M10、causalv5m3、mix/ffq 远端状态并回收小文件 | queued, remote-check |
+| D19 | local T12、v2 §6 | causal 剩余回填 | M10/ffq/mix 远端 summaries 已核对并在 experiment-lines §45 回填；其余 causal 小文件仍待检查 | partial / remote evidence |
 | D20 | appendix plan | G.2.1 logit sharpening 回填 | 更新 plan-6 的旧待实验标记和交叉链接 | done (f65ab29) |
 | D21 | appendix plan | C.4 三轴交叉总结表 | 从现有 CSV 生成提取脚本和首版表 | done (f65ab29) |
 | D22 | appendix plan | H.1.3 run_id 索引 | 从 registry/log 生成机器可读索引 | done (f65ab29) |
