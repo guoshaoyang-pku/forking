@@ -36,8 +36,8 @@
 | `nglab2x_opt_rmsprop_2x_b2_099` | 0.643 | **1.995** | **+210%** |
 | `nglab1x_opt_sgd_09` | −0.002 | +0.073 | 符号翻转 |
 
-⚠️ **`experiment-log.md` 全文数值仍是 pre-fix 的**，与本表矛盾。
-回填是 `docs/plans/plan-3-fix-and-backfill.md` 的 T1 任务。
+⚠️ **历史 section 仍可能保留 pre-fix 数值**，与本表的 `_fixed` 对照表不能混读。
+T1 目前仅完成远端 summary 回收与冲突审计；33 个重复 ID 均存在 host 间 endpoint 差异，未执行盲目覆盖。
 
 ## 主线（nanoGPT）
 
@@ -186,8 +186,8 @@ batch 72×2048、2000 步、seed 42（并以完全相同口径复现 seed 43）�
 |---|---|---|---|
 | T1 | 回填 `experiment-log.md`：pre-fix 数值**直接覆盖**为 `_fixed`，不保留旧值 | P0 | 远端 summary 已回收；字段级核对后覆盖 |
 | T2 | 修正 β₂ 记录（标注无效 + 删无支撑结论，**不补跑实验**，用户已明确不重要） | P0 | 历史口径已标记；数字覆盖随 T1 |
-| T3 | 用 `_fixed` 数据重生成全部图 | P0 | 待办 |
-| T4 | 修 `experiment-log.md` 结构（§10 重复、§5 缺失、90 行逐字重复） | P1 | 待办 |
+| T3 | 用 `_fixed` 数据重生成全部图 | P0 | 索引与 fixture 已完成；数据图待 host-scoped run 证据 |
+| T4 | 修 `experiment-log.md` 结构（§10 重复、§5 缺失、90 行逐字重复） | P1 | 章节编号与 TOC 已修；数字/表格复核仍开放 |
 | T5 | 修 `ngram5_freq_gap/model.py` 的死 fallback → 指向 `code/train.py` | P1 | 已完成；绑定审阅且 pytest 26 项通过 |
 | T6 | 补 M6 缺口（4x/5x/6x/8x）或显式限定结论覆盖范围 | P1 | 历史缺口已显式限定；不再是当前 TODO |
 | T7 | full-163 线：脚本已删除，数据坐标入库 `docs/notes/data/full-corpus-full163.md` | — | ✅ 已解决 |
