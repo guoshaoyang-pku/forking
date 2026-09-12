@@ -13,6 +13,7 @@
 
 | 附录 | 主题 | 状态 |
 |---|---|---|
+| ls20ep_logit_stats/ | 20-epoch logit sharpening、CE damage 与 exemplar 分布 | 已完成（§53；input/nogram，seed 42） |
 | [`lr_beta_ablation/`](lr_beta_ablation/report.html) | 表学习率 × β₂ 消融及交互；高表学习率体检（发现 ×2/×4 崩坏） | 🟡 进行中（2 个补点跑中） |
 | [`s1_scaling_three_axis/`](s1_scaling_three_axis/report.md) | Epoch length / exact frequency / table size 三轴 scaling | 🟢 seed 42 full grid + table 加密取点完成（98 run，QC 通过）；多 seed 待补 |
 

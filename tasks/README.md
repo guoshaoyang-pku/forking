@@ -1,6 +1,6 @@
 # Toy 实验线索引
 
-不依赖 nanoGPT backbone 的理论验证实验。**5 条线，编号 L1–L5**。
+不依赖 nanoGPT backbone 的理论验证实验。**6 条线，编号 L1–L6**；另有 S1 三轴 scaling 主线。
 
 每个任务目录**自包含**：脚本 + `results/` 结果 + 输入 fixture 都在同一个 `tasks/lN_*/` 下。
 理论文档在 `docs/notes/theory/`，对外图在 `docs/figs/theory/`。
