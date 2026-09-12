@@ -1,0 +1,54 @@
+% overencoding.bib — Engram / Over-Encoding benefit baseline 文献
+% 由 engram-benefit-baseline-survey-0912.md 调研 agent 创建 (2026-09-12)
+% 注意：另一个 agent 可能也在写此文件；本条目仅 append，不覆盖。
+
+@article{cheng2026engram,
+  title={Conditional Memory via Scalable Lookup: A New Axis of Sparsity for Large Language Models},
+  author={Cheng, Xin and Tian, Rui and Zeng, Wangding and Dai, Damai and Chen, Qinyu and Wang, Bingxuan and Xie, Zhenda and Huang, Kezhao and Yu, Xingkai and Deng, Chengqi and Zhou, Shangyan and Zhao, Chenggang and Hao, Zhewen and Li, Yukun and Zhang, Han and Zhang, Zhengyan and Wei, Yixu and Xu, M.Y. and Zhang, Huishuai and Zhao, Dongyan and Liang, Wenfeng},
+  year={2026},
+  eprint={2601.07372},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  note={v2 revised 2026-07-12. Code: \url{https://github.com/deepseek-ai/Engram}}
+}
+
+@inproceedings{huang2025over-tokenized,
+  title={Over-Tokenized Transformer: Vocabulary is Generally Worth Scaling},
+  author={Huang, Hongzhi and Zhu, Defa and Wu, Banggu and Zeng, Yutao and Wang, Ya and Min, Qiyang and Zhou, Xun},
+  booktitle={Proceedings of the 42nd International Conference on Machine Learning},
+  pages={26261--26282},
+  year={2025},
+  volume={267},
+  series={Proceedings of Machine Learning Research},
+  publisher={PMLR},
+  url={https://proceedings.mlr.press/v267/huang25bb.html},
+  note={arXiv:2501.16975v2. Introduces Over-Encoding (OE) with hierarchical n-gram input vocabulary.}
+}
+
+@article{zheng2026lngram,
+  title={Lngram: N-gram Conditional Memory in Latent Space},
+  author={Zheng, Yunao and Xia, Guoyang and Wang, Xiaojie and Ren, Lei},
+  year={2026},
+  eprint={2605.24869},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  note={Submitted 2026-05-24. Latent-space n-gram memory; post-hoc injection + joint training surpasses full fine-tuning.}
+}
+
+@misc{hertel2026engram-consumer,
+  title={Conditional Memory for Small Language Models: An Empirical Evaluation of N-Gram Hash Lookup Tables},
+  author={Hertel, T.},
+  year={2026},
+  howpublished={GitHub repository},
+  url={https://github.com/t-hertel/Engram},
+  note={Independent replication study. PPL reduction 22--30\% on Qwen2.5-0.5B to Qwen3.5-4B with zero downstream benchmark improvement. Self-described as ``A Negative Result''. Informal evidence only.}
+}
+
+@misc{deepseek2026v41flash,
+  title={DeepSeek-V4.1-Flash Model Card and Inference Code},
+  author={{DeepSeek-AI}},
+  year={2026},
+  howpublished={Hugging Face model card},
+  url={https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash},
+  note={Production deployment of Engram: layers 1 and 14, 4-gram hash, ~384M rows × 256 dims per layer (196.6B params total). inference/engram.py provides reference implementation.}
+}
