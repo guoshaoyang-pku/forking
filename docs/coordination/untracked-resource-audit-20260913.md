@@ -6,7 +6,7 @@ This is a classification record for files present in the shared worktree but not
 |---|---:|---|---|
 | `docs/notes/literature/overencoding-practical-implications.md` | 18.9 KB | **retain and review** | Article-phase synthesis; link from literature index after citation/core-credit review. |
 | `docs/plot_scripts/analyze_v5_seen_vs_novel_cpu.py` | 3.1 KB | **retain and review** | Analysis script for §53; verify its input paths and claim ceiling before tracking. |
-| `docs/notes/literature/pdfs/` | ~31 MB | **retain locally, do not stage yet** | Citation source PDFs; binary collection needs a storage decision and provenance manifest. No cross-cluster transfer. |
+| `docs/notes/literature/pdfs/` | ~31 MB | **retain locally, do not stage yet** | Citation source PDFs; `pdfs-manifest.tsv` now records 30 SHA-256 entries. Binary collection still needs a storage decision. No cross-cluster transfer. |
 | `_tmp_script_mmd.mmd` | 670 B | **temporary; deletion requires review** | Scratch Mermaid source; no current index/reference found. |
 | `lark_qr.png` | 895 B | **temporary; deletion requires review** | Feishu login artifact; unrelated to reproducible project evidence. |
 
