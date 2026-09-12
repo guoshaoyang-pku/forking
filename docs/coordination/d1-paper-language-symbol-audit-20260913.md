@@ -38,3 +38,9 @@ This is a review queue generated from Feishu paper v2 rev 1082. It does not alte
 - Novel continuation has no online train loss; do not imply a novel train/val subtraction.
 - “Power law” is limited to the measured frequency/range and fit; do not present it as a Good–Turing theorem.
 - §7.1 and §7.2 remain proposals until a pinned model, data, run, and evaluation packet exists.
+
+## Local draft disposition · 2026-09-13 continuation
+
+The local review draft at docs/report/paper-v2-review-draft.md now supplies claim-safe replacements for the three analytical placeholders in §6.1–§6.4 and Appendix B. It deliberately keeps long-term plateau, cross-architecture transfer, and SFT/DeepSeek results as unverified predictions or protocols. The draft is ready for author review, while the Feishu and blog copies remain unchanged.
+
+The following terms remain prohibited as unconditional article claims: “all n-gram memory”, “always”, “only post-training has multiple epochs”, “universal power law”, and any direct MiniMax causal attribution. They may appear only when explicitly labelled as a hypothesis, proxy, historical setting, or external report.

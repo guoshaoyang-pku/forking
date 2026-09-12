@@ -15,7 +15,7 @@
 
 | ID | 来源 | 工作项 | 今晚动作 | 状态 |
 |---|---|---|---|---|
-| D1 | 飞书 0912-3 | 全文写人话、符号统一 | `docs/report/paper-v2-review-draft.md` 已补齐 §6–§7/B 的 claim-safe 正文；云端原稿仍保留待补标记，待发布源审阅 | local draft ready / cloud open |
+| D1 | 飞书 0912-3 | 全文写人话、符号统一 | `docs/report/paper-v2-review-draft.md` 已补齐 §6–§7/B 的 claim-safe 正文；符号/禁用强断言清单见 `d1-paper-language-symbol-audit-20260913.md`；云端原稿仍保留待补标记 | local draft ready / cloud open |
 | D2 | 飞书 0912-4 | shanbin / haoran handoff | 生成两份任务卡，锁定输入、交付、验收和边界 | done (e8f3f5e) |
 | D3 | 飞书 0912-6、v2 §7.2 | V4.1-Flash SFT 攻击 | 只做方案和风险矩阵；不搬运 189 GiB 表 | blocked-by-P5 |
 | D4 | 飞书 0912-2 | Engram baseline go/no-go | 把 NO-GO 建议写入 backlog，保留 revision contingency | done (e8f3f5e; decision record) |
