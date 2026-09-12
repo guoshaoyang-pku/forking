@@ -19,9 +19,9 @@ This matrix reconciles the two Feishu pages, `experiment-lines.md`, `plan-3-fix-
 | Local T4 log structure | D13 | **audit complete / cleanup partial** | duplicate §10 repaired to §5; duplicate review finds no title collisions, numeric/table review remains. |
 | Local T5 model/fallback audit | D14 | **done** | source binding reviewed; isolated local pytest suite passes 26 tests. |
 | Local T6 M6 4x–8x | D15 | **historically bounded** | Existing decision limits the claim to measured points; no new historical runs are currently required. |
-| Local T8 no-ngram long baseline | D16 | **queued / code-sync gate** | 360-2 is idle, but remote code MD5 differs; see remote-preflight-20260913.md. |
-| Local T9 fixed-train probe | D17 | **queued / code-sync gate** | same MD5 mismatch and registration gate; no run started. |
-| Local T10 shorter epoch | D18 | **blocked by T8** | may start only after T8 result. |
+| Local T8 no-ngram long baseline | D16 | **covered by existing evidence; protocol review open** | `nglab1x_nogram_long_v5_fixed` is an 8000-step seed-42 endpoint, but its config uses historical table scale 2.0 (irrelevant to no-gram) and needs host-scoped curve review before replacing the queue item. |
+| Local T9 fixed-train probe | D17 | **covered by existing endpoints; probe semantics review open** | `nglab{1,2}x_input_rho_v5_fixed` exist on ophis/360-2, but duplicate 1x/2x endpoints conflict and their config does not expose a fixed probe count; do not treat as fully closed. |
+| Local T10 shorter epoch | D18 | **still blocked by protocol choice** | Existing S1 epoch-length array supersedes the old shrink-data proposal; no new run should start until the exact question is re-registered. |
 | Local T12 causal recovery | D19 | **queued / remote-check** | no new intervention run started. |
 | Paper §6 predictions | D5–D8 | **audit complete / evidence open** | d5-d8-prediction-claim-audit-20260913.md separates replay, LR, data/epoch and capacity claims. |
 | Paper §7.1 DeepSeek-like | D9 | **gated** | no direct reproduction without pinned implementation/model/compute authorization. |

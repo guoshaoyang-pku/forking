@@ -30,9 +30,9 @@
 | D13 | local T4 | experiment-log 结构整理 | 编号修复、标题审阅和目录刷新完成；数字/表格 review 仍开放 | audit complete / cleanup partial |
 | D14 | local T5 | ngram5 fallback / bug audit | model.py 绑定已审阅；隔离环境 pytest 26 项通过 | done (runtime/unit QC) |
 | D15 | local T6 | M6 大 shard 或限定结论 | 写补跑和限定范围两种方案，不擅自执行 | needs-user-decision |
-| D16 | local T8 | 8k–10k no-ngram 长程基线 | 远端 preflight 已完成；360-2 空闲但代码 MD5 不一致，待授权同步后再登记运行 | queued, code-sync gate |
-| D17 | local T9 | 固定 train probe 测 rho | 远端 preflight 已完成；同 T8 的代码同步和登记门槛 | queued, code-sync gate |
-| D18 | local T10 | 缩短 epoch 放大 gap | 只有 T8 完成且确认 backbone baseline 后允许 | blocked-by-T8 |
+| D16 | local T8 | 8k–10k no-ngram 长程基线 | 已发现 `nglab1x_nogram_long_v5_fixed` 8000-step endpoint；需确认其曲线/协议是否足以替代旧 T8 | evidence candidate / review open |
+| D17 | local T9 | 固定 train probe 测 rho | 已发现 `nglab{1,2}x_input_rho_v5_fixed` endpoints；probe 语义与跨 host 冲突仍需核对 | evidence candidate / review open |
+| D18 | local T10 | 缩短 epoch 放大 gap | S1 epoch-length 阵列已覆盖相邻科学问题；重新定义问题前不启动新 run | protocol review required |
 | D19 | local T12、v2 §6 | causal 剩余回填 | M10/ffq/mix 远端 summaries 已核对并在 experiment-lines §45 回填；其余 causal 小文件仍待检查 | partial / remote evidence |
 | D20 | appendix plan | G.2.1 logit sharpening 回填 | 更新 plan-6 的旧待实验标记和交叉链接 | done (f65ab29) |
 | D21 | appendix plan | C.4 三轴交叉总结表 | 从现有 CSV 生成提取脚本和首版表 | done (f65ab29) |
