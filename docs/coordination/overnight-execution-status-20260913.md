@@ -6,8 +6,8 @@ This status file records what was actually executed in the current worktree. It 
 |---|---|---|---|
 | Wave 0 | D20, D21, D22, D23, D24 | **partially executed** | Appendix C.4 coverage report, H.1.3 run index, figure index, untracked-resource audit |
 | Wave 0 | D1, D2, D4, D5, D7, D8, D10, D11, D13, D14, D25, D26, D27 | **planned / awaiting owner** | Queue remains authoritative; no completion is inferred |
-| Wave 1 | D6, D12, D16, D17, D19 | **preflight pending** | No GPU run started in this turn |
-| Wave 2 | D16, D17, D19 | **not started** | Requires registered run, GPU reservation, md5 and data-overlap checks |
+| Wave 1 | D6, D12, D16, D17, D19 | **preflight completed; execution gated** | Remote checks in remote-preflight-20260913.md; 360-2 idle but code MD5 differs |
+| Wave 2 | D16, D17, D19 | **not started** | Requires authorized code sync, fresh registration, GPU ownership and data-overlap checks |
 | Wave 3 | D3, D9, D15, D18 | **blocked / gated** | P5 authorization or upstream result dependency |
 
 ## New evidence packets
@@ -23,7 +23,7 @@ The current tool surface exposes goal management and shell/file tools but no age
 
 ## Remote preflight evidence · 2026-09-13
 
-Read-only SSH checks succeeded for `ophis-gpu`, `360-1`, and `360-2`. At check time, GPU memory was occupied on multiple cards on `ophis-gpu` and `360-1`; `360-2` GPUs were idle. Existing `_fixed` summary counts were 144, 127, and 223 respectively (directory counts only, not completion proof). Because the queue requires a fresh per-run registration, code md5 check, data-overlap check, and explicit GPU ownership, T8/T9/T12 remain queued rather than started.
+Read-only SSH checks succeeded for `ophis-gpu`, `360-1`, and `360-2`. At check time, GPU memory was occupied on multiple cards on `ophis-gpu` and `360-1`; `360-2` GPUs were idle. Existing `_fixed` summary counts were 144, 127, and 223 respectively (directory counts only, not completion proof). Full MD5 details and the resulting code-sync gate are recorded in remote-preflight-20260913.md; T8/T9/T12 remain queued.
 
 - **Handoff cards**: `docs/coordination/handoff-task-cards-20260913.md` (D2, commit `e8f3f5e`).
 - **Engram decision**: `docs/coordination/engram-decision-record-20260913.md` (D4, NO-GO for immediate direct reproduction; reopening criteria recorded).
