@@ -24,6 +24,7 @@
 | 远端 summary 证据 | coordination/remote-summary-recovery-20260913.md、remote-summary-cross-host-audit-20260913.md | 仅小型 summary.json；跨主机重复 ID 保留原样，未合并 |
 | 远端冲突 manifest | [coordination/remote-summary-conflicts-20260913.csv](coordination/remote-summary-conflicts-20260913.csv) | 33 个重复 ID、66 条 host-scoped endpoint 记录；不能取平均或覆盖登记簿 |
 | 候选 run 协议审计 | [coordination/candidate-run-protocol-audit-20260913.md](coordination/candidate-run-protocol-audit-20260913.md) | T8/T9 字段级 probe、日志完整性与历史 2× 口径核对 |
+| 机器可读 dispatch manifest | [coordination/overnight-dispatch-manifest.json](coordination/overnight-dispatch-manifest.json) | 每项 owner、依赖、并行性、验收和 P5 门槛；不表示后台 agent 已启动 |
 | launcher 口径审计 | coordination/launcher-setting-audit-20260913.md | canonical baseline 与历史/变体 launcher 分开；不自动执行 |
 
 ## 代码入口
