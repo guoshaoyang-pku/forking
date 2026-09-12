@@ -33,6 +33,8 @@
 当前状态：planned | running | done | stalled
 
 机器可读整晚队列：[`overnight-dispatch-manifest.json`](overnight-dispatch-manifest.json)。该 manifest 记录每项 owner、依赖、并行性、验收条件和 P5 审批门槛；它描述可执行队列，不表示后台 agent 已经启动。
+
+飞书状态审计脚本：[`refresh_feishu_backlog_audit.py`](refresh_feishu_backlog_audit.py)。它只读获取两份 wiki，输出 revision、checksum 和 unresolved marker 清单；不会写回云端。运行前需完成 `lark-cli auth status --verify`，示例：`python3 refresh_feishu_backlog_audit.py --out /tmp/feishu-marker-audit-latest.json`。
     结论（附 step / seed）：
     claim ceiling：
     下一步：
