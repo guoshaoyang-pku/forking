@@ -21,6 +21,7 @@ Fetched with `lark-cli docs +fetch --doc-format markdown --detail simple` using 
 - Local queue D2/D4/D20–D24 records handoff cards, Engram decision, logit-sharpening material, C.4 coverage table, H.1.3 index, figure audit, and untracked-resource audit as completed or evidence-backed.
 - Local queue D10/D11 are partial: remote summaries were recovered, but 33 duplicate IDs have host-level endpoint conflicts, so no numerical backfill was guessed.
 - Local queue D14/D26 are complete locally: the isolated environment runs the model package tests (26 passed), shell/compile checks, launcher fixture, and link audit.
+- The host-scoped conflict manifest is now `remote-summary-conflicts-20260913.csv`: 33 duplicate IDs / 66 endpoint rows, all with metric differences.
 - D3/D9/D15/D18 remain gated by P5, user choice, or upstream dependency.
 
 ## Cloud update boundary
