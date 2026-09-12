@@ -34,6 +34,8 @@ The prepared append-only Feishu update is in docs/coordination/feishu-writeback-
 
 ## Verification at handoff
 
+Current local snapshot (recheck with `git log` before any external write): figure index reports 290 visualizations and 79 plotting scripts; the dispatch manifest contains 27 unique IDs (`D1..D27`); Feishu read-only snapshot remains TODO rev 2335 / 27 markers and paper rev 1082 / 17 markers.
+
     python3 docs/coordination/check_navigation_links.py  # checked=32 missing=0
     .venv/bin/python -m pytest ngram5_freq_gap/tests -q  # 26 passed
     find code ngram5_freq_gap tasks docs/coordination docs/plot_scripts -name '*.py' -print0 | xargs -0 -n1 .venv/bin/python -m py_compile

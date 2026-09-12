@@ -12,7 +12,7 @@ This is a reviewable, append-only proposal. It does not modify either Feishu pag
 ## Proposed TODO-page insertion (XML)
 
 <h3>文章阶段状态同步（2026-09-13，本地审计）</h3>
-<p>以下状态来自仓库当前文章阶段文档（最新本地提交 cfd992c 及其前置审计提交）和对应 evidence packet。原有会议 checkbox 保留为历史记录；当前排程以 docs/coordination/overnight-queue-20260913.md 和机器可读的 overnight-dispatch-manifest.json 为准。</p>
+<p>以下状态来自仓库当前文章阶段文档、active/history 审计和对应 evidence packet；具体提交以写回前重新核验的本地 HEAD 为准。原有会议 checkbox 保留为历史记录；当前排程以 docs/coordination/overnight-queue-20260913.md 和机器可读的 overnight-dispatch-manifest.json 为准。</p>
 <table>
   <thead><tr><th>工作项</th><th>当前状态</th><th>证据与边界</th></tr></thead>
   <tbody>
