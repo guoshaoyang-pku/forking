@@ -246,3 +246,11 @@
 - 四臂 train_log: `data/runs_fixed/nglab1x_{input,y,v,nogram}_v5_128x_freq10_fd_fixed/train_log.jsonl`
 - S1 sweep: `data/runs_scaling/s1v5_128_tbl_{bi1,tri1}_R*_fixed/train_log.jsonl`
 - 20-epoch: 360-2 `/data/home/guoshaoyang/ngram-gap-lab/data/runs_scaling/s1v5_128_ep*_20ep_*_fixed/`
+
+---
+
+## 8. 更正（2026-09-12 复核，ls20ep 回收后）
+
+1. **§2 的「R=1 ≈ nogram floor」不成立，该基线作废**。R=1 臂 @1000 步 val CE = 7.36，而真 nogram 臂 @1000 步 = 3.63（`nglab1x_nogram_v5_128x_freq10_fd_fixed`）：R=1 是「全部 context 共享单行、被 128× table LR 轰」的受损臂，不是无表基线。因此 §2 的 ΔCE（bigram −2.83 / trigram −2.12）**系统性高估 benefit**。对真 nogram：1000 步 replay regime 下**任何 R 都没有正 benefit**（bigram 最优 R=494K 的 4.52 > nogram 3.63）。§2 的「val CE 随 R 的内部趋势」仍有效（bigram 单调饱和、trigram U 形），但绝对 benefit 只能以 §1/§3 的早期窗口与文献新鲜数据 regime 为准。
+2. **§4.1 vs §4.2 的 token share 差异已定案**：非分布漂移，是 branch 组合不同。freq_bin val 的 novel frac 与模型无关：bigram = 4.31%、trigram = 31.30%（ls20ep 双臂同值）。§4.1（@2000, 4.31%）为 bigram-only；§4.2（@20ep, 17.80%）为双 branch token 平均 ((4.31+31.30)/2 = 17.80)。引用时须标明 branch 口径。
+3. **CE 与锐化是两条轴**：本文件的 ΔCE 是 damage 轴；分布形状轴（entropy / top1−top2 margin / p(y_true)）见 `docs/experiment-log.md` §53 回填与 `docs/figs/main/fig_ls20ep_sharpening_vs_ce.png`。二者解耦：input 臂 novel 桶熵坍塌 ~5 nats 而 p(y_true) 恒 ≈0.006——锐化的峰落在训练记忆的 continuation 上，而非 val 真 token。

@@ -3974,3 +3974,22 @@ input 注入 / clean 单表 R=2^20 bigram+trigram / RMSProp(0.0,0.99) / table_lr
 **Smoke 证据**（`smoke_logit_stats_100_fixed`，GPU6，100 步）：
 - logit_stats.jsonl 396 行，首条 agg @ step 10 bigram：novel f0 count=25401, mean_entropy=8.34, mean_margin=0.016；seen f256+ count=294237, mean_margin=0.042（高频更自信，符合预期）。
 - exemplar dump 正常：hit_count=269 的 bigram context top20_probs=[0.0196, 0.0152, ...]（早期均匀）；hit_count=4251 的 top20_probs=[0.0879, 0.0190, ...]（高频已显尖峰）。
+
+### §53 回填（2026-09-12，running → done）
+
+**终态**（step 6740 = e20）：
+
+| run | final gap | val CE | train CE | 对照 §52 台阶 |
+|---|---|---|---|---|
+| `ls20ep_input_v5_128x_fd` | 12.403 | 12.512 | 0.109 | both 12.78（跨机 bf16 差 ~3%，一致） |
+| `ls20ep_nogram_v5_128x_fd` | 1.033 | 3.592 | 2.559 | nogram 1.0（一致） |
+
+**验收口径修正**：验收条件 1 原写「input gap ~5-6 / nogram ~0.2-0.3」系 2000 步口径笔误；20ep 口径应对标 §52 台阶值，实测一致。验收 2–4 全部通过（agg 覆盖 step 10..6740、exemplar 每步 64 条、train 曲线与 `nglab1x_input_v5_128x_freq10_fd` 前 2k 步重叠）。
+
+**核心观测**（CE 与锐化严格分开报告，脚本 `docs/plot_scripts/analyze_ls20ep_logit_sharpening.py`）：
+1. **锐化（shape 轴）全局坍塌、与频率桶无关**：input 臂 mean_entropy e1≈5.4–6.0 → e20≈0.66–0.91（bigram/trigram、novel 与 seen 全桶同幅）；nogram 对照仅降到 2.1–2.7。mean_margin（概率尺度）input e20≈0.59–0.68 vs nogram 0.33–0.43。
+2. **CE（damage 轴）是另一回事**：input bigram novel val CE 7.60→22.35（+0.78/epoch 近线性）、seen-f1 6.82→18.50、10k+ 4.99→12.94；nogram novel 4.59→3.50（e5 见底后微升）。
+3. **两轴解耦 = 极化判决证据**：input novel-f0 mean_ptrue e1→e20 恒 ≈0.006（真 token 被全额压制，熵坍塌的峰落在训练记忆的 continuation 上）；seen-f1 ptrue 0.015→e5 0.065 后平台（**低于** nogram 的 0.326）；nogram 各桶 ptrue 升到 0.24–0.33（锐化跟随真实分布）。即：表不是「更自信地正确」，而是「自信地记住采样到的那个」。
+4. **novel 份额口径定案**：freq_bin val 的 novel frac 与模型无关——bigram 4.31% / trigram 31.30%；benefit-side-measurements-0912.md §4.1 的 4.31% 是 bigram-only、§4.2 的 17.80% 是双 branch 平均 ((4.31+31.30)/2)，非分布漂移。
+
+**产物**：`docs/appendices/ls20ep_logit_stats/{agg_epoch_boundary.csv, freqbin_val_ce_epoch_boundary.csv, exemplars_selected.csv}`；图 `docs/figs/main/fig_ls20ep_sharpening_vs_ce.png`、`fig_ls20ep_exemplar_evolution.png`（appendix G.2.1 素材）；完整 `logit_stats.jsonl`（31MB/臂）留 `data/runs_fixed/`（gitignored），仓库只存 epoch 边界聚合。
