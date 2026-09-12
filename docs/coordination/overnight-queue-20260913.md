@@ -30,8 +30,8 @@
 | D13 | local T4 | experiment-log 结构整理 | 修复重复 §10/缺 §5；段落级重复扫描与全文目录仍待人工审阅 | partial (22397bd) |
 | D14 | local T5 | ngram5 fallback / bug audit | model.py 绑定代码审阅完成；运行时 import 与测试仍待可用依赖环境 | partial (import blocked by missing numpy) |
 | D15 | local T6 | M6 大 shard 或限定结论 | 写补跑和限定范围两种方案，不擅自执行 | needs-user-decision |
-| D16 | local T8 | 8k–10k no-ngram 长程基线 | 先做远端 preflight，再按登记运行 | queued, preflight |
-| D17 | local T9 | 固定 train probe 测 rho | 做 launcher/contract 审计，需 GPU 后启动 | queued, preflight |
+| D16 | local T8 | 8k–10k no-ngram 长程基线 | 远端 preflight 已完成；360-2 空闲但代码 MD5 不一致，待授权同步后再登记运行 | queued, code-sync gate |
+| D17 | local T9 | 固定 train probe 测 rho | 远端 preflight 已完成；同 T8 的代码同步和登记门槛 | queued, code-sync gate |
 | D18 | local T10 | 缩短 epoch 放大 gap | 只有 T8 完成且确认 backbone baseline 后允许 | blocked-by-T8 |
 | D19 | local T12、v2 §6 | causal 剩余回填 | 检查 M10、causalv5m3、mix/ffq 远端状态并回收小文件 | queued, remote-check |
 | D20 | appendix plan | G.2.1 logit sharpening 回填 | 更新 plan-6 的旧待实验标记和交叉链接 | done (f65ab29) |
