@@ -109,6 +109,8 @@
 | `ctbl_dim{192,48,12}_input_v5` | 2026-08-27 | **X2 clean 表行宽扫描 · v5** | ✅ done | gap 0.803/0.364/0.157 @1000 | §28 |
 
 状态约定：`planned` 已登记未开跑 / `running` 运行中 / `done` 已回填 / `stalled` 超期未回填。
+
+**文章阶段状态解释（2026-09-13）**：本文件保留各实验当时的登记和过程记录，标题中的 `planned` / `running` 可能是历史快照，不能单独作为当前状态。当前状态以 `docs/experiment-lines.md`、`docs/coordination/overnight-queue-20260913.md` 和对应 evidence packet 为准；已被后续 section 回填的运行，以后续回填 section 为准。历史 setting、旧 cadence 和已污染结果仍保留用于 provenance，不得因为状态清理而被改写成当前主线证据。
 新实验流程：总表加一行拿到唯一 `run_id` → 正文新建 section 按 `agents.md` §3 / `docs/plan.md` 模板填写
 → 占 GPU 开跑 → 结果回填并改状态。
 
@@ -399,7 +401,7 @@ validation 每 50 步；本批用 **v10 标准（validation + freq eval 每 10 �
 | freq index | `data/freq_index.npz` |
 | runs | `nglab1x_v10_v` / `nglab1x_v10_y` / `nglab1x_v10_input` / `nglab1x_v10_nogram` |
 
-### 结果（ophis-gpu 首波 · 23 桶 freq 统计，已 done；360-1 15 桶重跑进行中）
+### 结果（ophis-gpu 首波 · 23 桶 freq 统计，已完成；360-1 15 桶重跑亦已完成，均为历史口径）
 
 - ophis-gpu 首波（2026-08-06 21:41–22:41 CST，run_id 同上，使用当时 23 桶版 `ngram_freq.py`）：
   - `nglab1x_v10_v`：final_gap **4.9497**（train 1.3536 / val 6.3033）
@@ -443,7 +445,7 @@ launcher：`code/cluster/run_table_opt.sh <arm> <gpu>`。
 代码：`code/train.py` 新增 `--table_optimizer / --table_lr_scale / --table_betas`（默认不变）。
 对照基线：`nglab1x_v10_input`（同 flags，v10/2000）与 `nglab_input`（v50/1000）。
 
-### 结果（ophis-gpu 首波 · 23 桶 freq 统计，已 done；360-1 15 桶重跑进行中）
+### 结果（ophis-gpu 首波 · 23 桶 freq 统计，已完成；360-1 15 桶重跑亦已完成，均为历史口径）
 
 - ophis-gpu 首波（2026-08-06 21:41–22:41 CST，run_id 同上，使用当时 23 桶版 `ngram_freq.py`）：
   - `nglab1x_v10_v`：final_gap **4.9497**（train 1.3536 / val 6.3033）
@@ -460,7 +462,7 @@ launcher：`code/cluster/run_table_opt.sh <arm> <gpu>`。
   - 与 ophis 首波交叉验证：四 run gap 差 < 0.09（桶数不影响 train/val loss）。
 - 产物：图 `docs/figs/main/`；数据 `data/injpos_ablation_data.json`；克隆博客 `guoshaoyang-pku.github.io/blogs/ngram-gap-mechanism-guide-v10/`（validation 每 10 步 · 2000 steps）。
 
-### 9a. Table 优化器消融（郭绍阳，wave1 done / wave2 running）
+### 9a. Table 优化器消融（郭绍阳，wave1 / wave2 均已完成；历史 setting）
 
 > 与 §9 的 v10 主线重跑并行进行；只换 table optimizer，backbone 恒为 AdamW lr=0.004，input 注入、1x shard、seed42、v10。
 
@@ -1521,7 +1523,7 @@ v2 波次 freq-bin 的 train 侧是「每次评估从独立诊断迭代器新取
 - `exact_freq_loss.jsonl` 的 train 参考仍取 4 个固定 batch（它是 exact-f 的固定参考，
   属诊断口径，不进主图）；如用户后续要求也改当前 batch，另起 run_id。
 
-### 登记（planned → running）
+### 登记（历史登记；后续状态以 v3 evidence packet 为准）
 
 | run_id | 内容 | steps | 机器 |
 |---|---|---|---|
@@ -3365,7 +3367,7 @@ G_e=G_\star+(G_2-G_\star)q^{e-2}.
 - 修复后首批三臂均通过 step 50：input 6e-4 gap −0.0434、matched nogram 6e-4
   gap −0.0604、input 4e-3 gap −0.0072；GPU2/4/5 分别占用约 70/50/70 GB。
   `ps` 实参核验：6e-4×128=0.0768、4e-3×19.2=0.0768，且 val/freq/exact/table-norm
-  的末次覆盖值均为 50。状态保持 running，完成前不填科学裁决。
+  的末次覆盖值均为 50。当时记录为 running；后续 §42.6 已回填 14/14 run 的终态，本文不以此处快照覆盖后续证据。
 
 ### 42.5 全并行重排（2026-08-31，用户指示）
 

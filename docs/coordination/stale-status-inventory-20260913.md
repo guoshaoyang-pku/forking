@@ -4,17 +4,17 @@ This inventory is a review queue; historical entries remain for provenance. Curr
 
 Refresh note (2026-09-13 continuation): D14/D26 are now locally complete (26 pytest tests pass); D10/D11 are partial because 33 cross-host duplicate IDs have conflicting endpoint metrics; the local paper review draft is ready.
 
-Found 36 lines containing status markers across docs.
+Found 36 lines containing status markers across docs. This review pass resolved the stale markers that were misleading inside the active experiment log; remaining entries below are intentionally historical snapshots, explicit queue states, or cloud/archive copies.
 
 - `docs/experiment-log.md:111` 状态约定：`planned` 已登记未开跑 / `running` 运行中 / `done` 已回填 / `stalled` 超期未回填。
 - `docs/experiment-log.md:253` 可复用的干净基线。该 section 不启动新训练，不覆盖其他 Agent 的 running
-- `docs/experiment-log.md:402` ### 结果（ophis-gpu 首波 · 23 桶 freq 统计，已 done；360-1 15 桶重跑进行中）
-- `docs/experiment-log.md:446` ### 结果（ophis-gpu 首波 · 23 桶 freq 统计，已 done；360-1 15 桶重跑进行中）
-- `docs/experiment-log.md:463` ### 9a. Table 优化器消融（郭绍阳，wave1 done / wave2 running）
+- `docs/experiment-log.md:402` resolved: both historical injection runs are now labelled completed historical runs.
+- `docs/experiment-log.md:446` resolved: both historical injection runs are now labelled completed historical runs.
+- `docs/experiment-log.md:463` resolved: optimizer wave1/wave2 are now labelled completed historical setting.
 - `docs/experiment-log.md:1156` ### 登记（planned → running → done；seed 42 首轮）
 - `docs/experiment-log.md:1524` ### 登记（planned → running）
-- `docs/experiment-log.md:3368` 的末次覆盖值均为 50。状态保持 running，完成前不填科学裁决。
-- `docs/experiment-log.md:3978` ### §53 回填（2026-09-12，running → done）
+- `docs/experiment-log.md:3368` resolved: the old running snapshot now points readers to §42.6 for the 14/14 terminal backfill.
+- `docs/experiment-log.md:3978` resolved: §53 already has a done backfill section; the earlier transition is retained as provenance.
 - `docs/coordination/feishu-local-diff-20260913.md:14` - The TODO wiki has 9 unchecked boxes and 17 unresolved markers (`待补`, `待核`, `未启动`, `进行中`, or `预留`).
 - `docs/coordination/feishu-local-diff-20260913.md:17` - The TODO wiki still contains historical status text from before the local handoff work: it calls shanbin/haoran handoff “未启动”, C.4/H.1.3 extraction “待生成”, and the logit panel “已由待办 1b 的图 H-1/H-2 填上” in different places. Local evidence now supersedes those historical status lines for coordination, but the cloud page itself has not been edited.
 - `docs/coordination/experiment-log-duplicate-review-20260913.md:19` - L869: ## 12. epoch 对齐批（同 epoch 数 × 同 LR-per-epoch 轨迹，2026-08-07 进行中）
