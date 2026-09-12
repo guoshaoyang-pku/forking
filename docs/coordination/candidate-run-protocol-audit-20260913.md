@@ -22,3 +22,4 @@ This report uses only small remote summary.json and train_log.jsonl files recove
 2. Compare log row counts and final-step continuity with summary.steps; a short log is incomplete even when a summary exists.
 3. Match probe hash, data split, frequency index, and measurement interval before any experiment-log overwrite.
 4. Register host-scoped evidence first; collapse to a canonical run only after an explicit provenance decision.
+5. Remote code identity is a separate gate; see `remote-code-md5-audit-20260913.md`.

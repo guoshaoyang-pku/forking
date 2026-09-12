@@ -52,3 +52,5 @@ Read-only SSH checks succeeded for `ophis-gpu`, `360-1`, and `360-2`. At check t
 - **Repeatable coordination checks**: `overnight-dispatch-manifest.json` now records all D1–D27 owners, dependencies, parallelism, acceptance criteria, and approval gates. `feishu-marker-audit-20260913.json` snapshots TODO rev 2335 (27 markers) and paper rev 1082 (17 markers) without cloud writes. `check_navigation_links.py` checks 29 local navigation links with `missing=0`; the earlier D26 note's `checked=0` count is superseded.
 
 - **Publication audit**: `docs/coordination/blog-source-audit-20260913.md` confirms `docs/report/index.html` and the sibling blog target are byte-identical (42,707 bytes; SHA-256 `895284d1…7376`). The claim-safe review draft remains unpublished; no blog file was edited.
+
+- **Remote code identity**: `remote-code-md5-audit-20260913.md` shows ophis matches local `train.py`/`ngram_freq.py`, while 360-1/360-2 share a different Python revision; all hosts share the current clean launcher md5 except `run_baseline.sh` on ophis/360. This keeps T8/T9 host-scoped and blocks any unregistered promotion.
