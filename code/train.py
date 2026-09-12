@@ -1866,6 +1866,7 @@ def main():
     logit_stats_log = None
     logit_exemplar_ids = []  # list of (exemplar_id, branch, hit_count, quadrant)
     if args.logit_stats and freq_index_obj is not None:
+        from ngram_freq import compute_context_keys as _ls_compute_context_keys
         logit_stats_log = open(os.path.join(cfg.out_dir, "logit_stats.jsonl"), "w")
         # Deterministic exemplar selection: pick ~N/4 contexts per quadrant
         # (highF-seen, highF-novel, lowF-seen, lowF-novel) from val batches.
@@ -1878,7 +1879,7 @@ def main():
         all_keys_b = []; all_keys_t = []
         with torch.no_grad():
             for inp, _tgt in sample_batches:
-                bk, tk = compute_context_keys(inp, cfg.vocab_size)
+                bk, tk = _ls_compute_context_keys(inp, cfg.vocab_size)
                 all_keys_b.append(bk.cpu().numpy().ravel())
                 all_keys_t.append(tk.cpu().numpy().ravel())
         all_keys_b = np.concatenate(all_keys_b)
