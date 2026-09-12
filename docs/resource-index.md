@@ -16,6 +16,8 @@
 | appendix 章节规划 | plans/plan-6-appendix-structure.md | C–H 结构与图片分配 |
 | 多 agent 协作 | coordination/README.md | owner、状态、回收和证据包 |
 | experiment-log 目录 | coordination/experiment-log-toc.md | 由日志顶层 headings 生成的导航 |
+| 飞书↔本地 TODO 差异 | coordination/feishu-local-diff-20260913.md | 最新 revision、未解决项与云端写入边界 |
+| TODO 完成矩阵 | coordination/todo-completion-matrix-20260913.md | 飞书与本地 backlog 的逐项当前状态 |
 | 整晚 TODO 队列 | coordination/overnight-queue-20260913.md | 飞书 + 本地 TODO 的统一排程 |
 
 ## 代码入口
