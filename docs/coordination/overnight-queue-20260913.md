@@ -34,9 +34,9 @@
 | D17 | local T9 | 固定 train probe 测 rho | 做 launcher/contract 审计，需 GPU 后启动 | queued, preflight |
 | D18 | local T10 | 缩短 epoch 放大 gap | 只有 T8 完成且确认 backbone baseline 后允许 | blocked-by-T8 |
 | D19 | local T12、v2 §6 | causal 剩余回填 | 检查 M10、causalv5m3、mix/ffq 远端状态并回收小文件 | queued, remote-check |
-| D20 | appendix plan | G.2.1 logit sharpening 回填 | 更新 plan-6 的旧待实验标记和交叉链接 | ready |
-| D21 | appendix plan | C.4 三轴交叉总结表 | 从现有 CSV 生成提取脚本和首版表 | ready |
-| D22 | appendix plan | H.1.3 run_id 索引 | 从 registry/log 生成机器可读索引 | ready |
+| D20 | appendix plan | G.2.1 logit sharpening 回填 | 更新 plan-6 的旧待实验标记和交叉链接 | done (f65ab29) |
+| D21 | appendix plan | C.4 三轴交叉总结表 | 从现有 CSV 生成提取脚本和首版表 | done (f65ab29) |
+| D22 | appendix plan | H.1.3 run_id 索引 | 从 registry/log 生成机器可读索引 | done (f65ab29) |
 | D23 | figure inventory | 图号、fd、outdated/orphan、SVG/PNG | 生成决策报告，不移动/删除图片 | ready |
 | D24 | codebase | 未跟踪 PDF、临时脚本、二维码 | 生成分类和 gitignore 建议，不删除 | ready |
 | D25 | docs | 飞书 v2 与本地 report 差异 | 生成标题、图、引用、待核项 diff | ready |

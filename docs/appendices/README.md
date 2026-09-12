@@ -17,6 +17,8 @@
 | [`lr_beta_ablation/`](lr_beta_ablation/report.html) | 表学习率 × β₂ 消融及交互；高表学习率体检（发现 ×2/×4 崩坏） | 🟡 进行中（2 个补点跑中） |
 | [`s1_scaling_three_axis/`](s1_scaling_three_axis/report.md) | Epoch length / exact frequency / table size 三轴 scaling | 🟢 seed 42 full grid + table 加密取点完成（98 run，QC 通过）；多 seed 待补 |
 
+跨轴覆盖表见 `s1_scaling_three_axis/c4_cross_axis_coverage.md`；它不会把未测的三维交叉项当成已测。H.1.3 静态 run_id 导航见 `run_id_index.md`；索引存在不等于 run 已完成。
+
 ## 新增附录的约定
 
 1. 子文件夹名用小写下划线短名。
