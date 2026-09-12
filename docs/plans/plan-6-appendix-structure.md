@@ -87,7 +87,7 @@ Appendix
 │   │   ├── G.1.2 Per-epoch gap 增量与 staircase 形状
 │   │   └── G.1.3 Epoch multiseed 方差
 │   ├── G.2 Logit 锐化理论补充
-│   │   ├── G.2.1 2×2 锐化实验面板（待新实验，见缺口 #1）
+│   │   ├── G.2.1 2×2 锐化实验面板（已由 §53 logit-stats 素材覆盖；2×2 原设计降级为可选补强）
 │   │   ├── G.2.2 Bias split 与 paired decomposition
 │   │   └── G.2.3 Optimizer exponent 拟合
 │   ├── G.3 状态空间分割补充
@@ -228,9 +228,9 @@ Appendix
 
 | # | 缺口 | 所在小节 | 需要什么 | 优先级 | 状态 |
 |---|------|----------|----------|--------|------|
-| **1** | Logit 锐化 2×2 实验面板 | G.2.1 | 新实验：2×2 设计（sharp/flat logits × seen/novel），量化锐化对 gap 的贡献。已有 agent 在跑。 | P0 | 🚀 进行中 |
-| **2** | C.4 三轴交叉总结表 | C.4 | 需要汇总 bigram/trigram 在 table-size × dose × epoch 三维的联合 slope 表；当前只有单轴 fit，缺交叉项。需从现有 CSV 提取或补少量交叉点 run。 | P1 | 📋 待提取 |
-| **3** | H.1.3 完整 run_id 索引表 | H.1 | 需要从 `experiment-registry.html` 自动生成 markdown 索引表，按 appendix 节分组；当前 registry 是 HTML，appendix 需要可引用的静态表。 | P1 | 📋 待生成 |
+| **1** | Logit 锐化 2×2 实验面板 | G.2.1 | §53 已提供 20-epoch sharpening-vs-CE 与 exemplar 素材；原 2×2 新实验降级为可选补强。 | P0 | ✅ 素材完成 |
+| **2** | C.4 三轴交叉总结表 | C.4 | 已由 gen_appendix_c4_cross_table.py 从现有 CSV 生成覆盖表；无完整三维交叉，明确标注未测。 | P1 | ✅ 已生成 |
+| **3** | H.1.3 完整 run_id 索引表 | H.1 | 已由 docs/tools/gen_run_id_index.py 生成静态导航表；完成性仍需按 fixed 目录验收。 | P1 | ✅ 已生成 |
 
 ### 次要缺口
 
@@ -247,11 +247,11 @@ Appendix
 
 ## 4. 执行建议
 
-1. **Appendix 写作顺序**：H → C → D → E → F → G（H 是基础设施，先锁定口径；G 依赖缺口 #1 的实验结果，最后写）。
+1. **Appendix 写作顺序**：H → C → D → E → F → G（H 是基础设施，先锁定口径；G 使用 §53 已完成素材，严格 2×2 设计仅作可选补强）。
 2. **图片迁移**：正文确定 12 张后，其余图的引用路径统一改为 `appendix/C/figs/`、`appendix/D/figs/` 等子目录；物理文件可软链或复制，避免重复。
-3. **缺口 #1 跟踪**：logit 锐化 2×2 实验由另一 agent 负责，本计划只预留位置；实验完成后回填 G.2.1。
-4. **缺口 #2 提取脚本**：建议新增 `docs/plot_scripts/gen_appendix_c4_cross_table.py`，从 `s1_*_points.csv` 系列提取交叉统计。
-5. **缺口 #3 生成脚本**：建议新增 `docs/tools/gen_run_id_index.py`，解析 `experiment-registry.html` 输出 markdown 表。
+3. **缺口 #1 跟踪**：§53 已完成直接 logit-sharpening 测量；若需严格 sharp/flat × seen/novel 设计，另行登记新 run。
+4. **缺口 #2 提取脚本**：`docs/plot_scripts/gen_appendix_c4_cross_table.py` 已生成覆盖表；新增交叉 run 前需重新登记。
+5. **缺口 #3 生成脚本**：`docs/tools/gen_run_id_index.py` 已生成静态索引；每次 registry/log 更新后重跑。
 6. **Commit 策略**：本计划文件先行 commit；后续每个 appendix 节写成独立 commit（前缀 `docs: appendix-X ...`）。
 
 ---
