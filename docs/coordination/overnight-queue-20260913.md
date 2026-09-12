@@ -40,8 +40,8 @@
 | D23 | figure inventory | 图号、fd、outdated/orphan、SVG/PNG | 生成决策报告，不移动/删除图片 | done (d1656ee / f65ab29) |
 | D24 | codebase | 未跟踪 PDF、临时脚本、二维码 | 生成分类和 gitignore 建议，不删除 | done (f65ab29) |
 | D25 | docs | 飞书 v2 与本地 report 差异 | 生成标题、图、引用、待核项 diff | ready |
-| D26 | tests | pytest、shell、plot smoke、link check | 运行可用检查，记录缺失依赖 | ready |
-| D27 | publication | 本地 commit 与 blog 状态 | 检查 ahead/behind、工作区和差异，不 push | ready |
+| D26 | tests | pytest、shell、plot smoke、link check | shell + py_compile + figure-index smoke 已通过；pytest/model runtime 受缺依赖阻塞 | partial (32de8e2 / a88ef87) |
+| D27 | publication | 本地 commit 与 blog 状态 | 已核对本地 branch ahead；不 push，发布仓库差异仍待审计 | partial (P5 gate) |
 
 ## 整晚波次
 
