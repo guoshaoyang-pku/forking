@@ -33,7 +33,7 @@ The prepared append-only Feishu update is in docs/coordination/feishu-writeback-
 
 ## Verification at handoff
 
-    python3 docs/coordination/check_navigation_links.py  # checked=31 missing=0
+    python3 docs/coordination/check_navigation_links.py  # checked=32 missing=0
     .venv/bin/python -m pytest ngram5_freq_gap/tests -q  # 26 passed
     find code ngram5_freq_gap tasks docs/coordination docs/plot_scripts -name '*.py' -print0 | xargs -0 -n1 .venv/bin/python -m py_compile
     find code tasks ngram5_freq_gap -name '*.sh' -print0 | xargs -0 -n1 bash -n

@@ -24,4 +24,4 @@ Validation command:
 python3 docs/coordination/check_navigation_links.py
 ```
 
-Current result: `checked=31 missing=0`.
+Current result: `checked=32 missing=0`.

@@ -36,7 +36,7 @@
 
 飞书状态审计脚本：[`refresh_feishu_backlog_audit.py`](refresh_feishu_backlog_audit.py)。它只读获取两份 wiki，输出 revision、checksum 和 unresolved marker 清单；不会写回云端。运行前需完成 `lark-cli auth status --verify`，示例：`python3 refresh_feishu_backlog_audit.py --out /tmp/feishu-marker-audit-latest.json`。
 
-导航链接检查：[`check_navigation_links.py`](check_navigation_links.py)。它扫描 README、资源索引和协调入口中的相对 Markdown 链接；当前结果为 `checked=31 missing=0`。
+导航链接检查：[`check_navigation_links.py`](check_navigation_links.py)。它扫描 README、资源索引和协调入口中的相对 Markdown 链接；当前结果为 `checked=32 missing=0`。
     结论（附 step / seed）：
     claim ceiling：
     下一步：
