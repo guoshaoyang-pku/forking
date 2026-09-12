@@ -96,7 +96,7 @@ CPU smoke 只能验证代码路径，不能替代正式实验。主线 run 的�
 
 ## 维护状态
 
-当前仓库处于论文收敛与资源整理阶段。0912 新增的 benefit-side、logit-sharpening、文献和 appendix 素材已经落地；下一步优先级是统一正文语言和符号、整理 appendix C–H、维护实验/协作索引，再处理低优先级的 V4.1-Flash SFT 攻击线。统一 backlog 和资源状态见 docs/resource-index.md。
+当前仓库处于论文收敛与资源整理阶段。0912 新增的 benefit-side、logit-sharpening、文献和 appendix 素材已经落地；下一步优先级是统一正文语言和符号、整理 appendix C–H、维护实验/协作索引，再处理低优先级的 V4.1-Flash SFT 攻击线。统一 backlog 和资源状态见 docs/resource-index.md；整晚执行队列见 docs/coordination/overnight-queue-20260913.md。
 
 ## 许可
 

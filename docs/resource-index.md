@@ -15,6 +15,7 @@
 | 论文正文 | report/index.html | 本地只读副本；发布源在 blog repo |
 | appendix 章节规划 | plans/plan-6-appendix-structure.md | C–H 结构与图片分配 |
 | 多 agent 协作 | coordination/README.md | owner、状态、回收和证据包 |
+| 整晚 TODO 队列 | coordination/overnight-queue-20260913.md | 飞书 + 本地 TODO 的统一排程 |
 
 ## 代码入口
 
