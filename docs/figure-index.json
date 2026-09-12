@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-13T00:20:35+08:00",
-  "commit": "490c585",
+  "generated_at": "2026-09-13T01:15:33+08:00",
+  "commit": "32de8e2",
   "counts": {
     "orphan-review": 119,
     "current": 126,
@@ -5708,6 +5708,14 @@
       ],
       "clusters": [
         "本地镜像 / 原始集群需按 run 核对"
+      ]
+    },
+    {
+      "path": "docs/plot_scripts/gen_appendix_c4_cross_table.py",
+      "name": "gen_appendix_c4_cross_table.py",
+      "data_paths": [],
+      "clusters": [
+        "本地离线 / 未声明集群"
       ]
     },
     {
