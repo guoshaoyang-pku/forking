@@ -15,19 +15,19 @@
 
 | ID | 来源 | 工作项 | 今晚动作 | 状态 |
 |---|---|---|---|---|
-| D1 | 飞书 0912-3 | 全文写人话、符号统一 | 术语表、章节差异清单、可合并段落草稿 | ready |
+| D1 | 飞书 0912-3 | 全文写人话、符号统一 | 审计已完成；正文 patch 仍待写作阶段 | audit complete / prose open |
 | D2 | 飞书 0912-4 | shanbin / haoran handoff | 生成两份任务卡，锁定输入、交付、验收和边界 | done (e8f3f5e) |
 | D3 | 飞书 0912-6、v2 §7.2 | V4.1-Flash SFT 攻击 | 只做方案和风险矩阵；不搬运 189 GiB 表 | blocked-by-P5 |
 | D4 | 飞书 0912-2 | Engram baseline go/no-go | 把 NO-GO 建议写入 backlog，保留 revision contingency | done (e8f3f5e; decision record) |
-| D5 | v2 §6.1 | Replay 次数与相干更新 | 审计 §48–§53，列可证伪预测和缺口 | ready |
+| D5 | v2 §6.1 | Replay 次数与相干更新 | §48–§53 与预测缺口已审计 | audit complete / evidence open |
 | D6 | v2 §6.2 | 学习率与 table/backbone 更新 | 整理 blrabs、table LR、wd/SGD 预测 | ready, GPU gate |
-| D7 | v2 §6.3 | 数据量与 epoch 长度 | 整理 S1、M5、M6 覆盖范围并生成缺口表 | ready |
-| D8 | v2 §6.4 | 容量、映射与干预收益 | 汇总 S1 table-size、mask、reseed、net-val 证据 | ready |
+| D7 | v2 §6.3 | 数据量与 epoch 长度 | S1/M5/M6 覆盖与 fixed-step/pass 缺口已列出 | audit complete / decision open |
+| D8 | v2 §6.4 | 容量、映射与干预收益 | table-size、mask、reseed、net-val claim 边界已列出 | audit complete / evidence open |
 | D9 | v2 §7.1 | DeepSeek-like / Engram 复现 | 只做协议设计和 no-go 依据，不自动下载/训练大模型 | blocked-by-P5 |
 | D10 | local T1 | _fixed 数值回填 experiment-log | 生成 pre-fix/fixed 冲突清单和候选 patch | stalled (missing data mount) |
 | D11 | local T2 | β₂ bug 记录清理 | 标记无效历史结论，保留溯源，不补跑 | stalled (missing data mount) |
 | D12 | local T3 | _fixed 图重生成 | 审计脚本 roots 和 fixtures，只重跑可验证图 | ready, fixture gate |
-| D13 | local T4 | experiment-log 结构整理 | 修复重复 §10/缺 §5；段落级重复扫描与全文目录仍待人工审阅 | partial (22397bd) |
+| D13 | local T4 | experiment-log 结构整理 | 编号修复、标题审阅和目录刷新完成；数字/表格 review 仍开放 | audit complete / cleanup partial |
 | D14 | local T5 | ngram5 fallback / bug audit | model.py 绑定代码审阅完成；运行时 import 与测试仍待可用依赖环境 | partial (import blocked by missing numpy) |
 | D15 | local T6 | M6 大 shard 或限定结论 | 写补跑和限定范围两种方案，不擅自执行 | needs-user-decision |
 | D16 | local T8 | 8k–10k no-ngram 长程基线 | 远端 preflight 已完成；360-2 空闲但代码 MD5 不一致，待授权同步后再登记运行 | queued, code-sync gate |
@@ -40,7 +40,7 @@
 | D23 | figure inventory | 图号、fd、outdated/orphan、SVG/PNG | 生成决策报告，不移动/删除图片 | done (d1656ee / f65ab29) |
 | D24 | codebase | 未跟踪 PDF、临时脚本、二维码 | 生成分类和 gitignore 建议，不删除 | done (f65ab29) |
 | D25 | docs | 飞书 v2 与本地 report 差异 | 生成 revision/checksum 与待核项差异报告；不写云端 | done (Feishu audit) |
-| D26 | tests | pytest、shell、plot smoke、link check | shell + py_compile + figure-index smoke 已通过；pytest/model runtime 受缺依赖阻塞 | partial (32de8e2 / a88ef87) |
+| D26 | tests | pytest、shell、plot smoke、link check | shell + py_compile + figure-index + Markdown link smoke 通过；pytest/model runtime 受缺依赖阻塞 | partial / dependency gate |
 | D27 | publication | 本地 commit 与 blog 状态 | 已核对本地 branch ahead；不 push，发布仓库差异仍待审计 | partial (P5 gate) |
 
 ## 整晚波次
