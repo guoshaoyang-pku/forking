@@ -570,6 +570,106 @@ def compute_per_token_loss(model, inp: torch.Tensor, tgt: torch.Tensor,
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# 5. Logit-stats f-buckets (confidence polarization probe, §5.2 supplement)
+# ---------------------------------------------------------------------------
+
+# Coarser buckets than BUCKET_EDGES, tuned for confidence-polarization analysis:
+# low-frequency contexts are the predicted locus of strongest polarization.
+LOGIT_F_BUCKETS = [
+    (0, 0, "f0"),
+    (1, 1, "f1"),
+    (2, 3, "f2-3"),
+    (4, 7, "f4-7"),
+    (8, 15, "f8-15"),
+    (16, 63, "f16-63"),
+    (64, 255, "f64-255"),
+    (256, 10**9, "f256+"),
+]
+
+
+def logit_f_bucket_label(hit_count: int) -> str:
+    for lo, hi, label in LOGIT_F_BUCKETS:
+        if lo <= hit_count <= hi:
+            return label
+    return "f256+"
+
+
+def all_logit_f_bucket_labels() -> list:
+    return [label for _, _, label in LOGIT_F_BUCKETS]
+
+
+class LogitStatsAccumulator:
+    """Aggregate per-token confidence statistics by (branch, f_bucket, seen/novel).
+
+    Inputs (all numpy, torch-free):
+      - key_np:     context keys (int64), shape (N,)
+      - hits_np:    train hit counts for each key (int64), shape (N,)
+      - entropy_np: per-token softmax entropy H(p) in nats (float64), shape (N,)
+      - margin_np:  top1_prob - top2_prob (float64), shape (N,)
+      - ptrue_np:   p(y_true) under the model softmax (float64), shape (N,)
+
+    Accumulates sum/count for each (bucket, seen/novel) cell so the caller can
+    compute means after the batch. seen = (hit > 0); novel = (hit == 0). This
+    matches the exact-freq pipeline's definition of novel contexts.
+    """
+
+    def __init__(self, branch: str):
+        self.branch = branch
+        labels = all_logit_f_bucket_labels()
+        self._sum_h = {sn: {lb: 0.0 for lb in labels} for sn in ("seen", "novel")}
+        self._sum_m = {sn: {lb: 0.0 for lb in labels} for sn in ("seen", "novel")}
+        self._sum_p = {sn: {lb: 0.0 for lb in labels} for sn in ("seen", "novel")}
+        self._count = {sn: {lb: 0 for lb in labels} for sn in ("seen", "novel")}
+
+    def update_numpy(self, key_np, hits_np, entropy_np, margin_np, ptrue_np):
+        hits = np.asarray(hits_np, dtype=np.int64).ravel()
+        ent = np.asarray(entropy_np, dtype=np.float64).ravel()
+        mar = np.asarray(margin_np, dtype=np.float64).ravel()
+        ptr = np.asarray(ptrue_np, dtype=np.float64).ravel()
+        # bucket assignment
+        bucket_idx = np.zeros(len(hits), dtype=np.int32)
+        for i, (lo, hi, _) in enumerate(LOGIT_F_BUCKETS):
+            mask = (hits >= lo) & (hits <= hi)
+            bucket_idx[mask] = i
+        # clamp any overflow to last bucket
+        bucket_idx = np.clip(bucket_idx, 0, len(LOGIT_F_BUCKETS) - 1)
+        seen_mask = hits > 0
+        for sn, m in (("seen", seen_mask), ("novel", ~seen_mask)):
+            if not np.any(m):
+                continue
+            bi = bucket_idx[m]
+            e = ent[m]; mg = mar[m]; p = ptr[m]
+            for j, (_, _, lb) in enumerate(LOGIT_F_BUCKETS):
+                sel = bi == j
+                n = int(sel.sum())
+                if n == 0:
+                    continue
+                self._count[sn][lb] += n
+                self._sum_h[sn][lb] += float(e[sel].sum())
+                self._sum_m[sn][lb] += float(mg[sel].sum())
+                self._sum_p[sn][lb] += float(p[sel].sum())
+
+    def summary(self) -> dict:
+        out = {}
+        for sn in ("seen", "novel"):
+            d = {}
+            for _, _, lb in LOGIT_F_BUCKETS:
+                n = self._count[sn][lb]
+                if n > 0:
+                    d[lb] = {
+                        "count": n,
+                        "mean_entropy": self._sum_h[sn][lb] / n,
+                        "mean_margin": self._sum_m[sn][lb] / n,
+                        "mean_ptrue": self._sum_p[sn][lb] / n,
+                    }
+                else:
+                    d[lb] = {"count": 0, "mean_entropy": 0.0,
+                             "mean_margin": 0.0, "mean_ptrue": 0.0}
+            out[sn] = d
+        return out
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()

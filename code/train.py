@@ -1568,6 +1568,14 @@ def main():
     parser.add_argument("--exact_freq_eval_interval", type=int, default=10,
                         help="exact-frequency interval when --val_steps is unset; "
                              "otherwise follows the specified validation steps")
+    parser.add_argument("--logit_stats", action="store_true",
+                        help="enable confidence-polarization probe (§5.2 supplement): "
+                             "per-token entropy/margin/p_true + top-20 softmax, aggregated "
+                             "by (branch × f_bucket × seen/novel) in logit_stats.jsonl. "
+                             "Reuses the existing bf16 diagnostic forward; no extra forward.")
+    parser.add_argument("--logit_stats_exemplars", type=int, default=64,
+                        help="number of fixed exemplar contexts to dump full top-20 each eval "
+                             "(default 64; 16 per quadrant of freq×seen/novel)")
     parser.add_argument("--lr_schedule_epochs", type=int, default=0,
                         help=">0: anchor LR schedule to this many epochs (epoch-based progress)")
     parser.add_argument("--warmup_steps", type=int, default=100,
@@ -1853,6 +1861,92 @@ def main():
                 "step": rstep, "epoch": repoch,
                 "train": fb["train"], "val": fb["val"],
             }) + "\n")
+
+    # --- logit-stats probe (§5.2 supplement) ---
+    logit_stats_log = None
+    logit_exemplar_ids = []  # list of (exemplar_id, branch, hit_count, quadrant)
+    if args.logit_stats and freq_index_obj is not None:
+        logit_stats_log = open(os.path.join(cfg.out_dir, "logit_stats.jsonl"), "w")
+        # Deterministic exemplar selection: pick ~N/4 contexts per quadrant
+        # (highF-seen, highF-novel, lowF-seen, lowF-novel) from val batches.
+        # "highF" = hit >= median of sampled hits; "seen" = hit > 0.
+        import diag_worker as _dw
+        n_ex = max(4, args.logit_stats_exemplars)
+        per_quad = n_ex // 4
+        # Sample context keys from first 2 val batches (deterministic)
+        sample_batches = validation_batches[:2]
+        all_keys_b = []; all_keys_t = []
+        with torch.no_grad():
+            for inp, _tgt in sample_batches:
+                bk, tk = compute_context_keys(inp, cfg.vocab_size)
+                all_keys_b.append(bk.cpu().numpy().ravel())
+                all_keys_t.append(tk.cpu().numpy().ravel())
+        all_keys_b = np.concatenate(all_keys_b)
+        all_keys_t = np.concatenate(all_keys_t)
+        hits_b = freq_index_obj.hit_count_numpy("bigram", all_keys_b)
+        hits_t = freq_index_obj.hit_count_numpy("trigram", all_keys_t)
+        # Use bigram branch for exemplar selection (covers both branches via shared positions)
+        uniq_keys, uniq_idx = np.unique(all_keys_b, return_index=True)
+        uniq_hits = hits_b[uniq_idx]
+        med_hit = int(np.median(uniq_hits[uniq_hits > 0])) if np.any(uniq_hits > 0) else 1
+        quadrants = {
+            "highF_seen": (uniq_hits >= med_hit) & (uniq_hits > 0),
+            "highF_novel": (uniq_hits >= med_hit) & (uniq_hits == 0),  # impossible by def; fallback below
+            "lowF_seen": (uniq_hits < med_hit) & (uniq_hits > 0),
+            "lowF_novel": uniq_hits == 0,
+        }
+        # highF_novel is empty by definition; redistribute to lowF_novel
+        selected = []
+        rng = random.Random(cfg.seed + 7)
+        for qname, mask in quadrants.items():
+            if qname == "highF_novel":
+                continue
+            candidates = uniq_keys[mask]
+            if len(candidates) == 0:
+                continue
+            take = min(per_quad, len(candidates))
+            chosen = rng.sample(list(candidates), take)
+            for k in chosen:
+                h = int(freq_index_obj.bigram.get(int(k), 0))
+                selected.append((int(k), "bigram", h, qname))
+        # If we still need more, fill from trigram lowF_novel
+        if len(selected) < n_ex:
+            t_uniq, t_uidx = np.unique(all_keys_t, return_index=True)
+            t_uhits = hits_t[t_uidx]
+            novel_mask = t_uhits == 0
+            cand_t = t_uniq[novel_mask]
+            if len(cand_t) > 0:
+                extra = min(n_ex - len(selected), len(cand_t))
+                chosen_t = rng.sample(list(cand_t), extra)
+                for k in chosen_t:
+                    h = int(freq_index_obj.trigram.get(int(k), 0))
+                    selected.append((int(k), "trigram", h, "lowF_novel"))
+        logit_exemplar_ids = selected[:n_ex]
+        print(f"[nglab] logit_stats probe enabled: {len(logit_exemplar_ids)} exemplars "
+              f"(quadrants: "
+              + ", ".join(f"{q}={sum(1 for s in logit_exemplar_ids if s[3]==q)}"
+                          for q in ("highF_seen","lowF_seen","lowF_novel"))
+              + ")")
+
+    def on_logit_rows(lstep, lepoch, lbranch, lsummary, lexemplar_dump):
+        """Write one logit-stats aggregation result."""
+        if logit_stats_log is None:
+            return
+        # Aggregated row (small)
+        logit_stats_log.write(json.dumps({
+            "type": "agg",
+            "step": lstep, "epoch": lepoch, "branch": lbranch,
+            "buckets": lsummary,
+        }) + "\n")
+        # Exemplar rows (one per exemplar)
+        for ex in lexemplar_dump:
+            logit_stats_log.write(json.dumps({
+                "type": "exemplar",
+                "step": lstep, "epoch": lepoch, "branch": lbranch,
+                **ex,
+            }) + "\n")
+        logit_stats_log.flush()
+
     last_val_loss = float("nan")
     last_train_loss = float("nan")
     last_fixed_train_loss = float("nan")
@@ -2033,7 +2127,7 @@ def main():
             if diag_pool is not None and diag_pool.alive:
                 diag_pool.submit(step + 1, train_ds._epoch + 1, probe_hash,
                                  train_pairs, val_exact_pairs, val_fb_pairs, cur_pair)
-                diag_pool.drain(on_diag_rows)
+                diag_pool.drain(on_diag_rows, on_logit_rows=on_logit_rows)
             else:
                 exact_payload, fb_payload = diag_worker_mod.process_job(
                     freq_index_obj, cfg.vocab_size, train_pairs,
@@ -2045,6 +2139,67 @@ def main():
             if freq_bin_log is not None:
                 freq_bin_log.flush()
 
+        # --- logit-stats probe submission (§5.2 supplement) ---
+        # Runs on the SAME cadence as diag_due. Uses separate bf16 forwards on
+        # val batches to keep the standard exact-freq/freq-bin pipeline byte-
+        # identical when --logit_stats is off. Submits one job per branch.
+        if diag_due and logit_stats_log is not None:
+            import diag_worker as diag_worker_mod
+            for _ls_branch in ("bigram", "trigram"):
+                ls_payloads = diag_worker_mod.make_logit_payloads(
+                    fixed_val_batches, model, diag_amp_dtype, cfg.vocab_size,
+                    freq_index_obj, _ls_branch)
+                # Aggregate payloads: list of (keys, hits, entropy, margin, ptrue)
+                agg_pairs = [(p[0], p[1], p[2], p[3], p[4]) for p in ls_payloads]
+                # Exemplar payloads: for each exemplar, find matching positions in
+                # the val batches and extract top20. We precomputed exemplar keys;
+                # now scan ls_payloads for matches.
+                ex_pairs = []
+                for eid, ebranch, ehit, eq in logit_exemplar_ids:
+                    if ebranch != _ls_branch:
+                        continue
+                    # Find first occurrence of this key in any batch
+                    found = False
+                    for pi, p in enumerate(ls_payloads):
+                        keys_flat = p[0]
+                        idx_match = np.where(keys_flat == eid)[0]
+                        if len(idx_match) > 0:
+                            pos = int(idx_match[0])
+                            ex_pairs.append((
+                                eid,
+                                np.array([eid], dtype=np.int64),
+                                np.array([ehit], dtype=np.int64),
+                                p[5][pos:pos+1],   # top20_ids (1, 20)
+                                p[6][pos:pos+1],   # top20_probs (1, 20)
+                            ))
+                            found = True
+                            break
+                    # If not found in val batches, skip this exemplar for this step
+                if diag_pool is not None and diag_pool.alive:
+                    diag_pool.submit_logit(step + 1, train_ds._epoch + 1,
+                                           _ls_branch, agg_pairs, ex_pairs)
+                    diag_pool.drain(on_diag_rows, on_logit_rows=on_logit_rows)
+                else:
+                    # Sync fallback
+                    from ngram_freq import LogitStatsAccumulator
+                    acc = LogitStatsAccumulator(_ls_branch)
+                    for keys_np, hits_np, entropy_np, margin_np, ptrue_np in agg_pairs:
+                        acc.update_numpy(keys_np, hits_np, entropy_np, margin_np, ptrue_np)
+                    summary = acc.summary()
+                    exemplar_dump = []
+                    for eid, ek, eh, et_ids, et_probs in ex_pairs:
+                        exemplar_dump.append({
+                            "exemplar_id": int(eid),
+                            "branch": _ls_branch,
+                            "hit_count": int(np.asarray(eh).ravel()[0]),
+                            "top20_ids": [int(x) for x in np.asarray(et_ids).ravel()[:20]],
+                            "top20_probs": [float(x) for x in np.asarray(et_probs).ravel()[:20]],
+                        })
+                    on_logit_rows(step + 1, train_ds._epoch + 1, _ls_branch,
+                                  summary, exemplar_dump)
+            if logit_stats_log is not None:
+                logit_stats_log.flush()
+
         # periodic table norm
         if (step + 1) % cfg.table_norm_interval_steps == 0:
             tn = table_param_rms(model)
@@ -2054,11 +2209,14 @@ def main():
 
     # flush any diagnostics still queued in the background worker
     if diag_pool is not None:
-        diag_pool.close_and_drain(on_diag_rows)
+        diag_pool.close_and_drain(on_diag_rows, on_logit_rows=on_logit_rows)
         if exact_freq_log is not None:
             exact_freq_log.flush()
         if freq_bin_log is not None:
             freq_bin_log.flush()
+    if logit_stats_log is not None:
+        logit_stats_log.flush()
+        logit_stats_log.close()
 
     train_log.close()
     table_log.close()
@@ -2118,6 +2276,10 @@ def main():
         "exact_freq_log": (
             "exact_freq_loss.jsonl" if exact_freq_log is not None else None
         ),
+        "logit_stats_log": (
+            "logit_stats.jsonl" if logit_stats_log is not None else None
+        ),
+        "logit_stats_exemplars": len(logit_exemplar_ids) if logit_stats_log is not None else 0,
         "freq_index": args.freq_index if args.freq_index else None,
         "freq_index_sha256": (
             file_sha256(args.freq_index)
