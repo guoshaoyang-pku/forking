@@ -44,3 +44,5 @@ Read-only SSH checks succeeded for `ophis-gpu`, `360-1`, and `360-2`. At check t
 - **D25/Feishu diff**: both wiki pages were freshly fetched (TODO rev 2335; paper rev 1082) and compared with local queue/report state. The read-only result is `docs/coordination/feishu-local-diff-20260913.md`; cloud pages were not modified.
 
 - **Unified TODO matrix**: `docs/coordination/todo-completion-matrix-20260913.md` reconciles Feishu, local plans, and queue states item by item. It keeps open, partial, stalled, gated, and locally done states separate.
+
+- **Remote summary recovery**: small `summary.json` files from 360-2 were mirrored to `/tmp/ngram_gap_remote_summaries/` (223 files, 721734 bytes) and indexed in `remote-summary-inventory-360-2-20260913.csv`. No checkpoint, shard, or table was copied.
