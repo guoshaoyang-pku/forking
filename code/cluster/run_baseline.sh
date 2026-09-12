@@ -95,7 +95,7 @@ CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --warmup_steps 100 \
   --table_optimizer rmsprop \
   --table_betas 0.0,0.99 \
-  --table_lr_scale 2.0 \
+  --table_lr_scale 128.0 \
   --val_interval 10 \
   --val_batches 4 \
   --freq_index "$FREQ_INDEX" \

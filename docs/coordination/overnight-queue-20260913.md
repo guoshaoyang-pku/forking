@@ -15,7 +15,7 @@
 
 | ID | 来源 | 工作项 | 今晚动作 | 状态 |
 |---|---|---|---|---|
-| D1 | 飞书 0912-3 | 全文写人话、符号统一 | 审计已完成；正文 patch 仍待写作阶段 | audit complete / prose open |
+| D1 | 飞书 0912-3 | 全文写人话、符号统一 | 本地 report §8 已具备 claim-safe 数学叙事；云端原稿仍保留待补标记，待发布源审阅 | local draft ready / cloud open |
 | D2 | 飞书 0912-4 | shanbin / haoran handoff | 生成两份任务卡，锁定输入、交付、验收和边界 | done (e8f3f5e) |
 | D3 | 飞书 0912-6、v2 §7.2 | V4.1-Flash SFT 攻击 | 只做方案和风险矩阵；不搬运 189 GiB 表 | blocked-by-P5 |
 | D4 | 飞书 0912-2 | Engram baseline go/no-go | 把 NO-GO 建议写入 backlog，保留 revision contingency | done (e8f3f5e; decision record) |
@@ -24,11 +24,11 @@
 | D7 | v2 §6.3 | 数据量与 epoch 长度 | S1/M5/M6 覆盖与 fixed-step/pass 缺口已列出 | audit complete / decision open |
 | D8 | v2 §6.4 | 容量、映射与干预收益 | table-size、mask、reseed、net-val claim 边界已列出 | audit complete / evidence open |
 | D9 | v2 §7.1 | DeepSeek-like / Engram 复现 | 只做协议设计和 no-go 依据，不自动下载/训练大模型 | blocked-by-P5 |
-| D10 | local T1 | _fixed 数值回填 experiment-log | 生成 pre-fix/fixed 冲突清单和候选 patch | stalled (missing data mount) |
-| D11 | local T2 | β₂ bug 记录清理 | 标记无效历史结论，保留溯源，不补跑 | stalled (missing data mount) |
+| D10 | local T1 | _fixed 数值回填 experiment-log | 远端 summaries 已回收；字段级 config/log 仍需核对后再覆盖 | partial (remote evidence) |
+| D11 | local T2 | β₂ bug 记录清理 | 已完成历史口径标记与替代线说明；数字覆盖仍依赖 D10 核对 | partial |
 | D12 | local T3 | _fixed 图重生成 | 审计脚本 roots 和 fixtures，只重跑可验证图 | ready, fixture gate |
 | D13 | local T4 | experiment-log 结构整理 | 编号修复、标题审阅和目录刷新完成；数字/表格 review 仍开放 | audit complete / cleanup partial |
-| D14 | local T5 | ngram5 fallback / bug audit | model.py 绑定代码审阅完成；运行时 import 与测试仍待可用依赖环境 | partial (import blocked by missing numpy) |
+| D14 | local T5 | ngram5 fallback / bug audit | model.py 绑定已审阅；隔离环境 pytest 26 项通过 | done (runtime/unit QC) |
 | D15 | local T6 | M6 大 shard 或限定结论 | 写补跑和限定范围两种方案，不擅自执行 | needs-user-decision |
 | D16 | local T8 | 8k–10k no-ngram 长程基线 | 远端 preflight 已完成；360-2 空闲但代码 MD5 不一致，待授权同步后再登记运行 | queued, code-sync gate |
 | D17 | local T9 | 固定 train probe 测 rho | 远端 preflight 已完成；同 T8 的代码同步和登记门槛 | queued, code-sync gate |
@@ -40,7 +40,7 @@
 | D23 | figure inventory | 图号、fd、outdated/orphan、SVG/PNG | 生成决策报告，不移动/删除图片 | done (d1656ee / f65ab29) |
 | D24 | codebase | 未跟踪 PDF、临时脚本、二维码 | 生成分类和 gitignore 建议，不删除 | done (f65ab29) |
 | D25 | docs | 飞书 v2 与本地 report 差异 | 生成 revision/checksum 与待核项差异报告；不写云端 | done (Feishu audit) |
-| D26 | tests | pytest、shell、plot smoke、link check | shell + py_compile + figure-index + Markdown link smoke 通过；pytest/model runtime 受缺依赖阻塞 | partial / dependency gate |
+| D26 | tests | pytest、shell、plot smoke、link check | pytest 26 passed；shell/py_compile/figure-index passed；README/resource links now exercised by path audit | done (local QC) |
 | D27 | publication | 本地 commit 与 blog 状态 | 已核对本地 branch ahead；不 push，发布仓库差异仍待审计 | partial (P5 gate) |
 
 ## 整晚波次

@@ -113,12 +113,12 @@ if NanoGPTOriginal is not None:
                         raise RuntimeError("repository MixedOptimizer is unavailable")
                     return MixedOptimizer(
                         self,
-                        lr=kwargs.get("nanogpt_adam_lr", 0.004),
+                        lr=kwargs.get("nanogpt_adam_lr", 0.0006),
                         ngram_betas=kwargs.get("ngram_ve_betas", (0.0, 0.99)),
                         adam_betas=kwargs.get("adam_betas", (0.8, 0.95)),
                         weight_decay=kwargs.get("weight_decay", 0.1),
                         table_optimizer="rmsprop",
-                        table_lr_scale=kwargs.get("ngram_ve_lr_scale", 2.0),
+                        table_lr_scale=kwargs.get("ngram_ve_lr_scale", 128.0),
                         table_betas=kwargs.get("ngram_ve_betas", (0.0, 0.99)),
                     )
 

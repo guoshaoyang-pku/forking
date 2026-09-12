@@ -184,12 +184,12 @@ batch 72×2048、2000 步、seed 42（并以完全相同口径复现 seed 43）�
 
 | # | 任务 | 优先级 | 状态 |
 |---|---|---|---|
-| T1 | 回填 `experiment-log.md`：pre-fix 数值**直接覆盖**为 `_fixed`，不保留旧值 | P0 | 待办 |
-| T2 | 修正 β₂ 记录（标注无效 + 删无支撑结论，**不补跑实验**，用户已明确不重要） | P0 | 待办 |
+| T1 | 回填 `experiment-log.md`：pre-fix 数值**直接覆盖**为 `_fixed`，不保留旧值 | P0 | 远端 summary 已回收；字段级核对后覆盖 |
+| T2 | 修正 β₂ 记录（标注无效 + 删无支撑结论，**不补跑实验**，用户已明确不重要） | P0 | 历史口径已标记；数字覆盖随 T1 |
 | T3 | 用 `_fixed` 数据重生成全部图 | P0 | 待办 |
 | T4 | 修 `experiment-log.md` 结构（§10 重复、§5 缺失、90 行逐字重复） | P1 | 待办 |
-| T5 | 修 `ngram5_freq_gap/model.py` 的死 fallback → 指向 `code/train.py` | P1 | 待办 |
-| T6 | 补 M6 缺口（4x/5x/6x/8x）或显式限定结论覆盖范围 | P1 | 待用户拍板 |
+| T5 | 修 `ngram5_freq_gap/model.py` 的死 fallback → 指向 `code/train.py` | P1 | 已完成；绑定审阅且 pytest 26 项通过 |
+| T6 | 补 M6 缺口（4x/5x/6x/8x）或显式限定结论覆盖范围 | P1 | 历史缺口已显式限定；不再是当前 TODO |
 | T7 | full-163 线：脚本已删除，数据坐标入库 `docs/notes/data/full-corpus-full163.md` | — | ✅ 已解决 |
 | T8 | 长时程 no-ngram 对照（**缩小数据量前的保险**，不做缩小可缓跑） | P2 | 待办 |
 | T9 | 固定 train 采样集合的 loss 曲线（测 ρ，与 T8 可并行） | P2 | 待办 |

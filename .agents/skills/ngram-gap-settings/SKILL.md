@@ -20,15 +20,15 @@ differences from it in each run entry.
 | n-gram path | bigram + trigram at `input`; unigram and fourgram off |
 | table architecture | clean single full-width table, one layer and one hash per enabled branch |
 | clean-table R | outside a table-size experiment, `R_bigram = R_trigram = 2^20 = 1,048,576` |
-| backbone optimizer | AdamW `(0.8, 0.95)`, weight decay `0.1`, LR `0.004` |
-| table optimizer | RMSProp without momentum, `--table_betas 0.0,0.99`, `--table_lr_scale 2.0`; effective table LR `0.008` |
+| backbone optimizer | AdamW `(0.8, 0.95)`, weight decay `0.1`, LR `0.0006` |
+| table optimizer | RMSProp without momentum, `--table_betas 0.0,0.99`, `--table_lr_scale 128.0`; effective table LR `0.0768` |
 | data | fixed-order replay, data seed `42`, non-overlapping train and validation shards |
 | standard run | seed `42`, 1000 steps, bf16, no `torch.compile` |
 | primary measurement | online training-batch loss and fixed validation-batch loss |
 
 Always record `--lr_schedule warmup_constant --warmup_steps 100` explicitly.
-All new experiments linearly warm from 0.25×LR (`0.001` at the standard base
-LR) at step 1 to 1×LR (`0.004`) at step 100,
+All new experiments linearly warm from 0.25×LR (`0.00015` at the standard base
+LR) at step 1 to 1×LR (`0.0006`) at step 100,
 then hold LR fixed; this boundary does not move with epochs or total steps.
 They may not use warmdown. `warmdown` exists only to rerun a registered
 historical run. Zero-warmup `constant` is an optimizer diagnostic, not a

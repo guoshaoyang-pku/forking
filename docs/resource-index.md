@@ -59,7 +59,7 @@
 | over-encoding practical implications | notes/literature/overencoding-practical-implications.md | article-phase synthesis；机制推断与实验证据分开 |
 | citation PDF provenance | notes/literature/pdfs-manifest.tsv | 30 files with SHA-256；PDF collection remains review-only |
 | appendix C–H | plans/plan-6-appendix-structure.md | structure ready；C.4/H.1.3 已生成，正文缺口仍单列 |
-| figure inventory | figure-index.html / figure-index.json | 当前扫描 290 个可视化文件，含 current/outdated/orphan-review 分类 |
+| figure inventory | [figure-index.html](figure-index.html) / [figure-index.json](figure-index.json) | 当前扫描 290 个可视化文件，区分 referenced/outdated/orphan-review；referenced 仅表示被文档或命名引用，不等于科学验证 |
 
 ## 主线实验地图
 
@@ -75,18 +75,18 @@
 
 - 作图规则和数据源：docs/plot_scripts/README.md。
 - 当前图：docs/figs/main/、docs/figs/theory/、docs/figs/epoch_scale/。
-- 机器可读图片索引：docs/figure-index.html 与 docs/figure-index.json；生成/更新时需保留源脚本与 run_id。
+- 机器可读图片索引：[docs/figure-index.html](figure-index.html) 与 [docs/figure-index.json](figure-index.json)；生成/更新时需保留源脚本与 run_id。
 - 附录报告：docs/appendices/README.md。
 - 文献核实：docs/notes/literature/engram-benefit-baseline-survey-0912.md；实际影响分析：docs/notes/literature/overencoding-practical-implications.md。
 - 主开发仓库：/Users/guoshaoyang/Desktop/workdir/ngram-gap-lab。
 - 发布博客仓库：/Users/guoshaoyang/Desktop/workdir/guoshaoyang-pku.github.io。
-- ophis-gpu：/data3/guoshaoyang/ngram-gap-lab。
+- ophis-gpu：`/data4/guoshaoyang/ngram-gap-lab`（`/data/home` 为别名；以远端实际挂载为准）。
 - 360-1 / 360-2：/data/home/guoshaoyang/ngram-gap-lab。
 - 集群细则：docs/notes/data/cluster-infra.md。
 
 ## 清理与待决策
 
-- experiment-lines.md 的历史 T1–T12 与新论文 backlog 仍需合并成一张统一队列。
+- `docs/coordination/overnight-queue-20260913.md` 已提供统一队列；历史 T1–T12 仍保留在 experiment-lines 以维护溯源。
 - README、code/cluster/README.md 和部分旧 experiment-log section 曾保留旧 setting；历史数字不自动改写。
 - docs/figs/ 约 35 张 outdated、约 216 张 orphan，先归档/引用审查，再决定是否移动。
 - 本地 main 持续领先 origin/main（用 `git rev-list --count origin/main..HEAD` 获取实时数量）；citation PDF、临时脚本等未跟踪文件仍遵守 agents.md P5，未经决定不删除或 push。

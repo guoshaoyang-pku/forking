@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-09-13T01:15:33+08:00",
-  "commit": "32de8e2",
+  "generated_at": "2026-09-13T02:40:32+08:00",
+  "commit": "2ed03c8",
   "counts": {
-    "orphan-review": 119,
-    "current": 126,
-    "outdated": 45
+    "orphan-review": 123,
+    "referenced": 109,
+    "outdated": 58
   },
   "figures": [
     {
@@ -61,7 +61,7 @@
       "format": "png",
       "bytes": 262860,
       "category": "epoch_scale",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_epoch_aligned_figs.py"
       ],
@@ -338,7 +338,7 @@
       "format": "png",
       "bytes": 135586,
       "category": "epoch_scale",
-      "status": "current",
+      "status": "orphan-review",
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -356,7 +356,7 @@
       "format": "svg",
       "bytes": 92192,
       "category": "epoch_scale",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -376,7 +376,7 @@
       "format": "png",
       "bytes": 484257,
       "category": "epoch_scale",
-      "status": "current",
+      "status": "orphan-review",
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -394,7 +394,7 @@
       "format": "svg",
       "bytes": 1012160,
       "category": "epoch_scale",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -414,7 +414,7 @@
       "format": "png",
       "bytes": 146902,
       "category": "epoch_scale",
-      "status": "current",
+      "status": "orphan-review",
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -432,7 +432,7 @@
       "format": "svg",
       "bytes": 171456,
       "category": "epoch_scale",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -453,7 +453,7 @@
       "format": "png",
       "bytes": 240462,
       "category": "epoch_scale",
-      "status": "current",
+      "status": "orphan-review",
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -471,7 +471,7 @@
       "format": "svg",
       "bytes": 143482,
       "category": "epoch_scale",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -645,7 +645,7 @@
       "format": "svg",
       "bytes": 246200,
       "category": "epoch_scale",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_nogram_vs_epochaligned_figs.py"
       ],
@@ -1065,7 +1065,7 @@
       "format": "png",
       "bytes": 110894,
       "category": "root",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_ngram5_order5_figs.py"
       ],
@@ -1083,7 +1083,7 @@
       "format": "svg",
       "bytes": 202930,
       "category": "root",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_ngram5_order5_figs.py"
       ],
@@ -1104,7 +1104,7 @@
       "format": "png",
       "bytes": 211713,
       "category": "root",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_ngram5_order5_figs.py"
       ],
@@ -1122,7 +1122,7 @@
       "format": "svg",
       "bytes": 89556,
       "category": "root",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_ngram5_order5_figs.py"
       ],
@@ -1271,7 +1271,7 @@
       "format": "svg",
       "bytes": 86919,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py"
       ],
@@ -1293,7 +1293,7 @@
       "format": "svg",
       "bytes": 86743,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py"
       ],
@@ -1315,7 +1315,7 @@
       "format": "svg",
       "bytes": 132350,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/build_figure_index.py",
@@ -1344,7 +1344,7 @@
       "format": "html",
       "bytes": 799809,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1366,7 +1366,7 @@
       "format": "html",
       "bytes": 95270,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1388,7 +1388,7 @@
       "format": "svg",
       "bytes": 78716,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/build_figure_index.py",
@@ -1416,7 +1416,7 @@
       "format": "html",
       "bytes": 15362,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1436,7 +1436,7 @@
       "format": "html",
       "bytes": 15385,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1458,7 +1458,7 @@
       "format": "svg",
       "bytes": 47908,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1480,7 +1480,7 @@
       "format": "html",
       "bytes": 15362,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1502,7 +1502,7 @@
       "format": "svg",
       "bytes": 49112,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1522,7 +1522,7 @@
       "format": "svg",
       "bytes": 142325,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_all_figures.py"
       ],
@@ -1602,7 +1602,7 @@
       "format": "svg",
       "bytes": 206354,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1624,7 +1624,7 @@
       "format": "html",
       "bytes": 54428,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1646,7 +1646,7 @@
       "format": "svg",
       "bytes": 197093,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1722,7 +1722,7 @@
       "format": "png",
       "bytes": 223947,
       "category": "main",
-      "status": "current",
+      "status": "outdated",
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_nogram.py"
       ],
@@ -1742,7 +1742,7 @@
       "format": "png",
       "bytes": 102029,
       "category": "main",
-      "status": "current",
+      "status": "outdated",
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_nogram.py"
       ],
@@ -1762,7 +1762,7 @@
       "format": "png",
       "bytes": 141282,
       "category": "main",
-      "status": "current",
+      "status": "outdated",
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_nogram.py"
       ],
@@ -1782,7 +1782,7 @@
       "format": "png",
       "bytes": 128221,
       "category": "main",
-      "status": "current",
+      "status": "outdated",
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_nogram.py"
       ],
@@ -1802,7 +1802,7 @@
       "format": "png",
       "bytes": 126801,
       "category": "main",
-      "status": "current",
+      "status": "outdated",
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_nogram.py"
       ],
@@ -1856,7 +1856,7 @@
       "format": "png",
       "bytes": 169032,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/analyze_ls20ep_logit_sharpening.py"
       ],
@@ -1876,7 +1876,7 @@
       "format": "png",
       "bytes": 503277,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/analyze_ls20ep_logit_sharpening.py"
       ],
@@ -1934,7 +1934,7 @@
       "format": "png",
       "bytes": 215056,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -1954,7 +1954,7 @@
       "format": "png",
       "bytes": 61062,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_batch.py"
       ],
@@ -1975,7 +1975,7 @@
       "format": "png",
       "bytes": 423522,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -1995,7 +1995,7 @@
       "format": "png",
       "bytes": 63131,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_batch.py"
       ],
@@ -2017,7 +2017,7 @@
       "format": "png",
       "bytes": 288428,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -2035,7 +2035,7 @@
       "format": "png",
       "bytes": 38143,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_batch.py"
       ],
@@ -2057,7 +2057,7 @@
       "format": "png",
       "bytes": 201150,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_batch.py"
       ],
@@ -2078,7 +2078,7 @@
       "format": "png",
       "bytes": 191673,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -2098,7 +2098,7 @@
       "format": "png",
       "bytes": 140814,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2114,7 +2114,7 @@
       "format": "svg",
       "bytes": 96319,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2132,7 +2132,7 @@
       "format": "png",
       "bytes": 140375,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2148,7 +2148,7 @@
       "format": "svg",
       "bytes": 91428,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2166,7 +2166,7 @@
       "format": "png",
       "bytes": 202363,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -2186,7 +2186,7 @@
       "format": "png",
       "bytes": 119938,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_mask_high_threshold_scan.py"
       ],
@@ -2207,7 +2207,7 @@
       "format": "png",
       "bytes": 231966,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -2227,7 +2227,7 @@
       "format": "png",
       "bytes": 30762,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_batch.py"
       ],
@@ -2249,7 +2249,7 @@
       "format": "png",
       "bytes": 44438,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_batch.py"
       ],
@@ -2270,7 +2270,7 @@
       "format": "png",
       "bytes": 514551,
       "category": "main",
-      "status": "current",
+      "status": "outdated",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -2290,7 +2290,7 @@
       "format": "png",
       "bytes": 135579,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_beta099_gap_step1000.py"
       ],
@@ -2330,7 +2330,7 @@
       "format": "svg",
       "bytes": 17853,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_fig17_beta2_sweep.py"
       ],
@@ -2350,7 +2350,7 @@
       "format": "png",
       "bytes": 95683,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_blrv5_backbone_lr.py"
       ],
@@ -2387,7 +2387,7 @@
       "format": "png",
       "bytes": 207398,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2407,7 +2407,7 @@
       "format": "png",
       "bytes": 493187,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2428,7 +2428,7 @@
       "format": "png",
       "bytes": 84051,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2446,7 +2446,7 @@
       "format": "png",
       "bytes": 160133,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2467,7 +2467,7 @@
       "format": "png",
       "bytes": 573002,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2521,7 +2521,7 @@
       "format": "png",
       "bytes": 357800,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_fig01_injection_interactive.py",
         "docs/plot_scripts/plot_v5_registry_figures.py"
@@ -2542,7 +2542,7 @@
       "format": "png",
       "bytes": 216432,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2562,7 +2562,7 @@
       "format": "png",
       "bytes": 223917,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2582,7 +2582,7 @@
       "format": "html",
       "bytes": 360874,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_fig01_injection_interactive.py"
       ],
@@ -2674,7 +2674,7 @@
       "format": "png",
       "bytes": 279697,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_netval_benefit.py"
       ],
@@ -2692,7 +2692,7 @@
       "format": "svg",
       "bytes": 351591,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_netval_benefit.py"
       ],
@@ -2726,7 +2726,7 @@
       "format": "png",
       "bytes": 222000,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2747,7 +2747,7 @@
       "format": "png",
       "bytes": 537499,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2768,7 +2768,7 @@
       "format": "png",
       "bytes": 251291,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_readable.py"
       ],
@@ -2789,7 +2789,7 @@
       "format": "png",
       "bytes": 106538,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_conv.py"
       ],
@@ -2809,7 +2809,7 @@
       "format": "png",
       "bytes": 205239,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_conv.py"
       ],
@@ -2829,7 +2829,7 @@
       "format": "png",
       "bytes": 103596,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_conv.py"
       ],
@@ -2865,7 +2865,7 @@
       "format": "png",
       "bytes": 818139,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_readable.py"
       ],
@@ -2886,7 +2886,7 @@
       "format": "png",
       "bytes": 132782,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_readable.py"
       ],
@@ -2963,7 +2963,7 @@
       "format": "png",
       "bytes": 92891,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2986,7 +2986,7 @@
       "format": "png",
       "bytes": 138683,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -3009,7 +3009,7 @@
       "format": "png",
       "bytes": 143754,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_length_valid.py"
       ],
@@ -3027,7 +3027,7 @@
       "format": "svg",
       "bytes": 20971,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_length_valid.py"
       ],
@@ -3047,7 +3047,7 @@
       "format": "png",
       "bytes": 218146,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -3069,7 +3069,7 @@
       "format": "png",
       "bytes": 104883,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -3087,7 +3087,7 @@
       "format": "png",
       "bytes": 241178,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_staircase.py"
       ],
@@ -3105,7 +3105,7 @@
       "format": "png",
       "bytes": 153393,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_fig04_frequency_exact.py",
         "docs/plot_scripts/plot_v5_registry_figures.py"
@@ -3129,7 +3129,7 @@
       "format": "svg",
       "bytes": 176532,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_fig04_frequency_exact.py",
         "docs/plot_scripts/plot_v5_registry_figures.py"
@@ -3150,7 +3150,7 @@
       "format": "html",
       "bytes": 38219,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_fig04_frequency_exact.py"
       ],
@@ -3170,7 +3170,7 @@
       "format": "png",
       "bytes": 90954,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -3191,7 +3191,7 @@
       "format": "png",
       "bytes": 100142,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -3212,7 +3212,7 @@
       "format": "png",
       "bytes": 133342,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -3228,7 +3228,7 @@
       "format": "png",
       "bytes": 150372,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -3251,7 +3251,7 @@
       "format": "png",
       "bytes": 109386,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py",
         "docs/plot_scripts/plot_v5_fig06_table_size.py",
@@ -3277,7 +3277,7 @@
       "format": "png",
       "bytes": 166739,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py",
         "docs/plot_scripts/plot_v5_fig06_table_size.py",
@@ -3301,7 +3301,7 @@
       "format": "png",
       "bytes": 118029,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py",
         "docs/plot_scripts/plot_v5_fig06_table_size.py"
@@ -3325,7 +3325,7 @@
       "format": "svg",
       "bytes": 55792,
       "category": "main",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py",
         "docs/plot_scripts/plot_v5_fig06_table_size.py"
@@ -3472,7 +3472,7 @@
       "format": "svg",
       "bytes": 112690,
       "category": "short_epoch_b2",
-      "status": "current",
+      "status": "outdated",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -3559,7 +3559,7 @@
       "format": "svg",
       "bytes": 169565,
       "category": "table_opt",
-      "status": "current",
+      "status": "outdated",
       "scripts": [
         "docs/plot_scripts/build_figure_index.py",
         "docs/plot_scripts/fig_beta2_lr_curves.py"
@@ -3602,7 +3602,7 @@
       "format": "svg",
       "bytes": 109125,
       "category": "table_opt",
-      "status": "current",
+      "status": "outdated",
       "scripts": [
         "docs/plot_scripts/fig_beta2_lr_curves.py"
       ],
@@ -3684,7 +3684,7 @@
       "format": "svg",
       "bytes": 131281,
       "category": "table_opt",
-      "status": "current",
+      "status": "outdated",
       "scripts": [
         "docs/plot_scripts/analyze_table_opt.py",
         "docs/plot_scripts/analyze_table_opt_1x_vs_2x.py",
@@ -3731,7 +3731,7 @@
       "format": "svg",
       "bytes": 179200,
       "category": "table_opt",
-      "status": "current",
+      "status": "outdated",
       "scripts": [
         "docs/plot_scripts/analyze_table_opt_1x_vs_2x.py"
       ],
@@ -3775,7 +3775,7 @@
       "format": "svg",
       "bytes": 352648,
       "category": "table_opt",
-      "status": "current",
+      "status": "outdated",
       "scripts": [
         "docs/plot_scripts/analyze_table_opt_2x.py",
         "docs/plot_scripts/build_figure_index.py"
@@ -3888,7 +3888,7 @@
       "format": "svg",
       "bytes": 86810,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -3923,7 +3923,7 @@
       "format": "svg",
       "bytes": 89190,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -3959,7 +3959,7 @@
       "format": "svg",
       "bytes": 57868,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -4060,7 +4060,7 @@
       "format": "svg",
       "bytes": 159829,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_l6_residual_response.py"
       ],
@@ -4128,7 +4128,7 @@
       "format": "svg",
       "bytes": 131520,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -4373,7 +4373,7 @@
       "format": "svg",
       "bytes": 140255,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4411,7 +4411,7 @@
       "format": "svg",
       "bytes": 204298,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4431,7 +4431,7 @@
       "format": "svg",
       "bytes": 11775,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_theory_rbar_support_fig.py"
       ],
@@ -4523,7 +4523,7 @@
       "format": "png",
       "bytes": 98155,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4561,7 +4561,7 @@
       "format": "png",
       "bytes": 150981,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_theory_x1x2_verdict_figs.py"
       ],
@@ -4581,7 +4581,7 @@
       "format": "svg",
       "bytes": 76881,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_theory_x1x2_verdict_figs.py"
       ],
@@ -4601,7 +4601,7 @@
       "format": "png",
       "bytes": 53178,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_theory_x1x2_verdict_figs.py"
       ],
@@ -4621,7 +4621,7 @@
       "format": "svg",
       "bytes": 37416,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/gen_theory_x1x2_verdict_figs.py"
       ],
@@ -4641,7 +4641,7 @@
       "format": "svg",
       "bytes": 79927,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_toy_model_blog_figs.py"
       ],
@@ -4661,7 +4661,7 @@
       "format": "svg",
       "bytes": 68710,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/build_toy_model_blog_figs.py"
       ],
@@ -4681,7 +4681,7 @@
       "format": "svg",
       "bytes": 61163,
       "category": "theory",
-      "status": "current",
+      "status": "outdated",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -4789,7 +4789,7 @@
       "format": "png",
       "bytes": 413627,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_dilution_surface.py"
       ],
@@ -4828,7 +4828,7 @@
       "format": "png",
       "bytes": 221382,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_kernel_dynamics.py"
       ],
@@ -4848,7 +4848,7 @@
       "format": "svg",
       "bytes": 107371,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_kernel_dynamics.py"
       ],
@@ -4866,7 +4866,7 @@
       "format": "png",
       "bytes": 595868,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_kernel_rescale.py"
       ],
@@ -4884,7 +4884,7 @@
       "format": "svg",
       "bytes": 683867,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_kernel_rescale.py"
       ],
@@ -4902,7 +4902,7 @@
       "format": "png",
       "bytes": 348230,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/analyze_v5_f_by_pass_table.py"
       ],
@@ -4920,7 +4920,7 @@
       "format": "png",
       "bytes": 283170,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/plot_v5_good_turing_kernel.py"
       ],
@@ -5012,7 +5012,7 @@
       "format": "png",
       "bytes": 366951,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/analyze_v5_cosine_margin_posthoc.py",
         "docs/plot_scripts/plot_v5_table_cosine_margin.py"
@@ -5037,7 +5037,7 @@
       "format": "png",
       "bytes": 237892,
       "category": "theory",
-      "status": "current",
+      "status": "referenced",
       "scripts": [
         "docs/plot_scripts/analyze_v5_val_damage_vs_missing_mass.py"
       ],
@@ -5408,7 +5408,7 @@
       "format": "svg",
       "bytes": 53552,
       "category": "toy",
-      "status": "current",
+      "status": "referenced",
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
