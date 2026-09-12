@@ -5,7 +5,7 @@ This status file records what was actually executed in the current worktree. It 
 | wave | queue IDs | execution status | evidence |
 |---|---|---|---|
 | Wave 0 | D20, D21, D22, D23, D24 | **partially executed** | Appendix C.4 coverage report, H.1.3 run index, figure index, untracked-resource audit |
-| Wave 0 | D1, D2, D4, D5, D7, D8, D10, D11, D13, D14, D25, D26, D27 | **planned / awaiting owner** | Queue remains authoritative; no completion is inferred |
+| Wave 0 | D1, D2, D4, D5, D7, D8, D10, D11, D13, D14, D25, D26, D27 | **mixed: D14/D26 done; D1/D10/D11/D13/D27 partial or gated** | Queue remains authoritative; no completion is inferred |
 | Wave 1 | D6, D12, D16, D17, D19 | **preflight completed; execution gated** | Remote checks in remote-preflight-20260913.md; 360-2 idle but code MD5 differs |
 | Wave 2 | D16, D17, D19 | **not started** | Requires authorized code sync, fresh registration, GPU ownership and data-overlap checks |
 | Wave 3 | D3, D9, D15, D18 | **blocked / gated** | P5 authorization or upstream result dependency |
@@ -30,14 +30,14 @@ Read-only SSH checks succeeded for `ophis-gpu`, `360-1`, and `360-2`. At check t
 
 - **Log structure (D13/T4)**: the duplicate top-level §10 was repaired by renumbering the “基础实验统计与图表归档” section to §5 and updating its registry pointer (`22397bd`). Numeric/data cleanup and paragraph-level duplicate review remain open.
 
-- **T5/model binding**: source review confirms `model.py` targets repository `code/train.py` or a launcher-synced copy and has no external fallback. Runtime import is verified on `ophis-gpu` using its project environment and resolves to `/data4/guoshaoyang/ngram-gap-lab/code/train.py`; local import is blocked by missing `numpy`, and pytest is unavailable on both checked environments. D14 remains partial until tests run.
+- **T5/model binding**: source review confirms `model.py` targets repository `code/train.py` or a launcher-synced copy and has no external fallback. Runtime import is verified on `ophis-gpu` using its project environment and resolves to `/data4/guoshaoyang/ngram-gap-lab/code/train.py`; the isolated local environment now runs the complete ngram5 suite (26 passed). D14 is done.
 
 - **Literature/PDF provenance**: `docs/notes/literature/pdfs-manifest.tsv` now checksums 30 local PDFs. The synthesis `overencoding-practical-implications.md` and CPU analysis script remain untracked pending owner review; the QR and scratch Mermaid files remain explicitly temporary.
 - **Validation**: all newly added Python generators and the untracked CPU analysis script pass `py_compile`; `git diff --check` passes. Full pytest remains unavailable because this environment has no `pytest` module (and model import also needs `numpy`).
 
-- **Validation / publication (D26/D27)**: `bash -n` passes for the three active launchers; `py_compile` passes for new generators and the CPU analysis script; figure index regenerated at 290 figures / 79 scripts. Full pytest and runtime model import remain blocked by missing `pytest` and `numpy`. Local `main` remains ahead of `origin/main` (verify with `git rev-list --count origin/main..HEAD`); no push was attempted.
+- **Validation / publication (D26/D27)**: `bash -n`, `py_compile`, launcher fixture, README/resource link audit, and pytest (26 passed) all pass; figure index regenerated at 290 figures / 79 scripts with referenced/outdated/orphan-review labels. Local `main` remains ahead of `origin/main`; no push was attempted.
 
-- **Fixed-data audit (D10/D11)**: local `data` is a dangling symlink to an unavailable Extreme SSD path; zero local `_fixed` summaries are discoverable. Numerical log backfill is therefore stalled and no numbers were guessed or overwritten. Evidence: `docs/coordination/fixed-data-availability-audit-20260913.md`.
+- **Fixed-data audit (D10/D11)**: local `data` is a dangling symlink, but remote `_fixed` summaries have been recovered. Numerical overwrite remains pending field-level config/log comparison; no numbers were guessed or overwritten. Evidence: `docs/coordination/remote-summary-recovery-20260913.md`.
 
 - **T4/D13**: top-level log contents index generated at `docs/coordination/experiment-log-toc.md`; the duplicate §10 heading was repaired, while historical `§21`/`§24` aliases are intentionally preserved.
 
