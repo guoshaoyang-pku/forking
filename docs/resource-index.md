@@ -27,6 +27,7 @@
 | 机器可读 dispatch manifest | [coordination/overnight-dispatch-manifest.json](coordination/overnight-dispatch-manifest.json) | 每项 owner、依赖、并行性、验收和 P5 门槛；不表示后台 agent 已启动 |
 | 飞书 marker 审计脚本 | [coordination/refresh_feishu_backlog_audit.py](coordination/refresh_feishu_backlog_audit.py) | 只读刷新两份 wiki 的 revision、checksum 和 unresolved marker；不写回云端 |
 | 飞书写回草案 | [coordination/feishu-writeback-proposal-20260913.md](coordination/feishu-writeback-proposal-20260913.md) | 两页 append-only 局部插入方案；需用户批准后执行 |
+| blog source audit | [coordination/blog-source-audit-20260913.md](coordination/blog-source-audit-20260913.md) | 本地 report 与 blog target 当前字节级一致；review draft 尚未发布 |
 | 导航链接检查 | [coordination/check_navigation_links.py](coordination/check_navigation_links.py) | 扫描 5 个导航文件的相对链接；当前 `checked=24 missing=0` |
 | launcher 口径审计 | coordination/launcher-setting-audit-20260913.md | canonical baseline 与历史/变体 launcher 分开；不自动执行 |
 
