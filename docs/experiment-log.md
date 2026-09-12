@@ -10,7 +10,7 @@
 |---|---|---|---|---|---|
 | `blrabs_{input,nogram}_lr*_tlr0p0768_*` | 2026-08-31 | **纯 backbone LR 扫描：绝对 table LR 锁定 0.0768（14 run）** | ✅ done（§42 已回填） | 结果与时间常数见 §42 | §42 |
 | `blrv5_{input,nogram}_lr{0p0001..0p0040}` | 2026-08-30 | **耦合 LR 扫描（原误标 backbone-only；12 run）** | ⚠️ done but confounded | scale=128 导致绝对 table LR 0.0128→0.512；不得作纯 backbone 因果结论 | §39、§42 |
-| `s1v5_128_epfx_tri_{2p0,3p0,4p0}xL4_3ep` | 2026-08-31 | **V5 epoch 长度轴修复批（多 shard 真实池，trigram 单支路）** | ✅ done | 1.955/1.519/1.267；U 形确认为 wrap 假象 | §40 |
+| `s1v5_128_epfx_tri_{2p0,3p0,4p0}xL4_3ep` | 2026-08-31 | **V5 epoch 长度轴修复批（多 shard 真实池，trigram 单支路）** | ✅ done | 1.955/1.519/1.267；延续真实长度段单调下降，旧 U 形为 wrap 假象 | §40 |
 | `s1v5_128_ep_tri_1xL4_20ep` / `s1v5_128_ep1xL4_20ep_{both,nogram}` | 2026-08-31 | **V5 20-epoch 长 replay 批（shard-1 池 ×20 遍，tri-only / both / nogram 三臂）** | ✅ done（§41 已回填） | tri/both/nogram 20ep 边界与撤回平台外推见 §41 | §41 |
 | `causalv5m3_hash_reseed_e2{,e3}` | 2026-08-31 | **V5 二次 reseed 判决批（2022 步 6 pass：e2 单次 vs e2+e3 双次 reseed）** | ✅ done（§41 已回填） | e2/e2e3 终点与判决见 §41 | §41 |
 | `optv5h_rms_b099_s2p0_warmstart0p1` | 2026-08-26 | V5 warmup 起始倍率 · 0.1× | ✅ done | +1.504498 @1000 | §31 |
@@ -2719,8 +2719,9 @@ gap 形状。以 L4（337 batches/epoch）为单位给出 12 个倍数点：
 train/val/gap 全部有限。比较 3-epoch 阵列时只在 epoch 1/2/3 对齐；长训
 单独画 epoch-indexed gap trajectory，并将 no-gram 与 both 同图。
 
-回填结果：12 个 3-epoch 点的 final gap 呈 U 形，从 `4.417`（0.125×L4）
-下降至 `2.728`（1.0×L4）后回升至 `5.661`（2.0×L4）。L4 的 10-epoch
+历史回填结果：12 个 3-epoch 点曾被读作 U 形，从 `4.417`（0.125×L4）
+下降至 `2.728`（1.0×L4）后回升至 `5.661`（2.0×L4）；该读法已由 §40
+及后续 ep2 修订判定为 wrap-around/pass 数混杂。L4 的 10-epoch
 长训中，both 从 step 337 的 `−0.058` 增长到 step 3370 的 `8.917`；
 no-gram 同期为 `−0.042` 到 `0.480`，因此长训曲线单独解释，不与 3-epoch
 横向阵列混合。
