@@ -3943,3 +3943,34 @@ pass 2 起 CE 在归一化优化器（AdamW/RMSProp：步长不随梯度缩小�
 **最终修复（ep2，commit 9d200376）**：新建 shard 65=shard 2 前 ¼（83 batch）、66=shard 2 前 ¾（249 batch，chunk-slice md5 校验）；train = 真语料前缀 {1,65}/{1,61}/{1,66}/{1,2}（420/505/586/670 batch）；freq 索引按 train 集重建（freq_index_train1_25x/1_75x 覆盖为正确内容，train1_5x/train2x_fine 沿用）；val 按约定逐点收缩（1.25/1.5/1.75x → 3..10,6542；2x → 4..10,6542）。12 个新 run `s1v5_128_{y,v,input}_ep2_{1p25x,1p5x,1p75x,2x}L4_3ep`（ophis）。≤1x 的 8 个点为合法 nested-prefix，保留（旧 ep 组命名）；旧 input 臂 ep_1p25x–2x 四点带 reuse bug，仅作历史记录。
 
 **事故记录**：360 集群缺 `diag_worker.py`（fast-diag 管线依赖，2026-09-01 起标准）导致首批 44 run 训完在诊断阶段崩，已清理全部 partial、补同步并核对三机 md5 后重跑；360-1 GPU7 间歇性 OOM（同卡 6 run 无声失败，nvidia-smi 无 ECC pending），已弃用该卡并在 360-2 全量重跑 v_tbl；ophis GPU0 残留冒烟进程致 R16000 OOM，已隔离补跑。冒烟 `nglab_smoke_ml`（30 步）跳过登记。
+
+## §53 · 置信度极化探针 + 20-epoch logit-sharpening 直接验证（2026-09-12，planned→running）
+
+**动机**：§5.2 提出 logit 锐化机制——low-frequency context 上概率质量向 train 中见过的 continuation 集中，novel continuation 被系统性压低，且随 epoch/pass 线性加剧。此前仅有 loss 侧间接证据（margin 增长、novel 伤害），缺 softmax 分布的直接观测。本实验为 §5.2 + §7 补充实验提供 per-token confidence polarization 的直接测量。
+
+**实现**（commit `383fdf6`，md5 已核对 ophis-gpu）：
+- 新 CLI flag `--logit_stats`（默认关）。开启时在现有 diag_due 节奏（每 10 步）对 val batches 做额外 bf16 forward，计算 per-token softmax 熵 H(p)、top1−top2 margin、p(y_true)、top-20 (token_id, prob)。
+- CPU 异步聚合（`diag_worker.py` 扩展 `logit_job` 协议）：按 (branch × f_bucket × seen/novel) 聚合 mean/count。f_bucket = [0,1,2-3,4-7,8-15,16-63,64-255,256+]；seen/novel = hit>0/==0，与 exact-freq 管线口径一致。
+- ~64 固定 exemplar context（highF-seen/lowF-seen/lowF-novel 三象限各 16/16/32，从 val shards 确定性挑选），每次 eval dump 完整 top-20 softmax 分布。
+- 输出 `logit_stats.jsonl`：agg 行（每 step 每 branch 1 行，~500B）+ exemplar 行（每 step ~64 行，~300B/行）。smoke 100 步产出 396 行 / ~120KB，体积可控。
+- **回归**：flag 关闭时 forward/loss 逐位不变（独立 forward 路径）；flag 开启时 train loss 曲线与关闭时一致（探针只读不写梯度）；f_bucket/seen-novel 聚合与 exact_freq 在同一 fixture 上数字对得上（smoke 验证 novel f0 count 正确）。
+
+**Setting**（严格 = 主线契约，唯一变量 = injection_position + logit_stats 开启）：
+input 注入 / clean 单表 R=2^20 bigram+trigram / RMSProp(0.0,0.99) / table_lr_scale 128 / backbone AdamW 6e-4 warmup_constant(100) / bf16 无 compile / seed 42 / train shard 1 fixed replay / val shards 2,3,4,5,6,7,8,9,10,6542 / steps=6740（20 epoch，1 epoch=337 步）/ val 与探针每 10 步。nogram 对照同样开探针路径以保持可比（nogram 无 branch 维度则聚合到全 token，但代码仍分 bigram/trigram 两支提交，hit_count 全 0 → 全入 novel f0 桶）。
+
+**发射记录**：
+
+| run_id | arm | GPU | 机器 | 启动时间 | 状态 | 预计完成 |
+|---|---|---|---|---|---|---|
+| `ls20ep_input_v5_128x_fd` | input | 4 | ophis-gpu | 2026-09-12 11:39 | running | ~60-80 min |
+| `ls20ep_nogram_v5_128x_fd` | nogram | 5 | ophis-gpu | 2026-09-12 11:39 | running | ~60-80 min |
+
+**验收条件**：
+1. `summary.json` 存在且 `final_gap` 合理（input ~5-6，nogram ~0.2-0.3）。
+2. `logit_stats.jsonl` 非空，agg 行覆盖 step 10..6740，exemplar 行每 step ~64 条。
+3. 核心预测验证：low-f novel 桶的 mean_margin 随 epoch 单调增长；high-f seen 桶的 mean_ptrue 随 epoch 增长；exemplar top-20 分布从均匀→尖峰。
+4. train loss 曲线与历史同 setting run（如 `nglab1x_input_v5_128x_freq10_fd` 前 2k 步）重叠（确认探针对训练无影响）。
+
+**Smoke 证据**（`smoke_logit_stats_100_fixed`，GPU6，100 步）：
+- logit_stats.jsonl 396 行，首条 agg @ step 10 bigram：novel f0 count=25401, mean_entropy=8.34, mean_margin=0.016；seen f256+ count=294237, mean_margin=0.042（高频更自信，符合预期）。
+- exemplar dump 正常：hit_count=269 的 bigram context top20_probs=[0.0196, 0.0152, ...]（早期均匀）；hit_count=4251 的 top20_probs=[0.0879, 0.0190, ...]（高频已显尖峰）。
