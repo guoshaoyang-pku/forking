@@ -581,7 +581,9 @@ launcher `code/cluster/run_table_opt_2x.sh`（train shards 1,2 / val 3..10,6542 
 **产物**：数据 `data/runs/nglab1x_opt_rmsprop_4x{,_b2_099,_b2_098}/`（已同步本地）；
 launcher `code/cluster/run_table_opt_2x.sh` 风格。
 
-## 10. shard 大小扫描（epoch 长度剂量，2026-08-07，彻夜批）
+## 10. shard 大小扫描（epoch 长度剂量，2026-08-07，历史快照）
+
+> **历史状态说明（2026-09-13）**：本节保留当时的回填过程和原始数值，供 provenance 使用。其“待补”和“用户假设成立”措辞已由后续 v3/epfix 与 S1 v5 证据取代；当前 epoch-length 结论以 §40、§53 及 `experiment-lines.md` 为准。
 
 目的：用户假设「epoch 的 shard 越大，gap 越小」。§6/§7 已有 0.5x/1x/2x 三个点
 （gap@2000 = 4.95 / 1.96 / 0.50），本批**连续采样 shard 大小**补 9 个点，
@@ -616,7 +618,7 @@ launcher `code/cluster/run_table_opt_2x.sh` 风格。
 > 已含 shard 3 → fixed val 前几批与 train 重叠（val 被剧透），gap 偏负
 > （2.5x=−0.80 / 3x=−0.71 / 4x=−0.27 @2000）。已停，改 `_v2`（val 从最后一个 train shard 之后开始）。
 
-### 结果（gap@2000，首批 9 点已回填；2.5x/3x/4x 为 v2 重跑，待补）
+### 结果（gap@2000，历史首批快照；后续 v2/v3 结果见下方完整回填）
 
 | size | run | gap@2000 | epoch@2000 |
 |---|---|---|---|
@@ -630,7 +632,7 @@ launcher `code/cluster/run_table_opt_2x.sh` 风格。
 | 6x | `nglab6x_input_fv` | −0.11 | 2 |
 | 8x | `nglab8x_input_fv` | +0.03 | 2 |
 
-**结论（用户假设成立）**：epoch shard 越大，gap@2000 单调变小——
+**历史结论（已由后续协议修订限定）**：epoch shard 越大，gap@2000 单调变小——
 0.25x→8x：+13 → +5 → +2 → +0.5 → ~0（≥5x 在 2000 步内只走 ~2 个 epoch，gap 尚未形成）。
 0.25–2x 段呈近似幂律（log-log 斜率约 −1.5~−2）。
 
@@ -2793,7 +2795,7 @@ rows `R` 对 1000-step online gap 的影响。这直接对应旧 `ctbl_*` 单表
 
 | run_id 模式 | 数量 | 状态 | 结果目录 |
 |---|---:|---|---|
-| `s1v5_128_ep_tri_{mult}xL4_3ep` | 12 | ✅ done；U 形：1.0×L4 最低 2.469，0.125×=3.552、2.0×=5.582 | `data/runs_scaling/` |
+| `s1v5_128_ep_tri_{mult}xL4_3ep` | 12 | ✅ done；≤1×L4 真长度段 3.552→2.469；>1×L4 旧点为 wrap-around replay/pass 数，旧 U 形读法作废 | `data/runs_scaling/` |
 | `s1v5_128_ep_tri_1xL4_10ep` | 1 | ✅ done；gap@3370 = 8.675 | `data/runs_scaling/` |
 | `s1v5_128_ep_tri_1xL4_10ep_nogram` | 1 | ✅ done；gap@3370 = 0.455 | `data/runs_scaling/` |
 
