@@ -33,7 +33,7 @@ Read-only SSH checks succeeded for `ophis-gpu`, `360-1`, and `360-2`. At check t
 - **T5/model binding**: source review confirms `model.py` targets repository `code/train.py` or a launcher-synced copy and has no external fallback. Runtime import is verified on `ophis-gpu` using its project environment and resolves to `/data4/guoshaoyang/ngram-gap-lab/code/train.py`; the isolated local environment now runs the complete ngram5 suite (26 passed). D14 is done.
 
 - **Literature/PDF provenance**: `docs/notes/literature/pdfs-manifest.tsv` now checksums 30 local PDFs. The synthesis `overencoding-practical-implications.md` and CPU analysis script remain untracked pending owner review; the QR and scratch Mermaid files remain explicitly temporary.
-- **Validation**: all newly added Python generators and the untracked CPU analysis script pass `py_compile`; `git diff --check` passes. Full pytest remains unavailable because this environment has no `pytest` module (and model import also needs `numpy`).
+- **Validation**: all newly added Python generators and the untracked CPU analysis script pass `py_compile`; `git diff --check` passes. The isolated local environment provides pytest, numpy, and torch; the complete ngram5 suite passes 26 tests.
 
 - **Validation / publication (D26/D27)**: `bash -n`, `py_compile`, launcher fixture, README/resource link audit, and pytest (26 passed) all pass; figure index regenerated at 290 figures / 79 scripts with referenced/outdated/orphan-review labels. Local `main` remains ahead of `origin/main`; no push was attempted.
 
