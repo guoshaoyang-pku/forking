@@ -191,8 +191,8 @@ batch 72×2048、2000 步、seed 42（并以完全相同口径复现 seed 43）�
 | T5 | 修 `ngram5_freq_gap/model.py` 的死 fallback → 指向 `code/train.py` | P1 | 已完成；绑定审阅且 pytest 26 项通过 |
 | T6 | 补 M6 缺口（4x/5x/6x/8x）或显式限定结论覆盖范围 | P1 | 历史缺口已显式限定；不再是当前 TODO |
 | T7 | full-163 线：脚本已删除，数据坐标入库 `docs/notes/data/full-corpus-full163.md` | — | ✅ 已解决 |
-| T8 | 长时程 no-ngram 对照（**缩小数据量前的保险**，不做缩小可缓跑） | P2 | 待办 |
-| T9 | 固定 train 采样集合的 loss 曲线（测 ρ，与 T8 可并行） | P2 | 待办 |
-| T10 | 缩小单 epoch 数据量以放大 gap（**唯一必须等 T8 的动作**） | P2 | 等 T8 |
+| T8 | 长时程 no-ngram 对照（**缩小数据量前的保险**，不做缩小可缓跑） | P2 | 已有 `nglab1x_nogram_long_v5_fixed` 8000-step 候选；曲线/协议复核开放 |
+| T9 | 固定 train 采样集合的 loss 曲线（测 ρ，与 T8 可并行） | P2 | 已有 `nglab{1,2}x_input_rho_v5_fixed` 候选；fixed-probe 语义与 host 冲突复核开放 |
+| T10 | 缩小单 epoch 数据量以放大 gap（**唯一必须等 T8 的动作**） | P2 | S1 epoch-length 阵列已覆盖相邻问题；重新注册协议前不启动 |
 | T11 | 工程整理：`RUNS_DIR` 环境变量化、抽 `table_opt_common.py`、包改名 | P3 | 随手做 |
 | T12 | 干预机制已接线（CLI + 主循环 + `run_causal_minimal.sh`） | P1 | 代码就绪，待 GPU 实跑 |
