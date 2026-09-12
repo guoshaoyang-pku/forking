@@ -46,3 +46,5 @@ Read-only SSH checks succeeded for `ophis-gpu`, `360-1`, and `360-2`. At check t
 - **Unified TODO matrix**: `docs/coordination/todo-completion-matrix-20260913.md` reconciles Feishu, local plans, and queue states item by item. It keeps open, partial, stalled, gated, and locally done states separate.
 
 - **Remote summary recovery**: small `summary.json` files from 360-2 were mirrored to `/tmp/ngram_gap_remote_summaries/` (223 files, 721734 bytes) and indexed in `remote-summary-inventory-360-2-20260913.csv`. No checkpoint, shard, or table was copied.
+
+- **T8/T9 candidate qualification**: `docs/coordination/candidate-run-protocol-audit-20260913.md` records field-level evidence from ophis/360-1/360-2. T8 has an 8000-row complete no-gram log and is usable only as host-scoped endpoint evidence. T9 summaries explicitly contain a four-batch fixed probe with a shared hash and 10-step interval, but the 360-2 1x log is incomplete (12 rows), while 2x endpoints disagree and both use historical 2x table LR. Neither candidate is promoted to current 128x evidence.
