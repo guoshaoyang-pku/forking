@@ -19,6 +19,7 @@
 | 飞书↔本地 TODO 差异 | coordination/feishu-local-diff-20260913.md | 最新 revision、未解决项与云端写入边界 |
 | TODO 完成矩阵 | coordination/todo-completion-matrix-20260913.md | 飞书与本地 backlog 的逐项当前状态 |
 | 整晚 TODO 队列 | coordination/overnight-queue-20260913.md | 飞书 + 本地 TODO 的统一排程 |
+| 远端 summary 证据 | coordination/remote-summary-recovery-20260913.md、remote-summary-cross-host-audit-20260913.md | 仅小型 summary.json；跨主机重复 ID 保留原样，未合并 |
 
 ## 代码入口
 
