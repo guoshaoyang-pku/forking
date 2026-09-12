@@ -87,4 +87,4 @@
 - experiment-lines.md 的历史 T1–T12 与新论文 backlog 仍需合并成一张统一队列。
 - README、code/cluster/README.md 和部分旧 experiment-log section 曾保留旧 setting；历史数字不自动改写。
 - docs/figs/ 约 35 张 outdated、约 216 张 orphan，先归档/引用审查，再决定是否移动。
-- 本地有 57 个未 push commits，以及 citation PDF、临时脚本等未跟踪文件；push、删除和大文件处置遵守 agents.md P5。
+- 本地有 60 个未 push commits，以及 citation PDF、临时脚本等未跟踪文件；push、删除和大文件处置遵守 agents.md P5。
