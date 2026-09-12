@@ -1,87 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
-<title id="title">Three alternative n-gram injection routes around a Transformer computation</title>
-<desc id="desc">A Transformer computation frame contains Q, K, V projection, causal self-attention and MLP. Three independent green n-gram blocks connect before QKV, to V before attention, or after attention before MLP. The next Transformer block is outside the frame.</desc>
-<defs>
-  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f8f6f0"/><stop offset="1" stop-color="#ece9e0"/></linearGradient>
-  <linearGradient id="ng" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dcefe7"/><stop offset="1" stop-color="#c5e2d6"/></linearGradient>
-  <linearGradient id="core" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffdf8"/><stop offset="1" stop-color="#f1eee6"/></linearGradient>
-  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#27343a" flood-opacity=".13"/></filter>
-  <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#56636a"/></marker>
-  <marker id="dashArrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#267461"/></marker>
-  <style>
-    .title{font:600 32px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;fill:#18242a;letter-spacing:.2px}
-    .subtitle{font:400 16px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;fill:#66747a}
-    .label{font:600 18px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;fill:#1c292f}
-    .small{font:400 14px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;fill:#66747a}
-    .route{font:600 15px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;fill:#267461}
-    .node{fill:url(#core);stroke:#59676d;stroke-width:1.5}
-    .ngram{fill:url(#ng);stroke:#267461;stroke-width:2}
-    .frame{fill:#ffffff;fill-opacity:.34;stroke:#9aa5a5;stroke-width:1.5;stroke-dasharray:7 7}
-    .solid{fill:none;stroke:#56636a;stroke-width:3;stroke-linecap:round;marker-end:url(#arrow)}
-    .dashed{fill:none;stroke:#267461;stroke-width:2.5;stroke-linecap:round;stroke-dasharray:9 8;marker-end:url(#dashArrow)}
-  </style>
-</defs>
-<rect width="1600" height="900" fill="url(#bg)"/>
-<text x="80" y="72" class="title">Three alternative n-gram injection routes</text>
-<text x="80" y="106" class="subtitle">One route per run · vanilla Transformer computation · hash-table mechanics omitted from this architecture view</text>
-
-<!-- route-specific modules -->
-<g filter="url(#shadow)">
-  <rect x="84" y="250" width="300" height="128" rx="18" class="ngram"/>
-  <rect x="84" y="430" width="300" height="128" rx="18" class="ngram"/>
-  <rect x="84" y="610" width="300" height="128" rx="18" class="ngram"/>
-</g>
-<text x="234" y="292" text-anchor="middle" class="label">n-gram block</text>
-<text x="234" y="319" text-anchor="middle" class="small">bigram + trigram</text>
-<text x="234" y="350" text-anchor="middle" class="route">input route</text>
-<text x="234" y="472" text-anchor="middle" class="label">n-gram block</text>
-<text x="234" y="499" text-anchor="middle" class="small">bigram + trigram</text>
-<text x="234" y="530" text-anchor="middle" class="route">V route</text>
-<text x="234" y="652" text-anchor="middle" class="label">n-gram block</text>
-<text x="234" y="679" text-anchor="middle" class="small">bigram + trigram</text>
-<text x="234" y="710" text-anchor="middle" class="route">y route</text>
-
-<!-- token path -->
-<rect x="470" y="390" width="214" height="74" rx="14" class="node" filter="url(#shadow)"/>
-<text x="577" y="421" text-anchor="middle" class="label">Token + position</text>
-<text x="577" y="447" text-anchor="middle" class="small">representation xₗ</text>
-
-<!-- main computation frame -->
-<rect x="760" y="180" width="650" height="500" rx="26" class="frame"/>
-<text x="795" y="224" class="small">TRANSFORMER COMPUTATION</text>
-<text x="795" y="251" class="label">Attention → MLP</text>
-
-<rect x="835" y="325" width="230" height="90" rx="15" class="node" filter="url(#shadow)"/>
-<text x="950" y="362" text-anchor="middle" class="label">Q, K, V projection</text>
-<text x="950" y="389" text-anchor="middle" class="small">input enters here</text>
-
-<rect x="1110" y="325" width="230" height="90" rx="15" class="node" filter="url(#shadow)"/>
-<text x="1225" y="362" text-anchor="middle" class="label">Causal self-attention</text>
-<text x="1225" y="389" text-anchor="middle" class="small">V is consumed here</text>
-
-<rect x="1110" y="510" width="230" height="90" rx="15" class="node" filter="url(#shadow)"/>
-<text x="1225" y="547" text-anchor="middle" class="label">MLP</text>
-<text x="1225" y="574" text-anchor="middle" class="small">y route enters before this</text>
-
-<!-- solid backbone arrows -->
-<path d="M684 427 H835" class="solid"/>
-<path d="M1065 370 H1110" class="solid"/>
-<path d="M1225 415 V510" class="solid"/>
-
-<!-- route arrows -->
-<path d="M384 314 C500 314 560 350 835 350" class="dashed"/>
-<text x="552" y="300" text-anchor="middle" class="route">add before QKV</text>
-
-<path d="M384 494 C560 494 760 405 1110 390" class="dashed"/>
-<text x="690" y="456" text-anchor="middle" class="route">add to V before attention</text>
-
-<path d="M384 674 C620 674 845 570 1110 560" class="dashed"/>
-<text x="730" y="643" text-anchor="middle" class="route">add after attention, before MLP</text>
-
-<!-- next block outside frame -->
-<path d="M1225 600 V755" class="solid"/>
-<rect x="1082" y="770" width="286" height="70" rx="15" class="node" filter="url(#shadow)"/>
-<text x="1225" y="812" text-anchor="middle" class="label">Next Transformer block</text>
-
-<text x="80" y="820" class="small">The three green modules are route-specific alternatives; a single experimental run activates one route only.</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820" role="img" aria-labelledby="title desc">
+<title id="title">Three alternative n-gram injection routes</title>
+<desc id="desc">One Transformer computation frame contains Q, K, V projection, causal self-attention and MLP. Three independent green n-gram blocks connect before QKV, to V before attention, or after attention before MLP. The next Transformer block is outside the frame.</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#56636a"/></marker><marker id="ga" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#236b70"/></marker><style>.title{font:600 27px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;fill:#202020}.subtitle{font:400 15px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;fill:#686d73}.label{font:600 17px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;fill:#202020}.small{font:400 14px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;fill:#686d73}.route{font:600 14px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;fill:#236b70}.core{fill:#f3f0e8;stroke:#383838;stroke-width:1.4}.ngram{fill:#dce9e5;stroke:#236b70;stroke-width:1.8}.frame{fill:none;stroke:#9b9b91;stroke-width:1.4;stroke-dasharray:7 7}.solid{fill:none;stroke:#56636a;stroke-width:2.4;stroke-linecap:round;marker-end:url(#a)}.dashed{fill:none;stroke:#236b70;stroke-width:2.1;stroke-linecap:round;stroke-dasharray:8 7;marker-end:url(#ga)}</style></defs>
+<rect width="1400" height="820" fill="#faf9f5"/><text x="70" y="58" class="title">Three alternative n-gram injection routes</text><text x="70" y="86" class="subtitle">One route per run · vanilla Transformer computation · hash-table mechanics omitted</text>
+<rect x="70" y="170" width="260" height="112" rx="10" class="ngram"/><rect x="70" y="340" width="260" height="112" rx="10" class="ngram"/><rect x="70" y="510" width="260" height="112" rx="10" class="ngram"/>
+<text x="200" y="207" text-anchor="middle" class="label">n-gram block</text><text x="200" y="233" text-anchor="middle" class="small">bigram + trigram</text><text x="200" y="263" text-anchor="middle" class="route">input route</text><text x="200" y="377" text-anchor="middle" class="label">n-gram block</text><text x="200" y="403" text-anchor="middle" class="small">bigram + trigram</text><text x="200" y="433" text-anchor="middle" class="route">V route</text><text x="200" y="547" text-anchor="middle" class="label">n-gram block</text><text x="200" y="573" text-anchor="middle" class="small">bigram + trigram</text><text x="200" y="603" text-anchor="middle" class="route">y route</text>
+<rect x="410" y="348" width="210" height="72" rx="9" class="core"/><text x="515" y="378" text-anchor="middle" class="label">Token + position</text><text x="515" y="402" text-anchor="middle" class="small">representation xₗ</text>
+<rect x="690" y="145" width="560" height="485" rx="16" class="frame"/><text x="720" y="180" class="small">TRANSFORMER COMPUTATION</text><rect x="750" y="325" width="210" height="78" rx="9" class="core"/><text x="855" y="357" text-anchor="middle" class="label">Q, K, V projection</text><text x="855" y="381" text-anchor="middle" class="small">input enters here</text><rect x="1015" y="325" width="210" height="78" rx="9" class="core"/><text x="1120" y="357" text-anchor="middle" class="label">Causal self-attention</text><text x="1120" y="381" text-anchor="middle" class="small">V is consumed here</text><rect x="1015" y="485" width="210" height="78" rx="9" class="core"/><text x="1120" y="517" text-anchor="middle" class="label">MLP</text><text x="1120" y="541" text-anchor="middle" class="small">y route enters before this</text>
+<path d="M620 384H750" class="solid"/><path d="M960 364H1015" class="solid"/><path d="M1120 403V485" class="solid"/><path d="M330 226C460 226 520 325 750 350" class="dashed"/><text x="520" y="215" text-anchor="middle" class="route">add before QKV</text><path d="M330 396C520 396 700 386 1015 380" class="dashed"/><text x="665" y="370" text-anchor="middle" class="route">add to V before attention</text><path d="M330 566C570 566 760 525 1015 525" class="dashed"/><text x="680" y="555" text-anchor="middle" class="route">add after attention, before MLP</text>
+<path d="M1120 563V700" class="solid"/><rect x="975" y="710" width="290" height="62" rx="9" class="core"/><text x="1120" y="748" text-anchor="middle" class="label">Next Transformer block</text><text x="70" y="755" class="small">The three green modules are independent alternatives; a single run activates one route only.</text></svg>

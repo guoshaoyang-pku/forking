@@ -4001,3 +4001,5 @@ input 注入 / clean 单表 R=2^20 bigram+trigram / RMSProp(0.0,0.99) / table_lr
 图的语义与主线代码一致：input route 在 QKV projection 之前加到输入表示；V route 在 causal self-attention 之前加到完整 value stream（不是 top-k V）；y route 在 attention 之后、MLP 之前加到 attention output。gate、residual/LayerNorm 细节、hash table 和 frequency index 不进入主架构图，统一留给附录伪代码。该图为结构资产，无 run_id、step 或 seed；实验数值图仍按 P4/P7 记录证据坐标。
 
 图片索引已由 `python3 docs/plot_scripts/build_figure_index.py` 重建（当前扫描 290 个可视化文件、78 个脚本），图卡包含源脚本、数据/集群声明和文档引用。
+
+**图稿修订记录（2026-09-12）**：首版 SVG 使用了渐变、阴影和过大的标题层级，与已确认的 Mermaid 风格不一致；已按用户复核改回平面、低装饰版本（米色主干节点、绿色 n-gram 方块、细边框和虚线注入箭头）。飞书文档中的旧图片块已删除并替换为修订版，当前图片 block 为 `doxcnFSgbcg9oNyyo8Lp16CO8vf`。
