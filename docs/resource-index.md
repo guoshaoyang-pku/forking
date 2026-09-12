@@ -63,7 +63,7 @@
 | sharpening vs CE 图 | figs/main/fig_ls20ep_sharpening_vs_ce.png；figs/main/fig_ls20ep_exemplar_evolution.png | current |
 | over-encoding baseline survey | notes/literature/engram-benefit-baseline-survey-0912.md | current；Engram-style reproduction NO-GO 已记录 |
 | citation libraries | notes/literature/citations/ | current；core / credit 分开 |
-| over-encoding practical implications | notes/literature/overencoding-practical-implications.md | article-phase synthesis；机制推断与实验证据分开 |
+| over-encoding practical implications | notes/literature/overencoding-practical-implications.md | untracked article-phase synthesis；混合证据/机制推断/推测，citation review 后再纳入主引用 |
 | citation PDF provenance | notes/literature/pdfs-manifest.tsv | 30 files with SHA-256；PDF collection remains review-only |
 | appendix C–H | plans/plan-6-appendix-structure.md | structure ready；C.4/H.1.3 已生成，正文缺口仍单列 |
 | figure inventory | [figure-index.html](figure-index.html) / [figure-index.json](figure-index.json) | 当前扫描 290 个可视化文件，区分 referenced/outdated/orphan-review；referenced 仅表示被文档或命名引用，不等于科学验证 |
