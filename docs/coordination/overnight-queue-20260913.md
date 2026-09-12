@@ -27,7 +27,7 @@
 | D10 | local T1 | _fixed 数值回填 experiment-log | 远端 summaries 已回收；字段级 config/log 仍需核对后再覆盖 | partial (remote evidence) |
 | D11 | local T2 | β₂ bug 记录清理 | 已完成历史口径标记与替代线说明；数字覆盖仍依赖 D10 核对 | partial |
 | D12 | local T3 | _fixed 图重生成 | 审计脚本 roots 和 fixtures，只重跑可验证图 | ready, fixture gate |
-| D13 | local T4 | experiment-log 结构整理 | 编号修复、标题审阅和目录刷新完成；数字/表格 review 仍开放 | audit complete / cleanup partial |
+| D13 | local T4 | experiment-log 结构整理 | 编号修复、标题审阅、目录刷新和 active/history 状态审计完成；数字/表格 review 仍开放 | audit complete / numeric review open |
 | D14 | local T5 | ngram5 fallback / bug audit | model.py 绑定已审阅；隔离环境 pytest 26 项通过 | done (runtime/unit QC) |
 | D15 | local T6 | M6 大 shard 或限定结论 | 写补跑和限定范围两种方案，不擅自执行 | needs-user-decision |
 | D16 | local T8 | 8k–10k no-ngram 长程基线 | 360-1 候选有 8000 行完整 train_log、train/val 不重叠、seed 42；可作为 host-scoped 长程 endpoint，但仍需代码 md5 与曲线人工复核 | evidence candidate / review open |

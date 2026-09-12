@@ -32,7 +32,7 @@
     {"id": "D10", "owner": "data-audit", "parallel": true, "depends_on": [], "status": "partial_conflict_audit", "acceptance": "host-scoped config/log match; no blind overwrite"},
     {"id": "D11", "owner": "data-audit", "parallel": true, "depends_on": ["D10"], "status": "partial", "acceptance": "historical beta2 separated from current SSOT"},
     {"id": "D12", "owner": "plotting", "parallel": true, "depends_on": ["data_mount"], "status": "fixture_gate", "acceptance": "real JSONL-backed regeneration and source/run links"},
-    {"id": "D13", "owner": "docs", "parallel": true, "depends_on": ["D10"], "status": "cleanup_partial", "acceptance": "historical/current labels and no numeric provenance loss"},
+    {"id": "D13", "owner": "docs", "parallel": true, "depends_on": ["D10"], "status": "numeric_review_open", "acceptance": "active/history audit complete; historical/current labels and no numeric provenance loss"},
     {"id": "D14", "owner": "qa", "parallel": true, "depends_on": [], "status": "done_local", "acceptance": "26 ngram5 tests plus compile/shell checks"},
     {"id": "D15", "owner": "experiment", "parallel": false, "depends_on": ["user_choice"], "status": "historically_bounded", "acceptance": "run missing points or explicitly narrow claim"},
     {"id": "D16", "owner": "experiment", "parallel": true, "depends_on": ["D10","md5"], "status": "candidate_review_open", "acceptance": "T8 host-scoped endpoint or newly registered current run"},
