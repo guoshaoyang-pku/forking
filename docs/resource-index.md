@@ -2,7 +2,7 @@
 
 > 文章阶段的资源总表。这里记录去哪里找和能不能作为当前证据，不复制实验数字。
 
-更新时间：2026-09-12。权威 setting、冲突处理和安全边界仍以 agents.md 为准。
+更新时间：2026-09-13。权威 setting、冲突处理和安全边界仍以 agents.md 为准。
 
 ## 先按问题找入口
 
@@ -51,8 +51,8 @@
 | sharpening vs CE 图 | figs/main/fig_ls20ep_sharpening_vs_ce.png；figs/main/fig_ls20ep_exemplar_evolution.png | current |
 | over-encoding baseline survey | notes/literature/engram-benefit-baseline-survey-0912.md | current；Engram-style reproduction NO-GO 待拍板 |
 | citation libraries | notes/literature/citations/ | current；core / credit 分开 |
-| appendix C–H | plans/plan-6-appendix-structure.md | structure ready；部分提取表待生成 |
-| figure inventory | notes/figure-inventory-0912.md | current snapshot；约 278 张，含 orphan/outdated 分类 |
+| appendix C–H | plans/plan-6-appendix-structure.md | structure ready；C.4/H.1.3 已生成，正文缺口仍单列 |
+| figure inventory | figure-index.html / figure-index.json | 当前扫描 290 个可视化文件，含 current/outdated/orphan-review 分类 |
 
 ## 主线实验地图
 
@@ -82,4 +82,4 @@
 - experiment-lines.md 的历史 T1–T12 与新论文 backlog 仍需合并成一张统一队列。
 - README、code/cluster/README.md 和部分旧 experiment-log section 曾保留旧 setting；历史数字不自动改写。
 - docs/figs/ 约 35 张 outdated、约 216 张 orphan，先归档/引用审查，再决定是否移动。
-- 本地有 25 个未 push commits，以及 citation PDF、临时脚本等未跟踪文件；push、删除和大文件处置遵守 agents.md P5。
+- 本地有 39 个未 push commits，以及 citation PDF、临时脚本等未跟踪文件；push、删除和大文件处置遵守 agents.md P5。
