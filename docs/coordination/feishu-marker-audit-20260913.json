@@ -1,0 +1,199 @@
+{
+  "generated_by": "docs/coordination/refresh_feishu_backlog_audit.py",
+  "sources": {
+    "todo": {
+      "url": "https://gcnsa0liqppq.feishu.cn/wiki/G4KKwHMWriuHDOkARHCcHWBenwc",
+      "revision_id": 2335,
+      "bytes": 59947,
+      "sha256": "85aa2b6101b8f39431c07fdf389b7e5b916c012899c71be8a3339ff9f54d33ac",
+      "marker_count": 27,
+      "markers": [
+        {
+          "line": 17,
+          "text": "| §5 理论与预测 | 放在干预之后。回答两个问题：频率形状从何而来；replay 为什么产生并持续放大 gap。以 novel continuation 的缺失质量、logit 锐化和局部状态划分组织会议模型，逐项说明假设与证据；最后给可验证预测。表容量、epoch 长度、学习率关系中尚未完成的推导明确留作待核。 |"
+        },
+        {
+          "line": 29,
+          "text": "**epoch 数、epoch 长度与学习率不等价。**重复既有样本、更换为更多独立数据、增大单次更新强度改变的条件不同。拉长 epoch 还会降低未见续接质量、使低频桶迁移、改变总步数；同一 context 出现更多次不必然重访同一局部实例。F→kF 的归一化积分目前是待核推导，应明确权重、频率分布和动力学幅度，不能直接作为已验证的缩放定律。来源：[§5.4 及新增积分式](https://gcnsa0liqppq.feishu.cn/wiki/G4KKwHMWriuHDOkARHCcHWBenwc#doxcnUfXsxRsfIJDoeXhWAjSeNg)；M2:L16–104。"
+        },
+        {
+          "line": 37,
+          "text": "- [ ] 完成按行文顺序的中文初稿，先修事实和论证，再精修英文；压缩重复的发现故事与教程式实现说明，避免无信息量的“不……而……”式过渡。"
+        },
+        {
+          "line": 39,
+          "text": "- [ ] 将频率／表容量／epoch 长度图集中前置，将 mask 移入干预段；核对 none/no-gram 图例、图注、阈值、冻结／reseed 边界和对应 run。正文图数尚未最终确定。"
+        },
+        {
+          "line": 41,
+          "text": "- [ ] 补 gap(i,j) 的定义及对应证据图；统一 F、缺失质量、条件伤害、raw/net gap 与绝对 val 伤害的统计口径。"
+        },
+        {
+          "line": 43,
+          "text": "- [ ] 核对频率指数是否由数据分布决定、几何衰减与近线性的对应、epoch-length 积分，以及手写损失公式。现有计划与 blog 的长程／epoch-length 口径差异回到代码、run 和图源处理。"
+        },
+        {
+          "line": 45,
+          "text": "- [ ] 收敛更换基座／DeepSeek-like 和冻结表 SFT 两条实验的最小 setting、对照与预算，再共同 review；不把构造中的预测标记成已完成结果。"
+        },
+        {
+          "line": 47,
+          "text": "- [ ] 按英文模板预览篇幅、图位和主文／附录分配；最终数字和普适性主张以核验后的证据为准。"
+        },
+        {
+          "line": 91,
+          "text": "- **贡献**：(i) 自动发现与因果定位；(ii) 极简复现 + 频率因果（mask 干预）+ 三个幂律标定（频率、表大小、epoch 长度）；(iii) 最小理论统一解释幂律与多 epoch 动力学，并给出可验证的缩放预言；(iv) 对大模型 memory 模块与后训练的警示（DeepSeek-like 检验进行中；MiniMax M2.5 型失配的机制预言）。"
+        },
+        {
+          "line": 206,
+          "text": "和 table 相关的幂律关系。假如 table 撞车了，novel 有可能会被废掉？【待补充】【这个不重要，是上面的自然推论】"
+        },
+        {
+          "line": 214,
+          "text": "对出现了 F 次的 context，随机采样采到一个没见过的 continuation 的概率是幂律（Good–Turing 缺失质量）：$f(i)\\propto F(i)^{-\\alpha}$。所以频率 bin 的平均 gap 呈幂律。实测证据：g(f) 与 C·M(f) 对齐（图 4-7）、val 伤害 ∝ 缺失质量 M_f（图 4-8）、novel continuation 占 gap 大头（图 6-2）。与表大小相关的幂律（collision 可能废掉 novel 行）是上面的自然推论【待补充定量】。epoch length 的预言（所有 F→kF 后积分平均，各项 k^−α）见 §5.4。"
+        },
+        {
+          "line": 231,
+          "text": "实测闭合：f=1 环境 margin +1.08/pass、传递系数 1−p̂≈0.87、novel val 伤害 +0.94/pass；20 遍 gap 线性 0.664/pass（图 6-1）【几何衰减与线性增长的精确对应待核】。"
+        },
+        {
+          "line": 272,
+          "text": "**后训练风险（马嘉祺预言）**：大模型后训练时 over-encoding 模块通常被 frozen，而且只有后训练会有多 epoch 训练——这正是子空间里多次相干迭代的条件：即使表被冻结，backbone 仍可在子空间里反复强化/压低特定 continuation，n-gram 子空间里更容易发生「记忆」。我们要构造「马嘉祺」：假如某实体（马嘉祺）被 over-encoding、预训练分布合理，SFT 中反复写「马嘉祺 xx」，训练几遍之后，测试「马嘉祺 vv」的 loss 就会爆炸——xx 与 vv 共享 context 子空间，对 xx 的相干更新直接压低 vv。真实世界的对应物是 MiniMax M2.5 事件（token 覆盖不足 → lm_head 低频行漂移，「知识在、生成丢」；表架构下对应 context 端子空间失配）。风险矩阵见图 8-1。【实验进行中：更换基座模型复现 + SFT 场景构造】"
+        },
+        {
+          "line": 306,
+          "text": "局限：单 seed（128× 主线，43/44 复现进行中）；1x shard 极端 replay；vocab 8192 / 8 层小模型；seen/novel 账目只在 bigram 分支闭合；epoch length 的定量积分与几何/线性对应未完成；更换基座与 SFT 构造实验进行中（合作者）。"
+        },
+        {
+          "line": 353,
+          "text": "- **待办**：学弟 = 更换基座模型复现 + SFT 马嘉祺构造（用本文档让 AI 构造，一起 review）；seed 43/44 复现（128×，各约 15 min）；mask_high 按 f≥t 语义重刷；gap–f 斜率 −0.25/−0.32 是普适还是数据分布属性待定；几何衰减 vs 线性增长的对应待核；epoch length 定量积分待补；§2.1 shard/步数数字待对 OPHIS 原始记录核实。"
+        },
+        {
+          "line": 388,
+          "text": "以下任务由 subagent 阵列于今日 11:20–11:40 并行派发执行，随后由主 agent 逐份复核交付物并回收集群实验；14:40–15:10 回收两个 20-epoch 探针 run 并完成登记表回填。所有数字可溯源到 run_id / step / seed。表末「未启动」项等待分配。"
+        },
+        {
+          "line": 394,
+          "text": "| 2 · engram/overencoding baseline 调研 | ✅ 完成（NO-GO 推荐待拍板） | docs/notes/literature/engram-benefit-baseline-survey-0912.md | f791f5d |"
+        },
+        {
+          "line": 399,
+          "text": "| 3 · 写人话与符号统一 | ⬜ 未启动 | — | — |"
+        },
+        {
+          "line": 400,
+          "text": "| 4 · 分活 handoff（shanbin / haoran） | ⬜ 未启动（handoff 文档可随时起草） | — | — |"
+        },
+        {
+          "line": 401,
+          "text": "| 6 · V4.1-Flash SFT 攻击实验 | ⬜ 未启动（按批注优先级低于 perplexity 证明） | — | — |"
+        },
+        {
+          "line": 443,
+          "text": "### 待办 2 · 别的 overencoding 系统是否也降 PPL：文献核实与 go/no-go"
+        },
+        {
+          "line": 445,
+          "text": "结论：「overencoding 降 held-out PPL」在新鲜数据、iso-compute regime 证据扎实（与我们 1a 的早期窗口互证）；但 replay regime 下无人测过（我们是第一个），且四篇来源均未测 entropy / margin / calibration / seen-novel 分解——后者正是待办 1b 的新颖性锚点。推荐 NO-GO：不在 nanoGPT 复现 Engram-style 臂（需引入 gate/conv/RMSNorm 违反 P1 极简；benefit 证据已三源饱和；forking 与具体实现正交；1–2 人日仅换边际外部效度），留作 revision contingency。此项待拍板。"
+        },
+        {
+          "line": 469,
+          "text": "### 未启动项与交接坐标"
+        },
+        {
+          "line": 471,
+          "text": "- [ ] 待办 3 · 全文写人话与符号约定统一（属主写作线，等你与学弟排期）"
+        },
+        {
+          "line": 473,
+          "text": "- [ ] 待办 4 · 分活 handoff：shanbin（实验 prototype 细化、图片美化、autoresearch/transformer 引入引用），haoran（数学美化 §5）；两份 handoff 文档我可直接起草，确认后即出"
+        },
+        {
+          "line": 475,
+          "text": "- [ ] 待办 6 · V4.1-Flash SFT 攻击：未启动。前置与风险——engram 表约 189 GiB，跨集群搬运超 1GB 需你先同意（P5）；需提取低频 context 的 continuation 分布，再做有/无 engram 推理＋蒸馏对照；按你的批注优先级低于 perplexity 证明，建议独立进程或合作者承接"
+        },
+        {
+          "line": 477,
+          "text": "交接坐标速查：run 为 ls20ep_input_v5_128x_fd 与 ls20ep_nogram_v5_128x_fd（ophis-gpu GPU4/5，已跑完，本地 data/runs_fixed/）；commit 链 20291a3→f6a8708→383fdf6→309217b→f791f5d→e5f8994→7c054b4→745fc62→c446dec→330089f（均本地未 push）；集群 ophis-gpu 公网可达、360-2 可达、360-1 本轮未测。下一步建议：把图 H-1/H-2 填进飞书 v2 §5.2 与 appendix G.2.1；裁决七个决策点（图片 5 项＋Engram go/no-go＋benefit 瞬态的论文表述）。"
+        }
+      ]
+    },
+    "paper": {
+      "url": "https://gcnsa0liqppq.feishu.cn/wiki/Lyr3wfH8FiIWT6kdQmrc6dGUnEf",
+      "revision_id": 1082,
+      "bytes": 64465,
+      "sha256": "2677d783f1602716fc12a0350d2cd3e9692f40d0ba714c163ae08f6531708b38",
+      "marker_count": 17,
+      "markers": [
+        {
+          "line": 147,
+          "text": "和 table 相关的幂律关系。假如 table 撞车了，novel 有可能会被废掉？【待补充】【这个不重要，是上面的自然推论】"
+        },
+        {
+          "line": 172,
+          "text": "实测闭合：f=1 环境 margin +1.08/pass、传递系数 1−p̂≈0.87、novel val 伤害 +0.94/pass；20 遍 gap 线性 0.664/pass（图 6-1）【几何衰减与线性增长的精确对应待核】。 备用引用：[17] 独立复现 PPL 大降而下游持平，与锐化-伤害解耦互证；[14] 梯度下降隐式偏置作锐化方向参照。"
+        },
+        {
+          "line": 205,
+          "text": "［待补：多 epoch 动力学的解析预测及实测对齐；区分有限窗口中的近线性累计、增量衰减和长期平台，给出模型失效的观测条件。］"
+        },
+        {
+          "line": 211,
+          "text": "［待补：学习率—步数—相干更新强度的关系、表侧饱和区间与 backbone 响应曲线；区分已有经验结果和仍未由模型推出的部分。］"
+        },
+        {
+          "line": 217,
+          "text": "［待补：按验证 token 质量加权的积分表达、频率分布改变时的修正，以及固定步数／固定 pass 的配对验证。］"
+        },
+        {
+          "line": 227,
+          "text": "# 7 · 补充实验（预留）"
+        },
+        {
+          "line": 229,
+          "text": "本节预留两项补充实验，用于检验机制的跨结构适用性与后训练风险。有限续接覆盖、局部预测环境和重复强化提供共同的检验线索，但不预设任意模型均会复现同样的现象。"
+        },
+        {
+          "line": 231,
+          "text": "## 7.1 DeepSeek-like 模型的复现与干预（预留）"
+        },
+        {
+          "line": 235,
+          "text": "可进一步比较低频屏蔽和熵正则等候选措施，评价其是否保留原有训练收益并改善绝对 val loss；这些是待验证的方案，不预设对具体模型已有净收益。［待补：基座与模块版本、与标准 setting 的对应、复现曲线、干预图表及适用边界。］"
+        },
+        {
+          "line": 237,
+          "text": "## 7.2 小数据 SFT 压力测试（预留）"
+        },
+        {
+          "line": 263,
+          "text": "［待补：SFT 数据构造、冻结与可训练对照、目标／替代续接的概率变化及整体能力评估。上述画板保留为待验证的风险设计；本节结论及 §8 中对应的后训练讨论，以实际实验支持为准。］"
+        },
+        {
+          "line": 305,
+          "text": "# Appendix（结构预留）"
+        },
+        {
+          "line": 388,
+          "text": "［待补：代码版本、CLI、数据划分、online / fixed-probe、raw / net gap、F / f 映射和完整统计账目。］"
+        },
+        {
+          "line": 445,
+          "text": "# 本次修改记录与待核项（2026-09-08）"
+        },
+        {
+          "line": 459,
+          "text": "- v1 中 MiniMax M2.5 事件的具体机制归因未获本轮核实，不能作为本文机制的证据；新 Section 8 未采用这一外部事件。历史“实验进行中”也不代表本轮核准了实时进度。"
+        },
+        {
+          "line": 463,
+          "text": "**同日补充修订（2026-09-08）。**按后续要求合并 §2 的 n-gram 与 Over-Encoding 介绍，补入数学工具相关文献 [13]–[15]；适度补清 §3–§7 的测量口径、因果解释、数学假设、可检验预测与 SFT 协议，并更正正文两处标准单目标交叉熵写法。§8.3 改为围绕实测频率幂律及条件续接长尾的可能解释。前一轮记录保留为历史记录，其中交叉熵等部分待核项已在本轮处理；原有图表、历史数值和其余提纲尚未全面复核，最终公式、图表与实验结论仍由绍阳确认。本轮没有开展或宣称完成新实验。Introduction、标题、§2 其余段落、§8 其余小节、附录及既有参考文献均未改动；v1、plan.md、英文 TeX 和 Overleaf 未同步修改。"
+        },
+        {
+          "line": 465,
+          "text": "**后半部分结构调整（2026-09-08）。**将原 §5.4 的预测与验证独立为新 §6，依次组织 replay、学习率、唯一数据／epoch 长度及容量／干预收益；原 §6 的跨模型与后训练内容归入新 §7，分为 DeepSeek-like 和小数据 SFT 两项补充实验预留。原 §7 的工作总结并入 §8 开头，局限并入 §8.6；原 §8 五个讨论方向保留。净验证收益段落及配图移入 §6.4，SFT 风险画板保留在 §7.2；只移动原生资源块，未重建或修改图像和画板内容。正文的相关章节引用随之调整，其他章节、v1、本地 plan.md 和 TeX 未同步修改。"
+        }
+      ]
+    }
+  }
+}
