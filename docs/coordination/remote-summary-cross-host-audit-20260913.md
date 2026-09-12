@@ -39,3 +39,9 @@ There are 33 run IDs present on multiple hosts; 33 have differing summary hashes
 - s1v5_128_v_tbl_bi1_R5_fixed: 3602 gap=0.030238211154937744 sha=1eb9fcd1a3; 3601 gap=0.029300987720489502 sha=7470d0c677
 - s1v5_128_v_tbl_bi1_R675000_fixed: 3602 gap=1.2530893087387085 sha=7d73a87b22; 3601 gap=1.1771023273468018 sha=2a70b7f1d9
 - s1v5_128_v_tbl_bi1_R76000_fixed: 3602 gap=0.2286614179611206 sha=f853ddd0e6; 3601 gap=0.2289952039718628 sha=3689fe4c1e
+
+## 字段级重复 ID 判决（2026-09-13 continuation）
+
+对 `/tmp/ngram_gap_remote_summaries_all2/{ophis,3601,3602}` 中重复的 33 个 `_fixed` ID 做了 JSON 字段级比较。结果不是简单的路径差异：多数 S1 table-size 与 causal mask 重复项的 `final_gap`、`final_train_loss`、`final_val_loss` 均不同；`nglab2x_input_rho_v5_fixed` 还显示两份配置虽主超参相同，但数据路径不同且仍是历史 `table_lr_scale=2.0`、train shard `[1,2]`。
+
+因此当前规则是：重复 ID 按 host 保留，不能合并或取平均；在拿到对应 `config.json`、`train_log.jsonl` 和 commit/md5 之前，不把任一份提升为唯一权威，也不覆盖 `experiment-log.md`。这批 summary 只能支持 host-scoped endpoint evidence。
