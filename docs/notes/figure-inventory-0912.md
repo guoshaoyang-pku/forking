@@ -2,7 +2,7 @@
 
 > 盘点范围：`docs/figs/` 全部图片 + `docs/report/` 三份 HTML + 飞书初稿 v2 (LQjudLhhpoThlQxShb8cwuGSnkb)
 > 标准依据：`agents.md` §1 极简 setting（128× table LR、v5 clean 表、warmup_constant(100)、fast-diag `_fd` 口径）
-> 状态定义：**current** = 当前标准可直接用 | **outdated** = 旧标准需重绘 | **broken** = 脚本/数据缺失 | **orphan** = 未被任何文档引用 | **missing** = 文档引用但文件不存在
+> 历史盘点状态定义：**current** = 当时人工判断可直接用 | **outdated** = 旧标准需重绘 | **broken** = 脚本/数据缺失 | **orphan** = 未被任何文档引用 | **missing** = 文档引用但文件不存在。当前机器生成索引使用 `referenced`/`outdated`/`orphan-review`；`referenced` 只表示引用关系，不等于科学验证。
 
 ---
 
@@ -141,7 +141,7 @@
 
 ## Orphan 图片（未被任何文档引用）
 
-共 ~216 张图片未被 index.html / experiment-registry.html / clean-data-report.html / 飞书初稿 引用。
+共 ~216 张图片未被 index.html / experiment-registry.html / clean-data-report.html / 飞书初稿 引用（2026-09-12 人工快照；当前生成索引请以 `docs/figure-index.json` 为准）。
 
 主要类别：
 1. **epoch_scale/ 大量 sweep 中间产物** (~30张)：fig_sweep_*, gap_vs_epoch_*, shard_curve_* 等
