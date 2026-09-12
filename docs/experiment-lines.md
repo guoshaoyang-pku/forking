@@ -56,7 +56,7 @@
 | **X2** | clean 表行宽扫描 | 同步改变 bigram/trigram row width `d`，观察 gap 是否向 no-gram 塌缩 | `ctbl_dim{192,48,12}_input_v5`；d=768 复用基线 | `run_v5_clean.sh` | `gen_theory_x1x2_verdict_figs.py` | `figs/theory/` | §28 | ✅ 完成；step-1000 final gap=0.803/0.364/0.157 |
 | **M8** | replay 读出动力学 | gap 跨 pass 增长主要依赖继续写表，还是 backbone 逐轮学会读表 | `causalv5m3_*` | `V5_GROUP=causal_dynamics run_v5_main_manifest.sh` | `plot_v5_epoch_kernel_dynamics.py`（配套 10-epoch replay） | `figs/theory/` | §38 | ✅ 7/7 done @2022；freeze-backbone e1/e2/e3 gap=1.585/2.505/3.389，对照 5.733；freeze-table e2 保留 93.95% |
 | **M9** | backbone LR × 固定绝对 table LR | 去掉旧扫描中 table LR 随 `--lr` 共变的混淆；检验动力学时间尺度与平衡位置 | `blrabs_{input,nogram}_*` | `run_v5_backbone_lr_abslock.sh`（跨 ophis/360-2 直接并行） | `plot_v5_backbone_lr_epoch_dynamics.py` | `figs/theory/fig_v5_backbone_lr_{epoch_dynamics,recurrence_diagnostics}.{png,svg}` | §42 | ✅ 14/14 done + QC；table LR 恒为 0.0768；同 dose 不折叠，pass 数是独立状态变量；一阶平台参数仅为窗口内外推 |
-| **M10** | freeze 四因子长程 + pass 混匀 | 两状态模型硬预言：e2 全冻结后 gap 应停长；3 pass 全局混匀 vs 分块 replay 终点是否不变 | `ffqv5_freeze_{table,backbone,both}_e2_10ep`；`mixv5_tri_{replay,mixed}_3pass` | `GROUP={ffq,mix} run_v5_128x_rerun.sh`（360-2） | 待回填后定 | `figs/theory/` | §45 | 🚀 running（2026-09-01 起，360-2 GPU 0/1/2 + 4/5） |
+| **M10** | freeze 四因子长程 + pass 混匀 | 两状态模型硬预言：e2 全冻结后 gap 应停长；3 pass 全局混匀 vs 分块 replay 终点是否不变 | `ffqv5_freeze_{table,backbone,both}_e2_10ep`；`mixv5_tri_{replay,mixed}_3pass` | `GROUP={ffq,mix} run_v5_128x_rerun.sh`（360-2） | §45.1–§45.3 已回填；summary 位于远端 runs_fixed | `figs/theory/` | §45 | ✅ done；5/5 `_fixed` summaries；freeze_both final gap 3.0759（冻结后不变），mix 终点 2.4738 vs 2.2880 |
 
 **历史 M6 的缺口已不再是当前待办**：§12 的「对齐 epoch 后单调关系消失」仍只由
 8/12 个旧点支撑；缺失的大 shard 端（4x/5x/6x/8x）不补入当前证据，结论仅作
