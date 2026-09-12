@@ -3993,3 +3993,11 @@ input 注入 / clean 单表 R=2^20 bigram+trigram / RMSProp(0.0,0.99) / table_lr
 4. **novel 份额口径定案**：freq_bin val 的 novel frac 与模型无关——bigram 4.31% / trigram 31.30%；benefit-side-measurements-0912.md §4.1 的 4.31% 是 bigram-only、§4.2 的 17.80% 是双 branch 平均 ((4.31+31.30)/2)，非分布漂移。
 
 **产物**：`docs/appendices/ls20ep_logit_stats/{agg_epoch_boundary.csv, freqbin_val_ce_epoch_boundary.csv, exemplars_selected.csv}`；图 `docs/figs/main/fig_ls20ep_sharpening_vs_ce.png`、`fig_ls20ep_exemplar_evolution.png`（appendix G.2.1 素材）；完整 `logit_stats.jsonl`（31MB/臂）留 `data/runs_fixed/`（gitignored），仓库只存 epoch 边界聚合。
+
+## §54 · Transformer backbone 架构图资产（2026-09-12）
+
+为交接给两位合作者，新增结构图 `docs/figs/main/fig_transformer_ngram_injection_routes.svg`，源脚本为 `docs/plot_scripts/draw_transformer_ngram_injection.py`。图中主框只保留 `Q, K, V projection → causal self-attention → MLP`，并在框外接出 `Next Transformer block`；三个独立的绿色 n-gram block 分别表示 input、V、y 三种候选注入路径。它们不是 shared module，单个实验 run 只启用其中一种路径。
+
+图的语义与主线代码一致：input route 在 QKV projection 之前加到输入表示；V route 在 causal self-attention 之前加到完整 value stream（不是 top-k V）；y route 在 attention 之后、MLP 之前加到 attention output。gate、residual/LayerNorm 细节、hash table 和 frequency index 不进入主架构图，统一留给附录伪代码。该图为结构资产，无 run_id、step 或 seed；实验数值图仍按 P4/P7 记录证据坐标。
+
+图片索引已由 `python3 docs/plot_scripts/build_figure_index.py` 重建（当前扫描 290 个可视化文件、78 个脚本），图卡包含源脚本、数据/集群声明和文档引用。

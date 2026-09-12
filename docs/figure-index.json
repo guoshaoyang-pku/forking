@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-12T22:34:32+08:00",
-  "commit": "330089f",
+  "generated_at": "2026-09-12T23:33:23+08:00",
+  "commit": "d1656ee",
   "counts": {
-    "orphan-review": 118,
+    "orphan-review": 119,
     "current": 126,
     "outdated": 45
   },
@@ -1907,6 +1907,24 @@
       "clusters": [
         "本地离线 / 未声明集群",
         "本地镜像 / 原始集群需按 run 核对"
+      ],
+      "used_by": []
+    },
+    {
+      "path": "docs/figs/main/fig_transformer_ngram_injection_routes.svg",
+      "file": "fig_transformer_ngram_injection_routes.svg",
+      "format": "svg",
+      "bytes": 6112,
+      "category": "main",
+      "status": "orphan-review",
+      "scripts": [
+        "docs/plot_scripts/draw_transformer_ngram_injection.py"
+      ],
+      "data_paths": [
+        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
+      ],
+      "clusters": [
+        "本地离线 / 未声明集群"
       ],
       "used_by": []
     },
@@ -5644,6 +5662,14 @@
       ],
       "clusters": [
         "本地镜像 / 原始集群需按 run 核对"
+      ]
+    },
+    {
+      "path": "docs/plot_scripts/draw_transformer_ngram_injection.py",
+      "name": "draw_transformer_ngram_injection.py",
+      "data_paths": [],
+      "clusters": [
+        "本地离线 / 未声明集群"
       ]
     },
     {

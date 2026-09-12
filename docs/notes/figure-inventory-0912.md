@@ -10,15 +10,15 @@
 
 | 指标 | 数量 |
 |------|------|
-| 图片总数（docs/figs/） | 278 |
-| 唯一文件名 | 278 |
+| 图片总数（docs/figs/） | 290 |
+| 唯一文件名 | 290 |
 | 被 HTML 报告引用 | 52 |
 | 被飞书初稿引用 | 14 |
 | 被任一文档引用（去重） | ~63 |
 | **current**（当前标准） | ~45 |
 | **outdated**（旧标准） | ~35 |
 | **broken**（脚本/数据缺失） | 1 |
-| **orphan**（未被引用） | ~216 |
+| **orphan**（未被引用） | ~228 |
 | **missing**（引用但不存在） | 0 |
 
 ### 子目录分布
@@ -53,6 +53,7 @@
 | §6 | 图 6-2 | fig_v5_f_by_pass_accounting.png | analyze_v5_f_by_pass_table.py | 多 run 汇总 | 128× | **current** | f x pass 全账目 |
 | §6 | 图 6-1 | fig_v5_table_cosine_and_margin.png | analyze_v5_cosine_margin_posthoc.py | nglab1x_input_v5_128x_freq10_fd | 128×, _fd | **current** | 表 cosine + margin |
 | §9 | 图 9-1 | fig_v5_netval_benefit.png | plot_v5_netval_benefit.py | 多变体汇总 | 128× | **current** | 净收益判决 |
+| §3.1 | 图 3-0 | main/fig_transformer_ngram_injection_routes.svg | draw_transformer_ngram_injection.py | 无 run（结构图） | vanilla nanoGPT；三种 route 备选，每次 run 只启用一种 | **current** | 架构主图；hash table 逻辑留在附录伪代码 |
 
 ### 飞书图注编号问题
 
@@ -287,6 +288,7 @@
 | plot_v5_epoch_kernel_dynamics.py | fig_v5_epoch_kernel_dynamics | current |
 | plot_v5_netval_benefit.py | fig_v5_netval_benefit | current |
 | plot_v5_epoch_length_valid.py | fig_v5_s1_epoch_length_valid | current |
+| draw_transformer_ngram_injection.py | main/fig_transformer_ngram_injection_routes.svg | current；结构图，无实验数值 |
 | plot_v5_fig17_beta2_sweep.py | fig_v5_beta2_sweep_1k | current |
 | gen_shard_sweep_figs.py | epoch_scale/fig_sweep_* | mixed |
 | gen_all_figures.py | 根目录 fig_cmp_*, fig_uniform_*, fig_probe_* | outdated |

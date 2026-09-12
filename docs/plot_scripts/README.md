@@ -43,6 +43,10 @@ bucket total contribution = bucket fraction × bucket mean loss
 
 ### 主博客图表
 
+### 架构图
+
+`draw_transformer_ngram_injection.py` 生成 `docs/figs/main/fig_transformer_ngram_injection_routes.svg`。这是无实验数值的结构资产：一个 Transformer computation 框（QKV projection → causal self-attention → MLP），框外接出下一个 Transformer block，三个独立的绿色 n-gram block 分别标出 input、V、y 三种候选注入路径。每个 run 只启用一种路径；hash-table、gate 和 optimizer 细节留在附录伪代码。
+
 `gen_all_figures.py` 是当前 canonical generator：
 
 | 函数 | 输出 | 作图思想 |
