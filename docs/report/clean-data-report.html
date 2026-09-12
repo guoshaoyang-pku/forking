@@ -151,7 +151,7 @@ tr:hover td{background:rgba(53,61,121,.04)}
 <h2>6. 口径说明</h2>
 <div class="note method">
 <ul>
-<li><strong>新标准 v2</strong>：表优化器 RMSProp 无动量 <code>β=(0.0, 0.99)</code>、<code>table_lr_scale=2.0</code>、bf16（本波次附带 torch.compile；新默认标准已改为不 compile，见 agents.md §1.4）；backbone AdamW、lr 0.004 不变。</li>
+<li><strong>历史新标准 v2</strong>：表优化器 RMSProp 无动量 <code>β=(0.0, 0.99)</code>、<code>table_lr_scale=2.0</code>、bf16（本波次附带 torch.compile；当前默认标准已改为 table_lr_scale=128.0、backbone lr=0.0006 且不 compile，见 agents.md §1）；backbone AdamW、lr 0.004 仅作本历史波次坐标。</li>
 <li><strong>train loss 口径 = online</strong>：所有主图与表格的 train loss 都是当前训练 batch 的 loss（与 fixed val 同一 step 记录），即 agents.md 规定的 online gap 主测量。freq-bin 图的 train 侧是 online 窗口：每次评估从独立诊断迭代器新取 4 个 train batch，不消费训练流。</li>
 <li><strong>gap 定义</strong>：val_loss − train_loss，同一 step、同一 fixed-val batch；novel context 无 train loss，不进 gap。</li>
 <li><strong>双对数规范</strong>：gap ≤ 0 的点在 log 轴上剔除（图注说明）；dose–response 右面板用 symlog 保留近零与负值区域。</li>

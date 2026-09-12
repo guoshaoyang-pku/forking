@@ -14,7 +14,7 @@
 python3 docs/plot_scripts/build_figure_index.py
 ```
 
-这会生成 `docs/figure-index.html`（适合浏览和认领）和 `docs/figure-index.json`（适合脚本消费）。索引扫描 `docs/figs/` 中全部可视化文件，并为每张图记录论文上下文目录、current/outdated/orphan-review 状态、精确命中的绘图脚本、脚本声明的数据路径、可推断的集群以及本地文档引用。代码没有证据时，集群会显示“需按 run 核对”，不要凭文件名补猜测。
+这会生成 `docs/figure-index.html`（适合浏览和认领）和 `docs/figure-index.json`（适合脚本消费）。索引扫描 `docs/figs/` 中全部可视化文件，并为每张图记录论文上下文目录、`referenced`/`outdated`/`orphan-review` 状态、精确命中的绘图脚本、脚本声明的数据路径、可推断的集群以及本地文档引用。`referenced` 只表示被文档或命名引用，不等于科学证据已验证；代码没有证据时，集群会显示“需按 run 核对”，不要凭文件名补猜测。
 
 认领一张图时，先检查卡片中的 `used_by`、脚本和数据路径，再读取对应 run 的 `summary.json` 与 JSONL。训练图的可复现数据应来自 `data/runs_fixed/<run_id>_fixed/`；原始大文件在 `docs/notes/data/cluster-infra.md` 列出的集群路径。改图后重跑生成器、检查 `git diff --check`，并在图注或相邻文档中保留 run_id、step、seed 和 gap 定义。
 
