@@ -13,7 +13,7 @@ Fetched with `lark-cli docs +fetch --doc-format markdown --detail simple` using 
 
 - The TODO wiki has 9 unchecked boxes and 17 unresolved markers (`待补`, `待核`, `未启动`, `进行中`, or `预留`).
 - The paper v2 has no Markdown checkbox syntax, but it has 17 unresolved markers and explicit placeholders in §§6–8 / appendices.
-- Both documents still require: human-readable prose and symbol cleanup, gap(i,j)/frequency and missing-mass definitions, formula and epoch-length audits, cross-model/SFT protocol decisions, figure placement/length review, and final evidence review.
+- Both documents still require cloud-side reconciliation and final evidence review. Locally, the main prose replacement is now in `docs/report/paper-v2-review-draft.md`; it defines gap, missing-mass, F/f notation, epoch/pass limits, and cross-model/SFT protocol boundaries.
 - The TODO wiki still contains historical status text from before the local handoff work: it calls shanbin/haoran handoff “未启动”, C.4/H.1.3 extraction “待生成”, and the logit panel “已由待办 1b 的图 H-1/H-2 填上” in different places. Local evidence now supersedes those historical status lines for coordination, but the cloud page itself has not been edited.
 
 ## Local alignment
@@ -30,7 +30,7 @@ This audit is read-only. No Feishu page was modified. The source pages still nee
 
 ## Immediate article-writing priorities
 
-1. Resolve the six paper TODO lines before prose polish: formula correctness, gap(i,j) object, F/f notation, epoch-length versus pass count, and conditions for cross-model/SFT claims.
+1. Review `docs/report/paper-v2-review-draft.md` against the Feishu v2 wording and decide whether to copy it into the authoritative blog source.
 2. Attach the local evidence paths and run coordinates to the corresponding cloud sections.
 3. Decide whether cloud pages should be updated or remain the immutable meeting record.
 

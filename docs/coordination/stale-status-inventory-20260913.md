@@ -1,6 +1,8 @@
 # Stale status inventory - 2026-09-13
 
-This inventory is a review queue; historical and active statuses are not rewritten automatically.
+This inventory is a review queue; historical entries remain for provenance. Current coordination status is maintained in the queue/matrix files linked below.
+
+Refresh note (2026-09-13 continuation): D14/D26 are now locally complete (26 pytest tests pass); D10/D11 are partial because 33 cross-host duplicate IDs have conflicting endpoint metrics; the local paper review draft is ready.
 
 Found 36 lines containing status markers across docs.
 
