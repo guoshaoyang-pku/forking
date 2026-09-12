@@ -890,7 +890,7 @@ v2；本地 `data/runs/<run_id>/train_log.jsonl` 已补齐 12 个 run）。
 | LR | `--lr_schedule_epochs 6`（progress = epoch/6，warmdown 0.65；epoch 6→7 边界 lr=0.05）|
 | steps | 每 run 跑到 ~6.1 epoch（epoch 7 开始后 ~60-130 步）|
 | val / freq eval | v10，fixed-val |
-| 集群 | 0.25x–1.5x：360-2（14:26–15:47）；2x–3x：360-1（16:17–17:12，360-2 首跑 OOM 后重跑）；4x–8x：ophis-gpu（13:50 启动，进行中）|
+| 集群 | 0.25x–1.5x：360-2（14:26–15:47）；2x–3x：360-1（16:17–17:12，360-2 首跑 OOM 后重跑）；4x–8x：ophis-gpu（历史记录，未纳入当前证据）|
 
 | size | run | train shards | val shards | steps（目标 ~6.1 ep）|
 |---|---|---|---|---|
@@ -921,10 +921,10 @@ gap 在「6 个完整 pass 后」（epoch 7 首个 eval，lr=0.05）与「pass 6
 | 2x | **+0.800** | +0.711 | +0.894 | 2690 | +0.502 |
 | 2.5x | **+0.925** | +0.557 | +0.927 | 3360 | −0.027 |
 | 3x | **+2.141** | +1.712 | +2.117 | 4010 | +0.113 |
-| 4x | 进行中（step 4580/5490，epoch 6，gap +1.10 @17:16）| | | | −0.031 |
-| 5x | 进行中（step 4350/6900，epoch 4，gap −0.04）| | | | −0.047 |
-| 6x | 进行中（step 4370/8260，epoch 4，gap −0.12）| | | | −0.110 |
-| 8x | 进行中（step 4340/10960，epoch 3，gap −0.02）| | | | +0.027 |
+| 4x | 未纳入当前证据（历史 partial） | | | | −0.031 |
+| 5x | 未纳入当前证据（历史 partial） | | | | −0.047 |
+| 6x | 未纳入当前证据（历史 partial） | | | | −0.110 |
+| 8x | 未纳入当前证据（历史 partial） | | | | +0.027 |
 
 **初步结论（待 4x–8x 补全）**：对齐 epoch 数后，§10 的「shard 越大 gap 越小」
 **单调关系消失**——0.25x→3x 的 gap@6pass 在 +0.80~+2.14 之间非单调波动
@@ -3962,8 +3962,8 @@ input 注入 / clean 单表 R=2^20 bigram+trigram / RMSProp(0.0,0.99) / table_lr
 
 | run_id | arm | GPU | 机器 | 启动时间 | 状态 | 预计完成 |
 |---|---|---|---|---|---|---|
-| `ls20ep_input_v5_128x_fd` | input | 4 | ophis-gpu | 2026-09-12 11:39 | running | ~60-80 min |
-| `ls20ep_nogram_v5_128x_fd` | nogram | 5 | ophis-gpu | 2026-09-12 11:39 | running | ~60-80 min |
+| `ls20ep_input_v5_128x_fd` | input | 4 | ophis-gpu | 2026-09-12 11:39 | done | §53 回填完成 |
+| `ls20ep_nogram_v5_128x_fd` | nogram | 5 | ophis-gpu | 2026-09-12 11:39 | done | §53 回填完成 |
 
 **验收条件**：
 1. `summary.json` 存在且 `final_gap` 合理（input ~5-6，nogram ~0.2-0.3）。
