@@ -30,6 +30,7 @@
 | 飞书写回草案 | [coordination/feishu-writeback-proposal-20260913.md](coordination/feishu-writeback-proposal-20260913.md) | 两页 append-only 局部插入方案；需用户批准后执行 |
 | blog source audit | [coordination/blog-source-audit-20260913.md](coordination/blog-source-audit-20260913.md) | 本地 report 与 blog target 当前字节级一致；review draft 尚未发布 |
 | D1 prose audit | [coordination/d1-paper-language-symbol-audit-20260913.md](coordination/d1-paper-language-symbol-audit-20260913.md) | 符号统一、禁用强断言和本地 draft 状态 |
+| 项目 TODO 收敛报告 | [coordination/project-todo-closure-report-20260913.md](coordination/project-todo-closure-report-20260913.md) | 当前文章阶段接管入口；区分本地完成、证据候选、开放项和审批门槛 |
 | 导航链接检查 | [coordination/check_navigation_links.py](coordination/check_navigation_links.py) | 扫描 5 个导航文件的相对链接；当前 `checked=24 missing=0` |
 | launcher 口径审计 | coordination/launcher-setting-audit-20260913.md | canonical baseline 与历史/变体 launcher 分开；不自动执行 |
 
