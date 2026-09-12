@@ -19,8 +19,8 @@ This matrix reconciles the two Feishu pages, `experiment-lines.md`, `plan-3-fix-
 | Local T4 log structure | D13 | **audit complete / cleanup partial** | duplicate §10 repaired to §5; duplicate review finds no title collisions, numeric/table review remains. |
 | Local T5 model/fallback audit | D14 | **partial** | source binding reviewed; remote import passes; pytest unavailable. |
 | Local T6 M6 4x–8x | D15 | **needs user decision** | choose four new runs or limit claim to tested range. |
-| Local T8 no-ngram long baseline | D16 | **queued / GPU gate** | requires run registration, free GPU, md5 and data-overlap checks. |
-| Local T9 fixed-train probe | D17 | **queued / GPU gate** | same preflight; no run started. |
+| Local T8 no-ngram long baseline | D16 | **queued / code-sync gate** | 360-2 is idle, but remote code MD5 differs; see remote-preflight-20260913.md. |
+| Local T9 fixed-train probe | D17 | **queued / code-sync gate** | same MD5 mismatch and registration gate; no run started. |
 | Local T10 shorter epoch | D18 | **blocked by T8** | may start only after T8 result. |
 | Local T12 causal recovery | D19 | **queued / remote-check** | no new intervention run started. |
 | Paper §6 predictions | D5–D8 | **audit complete / evidence open** | d5-d8-prediction-claim-audit-20260913.md separates replay, LR, data/epoch and capacity claims. |
