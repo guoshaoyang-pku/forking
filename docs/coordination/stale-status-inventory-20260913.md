@@ -4,7 +4,7 @@ This inventory is a review queue; historical entries remain for provenance. Curr
 
 Refresh note (2026-09-13 continuation): D14/D26 are now locally complete (26 pytest tests pass); D10/D11 are partial because 33 cross-host duplicate IDs have conflicting endpoint metrics; the local paper review draft is ready.
 
-Found 36 lines containing status markers across docs. This review pass resolved the stale markers that were misleading inside the active experiment log; remaining entries below are intentionally historical snapshots, explicit queue states, or cloud/archive copies.
+Found 36 lines containing status markers across docs. This review pass resolved the stale markers that were misleading inside the active experiment log; remaining entries below are intentionally historical snapshots, explicit queue states, or cloud/archive copies. The duplicated §10 historical snapshot is now explicitly labelled as superseded, and its later v3/s43 result is the authoritative local record for that episode.
 
 - `docs/experiment-log.md:111` 状态约定：`planned` 已登记未开跑 / `running` 运行中 / `done` 已回填 / `stalled` 超期未回填。
 - `docs/experiment-log.md:253` 可复用的干净基线。该 section 不启动新训练，不覆盖其他 Agent 的 running
