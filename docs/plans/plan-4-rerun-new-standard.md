@@ -3,7 +3,7 @@
 > **历史标准（2026-08-24）**：β₂=0.99（无动量）· 表学习率 ×2（表实际 0.008）。
 > **状态**：⛔ **已被 agents.md §1 的当前 SSOT（table_lr_scale=128.0，实际 0.0768）取代**。旧清单保留用于溯源，不能交接给执行 agent，也不能据此启动 GPU。
 > 若需新标准重刷，必须另立 run_id、重写完整 setting，并重新经过 P5 审批。
-> **执行入口**：本文件 §5；执行器 `code/cluster/run_rerun_v2.sh`；目标集群 360-1（8 卡空闲）。
+> **执行入口（历史）**：本文件 §5；执行器 `code/cluster/run_rerun_v2.sh`；目标集群坐标仅作当时记录。当前不可直接执行。
 > **执行器**：`code/cluster/run_rerun_v2.sh`（所有参数显式，不依赖默认值）。
 > **与其他工作的关系**：`tasks/s1_scaling_three_axis` 是**独立的 scaling 测量实验线**
 > （冻结在旧默认 β₂=0.99 · ×1），与本重刷并行、互不干扰，见其自身文档。
@@ -15,7 +15,7 @@
 1. **只重刷「新标准下会变化」的实验**——即带 n-gram 表、且旧配置是 β₂=0.999 或表学习率 ×1 的。
 2. **不重刷**：无表对照（表参数无关，仍补 1 个同批对照）、表优化器消融中 β₂≠0.99 或 ×1 以外的扫描点（消融变量本身就是那些值）、已在跑的表大小扫描。
 3. 新 run 统一 `..._v2` 后缀，写入 `data/runs_fixed/`；旧 `_fixed` 保留作历史对照，**不删不改**。
-4. 所有重刷默认：seed 42，input 注入，2000 步，val 每 10 步，freq-bin 每 10 步，`--table_betas 0.0,0.99 --table_lr_scale 2.0`。
+4. 所有重刷默认（历史）：seed 42，input 注入，2000 步，val 每 10 步，freq-bin 每 10 步，`--table_betas 0.0,0.99 --table_lr_scale 2.0`。这些参数不得复制到当前主线。
 5. **LR 无 schedule（全家族统一）**：`--lr_schedule_epochs 0`（train.py 默认）。所有 run 走同一固定 lr 轨迹（warmdown 0.65），不按 epoch 锚定。理由：便于研究训练动力学（纯 step 视角），并与 §14 控制臂 / `_fixed` 批实际口径一致。历史 §12 原版曾设计 `lr_schedule_epochs 6`（LR 锚定 epoch），但 `_fixed` 批实际未用；本 plan 明确统一为无 schedule。
 
 ## 1. 重刷清单（Group A · 必做，31 个）
@@ -52,7 +52,7 @@
 > `steps` 值（保证同口径），故新 run 沿用 `_e6` 命名以对齐旧目录名，但**实际是
 > 5 epoch**（下文 A3 表「每-epoch 步数」列已按真实值修正，旧表写的是 steps/6，错误）。
 
-**剂量 → 分片 → 验证集对照表**（所有固定项：seed 42 · input 注入 · β₂=0.99 · 表学习率 ×2 ·
+**剂量 → 分片 → 验证集对照表（历史）**（所有固定项：seed 42 · input 注入 · β₂=0.99 · 表学习率 ×2 ·
 backbone LR 0.004 · val 与 freq-bin 每 10 步 · 8L/6H/768D）：
 
 | 剂量 L | train shards | val shards（与 train 不重叠） |
