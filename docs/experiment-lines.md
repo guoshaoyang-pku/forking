@@ -170,7 +170,7 @@ trigram 主臂的 per-bucket gap 在中频段出现较大值（[21,51)≈+1.00�
 因此暂不把“中频峰”写成稳健定律；seed 43 的频次图已加入同一脚本，但 LR 消融仍只有
 seed 42。
 
-设置要点：order=5（5-gram context）、train shard 1（49.7M tokens）/ val shards 2-10,6542 不重叠、
+设置要点（历史 N1–N4，不能作为当前主线默认）：order=5（5-gram context）、train shard 1（49.7M tokens）/ val shards 2-10,6542 不重叠、
 43M distinct contexts、input 注入、RMSProp 表 `(0.0, 0.99)`、table LR scale=2.0、AdamW lr 0.004、
 batch 72×2048、2000 步、seed 42（并以完全相同口径复现 seed 43）、bf16 不 compile。
 `make_ngram_blocks.py` + `ngram5_freq_gap/trainer.py`。
