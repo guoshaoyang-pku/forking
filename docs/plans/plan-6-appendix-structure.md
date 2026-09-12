@@ -192,7 +192,7 @@ Appendix
 | G.1.1 | `fig_main_within_epoch_aligned.{png,svg}`, `fig_toy_within_epoch_aligned.{png,svg}` | toy | 下沉 |
 | G.1.2 | `figs_v11_staircase_shape_comparison.{png,svg}` | toy | 下沉 |
 | G.1.3 | `fig_theory_epoch_multiseed.{png,svg}` | theory | 下沉 |
-| G.2.1 | **待新实验**（logit 锐化 2×2） | — | 缺口 #1 |
+| G.2.1 | §53 logit sharpening 素材（严格 2×2 为可选补强） | `docs/figs/main/fig_ls20ep_sharpening_vs_ce.png` | 已完成素材 |
 | G.2.2 | `fig_theory_bias_split.{png,svg}`, `fig_theory_paired_decomposition.{png,svg}` | theory | 下沉 |
 | G.2.3 | `fig_theory_optimizer_exponent.{png,svg}` | theory | 下沉 |
 | G.3.1 | `fig_v5_table_cosine_and_margin.png`（正文已用） | theory | 同图复用 |
