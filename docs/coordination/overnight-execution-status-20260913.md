@@ -36,3 +36,5 @@ Read-only SSH checks succeeded for `ophis-gpu`, `360-1`, and `360-2`. At check t
 - **Validation**: all newly added Python generators and the untracked CPU analysis script pass `py_compile`; `git diff --check` passes. Full pytest remains unavailable because this environment has no `pytest` module (and model import also needs `numpy`).
 
 - **Validation / publication (D26/D27)**: `bash -n` passes for the three active launchers; `py_compile` passes for new generators and the CPU analysis script; figure index regenerated at 290 figures / 79 scripts. Full pytest and runtime model import remain blocked by missing `pytest` and `numpy`. Local `main` is 47 commits ahead of `origin/main`; no push was attempted.
+
+- **Fixed-data audit (D10/D11)**: local `data` is a dangling symlink to an unavailable Extreme SSD path; zero local `_fixed` summaries are discoverable. Numerical log backfill is therefore stalled and no numbers were guessed or overwritten. Evidence: `docs/coordination/fixed-data-availability-audit-20260913.md`.

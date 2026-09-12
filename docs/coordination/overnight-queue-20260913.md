@@ -24,8 +24,8 @@
 | D7 | v2 §6.3 | 数据量与 epoch 长度 | 整理 S1、M5、M6 覆盖范围并生成缺口表 | ready |
 | D8 | v2 §6.4 | 容量、映射与干预收益 | 汇总 S1 table-size、mask、reseed、net-val 证据 | ready |
 | D9 | v2 §7.1 | DeepSeek-like / Engram 复现 | 只做协议设计和 no-go 依据，不自动下载/训练大模型 | blocked-by-P5 |
-| D10 | local T1 | _fixed 数值回填 experiment-log | 生成 pre-fix/fixed 冲突清单和候选 patch | ready |
-| D11 | local T2 | β₂ bug 记录清理 | 标记无效历史结论，保留溯源，不补跑 | ready |
+| D10 | local T1 | _fixed 数值回填 experiment-log | 生成 pre-fix/fixed 冲突清单和候选 patch | stalled (missing data mount) |
+| D11 | local T2 | β₂ bug 记录清理 | 标记无效历史结论，保留溯源，不补跑 | stalled (missing data mount) |
 | D12 | local T3 | _fixed 图重生成 | 审计脚本 roots 和 fixtures，只重跑可验证图 | ready, fixture gate |
 | D13 | local T4 | experiment-log 结构整理 | 修复重复 §10/缺 §5；段落级重复扫描与全文目录仍待人工审阅 | partial (22397bd) |
 | D14 | local T5 | ngram5 fallback / bug audit | model.py 绑定代码审阅完成；运行时 import 与测试仍待可用依赖环境 | partial (import blocked by missing numpy) |
