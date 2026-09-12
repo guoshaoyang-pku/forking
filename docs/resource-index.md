@@ -20,6 +20,7 @@
 | TODO 完成矩阵 | coordination/todo-completion-matrix-20260913.md | 飞书与本地 backlog 的逐项当前状态 |
 | 整晚 TODO 队列 | coordination/overnight-queue-20260913.md | 飞书 + 本地 TODO 的统一排程 |
 | 远端 summary 证据 | coordination/remote-summary-recovery-20260913.md、remote-summary-cross-host-audit-20260913.md | 仅小型 summary.json；跨主机重复 ID 保留原样，未合并 |
+| launcher 口径审计 | coordination/launcher-setting-audit-20260913.md | canonical baseline 与历史/变体 launcher 分开；不自动执行 |
 
 ## 代码入口
 
