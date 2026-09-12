@@ -32,3 +32,14 @@ This audit is read-only. No Feishu page was modified. The source pages still nee
 1. Resolve the six paper TODO lines before prose polish: formula correctness, gap(i,j) object, F/f notation, epoch-length versus pass count, and conditions for cross-model/SFT claims.
 2. Attach the local evidence paths and run coordinates to the corresponding cloud sections.
 3. Decide whether cloud pages should be updated or remain the immutable meeting record.
+
+## Local audit refresh - 2026-09-13 continuation
+
+Since the original read-only comparison, local evidence was extended without modifying either cloud page:
+
+- M10 freeze/mix and §41 reseed summaries were verified on 360-2 and the experiment registry was changed from running to done.
+- §53 logit-sharpening rows were changed from planned→running to done based on its existing §53 backfill.
+- The superseded 2× rerun plan was marked historical because agents.md now defines table LR scale 128×.
+- Three-host summary inventories were recovered using small-file-only filters; no checkpoints, shards, or tables were copied.
+
+The cloud revision/checksum pair remains TODO 2335 and paper 1082; a deliberate cloud-side write is still required to reconcile the historical checkboxes in place.
