@@ -67,6 +67,7 @@
 
 - 作图规则和数据源：docs/plot_scripts/README.md。
 - 当前图：docs/figs/main/、docs/figs/theory/、docs/figs/epoch_scale/。
+- 机器可读图片索引：docs/figure-index.html 与 docs/figure-index.json；生成/更新时需保留源脚本与 run_id。
 - 附录报告：docs/appendices/README.md。
 - 文献核实：docs/notes/literature/engram-benefit-baseline-survey-0912.md。
 - 主开发仓库：/Users/guoshaoyang/Desktop/workdir/ngram-gap-lab。
