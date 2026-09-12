@@ -34,7 +34,7 @@ table 学习率和 backbone 学习率改变的是不同更新算子。`plot_v5_b
 
 DeepSeek-like / Engram-style 复现和小数据 SFT 压力测试目前都是 protocol。没有固定基座、模块版本、数据构造、代码 commit、run_id 和评估包前，不把它们写成实验结果。SFT 方案至少需要表 frozen / trainable 两臂、目标 continuation 与替代 continuation、无关 context、整体验证集四类指标，并区分局部伤害与一般 SFT 遗忘。
 
-189 GiB 表搬运、跨集群大文件、模型下载和正式 GPU 运行属于单独授权节点；在授权前只保留协议、风险矩阵和 no-go 条件。
+约 189 GiB 的表搬运、跨集群大文件、模型下载和正式 GPU 运行属于单独授权节点；在授权前只保留协议、风险矩阵和 no-go 条件。
 
 ## Appendix B · 标准设置与测量合同
 
