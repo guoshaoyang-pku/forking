@@ -39,6 +39,20 @@
 
 主 agent 必须检查文件存在、路径可复现、run_id/step/seed/setting 齐全、数据来源是 _fixed 或明确标为历史/remote-only、脚本读取真实 artifact、图表报告与 experiment log 互相链接、结论没有越过 claims ledger。agent 返回文本只能算待审阅输入，通过这些检查并写入登记簿后才算 done。
 
+### 最小本地验证
+
+文档/启动器整理完成后，至少执行以下检查，并把命令及结果放进 evidence packet：
+
+```bash
+bash -n code/cluster/run_baseline.sh
+.venv/bin/python -m py_compile ngram5_freq_gap/model.py docs/plot_scripts/build_figure_index.py
+PYTHONPATH=ngram5_freq_gap .venv/bin/python -m pytest ngram5_freq_gap/tests -q
+python3 docs/plot_scripts/build_figure_index.py
+git diff --check
+```
+
+2026-09-13 本地 `.venv` 已验证 pytest 26 项通过；这只证明受测代码路径，不替代 GPU 科学实验。对于重复 run ID，必须按 host 保留原文件并比较 config、step、seed、measurement 与 endpoint；目前已发现 33 个跨 host 重复 ID 全部存在 endpoint 差异，未完成溯源前不得合并或覆盖登记簿。
+
 ## 运行与资源纪律
 
 - 新实验前先用 ngram-gap-settings 审计，再用 ngram-gap-experiment-registration 登记。
