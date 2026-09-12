@@ -4,7 +4,7 @@ This status file records what was actually executed in the current worktree. It 
 
 | wave | queue IDs | execution status | evidence |
 |---|---|---|---|
-| Wave 0 | D20, D21, D22, D23, D24 | **partially executed** | Appendix C.4 coverage report, H.1.3 run index, figure index, untracked-resource audit |
+| Wave 0 | D20, D21, D22, D23, D24 | **done locally** | Appendix C.4 coverage report, filtered H.1.3 run index, figure index, untracked-resource audit |
 | Wave 0 | D1, D2, D4, D5, D7, D8, D10, D11, D13, D14, D25, D26, D27 | **mixed: D14/D26 done; D1/D10/D11/D13/D27 partial or gated** | Queue remains authoritative; no completion is inferred |
 | Wave 1 | D6, D12, D16, D17, D19 | **preflight completed; execution gated** | Remote checks in remote-preflight-20260913.md; 360-2 idle but code MD5 differs |
 | Wave 2 | D16, D17, D19 | **not started** | Requires authorized code sync, fresh registration, GPU ownership and data-overlap checks |
