@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-13",
+  "queue": "docs/coordination/overnight-queue-20260913.md",
+  "dispatch_surface": {
+    "persistent_multi_agent": false,
+    "scheduler": false,
+    "note": "No background agent/thread handle exists in the current tool surface; entries are ready for explicit dispatch."
+  },
+  "approval_gates": [
+    "cross_cluster_transfer_over_1GB",
+    "new_architecture_or_model",
+    "delete_completed_run",
+    "branch_change",
+    "git_push"
+  ],
+  "waves": [
+    {"id": 0, "mode": "parallel_readonly_or_local", "items": ["D1","D5","D7","D8","D10","D11","D13","D14","D25","D26","D27"]},
+    {"id": 1, "mode": "parallel_remote_preflight", "items": ["D6","D12","D16","D17","D19"], "guard": "read_only; no checkpoint/shard/table transfer"},
+    {"id": 2, "mode": "conditional_gpu", "items": ["D16","D17","D19"], "guard": "fresh run_id, md5, GPU ownership, disjoint shards, evidence packet"},
+    {"id": 3, "mode": "gated", "items": ["D3","D9","D15","D18"], "guard": "requires explicit dependency or user approval"}
+  ],
+  "items": [
+    {"id": "D1", "owner": "writer", "parallel": true, "depends_on": [], "status": "local_ready_cloud_open", "acceptance": "paper-v2-review-draft.md reviewed; no claim beyond ledger"},
+    {"id": "D2", "owner": "coordination", "parallel": true, "depends_on": [], "status": "done_local", "acceptance": "handoff-task-cards-20260913.md"},
+    {"id": "D3", "owner": "experiment", "parallel": false, "depends_on": ["P5"], "status": "gated", "acceptance": "pinned model/data/arms plus approved large-file transfer"},
+    {"id": "D4", "owner": "literature", "parallel": true, "depends_on": [], "status": "done_local", "acceptance": "engram-decision-record-20260913.md"},
+    {"id": "D5", "owner": "analysis", "parallel": true, "depends_on": ["D10"], "status": "audit_complete_evidence_open", "acceptance": "prediction audit plus source run coordinates"},
+    {"id": "D6", "owner": "analysis", "parallel": true, "depends_on": ["D10"], "status": "ready_gpu_gate", "acceptance": "LR/table/backbone comparison with config and curve evidence"},
+    {"id": "D7", "owner": "analysis", "parallel": true, "depends_on": ["D10"], "status": "audit_complete_decision_open", "acceptance": "fixed-step/fixed-pass distinction and bounded wording"},
+    {"id": "D8", "owner": "analysis", "parallel": true, "depends_on": ["D10"], "status": "audit_complete_evidence_open", "acceptance": "capacity/mapping/intervention boundaries"},
+    {"id": "D9", "owner": "experiment", "parallel": false, "depends_on": ["P5"], "status": "gated", "acceptance": "pinned reproduction protocol and approved resources"},
+    {"id": "D10", "owner": "data-audit", "parallel": true, "depends_on": [], "status": "partial_conflict_audit", "acceptance": "host-scoped config/log match; no blind overwrite"},
+    {"id": "D11", "owner": "data-audit", "parallel": true, "depends_on": ["D10"], "status": "partial", "acceptance": "historical beta2 separated from current SSOT"},
+    {"id": "D12", "owner": "plotting", "parallel": true, "depends_on": ["data_mount"], "status": "fixture_gate", "acceptance": "real JSONL-backed regeneration and source/run links"},
+    {"id": "D13", "owner": "docs", "parallel": true, "depends_on": ["D10"], "status": "cleanup_partial", "acceptance": "historical/current labels and no numeric provenance loss"},
+    {"id": "D14", "owner": "qa", "parallel": true, "depends_on": [], "status": "done_local", "acceptance": "26 ngram5 tests plus compile/shell checks"},
+    {"id": "D15", "owner": "experiment", "parallel": false, "depends_on": ["user_choice"], "status": "historically_bounded", "acceptance": "run missing points or explicitly narrow claim"},
+    {"id": "D16", "owner": "experiment", "parallel": true, "depends_on": ["D10","md5"], "status": "candidate_review_open", "acceptance": "T8 host-scoped endpoint or newly registered current run"},
+    {"id": "D17", "owner": "experiment", "parallel": true, "depends_on": ["D10","md5"], "status": "candidate_conflict_review", "acceptance": "fixed probe and complete log with provenance"},
+    {"id": "D18", "owner": "experiment", "parallel": false, "depends_on": ["D16","protocol_choice"], "status": "protocol_review_required", "acceptance": "re-registered question before GPU use"},
+    {"id": "D19", "owner": "data-audit", "parallel": true, "depends_on": ["D10"], "status": "partial_remote_evidence", "acceptance": "remaining causal artifacts matched host-scoped"},
+    {"id": "D20", "owner": "appendix", "parallel": true, "depends_on": [], "status": "done_local", "acceptance": "G.2.1 references §53 current evidence"},
+    {"id": "D21", "owner": "appendix", "parallel": true, "depends_on": [], "status": "done_local", "acceptance": "C.4 table with interaction limitation"},
+    {"id": "D22", "owner": "appendix", "parallel": true, "depends_on": [], "status": "done_local", "acceptance": "filtered H.1.3 run index"},
+    {"id": "D23", "owner": "plotting", "parallel": true, "depends_on": [], "status": "done_local", "acceptance": "290-file index with referenced/outdated/orphan-review"},
+    {"id": "D24", "owner": "docs", "parallel": true, "depends_on": [], "status": "done_local", "acceptance": "untracked resource audit; no deletion"},
+    {"id": "D25", "owner": "coordination", "parallel": true, "depends_on": [], "status": "done_readonly", "acceptance": "fresh Feishu revision/checksum diff"},
+    {"id": "D26", "owner": "qa", "parallel": true, "depends_on": [], "status": "done_local", "acceptance": "pytest, py_compile, shell, links, figure generator"},
+    {"id": "D27", "owner": "release", "parallel": false, "depends_on": ["user_approval"], "status": "gated", "acceptance": "blog diff review and explicit push approval"}
+  ]
+}

@@ -30,7 +30,9 @@
     输入数据与 hash：
     预期产物：
     验收命令或检查：
-    当前状态：planned | running | done | stalled
+当前状态：planned | running | done | stalled
+
+机器可读整晚队列：[`overnight-dispatch-manifest.json`](overnight-dispatch-manifest.json)。该 manifest 记录每项 owner、依赖、并行性、验收条件和 P5 审批门槛；它描述可执行队列，不表示后台 agent 已经启动。
     结论（附 step / seed）：
     claim ceiling：
     下一步：
