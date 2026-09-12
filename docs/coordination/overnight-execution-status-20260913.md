@@ -27,3 +27,5 @@ Read-only SSH checks succeeded for `ophis-gpu`, `360-1`, and `360-2`. At check t
 
 - **Handoff cards**: `docs/coordination/handoff-task-cards-20260913.md` (D2, commit `e8f3f5e`).
 - **Engram decision**: `docs/coordination/engram-decision-record-20260913.md` (D4, NO-GO for immediate direct reproduction; reopening criteria recorded).
+
+- **Log structure (D13/T4)**: the duplicate top-level §10 was repaired by renumbering the “基础实验统计与图表归档” section to §5 and updating its registry pointer (`22397bd`). Numeric/data cleanup and paragraph-level duplicate review remain open.

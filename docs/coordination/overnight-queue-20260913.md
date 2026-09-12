@@ -27,7 +27,7 @@
 | D10 | local T1 | _fixed 数值回填 experiment-log | 生成 pre-fix/fixed 冲突清单和候选 patch | ready |
 | D11 | local T2 | β₂ bug 记录清理 | 标记无效历史结论，保留溯源，不补跑 | ready |
 | D12 | local T3 | _fixed 图重生成 | 审计脚本 roots 和 fixtures，只重跑可验证图 | ready, fixture gate |
-| D13 | local T4 | experiment-log 结构整理 | 统计重复 section、跳号、逐字重复，生成修复报告 | ready |
+| D13 | local T4 | experiment-log 结构整理 | 修复重复 §10/缺 §5；段落级重复扫描与全文目录仍待人工审阅 | partial (22397bd) |
 | D14 | local T5 | ngram5 fallback / bug audit | 检查 model.py、data_gen.py 与 train.py 绑定及测试 | ready |
 | D15 | local T6 | M6 大 shard 或限定结论 | 写补跑和限定范围两种方案，不擅自执行 | needs-user-decision |
 | D16 | local T8 | 8k–10k no-ngram 长程基线 | 先做远端 preflight，再按登记运行 | queued, preflight |
