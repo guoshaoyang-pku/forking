@@ -7,6 +7,7 @@ This report is the current handoff point for the article phase. It reconciles th
 - README navigation and article-phase entry points are current.
 - Resource index, figure index, run-id index, appendix C.4/H.1.3 outputs, and untracked-resource classification are present.
 - Historical status snapshots in docs/experiment-log.md that falsely implied active work were clarified; historical numbers and settings were retained.
+- The machine-assisted active/history audit classifies all 23 status-like log lines; no historical `planned`/`running` marker is used as current execution evidence.
 - Local paper review draft contains claim-safe replacements for §6.1–§6.4 and Appendix B.
 - D2 handoff cards, D4 Engram decision, D20–D24 appendix/resource work, D14 model audit, and D26 local QC have reviewable artifacts.
 - Repeatable checks exist for Feishu markers, navigation links, and overnight dispatch metadata.

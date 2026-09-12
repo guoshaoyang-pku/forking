@@ -16,7 +16,7 @@ This matrix reconciles the two Feishu pages, `experiment-lines.md`, `plan-3-fix-
 | Local T1 `_fixed` backfill | D10 | **partial / conflict audit** | Remote summaries recovered; 33 duplicate IDs all have endpoint metric conflicts across hosts, so no blind overwrite is allowed. |
 | Local T2 β₂ history cleanup | D11 | **partial** | Historical β₂ claims are marked; remaining numeric cleanup depends on host-scoped config/log evidence. |
 | Local T3 figure regeneration | D12 | **queued / fixture gate** | scripts/index audited; data-backed regeneration waits for data mount. |
-| Local T4 log structure | D13 | **audit complete / cleanup partial** | duplicate §10 repaired to §5; duplicate review finds no title collisions, numeric/table review remains. |
+| Local T4 log structure | D13 | **active/history audit complete; numeric review open** | duplicate §10 repaired to §5; 23 status-like lines classified; historical/current labels are explicit, while numeric/table review remains. |
 | Local T5 model/fallback audit | D14 | **done** | source binding reviewed; isolated local pytest suite passes 26 tests. |
 | Local T6 M6 4x–8x | D15 | **historically bounded** | Existing decision limits the claim to measured points; no new historical runs are currently required. |
 | Local T8 no-ngram long baseline | D16 | **covered by existing evidence; protocol review open** | `nglab1x_nogram_long_v5_fixed` is an 8000-step seed-42 endpoint with 800 log rows and disjoint shards; historical table scale 2.0 is inert because n-gram branches are disabled. Code/md5 and curve review remain. |

@@ -5,7 +5,7 @@ This status file records what was actually executed in the current worktree. It 
 | wave | queue IDs | execution status | evidence |
 |---|---|---|---|
 | Wave 0 | D20, D21, D22, D23, D24 | **done locally** | Appendix C.4 coverage report, filtered H.1.3 run index, figure index, untracked-resource audit |
-| Wave 0 | D1, D2, D4, D5, D7, D8, D10, D11, D13, D14, D25, D26, D27 | **mixed: D14/D26 done; D1/D10/D11/D13/D27 partial or gated** | Queue remains authoritative; no completion is inferred |
+| Wave 0 | D1, D2, D4, D5, D7, D8, D10, D11, D13, D14, D25, D26, D27 | **mixed: D14/D26 done; D1/D10/D11/D13/D27 partial or gated** | Queue remains authoritative; D13 active/history audit is complete but numeric review remains open |
 | Wave 1 | D6, D12, D16, D17, D19 | **preflight completed; execution gated** | Remote checks in remote-preflight-20260913.md; 360-2 idle but code MD5 differs |
 | Wave 2 | D16, D17, D19 | **not started** | Requires authorized code sync, fresh registration, GPU ownership and data-overlap checks |
 | Wave 3 | D3, D9, D15, D18 | **blocked / gated** | P5 authorization or upstream result dependency |
@@ -28,7 +28,7 @@ Read-only SSH checks succeeded for `ophis-gpu`, `360-1`, and `360-2`. At check t
 - **Handoff cards**: `docs/coordination/handoff-task-cards-20260913.md` (D2, commit `e8f3f5e`).
 - **Engram decision**: `docs/coordination/engram-decision-record-20260913.md` (D4, NO-GO for immediate direct reproduction; reopening criteria recorded).
 
-- **Log structure (D13/T4)**: the duplicate top-level §10 was repaired by renumbering the “基础实验统计与图表归档” section to §5 and updating its registry pointer (`22397bd`). Numeric/data cleanup and paragraph-level duplicate review remain open.
+- **Log structure (D13/T4)**: the duplicate top-level §10 was repaired by renumbering the “基础实验统计与图表归档” section to §5 and updating its registry pointer (`22397bd`). The 23-line active/history audit is complete; numeric/data cleanup and paragraph-level duplicate review remain open.
 
 - **T5/model binding**: source review confirms `model.py` targets repository `code/train.py` or a launcher-synced copy and has no external fallback. Runtime import is verified on `ophis-gpu` using its project environment and resolves to `/data4/guoshaoyang/ngram-gap-lab/code/train.py`; the isolated local environment now runs the complete ngram5 suite (26 passed). D14 is done.
 
