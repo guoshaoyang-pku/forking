@@ -4,7 +4,7 @@ This matrix reconciles the two Feishu pages, `experiment-lines.md`, `plan-3-fix-
 
 | source item | local queue | current state | evidence / blocker |
 |---|---|---|---|
-| Feishu writing + symbols | D1 | **audit complete / prose open** | d1-paper-language-symbol-audit-20260913.md inventories open markers; paper v2 still needs prose patch. |
+| Feishu writing + symbols | D1 | **local review draft ready / cloud open** | `docs/report/paper-v2-review-draft.md` supplies claim-safe §6–§7/B prose; Feishu v2 still retains historical placeholders. |
 | Feishu shanbin/haoran handoff | D2 | **done locally** | `handoff-task-cards-20260913.md`; cloud page still has historical “未启动” wording. |
 | Feishu Engram/overencoding decision | D4 | **decision recorded locally** | `engram-decision-record-20260913.md`; immediate direct reproduction NO-GO, conditional reopen criteria recorded. |
 | Feishu logit-sharpening panel | D20 | **done as current evidence** | §53 20-epoch artifacts and figures; strict 2×2 remains optional. |

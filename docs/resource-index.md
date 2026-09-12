@@ -13,6 +13,7 @@
 | 某个数字从哪里来 | experiment-log.md | 登记簿，按 section 查 |
 | 一句话能否写进文章 | claims-ledger.md | SUPPORTED / PROXY / UNRUN 边界 |
 | 论文正文 | report/index.html | 本地只读副本；发布源在 blog repo |
+| 本地正文审阅稿 | [report/paper-v2-review-draft.md](report/paper-v2-review-draft.md) | 已将飞书 v2 的待补段落改成 claim-safe 文字；不覆盖发布源 |
 | appendix 章节规划 | plans/plan-6-appendix-structure.md | C–H 结构与图片分配 |
 | 多 agent 协作 | coordination/README.md | owner、状态、回收和证据包 |
 | experiment-log 目录 | coordination/experiment-log-toc.md | 由日志顶层 headings 生成的导航 |
