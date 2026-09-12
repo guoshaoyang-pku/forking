@@ -49,8 +49,10 @@
 | benefit-side CE / PPL | notes/theory/benefit-side-measurements-0912.md | current；R=1 proxy 已明确作废 |
 | logit sharpening | experiment-log.md §53；appendices/ls20ep_logit_stats/ | current；context hit-count 分组 |
 | sharpening vs CE 图 | figs/main/fig_ls20ep_sharpening_vs_ce.png；figs/main/fig_ls20ep_exemplar_evolution.png | current |
-| over-encoding baseline survey | notes/literature/engram-benefit-baseline-survey-0912.md | current；Engram-style reproduction NO-GO 待拍板 |
+| over-encoding baseline survey | notes/literature/engram-benefit-baseline-survey-0912.md | current；Engram-style reproduction NO-GO 已记录 |
 | citation libraries | notes/literature/citations/ | current；core / credit 分开 |
+| over-encoding practical implications | notes/literature/overencoding-practical-implications.md | article-phase synthesis；机制推断与实验证据分开 |
+| citation PDF provenance | notes/literature/pdfs-manifest.tsv | 30 files with SHA-256；PDF collection remains review-only |
 | appendix C–H | plans/plan-6-appendix-structure.md | structure ready；C.4/H.1.3 已生成，正文缺口仍单列 |
 | figure inventory | figure-index.html / figure-index.json | 当前扫描 290 个可视化文件，含 current/outdated/orphan-review 分类 |
 
@@ -70,7 +72,7 @@
 - 当前图：docs/figs/main/、docs/figs/theory/、docs/figs/epoch_scale/。
 - 机器可读图片索引：docs/figure-index.html 与 docs/figure-index.json；生成/更新时需保留源脚本与 run_id。
 - 附录报告：docs/appendices/README.md。
-- 文献核实：docs/notes/literature/engram-benefit-baseline-survey-0912.md。
+- 文献核实：docs/notes/literature/engram-benefit-baseline-survey-0912.md；实际影响分析：docs/notes/literature/overencoding-practical-implications.md。
 - 主开发仓库：/Users/guoshaoyang/Desktop/workdir/ngram-gap-lab。
 - 发布博客仓库：/Users/guoshaoyang/Desktop/workdir/guoshaoyang-pku.github.io。
 - ophis-gpu：/data3/guoshaoyang/ngram-gap-lab。
