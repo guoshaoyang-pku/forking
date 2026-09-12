@@ -89,7 +89,7 @@
 | `nglab6x_input_fv` | 2026-08-07 | shard 扫描 · 6x（360-2）| ⛔ superseded | 被 v5 frequency-refresh 取代 | §10 |
 | `nglab8x_input_fv` | 2026-08-07 | shard 扫描 · 8x（360-2）| ⛔ superseded | 被 v5 frequency-refresh 取代 | §10 |
 | `t5z_zipf_s42/s43/s44` | 2026-08-07 | toy 严格 Zipf 分布（N_r∝1/r²）· per-bucket gap | ✅ done | 7.01/7.96/7.56 @2000 | §13 |
-| `nglab_plot_baseline` | 2026-08-06 | 基础实验统计与图表归档 | ✅ done | 15 bins + log/log-log | §10 |
+| `nglab_plot_baseline` | 2026-08-06 | 基础实验统计与图表归档 | ✅ done | 15 bins + log/log-log | §5 |
 | `ngram5_order5_trigram_fixed` | 2026-08-24 | **自然语言 5gram（order=5）· +trigram 注入 · input · fixed** | ✅ done | −0.0067 @2000 | §19 |
 | `ngram5_order5_puretransformer_fixed` | 2026-08-24 | **自然语言 5gram（order=5）· 纯 transformer 对照 · fixed** | ✅ done | +0.0054 @2000 | §19 |
 | `ngram5_order5_trigram_lr1x_fixed` | 2026-08-24 | **自然语言 5gram（order=5）· +trigram · 表 LR ×1** | ✅ done | +0.0015 @2000 | §19 |
@@ -247,7 +247,7 @@ At step 2000, every frequency file has 40 checkpoints and every checkpoint cover
 
 The novel fractions decrease relative to the one-shard index because the doubled training set covers more contexts, while the low-frequency trigram mass remains substantial. The full raw outputs are retained for future plots and alternative optimizer comparisons.
 
-## 10. 基础实验统计与图表归档（2026-08-06）
+## 5. 基础实验统计与图表归档（2026-08-06）
 
 目的：把已经完成并确认口径的基础实验，连同完整统计和图表生成方法登记为
 可复用的干净基线。该 section 不启动新训练，不覆盖其他 Agent 的 running
