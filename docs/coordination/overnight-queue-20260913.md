@@ -16,9 +16,9 @@
 | ID | 来源 | 工作项 | 今晚动作 | 状态 |
 |---|---|---|---|---|
 | D1 | 飞书 0912-3 | 全文写人话、符号统一 | 术语表、章节差异清单、可合并段落草稿 | ready |
-| D2 | 飞书 0912-4 | shanbin / haoran handoff | 生成两份任务卡，锁定输入、交付、验收和边界 | ready |
+| D2 | 飞书 0912-4 | shanbin / haoran handoff | 生成两份任务卡，锁定输入、交付、验收和边界 | done (e8f3f5e) |
 | D3 | 飞书 0912-6、v2 §7.2 | V4.1-Flash SFT 攻击 | 只做方案和风险矩阵；不搬运 189 GiB 表 | blocked-by-P5 |
-| D4 | 飞书 0912-2 | Engram baseline go/no-go | 把 NO-GO 建议写入 backlog，保留 revision contingency | ready |
+| D4 | 飞书 0912-2 | Engram baseline go/no-go | 把 NO-GO 建议写入 backlog，保留 revision contingency | done (e8f3f5e; decision record) |
 | D5 | v2 §6.1 | Replay 次数与相干更新 | 审计 §48–§53，列可证伪预测和缺口 | ready |
 | D6 | v2 §6.2 | 学习率与 table/backbone 更新 | 整理 blrabs、table LR、wd/SGD 预测 | ready, GPU gate |
 | D7 | v2 §6.3 | 数据量与 epoch 长度 | 整理 S1、M5、M6 覆盖范围并生成缺口表 | ready |
@@ -47,7 +47,7 @@
 
 ### Wave 0 · 零 GPU并行
 
-D1、D2、D4、D5、D7、D8、D10、D11、D13、D14、D20、D21、D22、D23、D24、D25、D26、D27。每项写独立审计文件或 patch，主 agent 最后顺序合并共享索引。
+D1、D5、D7、D8、D10、D11、D13、D14、D25、D26、D27。D2、D4、D20–D24 已有 evidence packet（见 overnight-execution-status）。每项写独立审计文件或 patch，主 agent 最后顺序合并共享索引。
 
 ### Wave 1 · 远端 preflight 与小文件回收
 

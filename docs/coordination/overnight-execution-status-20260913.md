@@ -24,3 +24,6 @@ The current tool surface exposes goal management and shell/file tools but no age
 ## Remote preflight evidence · 2026-09-13
 
 Read-only SSH checks succeeded for `ophis-gpu`, `360-1`, and `360-2`. At check time, GPU memory was occupied on multiple cards on `ophis-gpu` and `360-1`; `360-2` GPUs were idle. Existing `_fixed` summary counts were 144, 127, and 223 respectively (directory counts only, not completion proof). Because the queue requires a fresh per-run registration, code md5 check, data-overlap check, and explicit GPU ownership, T8/T9/T12 remain queued rather than started.
+
+- **Handoff cards**: `docs/coordination/handoff-task-cards-20260913.md` (D2, commit `e8f3f5e`).
+- **Engram decision**: `docs/coordination/engram-decision-record-20260913.md` (D4, NO-GO for immediate direct reproduction; reopening criteria recorded).
