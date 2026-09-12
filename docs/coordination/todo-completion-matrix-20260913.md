@@ -9,7 +9,7 @@ This matrix reconciles the two Feishu pages, `experiment-lines.md`, `plan-3-fix-
 | Feishu Engram/overencoding decision | D4 | **decision recorded locally** | `engram-decision-record-20260913.md`; immediate direct reproduction NO-GO, conditional reopen criteria recorded. |
 | Feishu logit-sharpening panel | D20 | **done as current evidence** | §53 20-epoch artifacts and figures; strict 2×2 remains optional. |
 | Feishu Appendix C.4 | D21 | **done locally** | `c4_cross_axis_coverage.md` generated from 62/12/12 CSV rows; unmeasured interaction stated. |
-| Feishu Appendix H.1.3 | D22 | **done locally** | `run_id_index.md` generated from registry/log/lines (329 IDs). |
+| Feishu Appendix H.1.3 | D22 | **done locally** | `run_id_index.md` regenerated from registry/log/lines (294 identifier-like IDs; asset names/glob patterns filtered). |
 | Feishu figure inventory | D23 | **done locally** | figure index: 290 visualizations, 79 scripts; no files moved/deleted. |
 | Feishu untracked resources | D24 | **done locally** | `untracked-resource-audit-20260913.md`; PDFs have 30-entry SHA-256 manifest. |
 | Feishu v2 ↔ local report diff | D25 | **done read-only** | `feishu-local-diff-20260913.md`; pages not modified. |
