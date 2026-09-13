@@ -1,10 +1,9 @@
 {
-  "generated_at": "2026-09-13T13:52:00+08:00",
-  "commit": "5e21fdf",
+  "generated_at": "2026-09-13T14:26:25+08:00",
+  "commit": "f8ac4f4",
   "counts": {
-    "orphan-review": 94,
-    "referenced": 96,
-    "outdated": 57
+    "excluded-unnumbered": 219,
+    "referenced": 28
   },
   "figures": [
     {
@@ -13,7 +12,8 @@
       "format": "png",
       "bytes": 275132,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -29,7 +29,8 @@
       "format": "png",
       "bytes": 80412,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -45,7 +46,8 @@
       "format": "png",
       "bytes": 75364,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -61,7 +63,8 @@
       "format": "png",
       "bytes": 262860,
       "category": "epoch_scale",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_epoch_aligned_figs.py"
       ],
@@ -81,7 +84,8 @@
       "format": "png",
       "bytes": 75315,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -97,7 +101,8 @@
       "format": "png",
       "bytes": 93392,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_epoch_scale_figs.py",
         "docs/plot_scripts/gen_shard_sweep_figs.py",
@@ -122,7 +127,8 @@
       "format": "png",
       "bytes": 268031,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_epoch_scale_figs.py"
       ],
@@ -140,7 +146,8 @@
       "format": "svg",
       "bytes": 122914,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_epoch_scale_figs.py"
       ],
@@ -158,7 +165,8 @@
       "format": "png",
       "bytes": 106026,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_shard_sweep_figs.py"
       ],
@@ -176,7 +184,8 @@
       "format": "svg",
       "bytes": 107698,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_shard_sweep_figs.py"
       ],
@@ -194,7 +203,8 @@
       "format": "png",
       "bytes": 326994,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_shard_sweep_figs.py"
       ],
@@ -212,7 +222,8 @@
       "format": "svg",
       "bytes": 999713,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_shard_sweep_figs.py"
       ],
@@ -230,7 +241,8 @@
       "format": "png",
       "bytes": 94545,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_shard_sweep_figs.py"
       ],
@@ -248,7 +260,8 @@
       "format": "svg",
       "bytes": 69413,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_shard_sweep_figs.py"
       ],
@@ -266,7 +279,8 @@
       "format": "png",
       "bytes": 138939,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_shard_sweep_figs.py"
       ],
@@ -284,7 +298,8 @@
       "format": "svg",
       "bytes": 364065,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_shard_sweep_figs.py"
       ],
@@ -302,7 +317,8 @@
       "format": "png",
       "bytes": 219562,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_shard_sweep_figs.py"
       ],
@@ -320,7 +336,8 @@
       "format": "svg",
       "bytes": 134782,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_shard_sweep_figs.py"
       ],
@@ -338,7 +355,8 @@
       "format": "png",
       "bytes": 135586,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -357,6 +375,9 @@
       "bytes": 92192,
       "category": "epoch_scale",
       "status": "referenced",
+      "figure_numbers": [
+        "图2-3"
+      ],
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -376,7 +397,8 @@
       "format": "png",
       "bytes": 484257,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -395,6 +417,9 @@
       "bytes": 1012160,
       "category": "epoch_scale",
       "status": "referenced",
+      "figure_numbers": [
+        "图2-1"
+      ],
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -414,7 +439,8 @@
       "format": "png",
       "bytes": 146902,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -433,6 +459,9 @@
       "bytes": 171456,
       "category": "epoch_scale",
       "status": "referenced",
+      "figure_numbers": [
+        "图1-1"
+      ],
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -453,7 +482,8 @@
       "format": "png",
       "bytes": 240462,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -472,6 +502,9 @@
       "bytes": 143482,
       "category": "epoch_scale",
       "status": "referenced",
+      "figure_numbers": [
+        "图2-2"
+      ],
       "scripts": [
         "docs/plot_scripts/gen_sweep_v2_figs.py"
       ],
@@ -491,7 +524,8 @@
       "format": "png",
       "bytes": 130912,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -507,7 +541,8 @@
       "format": "png",
       "bytes": 198665,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_epoch_aligned_figs.py"
       ],
@@ -525,7 +560,8 @@
       "format": "png",
       "bytes": 243974,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -541,7 +577,8 @@
       "format": "png",
       "bytes": 141224,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_nogram_vs_epochaligned_figs.py"
       ],
@@ -559,7 +596,8 @@
       "format": "svg",
       "bytes": 72671,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_nogram_vs_epochaligned_figs.py"
       ],
@@ -577,7 +615,8 @@
       "format": "png",
       "bytes": 97816,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_epoch_aligned_figs.py"
       ],
@@ -595,7 +634,8 @@
       "format": "png",
       "bytes": 162019,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -611,7 +651,8 @@
       "format": "png",
       "bytes": 132660,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -627,7 +668,8 @@
       "format": "png",
       "bytes": 280877,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_nogram_vs_epochaligned_figs.py"
       ],
@@ -645,7 +687,8 @@
       "format": "svg",
       "bytes": 246200,
       "category": "epoch_scale",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_nogram_vs_epochaligned_figs.py"
       ],
@@ -665,7 +708,8 @@
       "format": "png",
       "bytes": 266505,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -681,7 +725,8 @@
       "format": "png",
       "bytes": 424667,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -697,7 +742,8 @@
       "format": "png",
       "bytes": 236161,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -713,7 +759,8 @@
       "format": "png",
       "bytes": 202201,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -729,7 +776,8 @@
       "format": "png",
       "bytes": 349827,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -745,7 +793,8 @@
       "format": "png",
       "bytes": 175813,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -761,7 +810,8 @@
       "format": "png",
       "bytes": 206759,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -777,7 +827,8 @@
       "format": "png",
       "bytes": 190279,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -793,7 +844,8 @@
       "format": "png",
       "bytes": 455461,
       "category": "epoch_scale",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -809,7 +861,8 @@
       "format": "png",
       "bytes": 135364,
       "category": "root",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -825,7 +878,8 @@
       "format": "png",
       "bytes": 218297,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -841,7 +895,8 @@
       "format": "png",
       "bytes": 80930,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -857,7 +912,8 @@
       "format": "png",
       "bytes": 83984,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -873,7 +929,8 @@
       "format": "png",
       "bytes": 82294,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -889,7 +946,8 @@
       "format": "png",
       "bytes": 141169,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -905,7 +963,8 @@
       "format": "png",
       "bytes": 330632,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -921,7 +980,8 @@
       "format": "png",
       "bytes": 272522,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -937,7 +997,8 @@
       "format": "png",
       "bytes": 88976,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -953,7 +1014,8 @@
       "format": "png",
       "bytes": 87973,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -969,7 +1031,8 @@
       "format": "png",
       "bytes": 88714,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -985,7 +1048,8 @@
       "format": "png",
       "bytes": 81250,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1001,7 +1065,8 @@
       "format": "png",
       "bytes": 174217,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1017,7 +1082,8 @@
       "format": "png",
       "bytes": 179104,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1033,7 +1099,8 @@
       "format": "png",
       "bytes": 116341,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1049,7 +1116,8 @@
       "format": "png",
       "bytes": 117306,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1065,7 +1133,8 @@
       "format": "png",
       "bytes": 110894,
       "category": "root",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_ngram5_order5_figs.py"
       ],
@@ -1083,7 +1152,8 @@
       "format": "svg",
       "bytes": 202930,
       "category": "root",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_ngram5_order5_figs.py"
       ],
@@ -1104,7 +1174,8 @@
       "format": "png",
       "bytes": 211713,
       "category": "root",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_ngram5_order5_figs.py"
       ],
@@ -1122,7 +1193,8 @@
       "format": "svg",
       "bytes": 89556,
       "category": "root",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_ngram5_order5_figs.py"
       ],
@@ -1143,7 +1215,8 @@
       "format": "png",
       "bytes": 283038,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1159,7 +1232,8 @@
       "format": "png",
       "bytes": 288271,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1175,7 +1249,8 @@
       "format": "png",
       "bytes": 239264,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1191,7 +1266,8 @@
       "format": "png",
       "bytes": 192634,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1207,7 +1283,8 @@
       "format": "png",
       "bytes": 102411,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1223,7 +1300,8 @@
       "format": "png",
       "bytes": 150706,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1239,7 +1317,8 @@
       "format": "png",
       "bytes": 123260,
       "category": "root",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1255,7 +1334,8 @@
       "format": "png",
       "bytes": 141577,
       "category": "root",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1272,6 +1352,9 @@
       "bytes": 86919,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图2-4"
+      ],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py"
       ],
@@ -1294,6 +1377,9 @@
       "bytes": 86743,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图2-5"
+      ],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py"
       ],
@@ -1315,7 +1401,8 @@
       "format": "svg",
       "bytes": 132350,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/build_figure_index.py",
@@ -1344,7 +1431,8 @@
       "format": "html",
       "bytes": 799809,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1366,7 +1454,8 @@
       "format": "html",
       "bytes": 95270,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1389,6 +1478,9 @@
       "bytes": 78716,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图2-6"
+      ],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/build_figure_index.py",
@@ -1416,7 +1508,8 @@
       "format": "html",
       "bytes": 15362,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1436,7 +1529,8 @@
       "format": "html",
       "bytes": 15385,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1458,7 +1552,8 @@
       "format": "svg",
       "bytes": 47908,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1480,7 +1575,8 @@
       "format": "html",
       "bytes": 15362,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1502,7 +1598,8 @@
       "format": "svg",
       "bytes": 49112,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1522,7 +1619,8 @@
       "format": "svg",
       "bytes": 142325,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_all_figures.py"
       ],
@@ -1542,7 +1640,8 @@
       "format": "html",
       "bytes": 12322,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1562,7 +1661,8 @@
       "format": "svg",
       "bytes": 102821,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1582,7 +1682,8 @@
       "format": "svg",
       "bytes": 127899,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1602,7 +1703,8 @@
       "format": "svg",
       "bytes": 206354,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1624,7 +1726,8 @@
       "format": "html",
       "bytes": 54428,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1646,7 +1749,8 @@
       "format": "svg",
       "bytes": 197093,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1668,7 +1772,8 @@
       "format": "png",
       "bytes": 75218,
       "category": "main",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_input.py"
       ],
@@ -1686,7 +1791,8 @@
       "format": "png",
       "bytes": 67910,
       "category": "main",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_input.py"
       ],
@@ -1704,7 +1810,8 @@
       "format": "png",
       "bytes": 74174,
       "category": "main",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_input.py"
       ],
@@ -1722,7 +1829,8 @@
       "format": "png",
       "bytes": 223947,
       "category": "main",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_nogram.py"
       ],
@@ -1742,7 +1850,8 @@
       "format": "png",
       "bytes": 102029,
       "category": "main",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_nogram.py"
       ],
@@ -1762,7 +1871,8 @@
       "format": "png",
       "bytes": 141282,
       "category": "main",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_nogram.py"
       ],
@@ -1782,7 +1892,8 @@
       "format": "png",
       "bytes": 128221,
       "category": "main",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_nogram.py"
       ],
@@ -1802,7 +1913,8 @@
       "format": "png",
       "bytes": 126801,
       "category": "main",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_lrdiag_nogram.py"
       ],
@@ -1822,7 +1934,8 @@
       "format": "png",
       "bytes": 276583,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_lrscan_clean_input.py"
       ],
@@ -1840,7 +1953,8 @@
       "format": "png",
       "bytes": 252080,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -1856,7 +1970,8 @@
       "format": "png",
       "bytes": 169032,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/analyze_ls20ep_logit_sharpening.py"
       ],
@@ -1876,7 +1991,8 @@
       "format": "png",
       "bytes": 503277,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/analyze_ls20ep_logit_sharpening.py"
       ],
@@ -1896,7 +2012,8 @@
       "format": "svg",
       "bytes": 90195,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_blog_clone_v10.py",
         "docs/plot_scripts/gen_all_figures.py"
@@ -1916,7 +2033,8 @@
       "format": "svg",
       "bytes": 2918,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/draw_transformer_ngram_injection.py"
       ],
@@ -1934,7 +2052,8 @@
       "format": "png",
       "bytes": 215056,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -1954,7 +2073,8 @@
       "format": "png",
       "bytes": 61062,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_batch.py"
       ],
@@ -1975,7 +2095,8 @@
       "format": "png",
       "bytes": 423522,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -1996,6 +2117,9 @@
       "bytes": 63131,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图5-4"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_batch.py"
       ],
@@ -2017,7 +2141,8 @@
       "format": "png",
       "bytes": 288428,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -2036,6 +2161,9 @@
       "bytes": 38143,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图2-2"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_batch.py"
       ],
@@ -2057,7 +2185,8 @@
       "format": "png",
       "bytes": 201150,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_batch.py"
       ],
@@ -2078,7 +2207,8 @@
       "format": "png",
       "bytes": 191673,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -2098,7 +2228,8 @@
       "format": "png",
       "bytes": 140814,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2114,7 +2245,8 @@
       "format": "svg",
       "bytes": 96319,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2132,7 +2264,8 @@
       "format": "png",
       "bytes": 140375,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2149,6 +2282,9 @@
       "bytes": 91428,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图3-1"
+      ],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2166,7 +2302,8 @@
       "format": "png",
       "bytes": 202363,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -2187,6 +2324,9 @@
       "bytes": 119938,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图6-3"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_mask_high_threshold_scan.py"
       ],
@@ -2208,6 +2348,9 @@
       "bytes": 231966,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图6-2"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -2228,6 +2371,9 @@
       "bytes": 30762,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图7-4"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_batch.py"
       ],
@@ -2249,7 +2395,8 @@
       "format": "png",
       "bytes": 44438,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_batch.py"
       ],
@@ -2270,7 +2417,8 @@
       "format": "png",
       "bytes": 514551,
       "category": "main",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -2291,6 +2439,9 @@
       "bytes": 135579,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图7-1"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_beta099_gap_step1000.py"
       ],
@@ -2312,7 +2463,8 @@
       "format": "png",
       "bytes": 56740,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_fig17_beta2_sweep.py"
       ],
@@ -2331,6 +2483,9 @@
       "bytes": 17853,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图7-3"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_fig17_beta2_sweep.py"
       ],
@@ -2351,6 +2506,9 @@
       "bytes": 95683,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图7-5"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_blrv5_backbone_lr.py"
       ],
@@ -2371,7 +2529,8 @@
       "format": "png",
       "bytes": 205774,
       "category": "main",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2387,7 +2546,8 @@
       "format": "png",
       "bytes": 207398,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2408,6 +2568,9 @@
       "bytes": 493187,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图6-1"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2428,7 +2591,8 @@
       "format": "png",
       "bytes": 84051,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2446,7 +2610,8 @@
       "format": "png",
       "bytes": 160133,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2468,6 +2633,9 @@
       "bytes": 573002,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图7"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2489,7 +2657,8 @@
       "format": "png",
       "bytes": 471380,
       "category": "main",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2505,7 +2674,8 @@
       "format": "png",
       "bytes": 407567,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2521,7 +2691,8 @@
       "format": "png",
       "bytes": 357800,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_fig01_injection_interactive.py",
         "docs/plot_scripts/plot_v5_registry_figures.py"
@@ -2542,7 +2713,8 @@
       "format": "png",
       "bytes": 216432,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2562,7 +2734,8 @@
       "format": "png",
       "bytes": 223917,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2583,6 +2756,9 @@
       "bytes": 360874,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图2-1"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_fig01_injection_interactive.py"
       ],
@@ -2602,7 +2778,8 @@
       "format": "png",
       "bytes": 164197,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_mask_tradeoff.py"
       ],
@@ -2620,7 +2797,8 @@
       "format": "svg",
       "bytes": 51653,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_mask_tradeoff.py"
       ],
@@ -2638,7 +2816,8 @@
       "format": "png",
       "bytes": 191618,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_mask_sweep_lastep.py"
       ],
@@ -2656,7 +2835,8 @@
       "format": "svg",
       "bytes": 137882,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_mask_sweep_lastep.py"
       ],
@@ -2674,7 +2854,8 @@
       "format": "png",
       "bytes": 279697,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_netval_benefit.py"
       ],
@@ -2692,7 +2873,8 @@
       "format": "svg",
       "bytes": 351591,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_netval_benefit.py"
       ],
@@ -2710,7 +2892,8 @@
       "format": "png",
       "bytes": 265398,
       "category": "main",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2726,7 +2909,8 @@
       "format": "png",
       "bytes": 222000,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2747,7 +2931,8 @@
       "format": "png",
       "bytes": 537499,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2769,6 +2954,9 @@
       "bytes": 251291,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图7-2"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_readable.py"
       ],
@@ -2789,7 +2977,8 @@
       "format": "png",
       "bytes": 106538,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_conv.py"
       ],
@@ -2809,7 +2998,8 @@
       "format": "png",
       "bytes": 205239,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_conv.py"
       ],
@@ -2829,7 +3019,8 @@
       "format": "png",
       "bytes": 103596,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_conv.py"
       ],
@@ -2849,7 +3040,8 @@
       "format": "png",
       "bytes": 17081,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -2865,7 +3057,8 @@
       "format": "png",
       "bytes": 818139,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_readable.py"
       ],
@@ -2886,7 +3079,8 @@
       "format": "png",
       "bytes": 132782,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_readable.py"
       ],
@@ -2907,7 +3101,8 @@
       "format": "png",
       "bytes": 222360,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_conv.py"
       ],
@@ -2925,7 +3120,8 @@
       "format": "png",
       "bytes": 267683,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_optv5f_conv.py"
       ],
@@ -2943,7 +3139,8 @@
       "format": "png",
       "bytes": 91148,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_theory_alpha_collapse.py"
       ],
@@ -2963,7 +3160,8 @@
       "format": "png",
       "bytes": 92891,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -2986,7 +3184,8 @@
       "format": "png",
       "bytes": 138683,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -3009,7 +3208,8 @@
       "format": "png",
       "bytes": 143754,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_length_valid.py"
       ],
@@ -3028,6 +3228,9 @@
       "bytes": 20971,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图5-1"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_length_valid.py"
       ],
@@ -3048,6 +3251,9 @@
       "bytes": 218146,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图5-2"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
@@ -3069,7 +3275,8 @@
       "format": "png",
       "bytes": 104883,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -3087,7 +3294,8 @@
       "format": "png",
       "bytes": 241178,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_staircase.py"
       ],
@@ -3105,7 +3313,8 @@
       "format": "png",
       "bytes": 153393,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_fig04_frequency_exact.py",
         "docs/plot_scripts/plot_v5_registry_figures.py"
@@ -3130,6 +3339,9 @@
       "bytes": 176532,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图3-3"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_fig04_frequency_exact.py",
         "docs/plot_scripts/plot_v5_registry_figures.py"
@@ -3151,6 +3363,9 @@
       "bytes": 38219,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图3-2"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_fig04_frequency_exact.py"
       ],
@@ -3170,7 +3385,8 @@
       "format": "png",
       "bytes": 90954,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -3191,7 +3407,8 @@
       "format": "png",
       "bytes": 100142,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -3212,7 +3429,8 @@
       "format": "png",
       "bytes": 133342,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -3228,7 +3446,8 @@
       "format": "png",
       "bytes": 150372,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_registry_figures.py"
       ],
@@ -3251,7 +3470,8 @@
       "format": "png",
       "bytes": 109386,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py",
         "docs/plot_scripts/plot_v5_fig06_table_size.py",
@@ -3277,7 +3497,8 @@
       "format": "png",
       "bytes": 166739,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py",
         "docs/plot_scripts/plot_v5_fig06_table_size.py",
@@ -3301,7 +3522,8 @@
       "format": "png",
       "bytes": 118029,
       "category": "main",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py",
         "docs/plot_scripts/plot_v5_fig06_table_size.py"
@@ -3326,6 +3548,9 @@
       "bytes": 55792,
       "category": "main",
       "status": "referenced",
+      "figure_numbers": [
+        "图4-1"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_128x_doc_figures.py",
         "docs/plot_scripts/plot_v5_fig06_table_size.py"
@@ -3347,7 +3572,8 @@
       "format": "png",
       "bytes": 355328,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_warmup_start_grid.py"
       ],
@@ -3365,7 +3591,8 @@
       "format": "png",
       "bytes": 316486,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_warmup_constant_live.py"
       ],
@@ -3383,7 +3610,8 @@
       "format": "png",
       "bytes": 222758,
       "category": "main",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_yv_scaling.py"
       ],
@@ -3402,7 +3630,8 @@
       "format": "png",
       "bytes": 144573,
       "category": "short_epoch_b2",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_short_epoch_b2_figs.py"
       ],
@@ -3420,7 +3649,8 @@
       "format": "svg",
       "bytes": 74831,
       "category": "short_epoch_b2",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_short_epoch_b2_figs.py"
       ],
@@ -3438,7 +3668,8 @@
       "format": "png",
       "bytes": 115915,
       "category": "short_epoch_b2",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_short_epoch_b2_figs.py"
       ],
@@ -3456,7 +3687,8 @@
       "format": "png",
       "bytes": 159756,
       "category": "short_epoch_b2",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -3472,7 +3704,8 @@
       "format": "svg",
       "bytes": 112690,
       "category": "short_epoch_b2",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -3490,7 +3723,8 @@
       "format": "png",
       "bytes": 84277,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_figure_index.py",
         "docs/plot_scripts/fig_beta2_lr_ablation.py"
@@ -3513,7 +3747,8 @@
       "format": "svg",
       "bytes": 67024,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_figure_index.py",
         "docs/plot_scripts/fig_beta2_lr_ablation.py"
@@ -3536,7 +3771,8 @@
       "format": "png",
       "bytes": 251702,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_figure_index.py",
         "docs/plot_scripts/fig_beta2_lr_curves.py"
@@ -3559,7 +3795,8 @@
       "format": "svg",
       "bytes": 169565,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/build_figure_index.py",
         "docs/plot_scripts/fig_beta2_lr_curves.py"
@@ -3584,7 +3821,8 @@
       "format": "png",
       "bytes": 167168,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/fig_beta2_lr_curves.py"
       ],
@@ -3602,7 +3840,8 @@
       "format": "svg",
       "bytes": 109125,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/fig_beta2_lr_curves.py"
       ],
@@ -3622,7 +3861,8 @@
       "format": "png",
       "bytes": 90902,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/fig_beta2_lr_ablation.py"
       ],
@@ -3640,7 +3880,8 @@
       "format": "svg",
       "bytes": 63457,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/fig_beta2_lr_ablation.py"
       ],
@@ -3658,7 +3899,8 @@
       "format": "png",
       "bytes": 129509,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/analyze_table_opt.py",
         "docs/plot_scripts/analyze_table_opt_1x_vs_2x.py",
@@ -3684,7 +3926,8 @@
       "format": "svg",
       "bytes": 131281,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/analyze_table_opt.py",
         "docs/plot_scripts/analyze_table_opt_1x_vs_2x.py",
@@ -3712,7 +3955,8 @@
       "format": "png",
       "bytes": 299664,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/analyze_table_opt_1x_vs_2x.py"
       ],
@@ -3731,7 +3975,8 @@
       "format": "svg",
       "bytes": 179200,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/analyze_table_opt_1x_vs_2x.py"
       ],
@@ -3752,7 +3997,8 @@
       "format": "png",
       "bytes": 247204,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/analyze_table_opt_2x.py",
         "docs/plot_scripts/build_figure_index.py"
@@ -3775,7 +4021,8 @@
       "format": "svg",
       "bytes": 352648,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/analyze_table_opt_2x.py",
         "docs/plot_scripts/build_figure_index.py"
@@ -3800,7 +4047,8 @@
       "format": "png",
       "bytes": 156499,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/fig_val_loss_debug.py"
       ],
@@ -3818,7 +4066,8 @@
       "format": "svg",
       "bytes": 105413,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/fig_val_loss_debug.py"
       ],
@@ -3836,7 +4085,8 @@
       "format": "png",
       "bytes": 143435,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/fig_val_loss_debug.py"
       ],
@@ -3854,7 +4104,8 @@
       "format": "svg",
       "bytes": 91166,
       "category": "table_opt",
-      "status": "outdated",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/fig_val_loss_debug.py"
       ],
@@ -3872,7 +4123,8 @@
       "format": "png",
       "bytes": 73173,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -3890,7 +4142,8 @@
       "format": "svg",
       "bytes": 51092,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -3908,7 +4161,8 @@
       "format": "png",
       "bytes": 242177,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -3926,7 +4180,8 @@
       "format": "svg",
       "bytes": 86921,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -3944,7 +4199,8 @@
       "format": "png",
       "bytes": 239595,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -3962,7 +4218,8 @@
       "format": "svg",
       "bytes": 113515,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -3980,7 +4237,8 @@
       "format": "png",
       "bytes": 239771,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -3998,7 +4256,8 @@
       "format": "svg",
       "bytes": 129165,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4016,7 +4275,8 @@
       "format": "png",
       "bytes": 217689,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4034,7 +4294,8 @@
       "format": "svg",
       "bytes": 140255,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4052,7 +4313,8 @@
       "format": "png",
       "bytes": 262610,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4070,7 +4332,8 @@
       "format": "svg",
       "bytes": 204298,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4088,7 +4351,8 @@
       "format": "svg",
       "bytes": 11775,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_rbar_support_fig.py"
       ],
@@ -4106,7 +4370,8 @@
       "format": "png",
       "bytes": 66579,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4124,7 +4389,8 @@
       "format": "svg",
       "bytes": 43825,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4142,7 +4408,8 @@
       "format": "png",
       "bytes": 136312,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4160,7 +4427,8 @@
       "format": "svg",
       "bytes": 94989,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4178,7 +4446,8 @@
       "format": "png",
       "bytes": 98155,
       "category": "theory",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4198,7 +4467,8 @@
       "format": "svg",
       "bytes": 50307,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4216,7 +4486,8 @@
       "format": "png",
       "bytes": 150981,
       "category": "theory",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_x1x2_verdict_figs.py"
       ],
@@ -4236,7 +4507,8 @@
       "format": "svg",
       "bytes": 76881,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_x1x2_verdict_figs.py"
       ],
@@ -4254,7 +4526,8 @@
       "format": "png",
       "bytes": 53178,
       "category": "theory",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_x1x2_verdict_figs.py"
       ],
@@ -4274,7 +4547,8 @@
       "format": "svg",
       "bytes": 37416,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/gen_theory_x1x2_verdict_figs.py"
       ],
@@ -4292,7 +4566,8 @@
       "format": "png",
       "bytes": 421694,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_backbone_lr_epoch_dynamics.py"
       ],
@@ -4310,7 +4585,8 @@
       "format": "svg",
       "bytes": 195410,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_backbone_lr_epoch_dynamics.py"
       ],
@@ -4328,7 +4604,8 @@
       "format": "png",
       "bytes": 202732,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_backbone_lr_epoch_dynamics.py"
       ],
@@ -4346,7 +4623,8 @@
       "format": "svg",
       "bytes": 72259,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_backbone_lr_epoch_dynamics.py"
       ],
@@ -4364,7 +4642,8 @@
       "format": "png",
       "bytes": 202814,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_beta_by_R.py"
       ],
@@ -4383,6 +4662,9 @@
       "bytes": 413627,
       "category": "theory",
       "status": "referenced",
+      "figure_numbers": [
+        "图8-2"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_dilution_surface.py"
       ],
@@ -4402,7 +4684,8 @@
       "format": "png",
       "bytes": 288683,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_dynamics_decomposition.py"
       ],
@@ -4422,6 +4705,9 @@
       "bytes": 221382,
       "category": "theory",
       "status": "referenced",
+      "figure_numbers": [
+        "图5-3"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_kernel_dynamics.py"
       ],
@@ -4441,7 +4727,8 @@
       "format": "svg",
       "bytes": 107371,
       "category": "theory",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_kernel_dynamics.py"
       ],
@@ -4459,7 +4746,8 @@
       "format": "png",
       "bytes": 595868,
       "category": "theory",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_kernel_rescale.py"
       ],
@@ -4477,7 +4765,8 @@
       "format": "svg",
       "bytes": 683867,
       "category": "theory",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_epoch_kernel_rescale.py"
       ],
@@ -4495,7 +4784,8 @@
       "format": "png",
       "bytes": 348230,
       "category": "theory",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/analyze_v5_f_by_pass_table.py"
       ],
@@ -4514,6 +4804,9 @@
       "bytes": 283170,
       "category": "theory",
       "status": "referenced",
+      "figure_numbers": [
+        "图8-1"
+      ],
       "scripts": [
         "docs/plot_scripts/plot_v5_good_turing_kernel.py"
       ],
@@ -4533,7 +4826,8 @@
       "format": "png",
       "bytes": 87405,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/offline_hash_collision.py"
       ],
@@ -4551,7 +4845,8 @@
       "format": "svg",
       "bytes": 72647,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/offline_hash_collision.py"
       ],
@@ -4569,7 +4864,8 @@
       "format": "png",
       "bytes": 139022,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_interference_model.py"
       ],
@@ -4587,7 +4883,8 @@
       "format": "png",
       "bytes": 204016,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_missing_mass_kernel.py"
       ],
@@ -4605,7 +4902,8 @@
       "format": "png",
       "bytes": 366951,
       "category": "theory",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/analyze_v5_cosine_margin_posthoc.py",
         "docs/plot_scripts/plot_v5_table_cosine_margin.py"
@@ -4630,7 +4928,8 @@
       "format": "png",
       "bytes": 237892,
       "category": "theory",
-      "status": "referenced",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/analyze_v5_val_damage_vs_missing_mass.py"
       ],
@@ -4649,7 +4948,8 @@
       "format": "png",
       "bytes": 135948,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [
         "docs/plot_scripts/plot_v5_theory_alpha_collapse.py"
       ],
@@ -4669,7 +4969,8 @@
       "format": "svg",
       "bytes": 79426,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
@@ -4685,7 +4986,8 @@
       "format": "svg",
       "bytes": 215743,
       "category": "theory",
-      "status": "orphan-review",
+      "status": "excluded-unnumbered",
+      "figure_numbers": [],
       "scripts": [],
       "data_paths": [
         "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
