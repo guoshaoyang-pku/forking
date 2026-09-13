@@ -1,7 +1,7 @@
 {
   "schema": "figure-feishu-upload-manifest-v2",
   "document_id": "EALQdOh1Yok8lQxQQnqcStIHnBf",
-  "revision_id": 19,
+  "revision_id": 21,
   "unique_local_assets": 15,
   "image_blocks": 15,
   "unique_uploaded_paths": 15,
@@ -105,5 +105,6 @@
   "scattered_batch_blocks_deleted": 238,
   "standalone_feishu_doc": "https://gcnsa0liqppq.feishu.cn/docx/EALQdOh1Yok8lQxQQnqcStIHnBf",
   "plan_doc_revision_after_split": 2836,
-  "caption_policy": "图片实物不显示图号标签；图号只在表格第一列；不自动分配未编号序号"
+  "caption_policy": "图片实物不显示图号标签；图号只在表格第一列；不自动分配未编号序号",
+  "section_tables": 5
 }
