@@ -21,7 +21,7 @@ This report is the current handoff point for the article phase. It reconciles th
 
 ## What remains open or gated
 
-- D1 cloud write-back: local draft is ready, Feishu TODO/paper pages remain historical copies.
+- D1 cloud write-back: completed as append-only status snapshots on the preserved pages; TODO revision 2335→2336 and paper v2 revision 1082→1083. Existing blocks, comments, images, and resource blocks were retained.
 - Blog publication: local report and blog target are byte-identical, but the review draft is not published.
 - D3/D9: DeepSeek-like / V4.1-Flash / SFT lines require pinned resources and approval; the approximately 189 GiB transfer remains a P5 gate.
 - D15/D18: M6 and shorter-epoch questions require an explicit protocol decision.
@@ -30,11 +30,11 @@ This report is the current handoff point for the article phase. It reconciles th
 
 ## Approval boundary
 
-The prepared append-only Feishu update is in docs/coordination/feishu-writeback-proposal-20260913.md. Approval means only inserting the two proposed status notes at the recorded anchors. It does not authorize blog publication, git push, code synchronization, GPU execution, deletion, or large-file transfer.
+The Feishu write-back was authorized and completed as two append operations. Pre-write protection: TODO revision 2335/history_version_id 164864; paper revision 1082/history_version_id 114688. Post-write: TODO revision 2336; paper revision 1083. This authorization does not cover blog publication, git push, code synchronization, GPU execution, deletion, or large-file transfer.
 
 ## Verification at handoff
 
-Current local snapshot (recheck with `git log` before any external write): figure index reports 290 visualizations and 79 plotting scripts; the dispatch manifest contains 27 unique IDs (`D1..D27`); Feishu read-only snapshot remains TODO rev 2335 / 27 markers and paper rev 1082 / 17 markers.
+Current local snapshot: figure index reports 290 visualizations and 79 plotting scripts; the dispatch manifest contains 27 unique IDs (`D1..D27`); Feishu post-write snapshot is TODO rev 2336 / 25 comments and paper rev 1083 / 11 comments. Full fetch comparison shows each pre-write XML is an exact prefix of the post-write XML, and comment IDs are unchanged.
 
     python3 docs/coordination/check_navigation_links.py  # checked=32 missing=0
     .venv/bin/python -m pytest ngram5_freq_gap/tests -q  # 26 passed
