@@ -1,0 +1,3468 @@
+{
+  "schema": "figure-asset-registry-v1",
+  "generated_at": "2026-09-13T14:50:34+08:00",
+  "commit": "9770d27",
+  "asset_root": "docs/figs/",
+  "numbering_rule": "正式图沿用图章节-序号；未编号资产使用稳定图0-N；已有 number 永不重排。",
+  "asset_count": 247,
+  "assets": [
+    {
+      "number": "图0-1",
+      "path": "docs/figs/epoch_scale/curve_family_training_step.png",
+      "asset_type": "png",
+      "bytes": 275132,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-2",
+      "path": "docs/figs/epoch_scale/dataset_size_gap2000.png",
+      "asset_type": "png",
+      "bytes": 80412,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-3",
+      "path": "docs/figs/epoch_scale/dose_response_gap2000.png",
+      "asset_type": "png",
+      "bytes": 75364,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-4",
+      "path": "docs/figs/epoch_scale/epoch_aligned_train_val_gap.png",
+      "asset_type": "png",
+      "bytes": 262860,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-5",
+      "path": "docs/figs/epoch_scale/epoch_aligned_vs_dataset_size.png",
+      "asset_type": "png",
+      "bytes": 75315,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-6",
+      "path": "docs/figs/epoch_scale/epoch_boundaries.png",
+      "asset_type": "png",
+      "bytes": 93392,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-7",
+      "path": "docs/figs/epoch_scale/epoch_scale_train_val_gap.png",
+      "asset_type": "png",
+      "bytes": 268031,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-8",
+      "path": "docs/figs/epoch_scale/epoch_scale_train_val_gap.svg",
+      "asset_type": "svg",
+      "bytes": 122914,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-9",
+      "path": "docs/figs/epoch_scale/fig_sweep_epoch_map.png",
+      "asset_type": "png",
+      "bytes": 106026,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-10",
+      "path": "docs/figs/epoch_scale/fig_sweep_epoch_map.svg",
+      "asset_type": "svg",
+      "bytes": 107698,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-11",
+      "path": "docs/figs/epoch_scale/fig_sweep_family.png",
+      "asset_type": "png",
+      "bytes": 326994,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-12",
+      "path": "docs/figs/epoch_scale/fig_sweep_family.svg",
+      "asset_type": "svg",
+      "bytes": 999713,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-13",
+      "path": "docs/figs/epoch_scale/fig_sweep_gap_size.png",
+      "asset_type": "png",
+      "bytes": 94545,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-14",
+      "path": "docs/figs/epoch_scale/fig_sweep_gap_size.svg",
+      "asset_type": "svg",
+      "bytes": 69413,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-15",
+      "path": "docs/figs/epoch_scale/fig_sweep_gap_step.png",
+      "asset_type": "png",
+      "bytes": 138939,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-16",
+      "path": "docs/figs/epoch_scale/fig_sweep_gap_step.svg",
+      "asset_type": "svg",
+      "bytes": 364065,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-17",
+      "path": "docs/figs/epoch_scale/fig_sweep_meta.png",
+      "asset_type": "png",
+      "bytes": 219562,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-18",
+      "path": "docs/figs/epoch_scale/fig_sweep_meta.svg",
+      "asset_type": "svg",
+      "bytes": 134782,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-19",
+      "path": "docs/figs/epoch_scale/fig_sweep_v2_dose_resp.png",
+      "asset_type": "png",
+      "bytes": 135586,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-20",
+      "path": "docs/figs/epoch_scale/fig_sweep_v2_dose_resp.svg",
+      "asset_type": "svg",
+      "bytes": 92192,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-21",
+      "path": "docs/figs/epoch_scale/fig_sweep_v2_family.png",
+      "asset_type": "png",
+      "bytes": 484257,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-22",
+      "path": "docs/figs/epoch_scale/fig_sweep_v2_family.svg",
+      "asset_type": "svg",
+      "bytes": 1012160,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-23",
+      "path": "docs/figs/epoch_scale/fig_sweep_v2_injpos.png",
+      "asset_type": "png",
+      "bytes": 146902,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-24",
+      "path": "docs/figs/epoch_scale/fig_sweep_v2_injpos.svg",
+      "asset_type": "svg",
+      "bytes": 171456,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-25",
+      "path": "docs/figs/epoch_scale/fig_sweep_v2_meta.png",
+      "asset_type": "png",
+      "bytes": 240462,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-26",
+      "path": "docs/figs/epoch_scale/fig_sweep_v2_meta.svg",
+      "asset_type": "svg",
+      "bytes": 143482,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-27",
+      "path": "docs/figs/epoch_scale/gap_vs_epoch_by_dose.png",
+      "asset_type": "png",
+      "bytes": 130912,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-28",
+      "path": "docs/figs/epoch_scale/gap_vs_epoch_curves.png",
+      "asset_type": "png",
+      "bytes": 198665,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-29",
+      "path": "docs/figs/epoch_scale/gap_vs_epochs.png",
+      "asset_type": "png",
+      "bytes": 243974,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-30",
+      "path": "docs/figs/epoch_scale/gap_vs_passes_nogram.png",
+      "asset_type": "png",
+      "bytes": 141224,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-31",
+      "path": "docs/figs/epoch_scale/gap_vs_passes_nogram.svg",
+      "asset_type": "svg",
+      "bytes": 72671,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-32",
+      "path": "docs/figs/epoch_scale/gap_vs_shard_size_epoch_aligned.png",
+      "asset_type": "png",
+      "bytes": 97816,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-33",
+      "path": "docs/figs/epoch_scale/gap_vs_training_step.png",
+      "asset_type": "png",
+      "bytes": 162019,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-34",
+      "path": "docs/figs/epoch_scale/lr_schedule_sweep.png",
+      "asset_type": "png",
+      "bytes": 132660,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-35",
+      "path": "docs/figs/epoch_scale/nogram_vs_ngram_epochaligned.png",
+      "asset_type": "png",
+      "bytes": 280877,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-36",
+      "path": "docs/figs/epoch_scale/nogram_vs_ngram_epochaligned.svg",
+      "asset_type": "svg",
+      "bytes": 246200,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-37",
+      "path": "docs/figs/epoch_scale/processed_tokens_gap.png",
+      "asset_type": "png",
+      "bytes": 266505,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-38",
+      "path": "docs/figs/epoch_scale/processed_tokens_loss.png",
+      "asset_type": "png",
+      "bytes": 424667,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-39",
+      "path": "docs/figs/epoch_scale/shard_curve_family.png",
+      "asset_type": "png",
+      "bytes": 236161,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-40",
+      "path": "docs/figs/epoch_scale/shard_curve_family_epoch.png",
+      "asset_type": "png",
+      "bytes": 202201,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-41",
+      "path": "docs/figs/epoch_scale/shard_curve_family_step.png",
+      "asset_type": "png",
+      "bytes": 349827,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-42",
+      "path": "docs/figs/epoch_scale/shard_meta_by_epoch.png",
+      "asset_type": "png",
+      "bytes": 175813,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-43",
+      "path": "docs/figs/epoch_scale/shard_meta_dataset_size.png",
+      "asset_type": "png",
+      "bytes": 206759,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-44",
+      "path": "docs/figs/epoch_scale/shard_meta_relationship.png",
+      "asset_type": "png",
+      "bytes": 190279,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-45",
+      "path": "docs/figs/epoch_scale/sweep_train_val_gap.png",
+      "asset_type": "png",
+      "bytes": 455461,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-46",
+      "path": "docs/figs/fig_causal_arms.png",
+      "asset_type": "png",
+      "bytes": 135364,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-47",
+      "path": "docs/figs/fig_cmp_gap_all.png",
+      "asset_type": "png",
+      "bytes": 218297,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-48",
+      "path": "docs/figs/fig_cmp_gap_probe_b2_098_lr2.png",
+      "asset_type": "png",
+      "bytes": 80930,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-49",
+      "path": "docs/figs/fig_cmp_gap_probe_b2_099_lr1.png",
+      "asset_type": "png",
+      "bytes": 83984,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-50",
+      "path": "docs/figs/fig_cmp_gap_vanilla_probe_input.png",
+      "asset_type": "png",
+      "bytes": 82294,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-51",
+      "path": "docs/figs/fig_cmp_gap_vanilla_probe_nogram.png",
+      "asset_type": "png",
+      "bytes": 141169,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-52",
+      "path": "docs/figs/fig_cmp_grid_gap.png",
+      "asset_type": "png",
+      "bytes": 330632,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-53",
+      "path": "docs/figs/fig_cmp_grid_loss.png",
+      "asset_type": "png",
+      "bytes": 272522,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-54",
+      "path": "docs/figs/fig_cmp_loss_probe_b2_098_lr2.png",
+      "asset_type": "png",
+      "bytes": 88976,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-55",
+      "path": "docs/figs/fig_cmp_loss_probe_b2_099_lr1.png",
+      "asset_type": "png",
+      "bytes": 87973,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-56",
+      "path": "docs/figs/fig_cmp_loss_vanilla_probe_input.png",
+      "asset_type": "png",
+      "bytes": 88714,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-57",
+      "path": "docs/figs/fig_cmp_loss_vanilla_probe_nogram.png",
+      "asset_type": "png",
+      "bytes": 81250,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-58",
+      "path": "docs/figs/fig_cmp_scatter.png",
+      "asset_type": "png",
+      "bytes": 174217,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-59",
+      "path": "docs/figs/fig_cmp_train_all.png",
+      "asset_type": "png",
+      "bytes": 179104,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-60",
+      "path": "docs/figs/fig_dtype_compare.png",
+      "asset_type": "png",
+      "bytes": 116341,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-61",
+      "path": "docs/figs/fig_fp32_vs_bf16_samehp.png",
+      "asset_type": "png",
+      "bytes": 117306,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-62",
+      "path": "docs/figs/fig_ngram5_order5_gap.png",
+      "asset_type": "png",
+      "bytes": 110894,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-63",
+      "path": "docs/figs/fig_ngram5_order5_gap.svg",
+      "asset_type": "svg",
+      "bytes": 202930,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-64",
+      "path": "docs/figs/fig_ngram5_order5_gap_freq.png",
+      "asset_type": "png",
+      "bytes": 211713,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-65",
+      "path": "docs/figs/fig_ngram5_order5_gap_freq.svg",
+      "asset_type": "svg",
+      "bytes": 89556,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-66",
+      "path": "docs/figs/fig_online_b2_sweep_1x_lr2.png",
+      "asset_type": "png",
+      "bytes": 283038,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-67",
+      "path": "docs/figs/fig_online_b2_sweep_2ep_lr2.png",
+      "asset_type": "png",
+      "bytes": 288271,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-68",
+      "path": "docs/figs/fig_online_lr_sweep_b2_099_1x.png",
+      "asset_type": "png",
+      "bytes": 239264,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-69",
+      "path": "docs/figs/fig_probe_artifact_1.png",
+      "asset_type": "png",
+      "bytes": 192634,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-70",
+      "path": "docs/figs/fig_probe_artifact_2.png",
+      "asset_type": "png",
+      "bytes": 102411,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-71",
+      "path": "docs/figs/fig_uniform_b2_compare.png",
+      "asset_type": "png",
+      "bytes": 150706,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-72",
+      "path": "docs/figs/fig_uniform_compare.png",
+      "asset_type": "png",
+      "bytes": 123260,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-73",
+      "path": "docs/figs/fig_vanilla_repro_20260823.png",
+      "asset_type": "png",
+      "bytes": 141577,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-74",
+      "path": "docs/figs/main/fig_freq_bigram.svg",
+      "asset_type": "svg",
+      "bytes": 86919,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-75",
+      "path": "docs/figs/main/fig_freq_trigram.svg",
+      "asset_type": "svg",
+      "bytes": 86743,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-76",
+      "path": "docs/figs/main/fig_gap.svg",
+      "asset_type": "svg",
+      "bytes": 132350,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-77",
+      "path": "docs/figs/main/fig_gap_by_freq.html",
+      "asset_type": "html",
+      "bytes": 799809,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-78",
+      "path": "docs/figs/main/fig_gap_loss.html",
+      "asset_type": "html",
+      "bytes": 95270,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-79",
+      "path": "docs/figs/main/fig_gap_vs_frequency.svg",
+      "asset_type": "svg",
+      "bytes": 78716,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-80",
+      "path": "docs/figs/main/fig_gap_vs_frequency_log.html",
+      "asset_type": "html",
+      "bytes": 15362,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-81",
+      "path": "docs/figs/main/fig_gap_vs_frequency_loglog.html",
+      "asset_type": "html",
+      "bytes": 15385,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-82",
+      "path": "docs/figs/main/fig_gap_vs_frequency_loglog.svg",
+      "asset_type": "svg",
+      "bytes": 47908,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-83",
+      "path": "docs/figs/main/fig_gap_vs_frequency_logx.html",
+      "asset_type": "html",
+      "bytes": 15362,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-84",
+      "path": "docs/figs/main/fig_gap_vs_frequency_logx.svg",
+      "asset_type": "svg",
+      "bytes": 49112,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-85",
+      "path": "docs/figs/main/fig_gap_vs_frequency_steps.svg",
+      "asset_type": "svg",
+      "bytes": 142325,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-86",
+      "path": "docs/figs/main/fig_hitcount_dist.html",
+      "asset_type": "html",
+      "bytes": 12322,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-87",
+      "path": "docs/figs/main/fig_hitcount_dist.svg",
+      "asset_type": "svg",
+      "bytes": 102821,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-88",
+      "path": "docs/figs/main/fig_input_alignment.svg",
+      "asset_type": "svg",
+      "bytes": 127899,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-89",
+      "path": "docs/figs/main/fig_loss.svg",
+      "asset_type": "svg",
+      "bytes": 206354,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-90",
+      "path": "docs/figs/main/fig_loss_norm.html",
+      "asset_type": "html",
+      "bytes": 54428,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-91",
+      "path": "docs/figs/main/fig_loss_norm.svg",
+      "asset_type": "svg",
+      "bytes": 197093,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-92",
+      "path": "docs/figs/main/fig_lrdiag_input_gap.png",
+      "asset_type": "png",
+      "bytes": 75218,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-93",
+      "path": "docs/figs/main/fig_lrdiag_input_train.png",
+      "asset_type": "png",
+      "bytes": 67910,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-94",
+      "path": "docs/figs/main/fig_lrdiag_input_val.png",
+      "asset_type": "png",
+      "bytes": 74174,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-95",
+      "path": "docs/figs/main/fig_lrdiag_nogram_gap.png",
+      "asset_type": "png",
+      "bytes": 223947,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-96",
+      "path": "docs/figs/main/fig_lrdiag_nogram_lrmult.png",
+      "asset_type": "png",
+      "bytes": 102029,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-97",
+      "path": "docs/figs/main/fig_lrdiag_nogram_train.png",
+      "asset_type": "png",
+      "bytes": 141282,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-98",
+      "path": "docs/figs/main/fig_lrdiag_nogram_train_loglog.png",
+      "asset_type": "png",
+      "bytes": 128221,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-99",
+      "path": "docs/figs/main/fig_lrdiag_nogram_val.png",
+      "asset_type": "png",
+      "bytes": 126801,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-100",
+      "path": "docs/figs/main/fig_lrscan_clean_input.png",
+      "asset_type": "png",
+      "bytes": 276583,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-101",
+      "path": "docs/figs/main/fig_lrscan_clean_input_preview.png",
+      "asset_type": "png",
+      "bytes": 252080,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-102",
+      "path": "docs/figs/main/fig_ls20ep_exemplar_evolution.png",
+      "asset_type": "png",
+      "bytes": 169032,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-103",
+      "path": "docs/figs/main/fig_ls20ep_sharpening_vs_ce.png",
+      "asset_type": "png",
+      "bytes": 503277,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-104",
+      "path": "docs/figs/main/fig_table_norm.svg",
+      "asset_type": "svg",
+      "bytes": 90195,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-105",
+      "path": "docs/figs/main/fig_transformer_ngram_injection_routes.svg",
+      "asset_type": "svg",
+      "bytes": 2918,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-106",
+      "path": "docs/figs/main/fig_v5_128x_causal_frequency_effect.png",
+      "asset_type": "png",
+      "bytes": 215056,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-107",
+      "path": "docs/figs/main/fig_v5_128x_causal_gap.png",
+      "asset_type": "png",
+      "bytes": 61062,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-108",
+      "path": "docs/figs/main/fig_v5_128x_causal_losses.png",
+      "asset_type": "png",
+      "bytes": 423522,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-109",
+      "path": "docs/figs/main/fig_v5_128x_dose_gap.png",
+      "asset_type": "png",
+      "bytes": 63131,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-110",
+      "path": "docs/figs/main/fig_v5_128x_freeze_forking.png",
+      "asset_type": "png",
+      "bytes": 288428,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-111",
+      "path": "docs/figs/main/fig_v5_128x_injection_bars.png",
+      "asset_type": "png",
+      "bytes": 38143,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-112",
+      "path": "docs/figs/main/fig_v5_128x_injection_curves.png",
+      "asset_type": "png",
+      "bytes": 201150,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-113",
+      "path": "docs/figs/main/fig_v5_128x_injection_frequency_bigram.png",
+      "asset_type": "png",
+      "bytes": 191673,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-114",
+      "path": "docs/figs/main/fig_v5_128x_injection_frequency_tokens_raw.png",
+      "asset_type": "png",
+      "bytes": 140814,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-115",
+      "path": "docs/figs/main/fig_v5_128x_injection_frequency_tokens_raw.svg",
+      "asset_type": "svg",
+      "bytes": 96319,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-116",
+      "path": "docs/figs/main/fig_v5_128x_injection_frequency_tokens_scaled.png",
+      "asset_type": "png",
+      "bytes": 140375,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-117",
+      "path": "docs/figs/main/fig_v5_128x_injection_frequency_tokens_scaled.svg",
+      "asset_type": "svg",
+      "bytes": 91428,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-118",
+      "path": "docs/figs/main/fig_v5_128x_injection_frequency_trigram.png",
+      "asset_type": "png",
+      "bytes": 202363,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-119",
+      "path": "docs/figs/main/fig_v5_128x_mask_high_threshold_scan.png",
+      "asset_type": "png",
+      "bytes": 119938,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-120",
+      "path": "docs/figs/main/fig_v5_128x_mask_low_le_scan.png",
+      "asset_type": "png",
+      "bytes": 231966,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-121",
+      "path": "docs/figs/main/fig_v5_128x_optimizer_gap.png",
+      "asset_type": "png",
+      "bytes": 30762,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-122",
+      "path": "docs/figs/main/fig_v5_128x_rowwidth_gap.png",
+      "asset_type": "png",
+      "bytes": 44438,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-123",
+      "path": "docs/figs/main/fig_v5_2x_128x_injection_curves.png",
+      "asset_type": "png",
+      "bytes": 514551,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-124",
+      "path": "docs/figs/main/fig_v5_beta099_gap_step1000_vs_table_lr.png",
+      "asset_type": "png",
+      "bytes": 135579,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-125",
+      "path": "docs/figs/main/fig_v5_beta2_sweep_1k.png",
+      "asset_type": "png",
+      "bytes": 56740,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-126",
+      "path": "docs/figs/main/fig_v5_beta2_sweep_1k.svg",
+      "asset_type": "svg",
+      "bytes": 17853,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-127",
+      "path": "docs/figs/main/fig_v5_blrv5_backbone_lr.png",
+      "asset_type": "png",
+      "bytes": 95683,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-128",
+      "path": "docs/figs/main/fig_v5_causal_existing_losses.png",
+      "asset_type": "png",
+      "bytes": 205774,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-129",
+      "path": "docs/figs/main/fig_v5_causal_frequency_effect.png",
+      "asset_type": "png",
+      "bytes": 207398,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-130",
+      "path": "docs/figs/main/fig_v5_causal_losses.png",
+      "asset_type": "png",
+      "bytes": 493187,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-131",
+      "path": "docs/figs/main/fig_v5_dose_fixedstep.png",
+      "asset_type": "png",
+      "bytes": 84051,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-132",
+      "path": "docs/figs/main/fig_v5_dose_frequency_heatmap.png",
+      "asset_type": "png",
+      "bytes": 160133,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-133",
+      "path": "docs/figs/main/fig_v5_dose_trajectories.png",
+      "asset_type": "png",
+      "bytes": 573002,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-134",
+      "path": "docs/figs/main/fig_v5_dose_trajectories_existing.png",
+      "asset_type": "png",
+      "bytes": 471380,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-135",
+      "path": "docs/figs/main/fig_v5_fd_vs_old_curves.png",
+      "asset_type": "png",
+      "bytes": 407567,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-136",
+      "path": "docs/figs/main/fig_v5_injection.png",
+      "asset_type": "png",
+      "bytes": 357800,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-137",
+      "path": "docs/figs/main/fig_v5_injection_frequency_bigram.png",
+      "asset_type": "png",
+      "bytes": 216432,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-138",
+      "path": "docs/figs/main/fig_v5_injection_frequency_trigram.png",
+      "asset_type": "png",
+      "bytes": 223917,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-139",
+      "path": "docs/figs/main/fig_v5_injection_interactive.html",
+      "asset_type": "html",
+      "bytes": 360874,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-140",
+      "path": "docs/figs/main/fig_v5_mask_freq_tradeoff.png",
+      "asset_type": "png",
+      "bytes": 164197,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-141",
+      "path": "docs/figs/main/fig_v5_mask_freq_tradeoff.svg",
+      "asset_type": "svg",
+      "bytes": 51653,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-142",
+      "path": "docs/figs/main/fig_v5_mask_sweep_lastep.png",
+      "asset_type": "png",
+      "bytes": 191618,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-143",
+      "path": "docs/figs/main/fig_v5_mask_sweep_lastep.svg",
+      "asset_type": "svg",
+      "bytes": 137882,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-144",
+      "path": "docs/figs/main/fig_v5_netval_benefit.png",
+      "asset_type": "png",
+      "bytes": 279697,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-145",
+      "path": "docs/figs/main/fig_v5_netval_benefit.svg",
+      "asset_type": "svg",
+      "bytes": 351591,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-146",
+      "path": "docs/figs/main/fig_v5_optimizer_existing_curves.png",
+      "asset_type": "png",
+      "bytes": 265398,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-147",
+      "path": "docs/figs/main/fig_v5_optimizer_frequency.png",
+      "asset_type": "png",
+      "bytes": 222000,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-148",
+      "path": "docs/figs/main/fig_v5_optimizer_full_curves.png",
+      "asset_type": "png",
+      "bytes": 537499,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-149",
+      "path": "docs/figs/main/fig_v5_optv5f_all_scale_gap_facets.png",
+      "asset_type": "png",
+      "bytes": 251291,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-150",
+      "path": "docs/figs/main/fig_v5_optv5f_beta2_compare.png",
+      "asset_type": "png",
+      "bytes": 106538,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-151",
+      "path": "docs/figs/main/fig_v5_optv5f_conv_curves.png",
+      "asset_type": "png",
+      "bytes": 205239,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-152",
+      "path": "docs/figs/main/fig_v5_optv5f_final_gap.png",
+      "asset_type": "png",
+      "bytes": 103596,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-153",
+      "path": "docs/figs/main/fig_v5_optv5f_freq_heatmap.png",
+      "asset_type": "png",
+      "bytes": 17081,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-154",
+      "path": "docs/figs/main/fig_v5_optv5f_readable_2000_facets.png",
+      "asset_type": "png",
+      "bytes": 818139,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-155",
+      "path": "docs/figs/main/fig_v5_optv5f_readable_overview.png",
+      "asset_type": "png",
+      "bytes": 132782,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-156",
+      "path": "docs/figs/main/fig_v5_optv5f_train_facets.png",
+      "asset_type": "png",
+      "bytes": 222360,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-157",
+      "path": "docs/figs/main/fig_v5_optv5f_val_facets.png",
+      "asset_type": "png",
+      "bytes": 267683,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-158",
+      "path": "docs/figs/main/fig_v5_pass_collapse.png",
+      "asset_type": "png",
+      "bytes": 91148,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-159",
+      "path": "docs/figs/main/fig_v5_s1_epoch_length_scaling.png",
+      "asset_type": "png",
+      "bytes": 92891,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-160",
+      "path": "docs/figs/main/fig_v5_s1_epoch_length_trajectories.png",
+      "asset_type": "png",
+      "bytes": 138683,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-161",
+      "path": "docs/figs/main/fig_v5_s1_epoch_length_valid.png",
+      "asset_type": "png",
+      "bytes": 143754,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-162",
+      "path": "docs/figs/main/fig_v5_s1_epoch_length_valid.svg",
+      "asset_type": "svg",
+      "bytes": 20971,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-163",
+      "path": "docs/figs/main/fig_v5_s1_epoch_number.png",
+      "asset_type": "png",
+      "bytes": 218146,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-164",
+      "path": "docs/figs/main/fig_v5_s1_epoch_prefix.png",
+      "asset_type": "png",
+      "bytes": 104883,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-165",
+      "path": "docs/figs/main/fig_v5_s1_epoch_staircase.png",
+      "asset_type": "png",
+      "bytes": 241178,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-166",
+      "path": "docs/figs/main/fig_v5_s1_frequency_exact_f.png",
+      "asset_type": "png",
+      "bytes": 153393,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-167",
+      "path": "docs/figs/main/fig_v5_s1_frequency_exact_f.svg",
+      "asset_type": "svg",
+      "bytes": 176532,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-168",
+      "path": "docs/figs/main/fig_v5_s1_frequency_exact_interactive.html",
+      "asset_type": "html",
+      "bytes": 38219,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-169",
+      "path": "docs/figs/main/fig_v5_s1_frequency_token_mass.png",
+      "asset_type": "png",
+      "bytes": 90954,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-170",
+      "path": "docs/figs/main/fig_v5_s1_long_replay.png",
+      "asset_type": "png",
+      "bytes": 100142,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-171",
+      "path": "docs/figs/main/fig_v5_s1_table_load_collision.png",
+      "asset_type": "png",
+      "bytes": 133342,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-172",
+      "path": "docs/figs/main/fig_v5_s1_table_load_proxy.png",
+      "asset_type": "png",
+      "bytes": 150372,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-173",
+      "path": "docs/figs/main/fig_v5_s1_table_size.png",
+      "asset_type": "png",
+      "bytes": 109386,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-174",
+      "path": "docs/figs/main/fig_v5_s1_table_size_loglog.png",
+      "asset_type": "png",
+      "bytes": 166739,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-175",
+      "path": "docs/figs/main/fig_v5_s1_table_size_loglog_clean.png",
+      "asset_type": "png",
+      "bytes": 118029,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-176",
+      "path": "docs/figs/main/fig_v5_s1_table_size_loglog_clean.svg",
+      "asset_type": "svg",
+      "bytes": 55792,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-177",
+      "path": "docs/figs/main/fig_v5_warmup_start_grid.png",
+      "asset_type": "png",
+      "bytes": 355328,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-178",
+      "path": "docs/figs/main/fig_v5_warmup_vs_constant_live.png",
+      "asset_type": "png",
+      "bytes": 316486,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-179",
+      "path": "docs/figs/main/fig_v5_yv_scaling_three_axis.png",
+      "asset_type": "png",
+      "bytes": 222758,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-180",
+      "path": "docs/figs/short_epoch_b2/short_epoch_b2_gap.png",
+      "asset_type": "png",
+      "bytes": 144573,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-181",
+      "path": "docs/figs/short_epoch_b2/short_epoch_b2_gap.svg",
+      "asset_type": "svg",
+      "bytes": 74831,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-182",
+      "path": "docs/figs/short_epoch_b2/short_epoch_b2_gap_raw.png",
+      "asset_type": "png",
+      "bytes": 115915,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-183",
+      "path": "docs/figs/short_epoch_b2/short_epoch_b2_gap_v11.png",
+      "asset_type": "png",
+      "bytes": 159756,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-184",
+      "path": "docs/figs/short_epoch_b2/short_epoch_b2_gap_v11.svg",
+      "asset_type": "svg",
+      "bytes": 112690,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-185",
+      "path": "docs/figs/table_opt/fig_beta2_ablation.png",
+      "asset_type": "png",
+      "bytes": 84277,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-186",
+      "path": "docs/figs/table_opt/fig_beta2_ablation.svg",
+      "asset_type": "svg",
+      "bytes": 67024,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-187",
+      "path": "docs/figs/table_opt/fig_beta2_curves.png",
+      "asset_type": "png",
+      "bytes": 251702,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-188",
+      "path": "docs/figs/table_opt/fig_beta2_curves.svg",
+      "asset_type": "svg",
+      "bytes": 169565,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-189",
+      "path": "docs/figs/table_opt/fig_lr_curves.png",
+      "asset_type": "png",
+      "bytes": 167168,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-190",
+      "path": "docs/figs/table_opt/fig_lr_curves.svg",
+      "asset_type": "svg",
+      "bytes": 109125,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-191",
+      "path": "docs/figs/table_opt/fig_table_lr_ablation.png",
+      "asset_type": "png",
+      "bytes": 90902,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-192",
+      "path": "docs/figs/table_opt/fig_table_lr_ablation.svg",
+      "asset_type": "svg",
+      "bytes": 63457,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-193",
+      "path": "docs/figs/table_opt/fig_table_opt.png",
+      "asset_type": "png",
+      "bytes": 129509,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-194",
+      "path": "docs/figs/table_opt/fig_table_opt.svg",
+      "asset_type": "svg",
+      "bytes": 131281,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-195",
+      "path": "docs/figs/table_opt/fig_table_opt_1x_vs_2x.png",
+      "asset_type": "png",
+      "bytes": 299664,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-196",
+      "path": "docs/figs/table_opt/fig_table_opt_1x_vs_2x.svg",
+      "asset_type": "svg",
+      "bytes": 179200,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-197",
+      "path": "docs/figs/table_opt/fig_table_opt_2x.png",
+      "asset_type": "png",
+      "bytes": 247204,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-198",
+      "path": "docs/figs/table_opt/fig_table_opt_2x.svg",
+      "asset_type": "svg",
+      "bytes": 352648,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-199",
+      "path": "docs/figs/table_opt/fig_val_loss_beta2_lr.png",
+      "asset_type": "png",
+      "bytes": 156499,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-200",
+      "path": "docs/figs/table_opt/fig_val_loss_beta2_lr.svg",
+      "asset_type": "svg",
+      "bytes": 105413,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-201",
+      "path": "docs/figs/table_opt/fig_val_loss_short_epoch.png",
+      "asset_type": "png",
+      "bytes": 143435,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-202",
+      "path": "docs/figs/table_opt/fig_val_loss_short_epoch.svg",
+      "asset_type": "svg",
+      "bytes": 91166,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-203",
+      "path": "docs/figs/theory/fig_theory_bias_split.png",
+      "asset_type": "png",
+      "bytes": 73173,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-204",
+      "path": "docs/figs/theory/fig_theory_bias_split.svg",
+      "asset_type": "svg",
+      "bytes": 51092,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-205",
+      "path": "docs/figs/theory/fig_theory_epoch_multiseed.png",
+      "asset_type": "png",
+      "bytes": 242177,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-206",
+      "path": "docs/figs/theory/fig_theory_epoch_multiseed.svg",
+      "asset_type": "svg",
+      "bytes": 86921,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-207",
+      "path": "docs/figs/theory/fig_theory_exposure_frequency.png",
+      "asset_type": "png",
+      "bytes": 239595,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-208",
+      "path": "docs/figs/theory/fig_theory_exposure_frequency.svg",
+      "asset_type": "svg",
+      "bytes": 113515,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-209",
+      "path": "docs/figs/theory/fig_theory_m2_frequency_decomposition.png",
+      "asset_type": "png",
+      "bytes": 239771,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-210",
+      "path": "docs/figs/theory/fig_theory_m2_frequency_decomposition.svg",
+      "asset_type": "svg",
+      "bytes": 129165,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-211",
+      "path": "docs/figs/theory/fig_theory_optimizer_exponent.png",
+      "asset_type": "png",
+      "bytes": 217689,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-212",
+      "path": "docs/figs/theory/fig_theory_optimizer_exponent.svg",
+      "asset_type": "svg",
+      "bytes": 140255,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-213",
+      "path": "docs/figs/theory/fig_theory_paired_decomposition.png",
+      "asset_type": "png",
+      "bytes": 262610,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-214",
+      "path": "docs/figs/theory/fig_theory_paired_decomposition.svg",
+      "asset_type": "svg",
+      "bytes": 204298,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-215",
+      "path": "docs/figs/theory/fig_theory_rbar_support.svg",
+      "asset_type": "svg",
+      "bytes": 11775,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-216",
+      "path": "docs/figs/theory/fig_theory_s1_beta_seed.png",
+      "asset_type": "png",
+      "bytes": 66579,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-217",
+      "path": "docs/figs/theory/fig_theory_s1_beta_seed.svg",
+      "asset_type": "svg",
+      "bytes": 43825,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-218",
+      "path": "docs/figs/theory/fig_theory_sampling_regimes.png",
+      "asset_type": "png",
+      "bytes": 136312,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-219",
+      "path": "docs/figs/theory/fig_theory_sampling_regimes.svg",
+      "asset_type": "svg",
+      "bytes": 94989,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-220",
+      "path": "docs/figs/theory/fig_theory_table_slopes.png",
+      "asset_type": "png",
+      "bytes": 98155,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-221",
+      "path": "docs/figs/theory/fig_theory_table_slopes.svg",
+      "asset_type": "svg",
+      "bytes": 50307,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-222",
+      "path": "docs/figs/theory/fig_theory_x1_optimizer.png",
+      "asset_type": "png",
+      "bytes": 150981,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-223",
+      "path": "docs/figs/theory/fig_theory_x1_optimizer.svg",
+      "asset_type": "svg",
+      "bytes": 76881,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-224",
+      "path": "docs/figs/theory/fig_theory_x2_tabledim.png",
+      "asset_type": "png",
+      "bytes": 53178,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-225",
+      "path": "docs/figs/theory/fig_theory_x2_tabledim.svg",
+      "asset_type": "svg",
+      "bytes": 37416,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-226",
+      "path": "docs/figs/theory/fig_v5_backbone_lr_epoch_dynamics.png",
+      "asset_type": "png",
+      "bytes": 421694,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-227",
+      "path": "docs/figs/theory/fig_v5_backbone_lr_epoch_dynamics.svg",
+      "asset_type": "svg",
+      "bytes": 195410,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-228",
+      "path": "docs/figs/theory/fig_v5_backbone_lr_recurrence_diagnostics.png",
+      "asset_type": "png",
+      "bytes": 202732,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-229",
+      "path": "docs/figs/theory/fig_v5_backbone_lr_recurrence_diagnostics.svg",
+      "asset_type": "svg",
+      "bytes": 72259,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-230",
+      "path": "docs/figs/theory/fig_v5_beta_by_table_R.png",
+      "asset_type": "png",
+      "bytes": 202814,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-231",
+      "path": "docs/figs/theory/fig_v5_dilution_surface.png",
+      "asset_type": "png",
+      "bytes": 413627,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-232",
+      "path": "docs/figs/theory/fig_v5_epoch_dynamics_decomposition.png",
+      "asset_type": "png",
+      "bytes": 288683,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-233",
+      "path": "docs/figs/theory/fig_v5_epoch_kernel_dynamics.png",
+      "asset_type": "png",
+      "bytes": 221382,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-234",
+      "path": "docs/figs/theory/fig_v5_epoch_kernel_dynamics.svg",
+      "asset_type": "svg",
+      "bytes": 107371,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-235",
+      "path": "docs/figs/theory/fig_v5_epoch_kernel_rescale.png",
+      "asset_type": "png",
+      "bytes": 595868,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-236",
+      "path": "docs/figs/theory/fig_v5_epoch_kernel_rescale.svg",
+      "asset_type": "svg",
+      "bytes": 683867,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-237",
+      "path": "docs/figs/theory/fig_v5_f_by_pass_accounting.png",
+      "asset_type": "png",
+      "bytes": 348230,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-238",
+      "path": "docs/figs/theory/fig_v5_good_turing_kernel.png",
+      "asset_type": "png",
+      "bytes": 283170,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-239",
+      "path": "docs/figs/theory/fig_v5_hash_collision_mass.png",
+      "asset_type": "png",
+      "bytes": 87405,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-240",
+      "path": "docs/figs/theory/fig_v5_hash_collision_mass.svg",
+      "asset_type": "svg",
+      "bytes": 72647,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-241",
+      "path": "docs/figs/theory/fig_v5_interference_model_vs_data.png",
+      "asset_type": "png",
+      "bytes": 139022,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-242",
+      "path": "docs/figs/theory/fig_v5_missing_mass_kernel.png",
+      "asset_type": "png",
+      "bytes": 204016,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-243",
+      "path": "docs/figs/theory/fig_v5_table_cosine_and_margin.png",
+      "asset_type": "png",
+      "bytes": 366951,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-244",
+      "path": "docs/figs/theory/fig_v5_val_damage_vs_missing_mass_bigram.png",
+      "asset_type": "png",
+      "bytes": 237892,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-245",
+      "path": "docs/figs/theory/fig_v5_zipf_context_alpha.png",
+      "asset_type": "png",
+      "bytes": 135948,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-246",
+      "path": "docs/figs/theory/ngram5_sample285_final_gap_by_frequency.svg",
+      "asset_type": "svg",
+      "bytes": 79426,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    },
+    {
+      "number": "图0-247",
+      "path": "docs/figs/theory/ngram5_sample285_loss_epoch_replay.svg",
+      "asset_type": "svg",
+      "bytes": 215743,
+      "scripts": [],
+      "data_paths": [
+        "待按对应生成脚本核实"
+      ],
+      "clusters": [
+        "待按对应 run 核实"
+      ],
+      "status": "asset-in-git"
+    }
+  ]
+}
