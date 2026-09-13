@@ -3,15 +3,14 @@
   "numbering_rule": "沿用论文初稿已有图x-y编号；允许跳跃；不再自动分配未编号序号。主现象与ngram原理图归第1章。",
   "source_draft": "飞书论文初稿 v2 · Lyr3wfH8FiIWT6kdQmrc6dGUnEf",
   "chapters": [
-    "1 Introduction",
+    "1 Introduction（主现象与 n-gram 原理）",
     "2 Related Works（无图）",
-    "3 现象：主现象与三个幂律",
-    "4 干预与频率/理论证据",
-    "5 因果与动力学",
-    "6 预测与验证",
+    "3 实现和现象（保留图号中的 3-* 与 scaling 图）",
+    "4 干预实验",
+    "5 理论：幂律、多 epoch 动力学与机制",
+    "6 模型的进一步预测与验证（图号沿用草稿 9-1）",
     "7 补充实验（预留）",
     "8 结论与讨论",
-    "9 净收益判决（草稿预留）",
     "Appendix A–H（按初稿采用后加入）"
   ],
   "figures": [
@@ -30,7 +29,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "RysvbwjXooPi2Zx8yJzcLLcznYe"
+      "file_token": "RysvbwjXooPi2Zx8yJzcLLcznYe",
+      "manuscript_section": "1"
     },
     {
       "number": "图1-2",
@@ -47,7 +47,8 @@
         "本地绘图；无集群依赖"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "AiMcbLr71obx2ZxuSFrcjkupn4c"
+      "file_token": "AiMcbLr71obx2ZxuSFrcjkupn4c",
+      "manuscript_section": "1"
     },
     {
       "number": "图3-8",
@@ -64,7 +65,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "QJa0bjUcUoMO2Yxbulncj3NMnPd"
+      "file_token": "QJa0bjUcUoMO2Yxbulncj3NMnPd",
+      "manuscript_section": "3"
     },
     {
       "number": "图4-3",
@@ -81,7 +83,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "H12mbLC04oYVY3xnAPUcN5WsntB"
+      "file_token": "H12mbLC04oYVY3xnAPUcN5WsntB",
+      "manuscript_section": "3"
     },
     {
       "number": "图4-5",
@@ -98,7 +101,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "VeSqbGY4Loif8UxBprjcJzcennf"
+      "file_token": "VeSqbGY4Loif8UxBprjcJzcennf",
+      "manuscript_section": "4"
     },
     {
       "number": "图4-6",
@@ -115,7 +119,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "F6b2bCjrIo6ejSxs9bSc5F35niR"
+      "file_token": "F6b2bCjrIo6ejSxs9bSc5F35niR",
+      "manuscript_section": "4"
     },
     {
       "number": "图4-7",
@@ -132,7 +137,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "ZtLzbFGEBocpbKxk8cOcQnFKnNb"
+      "file_token": "ZtLzbFGEBocpbKxk8cOcQnFKnNb",
+      "manuscript_section": "5"
     },
     {
       "number": "图4-8",
@@ -149,7 +155,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "ZU3LbMhDJotp2FxMzyPcqIBSnnc"
+      "file_token": "ZU3LbMhDJotp2FxMzyPcqIBSnnc",
+      "manuscript_section": "5"
     },
     {
       "number": "图5-1",
@@ -166,7 +173,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "FrYJb1gKkociuhxkizWckYDFnRf"
+      "file_token": "FrYJb1gKkociuhxkizWckYDFnRf",
+      "manuscript_section": "4"
     },
     {
       "number": "图5-3",
@@ -183,7 +191,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "LaAWb04OVoiFhaxRWT0cen4pnFc"
+      "file_token": "LaAWb04OVoiFhaxRWT0cen4pnFc",
+      "manuscript_section": "5"
     },
     {
       "number": "图6-1",
@@ -200,7 +209,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "BCdlbFuDSoSX1qxLRrKc0Lytnmf"
+      "file_token": "BCdlbFuDSoSX1qxLRrKc0Lytnmf",
+      "manuscript_section": "5"
     },
     {
       "number": "图6-2",
@@ -217,7 +227,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "RJCnbHCOIodKKcx0vFtcKcjlnPf"
+      "file_token": "RJCnbHCOIodKKcx0vFtcKcjlnPf",
+      "manuscript_section": "5"
     },
     {
       "number": "图7-1",
@@ -234,7 +245,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "Q0EGb6LhsovDaUxA9Dnc0Naon7f"
+      "file_token": "Q0EGb6LhsovDaUxA9Dnc0Naon7f",
+      "manuscript_section": "3"
     },
     {
       "number": "图7-2",
@@ -251,7 +263,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "Aq9VbHhkDo2d4Ox1i5EcIDKnnbh"
+      "file_token": "Aq9VbHhkDo2d4Ox1i5EcIDKnnbh",
+      "manuscript_section": "3"
     },
     {
       "number": "图9-1",
@@ -268,7 +281,8 @@
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "FR0hb4FO3o6Rb1xRuAHcu2NFn0w"
+      "file_token": "FR0hb4FO3o6Rb1xRuAHcu2NFn0w",
+      "manuscript_section": "6"
     }
   ]
 }
