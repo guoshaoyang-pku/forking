@@ -1322,13 +1322,11 @@ logits 72×2048×8192 ≈ 12 亿元素），不是 bf16 没生效。
 
 ---
 
-## 19. 自然语言 5gram（order=5）· 极简 setting 重跑（2026-08-24）
+## 19. 自然语言 5gram（order=5）· 历史计划（已退役）
 
 ### 背景
-历史上 `ngram5_freq_gap` 包实际只跑过 trigram（`--order 3`），order=5 的自然语言
-5gram 从未用极简 setting 执行过。OPHIS 旧库只有 order=5 的 smoke（`run_contract_20260806-115854.json`：
-`"order": 5`，但 `loader_selection.smoke: true`，train_docs=200，25600 tokens）。本次
-用 `code/make_ngram_blocks.py` + `ngram5_freq_gap/trainer.py` 在极简 setting 下重跑。
+历史上曾计划用 `ngram5_freq_gap` trainer 做 order=5 smoke；该路线未纳入当前论文主线，
+旧包和 launcher 已删除。此节仅作 provenance，当前不再维护或重跑。
 
 ### 数据（`data/ngram5_minimal_order5/`，新生成）
 | 项 | 值 |
@@ -2173,14 +2171,7 @@ run 目录，因此旧数字降级为历史存档，不能作为本节的 5-gram
 
 ### 可执行命令与验收
 
-launcher：`ngram5_freq_gap/cluster/run_on_cluster.sh`，必须显式设置
-`NGRAM5_RUN_ID=ngram5_order5_sample285_v5_transformer_s42`，并在目标机完成
-代码 hash 核对、GPU 空闲核对和数据生成 smoke。训练前需确认数据 metadata
-为 `order=5`、`block_len=7`，以及 `exact_ngram_counts.npz` 使用
-`contexts` 矩阵而不是溢出的 packed int64 key。验收产物为
-`data/runs_fixed/ngram5_order5_sample285_v5_transformer_s42_fixed/`，至少含
-run contract、summary、training/validation JSONL、fixed batch hashes 和
-exact-frequency probe 输出；MLP 臂只有在实现后另起 run_id。
+本节仅保留历史坐标，不提供可执行 launcher。未来如需 order=5，应按当前 SSOT 重新设计并另起 run_id。
 
 ---
 

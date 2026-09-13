@@ -45,8 +45,8 @@
 | code/make_ngram_blocks.py | 极简 n-gram block 数据路径 | current |
 | code/cluster/run_baseline.sh | 非 table-size 新实验入口 | current；只改一个变量 |
 | code/cluster/ | 历史 wave launcher 与环境工具 | 混合；逐个脚本审计后再运行 |
-| ngram5_freq_gap/ | alpha 数据干预 + 独立 trainer | current 独立实验维度 |
-| tasks/ | 自包含的 toy / theory / synthetic 验证任务 | 各任务自包含 |
+| tasks/s1_scaling_three_axis/ | 自然语料三轴 scaling 任务 | current；只改单一轴 |
+| ngram5_freq_gap/、L1–L6 toy | 受控数据 / 解析 toy harness | retired 2026-09-13；仅可从 Git 历史追溯 |
 
 ## 实验与数据命名
 
@@ -92,6 +92,7 @@
 - 附录报告：docs/appendices/README.md。
 - 文献核实：docs/notes/literature/engram-benefit-baseline-survey-0912.md；实际影响分析：docs/notes/literature/overencoding-practical-implications.md。
 - 主开发仓库：/Users/guoshaoyang/Desktop/workdir/ngram-gap-lab。
+- 旧 toy / synthetic harness：已从当前工作树移除；历史提交仍可用 git log --all -- path 追溯。
 - 发布博客仓库：/Users/guoshaoyang/Desktop/workdir/guoshaoyang-pku.github.io。
 - ophis-gpu：`/data4/guoshaoyang/ngram-gap-lab`（`/data/home` 为别名；以远端实际挂载为准）。
 - 360-1 / 360-2：/data/home/guoshaoyang/ngram-gap-lab。

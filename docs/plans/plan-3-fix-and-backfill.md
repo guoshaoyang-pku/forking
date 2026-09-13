@@ -103,22 +103,18 @@
 
 ## P1 · 结构与可信度
 
-### T5 · 修 `ngram5_freq_gap/model.py` 的死 fallback
+### T5 · 退役 `ngram5_freq_gap` trainer（已完成清理）
 
-**问题**：`model.py` 曾依次尝试多个仓库外 fallback，导致本地 `import model` 依赖不可复现。
-`data_gen.py` 的 `_load_upstream_lib()` 同理。
+**历史问题**：`model.py` 曾依次尝试多个仓库外 fallback，导致本地 `import model` 依赖不可复现。
+`data_gen.py` 的 `_load_upstream_lib()` 同理。该 trainer 已从工作树删除，不再维护或重跑。
 
-**后果**：`ngram5_freq_gap/README.md` §2 那张「符合极简 setting」的表**只是环境变量声明，
-无法在仓库内验证**，因为真正的 backbone 代码不在这里。
+**处理**：旧包及其测试、launcher、报告和 toy 产物已删除；相关实验仅保留在 Git 历史中作 provenance。
 
 **做什么**
-1. 把 `model.py` 的 fallback 改为主线 `code/train.py`，确认能取出 `NanoGPTOriginal`。
-2. 若主线 `code/train.py` 的类名/结构不匹配，写一个薄适配层，**不要复制第二份 nanoGPT**。
-3. 跑 `ngram5_freq_gap/tests`（22 个纯 CPU 单测）确认无回归。
-4. 顺带核对：该包是否真的没有 B1/B2 两个 bug（README 声称没有，需代码级确认）。
+1. 不恢复旧包，也不为其补适配层；主线统一使用 `code/train.py`。
+2. 新实验如有必要，另立符合当前 SSOT 的 run 计划和 run_id。
 
-**验收**：`python -c "import sys; sys.path.insert(0,'ngram5_freq_gap'); import model"` 成功；
-单测全绿；README §2 的每一项都能在代码里指出出处。
+**验收**：仓库当前入口不再依赖 `ngram5_freq_gap`；导航检查与主线代码检查通过。
 
 ### T6 · 补 M6 缺口或限定结论
 
@@ -195,9 +191,8 @@
    `ρ(f)` 和 `gap(f)`，可直接拟合 β、c、γ，不需要先验假定幂律。
 4. log 频率不要更高（每 10 步已足够），避免拖慢训练。
 
-**实现提示**：`ngram5_freq_gap/trainer.py` 已有 `fixed_train_probe_batches` 的成熟实现
-（materialized 固定 batch 列表 + SHA256 记账 + `itertools.chain` 保证不跳数据）。
-**移植它，不要重写**。注意主线 `code/train.py` 必须避免重蹈 B1——探针绝不能消费训练迭代器。
+**实现提示（历史）**：旧 trainer 曾有 `fixed_train_probe_batches` 实现；该代码已退役。
+如需实现固定 train probe，请在主线 `code/train.py` 中按当前测量契约重新实现，探针绝不能消费训练迭代器。
 
 **run_id**：`nglab1x_input_rho_s42`
 
@@ -224,8 +219,8 @@
 |---|---|
 | T11 | `RUNS_DIR` 环境变量化。现在 13 个脚本各自硬编码，下次再出 bug 又要改 13 处 |
 | T12 | 抽 `docs/plot_scripts/table_opt_common.py`。三个 `analyze_table_opt*.py` 约 40% 行重复（三个入口保留，问题确实不同） |
-| T13 | `ngram5_freq_gap` 更名 `controlled_ngram`（包名 `ngram5` 是历史误称，launcher 实际跑 `--order 3`）。需同步 3 个调用点 + 集群 rsync 路径 |
-| T14 | `ngram5_freq_gap/resample_aligned_dataset.py` 无 launcher 引用，确认后删除 |
+| T13 | ✅ 旧 `ngram5_freq_gap` trainer、launcher 和数据重采样脚本已删除；不再更名或迁移。 |
+| T14 | ✅ `ngram5_freq_gap/resample_aligned_dataset.py` 随旧包一并删除。 |
 | T12 | ✅ 干预机制已接线：`apply_intervention()` + `table_mult` 已接通 CLI → Config → 主循环（一次性闩锁）。`run_causal_minimal.sh` 就位。**只剩在 GPU 上实跑验证**（因果重跑队列，见 `agents.md` §6.3） |
 
 ---

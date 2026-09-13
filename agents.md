@@ -90,8 +90,7 @@ ngram-gap-lab/
 ├── agents.md                    # 本文件
 ├── .agents/skills/ + README.md
 ├── code/                        # 主线 nanoGPT（train.py / ngram_freq.py / cluster/ / tools/）
-├── tasks/                       # L1–L5 敏捷验证（tasks/README.md 先读）
-├── ngram5_freq_gap/             # 受控数据干预运行时（data_gen.py / trainer.py / tests）
+├── tasks/                       # 自包含的自然语料 scaling 任务
 ├── docs/
 │   ├── experiment-lines.md      # ★★ 实验线全景 + 权威数据源 + 待办（入口）
 │   ├── experiment-log.md        # ★ 实验登记簿
@@ -104,7 +103,7 @@ ngram-gap-lab/
 └── data/                        # gitignored：tokenized / freq_index*.npz / runs_fixed/
 ```
 
-**入口顺序**：agents.md → `experiment-lines.md` → `experiment-log.md` / `tasks/README.md` / `ngram5_freq_gap/README.md`。
+**入口顺序**：agents.md → `experiment-lines.md` → `experiment-log.md` / `claims-ledger.md`。
 
 **tasks/ 约定**：独立、自包含、单机快速跑完。目录 `lN_<短名>`，脚本在根、结果在 `results/`、fixture 在 `results/inputs/`；不依赖 `code/train.py`、不依赖 GPU、不写 `data/`；新增时在 `tasks/README.md` 补一行说明科学问题。
 
@@ -121,7 +120,7 @@ ngram-gap-lab/
 | **360-2** | VPN → `10.234.161.3:22`，`ssh 360-2` | 8×H200 (143.7GB) | ❌ | 同上 | ✅ |
 
 - 360 系无公网且不能直连 ophis-gpu；跨集群搬运走 **ophis-gpu → Mac → 360** 中转。
-- 分工：主线 nanoGPT 三机均可（代码同步后口径一致）；toy/合成数据默认 **360-2**。
+- 分工：主线 nanoGPT 三机均可（代码同步后口径一致）；不再启动 toy / synthetic harness。
 
 **跑前强制检查**：① `nvidia-smi` 确认卡空闲，`CUDA_VISIBLE_DEVICES=<id>` 占卡，一 Agent 只用自己的卡；② 同步代码后 `md5sum` 核对 `code/train.py`/`ngram_freq.py`/`cluster/*.sh`（权威源=本地已 commit 版本；教训：360 曾残留旧 `train.py` `f9388473` 口径不一致）；③ 改代码先 commit 再同步，同批实验跨机用同一份代码。
 
@@ -140,7 +139,36 @@ ngram-gap-lab/
 
 ---
 
-## 6. 相关 skill
+## 6. 论文与外部研究对照（2026-09-13）
+
+本项目的论文计划与中文初稿以以下两份飞书文档为入口；英文投稿稿仍以文档中声明的本地 TeX 为准，飞书页面中的计划、数字和机制只有在对应 run、step、seed 和图源核验后才可升级为论文结论。
+
+- 论文计划：<https://gcnsa0liqppq.feishu.cn/wiki/G4KKwHMWriuHDOkARHCcHWBenwc>
+- 中文论文初稿 v2：<https://gcnsa0liqppq.feishu.cn/wiki/Lyr3wfH8FiIWT6kdQmrc6dGUnEf>
+- 对照论文：**Data Scarcity and Model Sparsity: Mixtures-of-Experts Overfit More to Repeated Data**，<https://arxiv.org/pdf/2609.11917>
+
+### 6.1 与 MoE 论文的关系：现象一致，机制部分同构
+
+外部论文在固定总 token 预算、改变 unique token 数的实验中发现：数据 repetition 提高时，dense 与 MoE 的 validation CE 恶化、training loss 继续下降；MoE 更早且更快退化，且总参数量／稀疏度比 active 参数更能解释退化。其机制证据是 router 很早稳定，重复数据随后反复更新近似固定的 expert 子集，expert specialization 随 repetition 增强；dropout、FFN/expert output masking 可缓解，router jitter、gradient clipping 和普通 weight decay 作用较弱。
+
+这与本项目的 Forking 现象在操作层面一致：固定 replay 后 train loss 与 fixed-val loss 分叉，gap 随重复曝光累积；局部 n-gram context→row 对齐使更新集中到一小部分条件记忆和相容的 backbone 状态，低频 context/novel continuation 受损，mask 或破坏映射可显著降低 gap。两者可以共享一个较高层的抽象：**数据重复把有限的独立样本反复送入一个稀疏或局部激活的参数子空间，导致局部 specialization／logit sharpening，训练集收益与未覆盖条件的泛化损失分离。**
+
+但目前不能把两者写成“同一机制已被证明”：
+
+1. MoE 论文直接测量的是跨架构 validation CE 随 repetition rate 的退化，以及 router ossification 和 expert knockout specialization；本项目直接测量的是 clean n-gram 的 train/val gap、频率分解、hash reseed、freeze 和 low-frequency mask。
+2. MoE 的关键中间变量是**学习到的 router 分区和 expert 函数专门化**；n-gram 的关键中间变量是**确定性 context→table-row 查找、有限续接覆盖、表与 backbone 的共适应**。n-gram 没有可直接等同于 MoE router 的 learned routing。
+3. 本项目的“over-encoding 会锐化 logits，因而重复压低尾部并增强 memorization”是很有解释力的统一假说，但应由 logit margin/entropy、seen-vs-novel continuation 概率轨迹和干预实验直接检验；在没有这些证据前，正文应写为机制模型或预测，不能当作已证实的唯一因果链。
+4. “n-gram 是极其 sparsely activating 的 local MoE”适合作为结构类比和实验假说：它说明局部条件路径的重复更新为何可能类似 expert specialization；它不意味着 n-gram 在参数化、路由学习或负载均衡意义上就是 MoE。
+
+因此，论文对照结论应使用以下口径：**MoE 论文独立支持“数据稀缺 × 局部/稀疏参数化会放大 repetition overfitting”这一现象级命题；本项目进一步在 n-gram memory 中给出条件续接、频率、映射对齐和 backbone 共适应的因果证据。二者的共同机制候选是重复驱动的局部 specialization 与 logit sharpening，但跨架构等价性仍是待验证预测。**
+
+### 6.2 对照时的实验与写作要求
+
+- 将“相同现象”拆成 train loss、fixed-val loss、raw/net gap、重复次数/epoch 和绝对 validation loss，避免只凭终点 gap 类比。
+- 对齐 unique-data budget、total-token budget、active/total parameter、局部激活比例和 regularization；MoE 论文的 repetition rate 不等于本项目的 context frequency F。
+- 对照图和结论必须回到 `docs/experiment-lines.md`、`docs/experiment-log.md`、`docs/claims-ledger.md` 及 `data/runs_fixed/`；飞书页面中的机制段落保留假说、待核和已验证三种状态。
+
+## 7. 相关 skill
 
 - repo-level skills 在 `.agents/skills/`，随仓库交接；可用 `$` 显式调用或按 description 自动匹配。个人全局安装可软链到这些目录，但**不以绝对个人路径作为仓库唯一来源**。
 - `ngram-gap-settings`：新 setting/ablation/launcher 审计，锁定极简契约、table R、口径、单变量差异。

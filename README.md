@@ -39,7 +39,7 @@
 | 主现象 | 四臂 injection 对照、fixed-val gap 曲线 | docs/experiment-lines.md M2 / V5-refresh |
 | 动力学 | pass 内漂移、backbone 驱动的 novel suppression、表 cosine 与 margin | docs/experiment-log.md §48–§52 |
 | 直接分布证据 | 20-epoch logit sharpening probe；input 与 nogram 对照 | docs/experiment-log.md §53；docs/appendices/ls20ep_logit_stats/ |
-| 理论与 toy | Markov exact、sampling law、residual-response moments、synthetic harness | tasks/README.md |
+| 机制与理论 | replay 动力学、缺失质量、margin 锐化、table-R 与多层注入 | docs/experiment-lines.md / docs/notes/theory/benefit-side-measurements-0912.md |
 | 文献与 related work | over-encoding、Engram、duplication、Good–Turing citation 库 | docs/notes/literature/ |
 | 正文与附录 | 主报告、背景页、实验 registry、C–H appendix plan | docs/report/、docs/plans/plan-6-appendix-structure.md |
 
@@ -57,9 +57,6 @@ run_baseline.sh 只适合非 table-size 的新实验。正式运行前必须登�
 ### CPU / 本地验证
 
     python3 -m py_compile code/train.py code/diag_worker.py
-    python3 tasks/l2_markov_exact/markov_clean_unigram.py
-    python3 tasks/l3_sampling_law/gap_vs_samples_unigram.py
-    python3 -m pytest ngram5_freq_gap/tests -q
 
 CPU smoke 只能验证代码路径，不能替代正式实验。主线 run 的原始产物在 gitignored 的 data/runs_fixed/*_fixed/；不要把 data/runs/ 中的旧结果当作证据。
 
@@ -72,8 +69,7 @@ CPU smoke 只能验证代码路径，不能替代正式实验。主线 run 的�
 ## 代码和资源布局
 
     code/                  主线 nanoGPT、频率索引、诊断和 GPU launchers
-    ngram5_freq_gap/       受控数据干预运行时，只动数据侧
-    tasks/                 自包含的 toy / theory / synthetic 验证任务
+    tasks/s1_scaling_three_axis/  自然语料三轴 scaling 任务
     docs/experiment-*.md   实验全景、登记簿和 claim ledger
     docs/coordination/     多 agent 分工、登记、回收和证据包规范
     docs/notes/            方法、理论、数据、文献和研究判断
@@ -96,7 +92,7 @@ CPU smoke 只能验证代码路径，不能替代正式实验。主线 run 的�
 
 ## 维护状态
 
-当前仓库处于论文收敛与资源整理阶段。0912 新增的 benefit-side、logit-sharpening、文献和 appendix 素材已经落地；下一步优先级是统一正文语言和符号、整理 appendix C–H、维护实验/协作索引，再处理低优先级的 V4.1-Flash SFT 攻击线。统一 backlog 和资源状态见 [docs/resource-index.md](docs/resource-index.md)；整晚执行队列见 [overnight queue](docs/coordination/overnight-queue-20260913.md)。
+当前仓库处于论文收敛与资源整理阶段。0912 新增的 benefit-side、logit-sharpening、文献和 appendix 素材已经落地；旧 toy / synthetic harness 已退役；后续优先统一正文语言和符号、整理 appendix C–H、维护实验/协作索引，再处理低优先级的 V4.1-Flash SFT 攻击线。统一 backlog 和资源状态见 [docs/resource-index.md](docs/resource-index.md)；整晚执行队列见 [overnight queue](docs/coordination/overnight-queue-20260913.md)。
 
 ## 许可
 

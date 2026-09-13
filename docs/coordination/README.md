@@ -16,7 +16,7 @@
 | 作图 | 已登记 run + canonical script | docs/plot_scripts + docs/figs | 不从 prose 手填数值 |
 | 文献 | 一手论文、官方代码/页面 | docs/notes/literature | core 与 credit 分开，无法核实时标注 |
 | 正文编辑 | claims ledger、已审核图表 | blog repo → copy 到 docs/report | 不把 proxy/observational 升级成因果结论 |
-| 数学附录 | theory notes、exact toy results | docs/appendices 或 docs/report/theory.html | 写明适用条件与 claim ceiling |
+| 机制附录 | 已审核的自然语料证据与理论说明 | docs/appendices 或 docs/report/index.html | 写明适用条件与 claim ceiling |
 | 远端实验 | 已登记 setting、固定 commit | runs_fixed + experiment log | 先做 GPU、md5、数据不重叠检查 |
 
 ## 实验交接模板
@@ -51,8 +51,7 @@
 
 ```bash
 bash -n code/cluster/run_baseline.sh
-.venv/bin/python -m py_compile ngram5_freq_gap/model.py docs/plot_scripts/build_figure_index.py
-PYTHONPATH=ngram5_freq_gap .venv/bin/python -m pytest ngram5_freq_gap/tests -q
+python3 -m py_compile code/train.py code/diag_worker.py docs/plot_scripts/build_figure_index.py
 python3 docs/plot_scripts/build_figure_index.py
 git diff --check
 ```
@@ -68,6 +67,9 @@ git diff --check
 - 不使用 rsync --delete；不删除已完成 run；不在未授权时 push、改分支或搬运超过 1 GB 的文件。
 
 ## 当前论文队列
+
+旧的 ngram5_freq_gap/ 与 L1–L6 toy / synthetic harness 已于 2026-09-13 退役；不要恢复其 launcher、测试或实验入口。
+
 
 1. 正文人话化、符号统一和 claim ceiling 对齐。
 2. Appendix C–H 缺口：C.4 三轴表、H.1.3 run index、G.2.1 已完成素材回填。

@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-09-13T05:02:28+08:00",
-  "commit": "87f49c6",
+  "generated_at": "2026-09-13T13:52:00+08:00",
+  "commit": "5e21fdf",
   "counts": {
-    "orphan-review": 123,
-    "referenced": 109,
-    "outdated": 58
+    "orphan-review": 94,
+    "referenced": 96,
+    "outdated": 57
   },
   "figures": [
     {
@@ -3867,345 +3867,6 @@
       "used_by": []
     },
     {
-      "path": "docs/figs/theory/fig_gap_vs_samples_bc11.png",
-      "file": "fig_gap_vs_samples_bc11.png",
-      "format": "png",
-      "bytes": 118361,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_gap_vs_samples_bc11.svg",
-      "file": "fig_gap_vs_samples_bc11.svg",
-      "format": "svg",
-      "bytes": 86810,
-      "category": "theory",
-      "status": "referenced",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": [
-        "docs/report/experiment-registry.html",
-        "docs/report/versions/experiment-registry-20260827-before-v5-prune.html"
-      ]
-    },
-    {
-      "path": "docs/figs/theory/fig_gap_vs_samples_exact.png",
-      "file": "fig_gap_vs_samples_exact.png",
-      "format": "png",
-      "bytes": 114447,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_gap_vs_samples_exact.svg",
-      "file": "fig_gap_vs_samples_exact.svg",
-      "format": "svg",
-      "bytes": 89190,
-      "category": "theory",
-      "status": "referenced",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": [
-        "docs/report/experiment-registry.html",
-        "docs/report/theory.html",
-        "docs/report/versions/experiment-registry-20260827-before-v5-prune.html"
-      ]
-    },
-    {
-      "path": "docs/figs/theory/fig_gap_vs_samples_longtail.png",
-      "file": "fig_gap_vs_samples_longtail.png",
-      "format": "png",
-      "bytes": 68128,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_gap_vs_samples_longtail.svg",
-      "file": "fig_gap_vs_samples_longtail.svg",
-      "format": "svg",
-      "bytes": 57868,
-      "category": "theory",
-      "status": "referenced",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": [
-        "docs/report/experiment-registry.html",
-        "docs/report/versions/experiment-registry-20260827-before-v5-prune.html"
-      ]
-    },
-    {
-      "path": "docs/figs/theory/fig_gap_vs_samples_realgen.png",
-      "file": "fig_gap_vs_samples_realgen.png",
-      "format": "png",
-      "bytes": 157621,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_gap_vs_samples_realgen.svg",
-      "file": "fig_gap_vs_samples_realgen.svg",
-      "format": "svg",
-      "bytes": 123794,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_gap_vs_samples_unresolved.png",
-      "file": "fig_gap_vs_samples_unresolved.png",
-      "format": "png",
-      "bytes": 71768,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_gap_vs_samples_unresolved.svg",
-      "file": "fig_gap_vs_samples_unresolved.svg",
-      "format": "svg",
-      "bytes": 62728,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_l6_residual_response.png",
-      "file": "fig_l6_residual_response.png",
-      "format": "png",
-      "bytes": 187690,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/plot_l6_residual_response.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_l6_residual_response.svg",
-      "file": "fig_l6_residual_response.svg",
-      "format": "svg",
-      "bytes": 159829,
-      "category": "theory",
-      "status": "referenced",
-      "scripts": [
-        "docs/plot_scripts/plot_l6_residual_response.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": [
-        "docs/report/theory.html"
-      ]
-    },
-    {
-      "path": "docs/figs/theory/fig_markov_unigram_excess_vs_freq.png",
-      "file": "fig_markov_unigram_excess_vs_freq.png",
-      "format": "png",
-      "bytes": 148632,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_markov_unigram_excess_vs_freq.svg",
-      "file": "fig_markov_unigram_excess_vs_freq.svg",
-      "format": "svg",
-      "bytes": 133091,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_markov_unigram_gap_epochs.png",
-      "file": "fig_markov_unigram_gap_epochs.png",
-      "format": "png",
-      "bytes": 178708,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_markov_unigram_gap_epochs.svg",
-      "file": "fig_markov_unigram_gap_epochs.svg",
-      "format": "svg",
-      "bytes": 131520,
-      "category": "theory",
-      "status": "referenced",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": [
-        "docs/report/experiment-registry.html",
-        "docs/report/versions/experiment-registry-20260827-before-v5-prune.html"
-      ]
-    },
-    {
-      "path": "docs/figs/theory/fig_markov_unigram_h.png",
-      "file": "fig_markov_unigram_h.png",
-      "format": "png",
-      "bytes": 184306,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_markov_unigram_h.svg",
-      "file": "fig_markov_unigram_h.svg",
-      "format": "svg",
-      "bytes": 117978,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_synth_excess_vs_freq.svg",
-      "file": "fig_synth_excess_vs_freq.svg",
-      "format": "svg",
-      "bytes": 61569,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/theory/fig_synth_excess_vs_step.svg",
-      "file": "fig_synth_excess_vs_step.svg",
-      "format": "svg",
-      "bytes": 48443,
-      "category": "theory",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
       "path": "docs/figs/theory/fig_theory_bias_split.png",
       "file": "fig_theory_bias_split.png",
       "format": "png",
@@ -4373,7 +4034,7 @@
       "format": "svg",
       "bytes": 140255,
       "category": "theory",
-      "status": "referenced",
+      "status": "orphan-review",
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4383,9 +4044,7 @@
       "clusters": [
         "本地离线 / 未声明集群"
       ],
-      "used_by": [
-        "docs/report/theory.html"
-      ]
+      "used_by": []
     },
     {
       "path": "docs/figs/theory/fig_theory_paired_decomposition.png",
@@ -4411,7 +4070,7 @@
       "format": "svg",
       "bytes": 204298,
       "category": "theory",
-      "status": "referenced",
+      "status": "orphan-review",
       "scripts": [
         "docs/plot_scripts/gen_theory_report_figures.py"
       ],
@@ -4421,9 +4080,7 @@
       "clusters": [
         "本地离线 / 未声明集群"
       ],
-      "used_by": [
-        "docs/report/theory.html"
-      ]
+      "used_by": []
     },
     {
       "path": "docs/figs/theory/fig_theory_rbar_support.svg",
@@ -4431,7 +4088,7 @@
       "format": "svg",
       "bytes": 11775,
       "category": "theory",
-      "status": "referenced",
+      "status": "orphan-review",
       "scripts": [
         "docs/plot_scripts/gen_theory_rbar_support_fig.py"
       ],
@@ -4441,9 +4098,7 @@
       "clusters": [
         "本地镜像 / 原始集群需按 run 核对"
       ],
-      "used_by": [
-        "docs/report/theory.html"
-      ]
+      "used_by": []
     },
     {
       "path": "docs/figs/theory/fig_theory_s1_beta_seed.png",
@@ -4581,7 +4236,7 @@
       "format": "svg",
       "bytes": 76881,
       "category": "theory",
-      "status": "referenced",
+      "status": "orphan-review",
       "scripts": [
         "docs/plot_scripts/gen_theory_x1x2_verdict_figs.py"
       ],
@@ -4591,9 +4246,7 @@
       "clusters": [
         "本地镜像 / 原始集群需按 run 核对"
       ],
-      "used_by": [
-        "docs/report/theory.html"
-      ]
+      "used_by": []
     },
     {
       "path": "docs/figs/theory/fig_theory_x2_tabledim.png",
@@ -4621,7 +4274,7 @@
       "format": "svg",
       "bytes": 37416,
       "category": "theory",
-      "status": "referenced",
+      "status": "orphan-review",
       "scripts": [
         "docs/plot_scripts/gen_theory_x1x2_verdict_figs.py"
       ],
@@ -4631,67 +4284,7 @@
       "clusters": [
         "本地镜像 / 原始集群需按 run 核对"
       ],
-      "used_by": [
-        "docs/report/theory.html"
-      ]
-    },
-    {
-      "path": "docs/figs/theory/fig_toy_synth_gap_vs_freq.svg",
-      "file": "fig_toy_synth_gap_vs_freq.svg",
-      "format": "svg",
-      "bytes": 79927,
-      "category": "theory",
-      "status": "referenced",
-      "scripts": [
-        "docs/plot_scripts/build_toy_model_blog_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": [
-        "docs/report/versions/blog-index-20260806.html"
-      ]
-    },
-    {
-      "path": "docs/figs/theory/fig_toy_synth_gap_vs_step.svg",
-      "file": "fig_toy_synth_gap_vs_step.svg",
-      "format": "svg",
-      "bytes": 68710,
-      "category": "theory",
-      "status": "referenced",
-      "scripts": [
-        "docs/plot_scripts/build_toy_model_blog_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": [
-        "docs/report/versions/blog-index-20260806.html"
-      ]
-    },
-    {
-      "path": "docs/figs/theory/fig_toy_v5_2x2.svg",
-      "file": "fig_toy_v5_2x2.svg",
-      "format": "svg",
-      "bytes": 61163,
-      "category": "theory",
-      "status": "outdated",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": [
-        "docs/report/versions/blog-index-20260806.html"
-      ]
+      "used_by": []
     },
     {
       "path": "docs/figs/theory/fig_v5_backbone_lr_epoch_dynamics.png",
@@ -5101,357 +4694,6 @@
         "本地 docs/figs；原始集群需按 run 核对"
       ],
       "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_main_within_epoch_aligned.png",
-      "file": "fig_main_within_epoch_aligned.png",
-      "format": "png",
-      "bytes": 345970,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/gen_within_epoch_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_main_within_epoch_aligned.svg",
-      "file": "fig_main_within_epoch_aligned.svg",
-      "format": "svg",
-      "bytes": 207467,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/gen_within_epoch_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_main_within_epoch_train_val_gap.png",
-      "file": "fig_main_within_epoch_train_val_gap.png",
-      "format": "png",
-      "bytes": 151257,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/gen_within_epoch_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_main_within_epoch_train_val_gap.svg",
-      "file": "fig_main_within_epoch_train_val_gap.svg",
-      "format": "svg",
-      "bytes": 108552,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/gen_within_epoch_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_toy_within_epoch_aligned.png",
-      "file": "fig_toy_within_epoch_aligned.png",
-      "format": "png",
-      "bytes": 73769,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/gen_within_epoch_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_toy_within_epoch_aligned.svg",
-      "file": "fig_toy_within_epoch_aligned.svg",
-      "format": "svg",
-      "bytes": 48379,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/gen_within_epoch_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_toy_within_epoch_train_val_gap.png",
-      "file": "fig_toy_within_epoch_train_val_gap.png",
-      "format": "png",
-      "bytes": 128691,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/gen_within_epoch_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_toy_within_epoch_train_val_gap.svg",
-      "file": "fig_toy_within_epoch_train_val_gap.svg",
-      "format": "svg",
-      "bytes": 79412,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/gen_within_epoch_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_within_epoch_normalized.png",
-      "file": "fig_within_epoch_normalized.png",
-      "format": "png",
-      "bytes": 140948,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/gen_within_epoch_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_within_epoch_normalized.svg",
-      "file": "fig_within_epoch_normalized.svg",
-      "format": "svg",
-      "bytes": 71681,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/gen_within_epoch_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_zipf_experiment.png",
-      "file": "fig_zipf_experiment.png",
-      "format": "png",
-      "bytes": 152626,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/gen_zipf_experiment_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "360-2"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_zipf_experiment.svg",
-      "file": "fig_zipf_experiment.svg",
-      "format": "svg",
-      "bytes": 136159,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/gen_zipf_experiment_figs.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "360-2"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_zipf_gap_analysis.png",
-      "file": "fig_zipf_gap_analysis.png",
-      "format": "png",
-      "bytes": 237616,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/analyze_zipf_gap.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/fig_zipf_gap_analysis.svg",
-      "file": "fig_zipf_gap_analysis.svg",
-      "format": "svg",
-      "bytes": 186951,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [
-        "docs/plot_scripts/analyze_zipf_gap.py"
-      ],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地离线 / 未声明集群"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/figs_v11_staircase_shape_comparison.png",
-      "file": "figs_v11_staircase_shape_comparison.png",
-      "format": "png",
-      "bytes": 67010,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/figs_v11_staircase_shape_comparison.svg",
-      "file": "figs_v11_staircase_shape_comparison.svg",
-      "format": "svg",
-      "bytes": 54971,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/figs_v11_toy_beta_scan_per_epoch.png",
-      "file": "figs_v11_toy_beta_scan_per_epoch.png",
-      "format": "png",
-      "bytes": 111412,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/figs_v11_toy_beta_scan_per_epoch.svg",
-      "file": "figs_v11_toy_beta_scan_per_epoch.svg",
-      "format": "svg",
-      "bytes": 53552,
-      "category": "toy",
-      "status": "referenced",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": [
-        "docs/report/experiment-registry.html",
-        "docs/report/versions/experiment-registry-20260827-before-v5-prune.html"
-      ]
-    },
-    {
-      "path": "docs/figs/toy/figs_v11_toy_beta_scan_step_level.png",
-      "file": "figs_v11_toy_beta_scan_step_level.png",
-      "format": "png",
-      "bytes": 145485,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
-    },
-    {
-      "path": "docs/figs/toy/figs_v11_toy_beta_scan_step_level.svg",
-      "file": "figs_v11_toy_beta_scan_step_level.svg",
-      "format": "svg",
-      "bytes": 127404,
-      "category": "toy",
-      "status": "orphan-review",
-      "scripts": [],
-      "data_paths": [
-        "未在脚本中声明；查看对应 run 的 summary.json / JSONL"
-      ],
-      "clusters": [
-        "本地 docs/figs；原始集群需按 run 核对"
-      ],
-      "used_by": []
     }
   ],
   "scripts": [
@@ -5635,14 +4877,6 @@
       ],
       "clusters": [
         "本地镜像 / 原始集群需按 run 核对"
-      ]
-    },
-    {
-      "path": "docs/plot_scripts/build_ngram5_freq_gap_fig.py",
-      "name": "build_ngram5_freq_gap_fig.py",
-      "data_paths": [],
-      "clusters": [
-        "本地离线 / 未声明集群"
       ]
     },
     {

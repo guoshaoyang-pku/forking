@@ -479,10 +479,8 @@
   <tr><td>replay/epoch 纯函数</td><td><code>code/gap_experiment.py</code>（312 行）</td><td>主线与 ngram5 共用</td></tr>
   <tr><td>数据准备</td><td><code>code/prepare_data.py</code> / <code>make_ngram_blocks.py</code></td><td>token shards；受控 block 构造</td></tr>
   <tr><td>集群启动器</td><td><code>code/cluster/*.sh</code></td><td><code>run_v5_clean.sh</code> 是单 run 契约；<code>run_v5_main_manifest.sh</code> 调度主线家族；<code>run_v5_table_grid.sh</code> 调度 18 点双表 R 网格。旧 launcher 仅供历史溯源。</td></tr>
-  <tr><td>受控数据干预</td><td><code>ngram5_freq_gap/</code></td><td>第四维度：动数据不动模型</td></tr>
-  <tr><td>作图脚本</td><td><code>docs/plot_scripts/</code></td><td>当前 canonical：<code>plot_v5_registry_figures.py</code>（登记表主图）与 <code>analyze_v5_scaling.py</code>（CSV/拟合）；图进 <code>docs/figs/</code></td></tr>
-  <tr><td>toy 线</td><td><code>tasks/l1..l5/</code></td><td>独立自包含，纯 numpy/torch</td></tr>
-</table>
+    <tr><td>作图脚本</td><td><code>docs/plot_scripts/</code></td><td>当前 canonical：<code>plot_v5_registry_figures.py</code>（登记表主图）与 <code>analyze_v5_scaling.py</code>（CSV/拟合）；图进 <code>docs/figs/</code></td></tr>
+  </table>
 
 <h3>注入与训练原理（一句话版）</h3>
 <ul>

@@ -28,7 +28,7 @@
 
 ## 3. 生成参数（历史方案，供参考）
 
-当时计划用 `ngram5_freq_gap/data_gen.py` 生成**无干预基线**数据集：
+当时计划用旧的 `ngram5_freq_gap/data_gen.py` 生成**无干预基线**数据集；该 trainer 已退役，以下仅作历史坐标：
 
 ```
 --alpha 0.0            # 不做低频上采样（纯基线）
@@ -57,5 +57,5 @@
 
 1. 按 §1 确认数据还在。
 2. 按 `agents.md` §1 极简 setting 写**新的**数据准备与训练流程（主线 `code/prepare_data.py`
-   与 `code/train.py` 是起点，不要用 `ngram5_freq_gap` 的 trainer）。
+   与 `code/train.py` 是起点，不要恢复旧 `ngram5_freq_gap` trainer）。
 3. 明确这次仿真的**唯一自变量**，并在 `docs/experiment-lines.md` 登记新实验线。

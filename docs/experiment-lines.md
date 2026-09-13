@@ -62,33 +62,14 @@ T1 目前仅完成远端 summary 回收与冲突审计；33 个重复 ID 均存�
 8/12 个旧点支撑；缺失的大 shard 端（4x/5x/6x/8x）不补入当前证据，结论仅作
 历史限定。当前 epoch 结论改由下方 v5 S1 三 epoch 阵列与 L4 长训承担。
 
-## Toy 线
+## Toy / synthetic 线（已退役）
 
-完整说明见 **`../tasks/README.md`**。
-
-| # | 线名 | 脚本目录 | 结果目录 |
-|---|---|---|---|
-| L1 | Lookup-Table 记忆 × Replay | `tasks/l1_lookup_replay/` | `tasks/l1_lookup_replay/results/` |
-| L2 | Markov 链精确 gap 闭式解 | `tasks/l2_markov_exact/` | `tasks/l2_markov_exact/results/` |
-| L3 | 单 context 采样律 gap(r) | `tasks/l3_sampling_law/` | 直接出图 |
-| L4 | 幂律合成数据 × 真 harness | `tasks/l4_synth_powerlaw/` | 360-2 远端 + 本地汇总 JSON |
-| L5 | 优化器伪影（RMSProp v 锯齿 / 表容量） | `tasks/l5_optimizer_artifact/` | `tasks/l5_optimizer_artifact/results/` |
-| L6 | 残差—learned-response 精确模型 | `tasks/l6_residual_response/` | `tasks/l6_residual_response/results/` |
-
-另有两条**历史真 harness toy 线**。图仍保留在 `docs/figs/theory/`，但所需
-run metadata 未随仓库迁入，因此作图脚本默认拒绝运行；只有显式提供已审核的
-历史结果目录时才能重现：
-
-| # | 线名 | run_id | 作图脚本 | log § |
-|---|---|---|---|---|
-| T1 | toy β 扫描 / 台阶溯源（历史） | `t5b_*` | `gen_within_epoch_figs.py` | §11(A) |
-| T2 | toy 严格 Zipf（历史） | `t5z_zipf_s4{2,3,4}` | `gen_zipf_experiment_figs.py`<br>`analyze_zipf_gap.py` | §13 |
+旧的 ngram5_freq_gap/ 受控数据 trainer 与 L1–L6 toy / synthetic 任务不再属于论文证据链，已于 2026-09-13 从当前工作树移除。历史实验日志、图和提交只用于 provenance，不再作为活动入口或新实验依赖。当前模型解释完全由 M2/V5、M8–M10、S1 以及 §48–§53 的自然语料证据承担。
 
 ## S1 三轴 scaling（T-scaling，极简 setting）
 
 > 完整计划：`docs/plans/plan-5-s1-three-axis-handoff.md`；专题报告：
-> `docs/appendices/s1_scaling_three_axis/report.md`；独立数学报告：
-> `docs/report/theory.html`；任务代码：
+> `docs/appendices/s1_scaling_three_axis/report.md`；任务代码：
 > `tasks/s1_scaling_three_axis/`。结果目录 `data/runs_scaling/`（新 namespace）。
 
 | 轴 | 科学问题 | run_id 前缀 | launcher | 状态 |
@@ -138,21 +119,9 @@ run 只保留为历史数学审计，不能标记为当前标准完成。当前 
 无条件幂律；两因素模型只有有限区间的 β 相对可辨识，A/c/γ 不可辨识；模块
 交互显著且 seed-sensitive，不允许合并单公式。
 
-## 独立包
+## 自然语言 5gram（order=5）· 历史线（已退役）
 
-**`ngram5_freq_gap/`** —— **第四个实验维度：受控数据干预**（固定极简 setting，只动数据侧）。
-唯一自变量 `alpha`（低频上采样强度），检验 `gap(r) ≈ (K_eff−1)/r`。
-它与主线的「注入点 / table 优化器 / epoch 长度」三个维度**正交**，不是竞争实现。
-定位、极简 setting 逐项核对、以及 P0/P1 阻塞项见 **`../ngram5_freq_gap/README.md`**。
-
-⚠️ **口径隔离**：该包的 train probe 是「训练前抓取、全程不变的 2 个 batch」，
-主线是「滚动的独立诊断迭代器」。两者各自自洽但**数值不可互相引用**。
-
----
-
-## 自然语言 5gram（order=5）· 极简 setting
-
-> 详细记录：`docs/experiment-log.md` §19。数据：`data/ngram5_minimal_order5/`。
+> 详细记录：`docs/experiment-log.md` §19。以下 run 是历史记录，不再作为当前活动入口；旧 trainer 已删除。
 
 | # | 线名 | 科学问题 | run_id | 状态 |
 |---|---|---|---|---|
@@ -161,7 +130,7 @@ run 只保留为历史数学审计，不能标记为当前标准完成。当前 
 | N3 | 自然语言 5gram · LR 消融 ×1 | 表 LR ×1（=backbone lr）对 gap 的影响 | `ngram5_order5_trigram_lr1x_fixed` | ✅ done @2000（gap +0.0015） |
 | N4 | 自然语言 5gram · LR 消融 ×4 | 表 LR ×4 对 gap 的影响 | `ngram5_order5_trigram_lr4x_fixed` | ✅ done @2000（gap −0.0092） |
 
-**初步结论（seed 42/43 的 +trigram 主臂）**：全局 gap 极小（主臂 −0.0067、
+**历史初步结论（seed 42/43 的 +trigram 主臂）**：全局 gap 极小（主臂 −0.0067、
 −0.0090；其余 seed 42 消融臂 −0.0092 到 +0.0054），与合成 markov 完全不同——43M
 distinct 5gram contexts 挤 1M 行表，collision 可能稀释 gap。表仍有效降低 train loss
 （seed 42 的 ×2/×4≈0.71 < ×1≈0.77 < 无表≈0.83；seed 43 主臂 train≈0.695）。
@@ -173,7 +142,7 @@ seed 42。
 设置要点（历史 N1–N4，不能作为当前主线默认）：order=5（5-gram context）、train shard 1（49.7M tokens）/ val shards 2-10,6542 不重叠、
 43M distinct contexts、input 注入、RMSProp 表 `(0.0, 0.99)`、table LR scale=2.0、AdamW lr 0.004、
 batch 72×2048、2000 步、seed 42（并以完全相同口径复现 seed 43）、bf16 不 compile。
-`make_ngram_blocks.py` + `ngram5_freq_gap/trainer.py`。
+`code/make_ngram_blocks.py` + `code/train.py`。
 
 ---
 
@@ -188,7 +157,7 @@ batch 72×2048、2000 步、seed 42（并以完全相同口径复现 seed 43）�
 | T2 | 修正 β₂ 记录（标注无效 + 删无支撑结论，**不补跑实验**，用户已明确不重要） | P0 | 历史口径已标记；数字覆盖随 T1 |
 | T3 | 用 `_fixed` 数据重生成全部图 | P0 | 索引与 fixture 已完成；数据图待 host-scoped run 证据 |
 | T4 | 修 `experiment-log.md` 结构（§10 重复、§5 缺失、90 行逐字重复） | P1 | 章节编号与 TOC 已修；数字/表格复核仍开放 |
-| T5 | 修 `ngram5_freq_gap/model.py` 的死 fallback → 指向 `code/train.py` | P1 | 已完成；绑定审阅且 pytest 26 项通过 |
+| T5 | 旧受控数据 trainer 的模型绑定审计 | P1 | 已退役；历史提交可追溯，当前不再执行 |
 | T6 | 补 M6 缺口（4x/5x/6x/8x）或显式限定结论覆盖范围 | P1 | 历史缺口已显式限定；不再是当前 TODO |
 | T7 | full-163 线：脚本已删除，数据坐标入库 `docs/notes/data/full-corpus-full163.md` | — | ✅ 已解决 |
 | T8 | 长时程 no-ngram 对照（**缩小数据量前的保险**，不做缩小可缓跑） | P2 | 已有 `nglab1x_nogram_long_v5_fixed` 8000-step 候选；曲线/协议复核开放 |

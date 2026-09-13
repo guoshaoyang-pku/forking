@@ -37,9 +37,9 @@ The Feishu write-back was authorized and completed as two append operations. Pre
 Current local snapshot: figure index reports 290 visualizations and 79 plotting scripts; the dispatch manifest contains 27 unique IDs (`D1..D27`); Feishu post-write snapshot is TODO rev 2336 / 25 comments and paper rev 1083 / 11 comments. Full fetch comparison shows each pre-write XML is an exact prefix of the post-write XML, and comment IDs are unchanged.
 
     python3 docs/coordination/check_navigation_links.py  # checked=32 missing=0
-    .venv/bin/python -m pytest ngram5_freq_gap/tests -q  # 26 passed
-    find code ngram5_freq_gap tasks docs/coordination docs/plot_scripts -name '*.py' -print0 | xargs -0 -n1 .venv/bin/python -m py_compile
-    find code tasks ngram5_freq_gap -name '*.sh' -print0 | xargs -0 -n1 bash -n
+    python3 -m py_compile code/train.py code/diag_worker.py  # current-path compile
+    find code tasks docs/coordination docs/plot_scripts -name '*.py' -print0 | xargs -0 -n1 .venv/bin/python -m py_compile
+    find code tasks -name '*.sh' -print0 | xargs -0 -n1 bash -n
     git diff --check
 
 The five untracked resources remain intentionally untouched and are listed in untracked-resource-audit-20260913.md.
