@@ -250,20 +250,20 @@
     },
     {
       "number": "图7-2",
-      "path": "docs/figs/main/fig_v5_s1_epoch_length_scaling.png",
+      "path": "docs/figs/main/fig_v5_s1_epoch_number.png",
       "format": "PNG",
-      "bytes": 92891,
+      "bytes": 218146,
       "scripts": [
-        "docs/plot_scripts/plot_v5_epoch_length_valid.py"
+        "docs/plot_scripts/plot_v5_128x_doc_figures.py"
       ],
       "data_paths": [
-        "data/runs_fixed/<run_id>_fixed/（按脚本核对）"
+        "docs/appendices/s1_scaling_three_axis/s1_epoch_long_replay_points.csv"
       ],
       "clusters": [
-        "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
+        "ophis-gpu / 360-2（按 run_id 核对；s1v5_128_ep_tri_1xL4_20ep、s1v5_128_ep1xL4_20ep_both、s1v5_128_ep1xL4_20ep_nogram）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "Aq9VbHhkDo2d4Ox1i5EcIDKnnbh",
+      "file_token": "WvPnbVThEoW3Phx4V3ecowLrnKd",
       "manuscript_section": "3"
     },
     {
