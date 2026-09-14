@@ -1,0 +1,141 @@
+{
+  "analysis_id": "epoch20_gt_prefix_20260915",
+  "host": "ophis-gpu",
+  "captured_at": "2026-09-14T17:58:12.888193+00:00",
+  "source_git_commit": "a22d9a1",
+  "files": [
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/docs/appendices/epoch20_gt_prefix_20260915/count.cpp",
+      "bytes": 4553,
+      "sha256": "308333b5c87303d701781b8f65dfc6483a58102d577bcf8c11e476f60be17ce5"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/code/train.py",
+      "bytes": 112844,
+      "sha256": "3e3cde2bf5e2f7a498f5b573177293267ce06a82791642fdc4e71f2b20af0c7e"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/code/ngram_freq.py",
+      "bytes": 30263,
+      "sha256": "4d35cc4b85bdde5fe82913040fa1d13b022aba57cd537f6e615bf9cd0028e651"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00000.bin",
+      "bytes": 99728928,
+      "sha256": "70630ccb87b01539d55d458084160e079ea606872966bdf23663c7415ccfde7d"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00001.bin",
+      "bytes": 99433872,
+      "sha256": "e8dfa753beed211885b60b4a71e79a40c9a7249c465dcf405d4a4aefc9764911"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00002.bin",
+      "bytes": 98253648,
+      "sha256": "818f72cf97875ec11118f6332240f5431ed84485c4c95072c944b0fefe13f2c0"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00003.bin",
+      "bytes": 97368480,
+      "sha256": "aad2b3b48d4a682f5d9d4f8db2487e864a04fae66ff72a1d1a64e8cfa44416e2"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00004.bin",
+      "bytes": 97368480,
+      "sha256": "f13aa5abb8658db0658d06d7fa2e4bde22d650ff4e64945d6f6ae4b629462925"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00005.bin",
+      "bytes": 98548704,
+      "sha256": "d8c0d4927614f84a3d8f1a562ecb1933ad141eb14d8f482d69f0d7cff06302a3"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00006.bin",
+      "bytes": 97368480,
+      "sha256": "40a12412e20ea5c04db8e9365ed720cfa961c9cf64a007dfed8c861d966003d2"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00007.bin",
+      "bytes": 97073424,
+      "sha256": "9b3e94f4e6803166dc0209a7ce6d298f92ab135eee8ff8b0278c1b3dad9846c1"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00008.bin",
+      "bytes": 97368480,
+      "sha256": "275dfd571305315ff7e17438f9aefa451cff4366d07e48b9c42732fff474d423"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00009.bin",
+      "bytes": 98548704,
+      "sha256": "ab1f1646d447162ac543c583007674f25b995ac698625ebb2d6193bb4f5ccbe8"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00010.bin",
+      "bytes": 98548704,
+      "sha256": "560d480abdeb672dc728955d2968eb95f1f328608a07f49791529a0e1693ca2a"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00011.bin",
+      "bytes": 97073424,
+      "sha256": "be06f0bbb23c7ecab0eb5a54ce710ad8a5ae1361e28685af7160a284af4dbab8"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00012.bin",
+      "bytes": 97073424,
+      "sha256": "3e3fb090e46ab31f3272e3922b4c1c7d6e48a8526fdfa5b57d48561b1040af3b"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00013.bin",
+      "bytes": 98253648,
+      "sha256": "75b56cb41fff637d61eb3dadabd9d2647e58f2d25df4a08ef960fc0eb0de100d"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00014.bin",
+      "bytes": 97958592,
+      "sha256": "d188c16fd72504bc49e700f92c47288607f301f8c00a9b04fe3283af7923eb09"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00015.bin",
+      "bytes": 97958592,
+      "sha256": "fb2c6c6e28ee30da8181c9b00aefb14f2de71136fd2850705d7311f840de5f6a"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00016.bin",
+      "bytes": 98548704,
+      "sha256": "195e7af50bdc397cbe00e0d2dfd4ed473e10a5bb8472b09389f8dfab9ef61a11"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00017.bin",
+      "bytes": 98548704,
+      "sha256": "314713973f1563ec14432f045fb623aff331b38ee4228f8958482f21e25347bf"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00018.bin",
+      "bytes": 98253648,
+      "sha256": "6aaaf17bf9a7cce6693b982d0cd129f4c9da8cae932224b8839540806b966e65"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00019.bin",
+      "bytes": 97368480,
+      "sha256": "bc03e8198ac9d7cfcd373fd5587e011685339541d849ffccf17d29828cb6e521"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00020.bin",
+      "bytes": 99138816,
+      "sha256": "b1d5bafa8766f9948206140287d91b0360968509bf6c7765f03d0cb523e9ab1f"
+    },
+    {
+      "path": "/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00021.bin",
+      "bytes": 98253648,
+      "sha256": "3df7458d09f7e412a8e42904c1bc5b031048badb3539651d094ee594036cccb6"
+    }
+  ],
+  "semantics": {
+    "context": "train.py trigram input with exact two-position padding",
+    "val": "first 4 batches of shard 21; batch72 seq2048",
+    "train": "first epoch_batches*72 complete chunks across shards 0..20; no chunk-boundary 4grams",
+    "Q_gt_seen": "sum over fixed-val-seen contexts mu_c*N1(c)/f_c; no division by seen mass",
+    "Q_gt_all": "coverage diagnostic Q_gt_seen + novel context mass; not a per-context gap",
+    "sampling": "one corpus pass only; no replay multiplication"
+  }
+}
