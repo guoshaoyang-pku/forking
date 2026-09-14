@@ -1,11 +1,11 @@
 {
-  "captured_at": "2026-09-15T00:08:39.481526+08:00",
-  "epoch2_observed": 19,
+  "captured_at": "2026-09-15T01:37:45.942798+08:00",
+  "epoch2_observed": 20,
   "total": 20,
-  "done": 18,
+  "done": 20,
   "train_pool_batches": 6981,
   "source_snapshot": "docs/appendices/epoch20_20260914/epoch2_snapshot.json",
-  "completion_eta": "2026-09-15T00:49:55.227833+08:00",
+  "completion_eta": null,
   "runs": [
     {
       "run_id": "s1v5_128_ep20_tri_0p125xL4_3ep_v2_fixed",
@@ -18,7 +18,7 @@
       "seconds_per_step": 0.26019154129357175,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 6660.999324
+      "log_age_seconds": 12007.460596
     },
     {
       "run_id": "s1v5_128_ep20_tri_0p1667xL4_3ep_v2_fixed",
@@ -31,7 +31,7 @@
       "seconds_per_step": 0.26020556763757635,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 6650.108398
+      "log_age_seconds": 11996.56967
     },
     {
       "run_id": "s1v5_128_ep20_tri_0p25xL4_3ep_v2_fixed",
@@ -44,7 +44,7 @@
       "seconds_per_step": 0.25997156643670455,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 6628.594465
+      "log_age_seconds": 11975.055737
     },
     {
       "run_id": "s1v5_128_ep20_tri_0p3333xL4_3ep_v2_fixed",
@@ -57,7 +57,7 @@
       "seconds_per_step": 0.25772331755585465,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 6566.600052
+      "log_age_seconds": 11913.061324
     },
     {
       "run_id": "s1v5_128_ep20_tri_0p5xL4_3ep_v2_fixed",
@@ -70,7 +70,7 @@
       "seconds_per_step": 0.2591146887072667,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 6511.772575
+      "log_age_seconds": 11858.233847
     },
     {
       "run_id": "s1v5_128_ep20_tri_0p6667xL4_3ep_v2_fixed",
@@ -83,7 +83,7 @@
       "seconds_per_step": 0.2583750270284555,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 6446.849481
+      "log_age_seconds": 11793.310753
     },
     {
       "run_id": "s1v5_128_ep20_tri_0p75xL4_3ep_v2_fixed",
@@ -96,7 +96,7 @@
       "seconds_per_step": 0.25607419714271945,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 6362.791197
+      "log_age_seconds": 11709.252469
     },
     {
       "run_id": "s1v5_128_ep20_tri_1p0xL4_3ep_v2_fixed",
@@ -109,7 +109,7 @@
       "seconds_per_step": 0.2577030817507254,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 6243.194289
+      "log_age_seconds": 11589.655561
     },
     {
       "run_id": "s1v5_128_ep20_tri_1p25xL4_3ep_v2_fixed",
@@ -122,7 +122,7 @@
       "seconds_per_step": 0.2592613850715537,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 6112.460917
+      "log_age_seconds": 11458.922189
     },
     {
       "run_id": "s1v5_128_ep20_tri_1p5xL4_3ep_v2_fixed",
@@ -135,7 +135,7 @@
       "seconds_per_step": 0.2556052518512061,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 5966.143257
+      "log_age_seconds": 11312.604529
     },
     {
       "run_id": "s1v5_128_ep20_tri_1p75xL4_3ep_v2_fixed",
@@ -148,7 +148,7 @@
       "seconds_per_step": 0.2569708757400513,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 5780.930071
+      "log_age_seconds": 11127.391343
     },
     {
       "run_id": "s1v5_128_ep20_tri_2p0xL4_3ep_v2_fixed",
@@ -161,7 +161,7 @@
       "seconds_per_step": 0.2578239373622402,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 5584.596244
+      "log_age_seconds": 10931.057516
     },
     {
       "run_id": "s1v5_128_ep20_tri_2p5xL4_3ep_v2_fixed",
@@ -174,7 +174,7 @@
       "seconds_per_step": 0.26101260802831994,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 5306.74777
+      "log_age_seconds": 10653.209042
     },
     {
       "run_id": "s1v5_128_ep20_tri_3p0xL4_3ep_v2_fixed",
@@ -187,7 +187,7 @@
       "seconds_per_step": 0.2640810944402566,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 4981.295504
+      "log_age_seconds": 10327.756776
     },
     {
       "run_id": "s1v5_128_ep20_tri_4p0xL4_3ep_v2_fixed",
@@ -200,7 +200,7 @@
       "seconds_per_step": 0.26252273678539745,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 4503.354653
+      "log_age_seconds": 9849.815925
     },
     {
       "run_id": "s1v5_128_ep20_tri_6p0xL4_3ep_v2_fixed",
@@ -213,7 +213,7 @@
       "seconds_per_step": 0.26042926407243355,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 3707.266317
+      "log_age_seconds": 9053.727589
     },
     {
       "run_id": "s1v5_128_ep20_tri_8p0xL4_3ep_v2_fixed",
@@ -226,7 +226,7 @@
       "seconds_per_step": 0.26263594579601096,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 2840.132283
+      "log_age_seconds": 8186.593555
     },
     {
       "run_id": "s1v5_128_ep20_tri_10p0xL4_3ep_v2_fixed",
@@ -239,33 +239,33 @@
       "seconds_per_step": 0.2630132122039795,
       "epoch2_eta": null,
       "completion_eta": null,
-      "log_age_seconds": 1838.030178
+      "log_age_seconds": 7184.49145
     },
     {
       "run_id": "s1v5_128_ep20_tri_15p0xL4_3ep_v2_fixed",
       "multiplier": 15.0,
       "epoch_batches": 5055,
-      "done": false,
-      "gpu": "0",
-      "step": 14170,
+      "done": true,
+      "gpu": null,
+      "step": 15165,
       "target": 15165,
-      "seconds_per_step": 0.26074986028671265,
+      "seconds_per_step": 0.26080767137920435,
       "epoch2_eta": null,
-      "completion_eta": "2026-09-15T00:12:57.345335+08:00",
-      "log_age_seconds": 1.582302
+      "completion_eta": null,
+      "log_age_seconds": 5088.541043
     },
     {
       "run_id": "s1v5_128_ep20_tri_20p0xL4_3ep_v2_fixed",
       "multiplier": 20.0,
       "epoch_batches": 6740,
-      "done": false,
-      "gpu": "3",
-      "step": 10780,
+      "done": true,
+      "gpu": null,
+      "step": 20220,
       "target": 20220,
-      "seconds_per_step": 0.26247040295600893,
-      "epoch2_eta": "2026-09-15T00:20:26.177317+08:00",
-      "completion_eta": "2026-09-15T00:49:55.227833+08:00",
-      "log_age_seconds": 1.974297
+      "seconds_per_step": 0.2623183379173279,
+      "epoch2_eta": null,
+      "completion_eta": null,
+      "log_age_seconds": 2866.809119
     }
   ]
 }

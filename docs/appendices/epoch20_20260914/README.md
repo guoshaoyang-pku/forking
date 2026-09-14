@@ -1,11 +1,11 @@
 # 图 7-2：20 点 epoch 长度 scaling 的 epoch 2 快照
 
-冻结时间：2026-09-15 00:08:39 CST。共 20 个长度点，19 个已采到精确 epoch 2 边界，18 个已完成全部 3 epochs；20× 的 epoch 2 尚未观测。图中 epoch 2 为主曲线，epoch 1 为浅灰背景，缺失点留空，轴下三角仅标识待采样位置。
+冻结时间：2026-09-15 01:37:45 CST。20 个长度点均已完成全部 3 epochs，epoch 1/2/3 的 60 个精确边界值已全部采齐。图中 epoch 2 为主曲线，epoch 1 为浅灰背景。队列全部标记 done，集群上本批次训练进程数为 0。
 
 ## 图片和复现
 
 - 图片：[PNG](../../figs/main/fig_s1_epoch20_epoch2_live.png) / [SVG](../../figs/main/fig_s1_epoch20_epoch2_live.svg)。
-- 边界数据：[CSV](../../figs/main/fig_s1_epoch20_epoch2_live.csv)，60 行对应 20 个 run 的 epoch 1/2/3，未观测数值为空。
+- 边界数据：[CSV](../../figs/main/fig_s1_epoch20_epoch2_live.csv)，60 行对应 20 个 run 的 epoch 1/2/3，全部为 observed。
 - 证据：[epoch2_snapshot.json](epoch2_snapshot.json) 包含解析后的训练日志、summary 或运行中配置、文件 SHA256、源路径、数据容量及代码校验信息；[epoch2_status.json](epoch2_status.json) 记录进度和 ETA。
 - 采集脚本：[collect_epoch20_snapshot.py](../../plot_scripts/collect_epoch20_snapshot.py)；绘图脚本：[plot_epoch20_epoch2_live.py](../../plot_scripts/plot_epoch20_epoch2_live.py)。
 
@@ -16,7 +16,7 @@
 .venv/bin/python docs/plot_scripts/plot_epoch20_epoch2_live.py
 ```
 
-刷新命令覆盖当前快照和图片；需要保留旧快照时，采集与绘图脚本均支持显式快照路径参数（分别为 `--output` 和 `--snapshot`）。本说明中的进度和 ETA 只对应上述冻结时间，后续以生成的 status JSON 为准。
+刷新命令覆盖当前快照和图片；需要保留旧快照时，采集与绘图脚本均支持显式快照路径参数（分别为 `--output` 和 `--snapshot`）。本说明中的完成状态对应上述冻结时间；status JSON 的 completion_eta 已为 null，表示没有剩余训练。19/20 点的中间快照保留在本地 commit `3a26fdf`。
 
 ## 数据坐标和口径
 
@@ -30,6 +30,6 @@
 
 ## 当前观察和进度
 
-seed 42 的 epoch 2 raw gap：1× 在 step 674 为 1.081173；4× 在 step 2696 为 0.600700；10× 在 step 6740 为 0.145931；15× 在 step 10110 为 0.186611。精确 run_id 和每点源文件哈希见 CSV。整体随数据长度下降，10×→15× 小幅回升；单 seed、当前训练 batch 边界值不足以支持严格单调或幂律结论。
+seed 42 的 epoch 2 raw gap：1× 在 step 674 为 1.081173；4× 在 step 2696 为 0.600700；10× 在 step 6740 为 0.145931；15× 在 step 10110 为 0.186611；20× 在 step 13480 为 0.133595。精确 run_id 和每点源文件哈希见 CSV。整体随数据长度下降，10×→15× 小幅回升；单 seed、当前训练 batch 边界值不足以支持严格单调或幂律结论。
 
-在冻结时间，15× 位于 14170/15165 steps，20× 位于 10780/20220 steps，两个日志均在 2 秒内更新。按最近 1000 steps 的耗时估算，20× 的 epoch 2 边界（step 13480）约在 00:20:26，整批全部 3 epochs 约在 00:49:55 CST 完成；合理报告范围为 00:45–01:00。ETA 是该快照下的速度外推。
+15× 最终为 15165/15165 steps，summary 写入时间为 2026-09-15 00:12:57 CST；20× 最终为 20220/20220 steps，summary 写入时间为 00:49:59 CST，整批已结束，与此前约 00:50 的 ETA 一致。完成时间取源 summary 文件 mtime，队列 done、summary.steps 与最终日志 step 交叉核对通过。20× 的 epoch 3 raw gap 为 0.220282（step 20220，seed 42）。全部 run 均通过配置、代码哈希、每 10 步日志、精确 epoch 边界及 gap=val−train 审计。
