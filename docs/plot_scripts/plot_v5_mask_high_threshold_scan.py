@@ -2,12 +2,12 @@
 """mask_high threshold scan figure (128×, epoch-2 boundary).
 
 Plots final gap at step 1000 vs mask_high frequency threshold (high→low),
-all 14 points from the causalv5m2 inclusive-semantics refresh (f>=t).
+all 14 points from the causalv5m2 inclusive-semantics refresh (F>=t).
 Points are raw final gaps; thin 3-point connector only as visual aid.
 
 Mask semantics: the frequency mask is context-level.  For t>0, `high`
-masks only contexts seen in the train shard with f>=t, so novel contexts
-(f=0) remain active and the completed scan stops at t=1.  The lower
+masks only contexts seen in the train shard with F>=t, so novel contexts
+(F=0) remain active and the completed scan stops at t=1.  The lower
 boundary t=0 is defined as a full context mask, including novel contexts,
 and must be regenerated before it can be plotted.
 """
@@ -24,7 +24,7 @@ RUNS_FIXED = ROOT / "data" / "runs_fixed"
 OUT = ROOT / "docs" / "figs" / "main"
 OUT.mkdir(parents=True, exist_ok=True)
 
-# (threshold, run_id) — causalv5m2_* are the f>=t inclusive-semantics refresh;
+# (threshold, run_id) — causalv5m2_* are the F>=t inclusive-semantics refresh;
 # t=200 is part of the same causalv5m2 batch (ophis GPU3).
 POINTS = [
     (12800, "causalv5m2_mask_high_t12800_e1_fixed"),
@@ -100,14 +100,14 @@ def main():
                       xytext=(4, 7), fontsize=8, color="#374151")
 
     axis.set_xscale("log")
-    axis.set_xlabel("mask_high frequency threshold $t$ (mask contexts with $f \\geq t$)")
+    axis.set_xlabel("mask_high frequency threshold $t$ (mask contexts with $F \\geq t$)")
     axis.set_ylabel("final gap at step 1000")
     axis.axhline(0, color="#686d73", linewidth=0.8, linestyle=":")
     axis.grid(alpha=0.25, which="both")
     axis.set_title(
         "mask_high threshold scan · 128× · epoch-2 boundary (1000 steps)\n"
-        "lower $t$ masks more seen contexts; novel ($f{=}0$) contexts are never masked;\n"
-        "all points use the inclusive f$\\geq t$ semantics (causalv5m2 refresh)"
+        "lower $t$ masks more seen contexts; novel ($F{=}0$) contexts are never masked;\n"
+        "all points use the inclusive F$\\geq t$ semantics (causalv5m2 refresh)"
     )
     figure.tight_layout()
     out = OUT / "fig_v5_128x_mask_high_threshold_scan.png"

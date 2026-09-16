@@ -99,7 +99,7 @@
       "format": "PNG",
       "bytes": 119938,
       "scripts": [
-        "docs/plot_scripts/plot_v5_registry_figures.py"
+        "docs/plot_scripts/plot_v5_mask_high_threshold_scan.py"
       ],
       "data_paths": [
         "data/runs_fixed/<run_id>_fixed/（按脚本核对）"
@@ -239,21 +239,21 @@
     },
     {
       "number": "图3-4",
-      "path": "docs/figs/main/fig_v5_s1_epoch_length_valid.png",
-      "format": "PNG + SVG",
-      "bytes": 143754,
+      "path": "docs/figs/main/fig_s1_epoch20_epoch2_epoch3.png",
+      "format": "PNG + SVG + CSV",
+      "bytes": 160313,
       "scripts": [
-        "docs/plot_scripts/plot_v5_epoch_length_valid.py"
+        "docs/plot_scripts/plot_epoch20_scaling.py"
       ],
       "data_paths": [
-        "docs/appendices/s1_scaling_three_axis/s1_epoch_length_points.csv",
-        "data/runs_scaling/<run_id>_fixed/summary.json"
+        "docs/figs/main/fig_s1_epoch20_epoch2_epoch3.csv",
+        "docs/appendices/epoch20_20260914/epoch2_snapshot.json"
       ],
       "clusters": [
-        "360-1（修复后的 epfx 2×/3×/4×L4 runs；具体 run_id 见 CSV）"
+        "ophis-gpu（seed 42；20 个长度各 1 run，每 run 完整 3 epoch）"
       ],
-      "status": "论文候选·corrected 20-point scaling",
-      "file_token": "QuVmbuLL9o5siIxoPh1cVd52nwf",
+      "status": "论文候选·exact-epoch 20-length replacement",
+      "file_token": "LGlAbs4dvoWw7wxRiYhcYVkUnsd",
       "manuscript_section": "3"
     },
     {

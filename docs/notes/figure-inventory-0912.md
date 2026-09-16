@@ -42,11 +42,11 @@
 | §3.2 | 图 1-1 | fig_paper1_forking_curves.png | plot_paper_fig1_forking.py | nglab1x_{input,y,v,nogram}_v5_128x_freq10_fixed | 128×, v5, warmup_const(100), seed 42, 2000 steps | **current** | 四臂主线曲线；左 train/val，右 raw gap |
 | §3.3 | 图 4-3 | fig_v5_s1_frequency_exact_f.png | plot_v5_registry_figures.py | nglab1x_input_v5_freq10_r1 等 | v5 freq10 (非 _fd) | **outdated** | 非 fd 口径，需确认是否重绘 |
 | §3.3 | 图 7-1 | fig_v5_s1_table_size_loglog_clean.png | plot_v5_128x_doc_figures.py | nglab1x_{arm}_v5_128x_freq10 | 128×, v5 | **current** | gap-R 双对数 |
-| §3.3 | 图 7-2 | fig_v5_s1_epoch_length_scaling.png | plot_v5_registry_figures.py | s1v5_128_ep* 系列 | 128×, v5 | **current** | epoch 长度轴 scaling |
+| §3.3 | 图 3-4 | fig_s1_epoch20_epoch2_epoch3.png | plot_epoch20_scaling.py | s1v5_128_ep20_tri_*_3ep_v2_fixed | trigram-only, clean R=2²⁰, seed 42；20 长度 × 完整 3 epoch（每长度 1 run） | **current** | Figure 5 replacement；epoch 2/3 精确边界 |
 | §3.3 | 图 3-8 | fig_v5_s1_epoch_staircase.png | plot_v5_epoch_staircase.py | nglab1x_input_v5_128x_freq10_fd + s1v5_128_ep*_20ep | 128×, _fd, 20ep | **current** | 多 epoch 台阶 |
 | §5.1 | 图 5-1 | fig_v5_causal_losses.png | plot_v5_128x_doc_figures.py | causalv5c_*_128x 系列 | 128×, causal | **current** | 因果干预臂轨迹 |
 | §4 | 图 4-5 | fig_v5_128x_mask_low_le_scan.png | plot_v5_128x_doc_figures.py | causalv5m2_mask_low_* | 128×, mask | **current** | mask_low 阈值扫描 |
-| §4 | 图 4-6 | fig_v5_128x_mask_high_threshold_scan.png | plot_v5_mask_high_threshold_scan.py | causalv5m2_mask_high_t*_e1 | 128×, f>=t 刷新 | **current** | mask_high 阈值扫描 |
+| §4 | 图 4-6 | fig_v5_128x_mask_high_threshold_scan.png | plot_v5_mask_high_threshold_scan.py | causalv5m2_mask_high_t*_e1_fixed | 128×, F>=t 刷新，14 个阈值 | **current** | mask_high 阈值扫描 |
 | §5 | 图 5-3 | fig_v5_s1_long_replay.png | plot_v5_registry_figures.py | s1v5_128_ep*_20ep 系列 | 128×, 20ep | **current** | 20-epoch 长程线性 |
 | §5.1 | 图 4-7 | fig_v5_good_turing_kernel.png | plot_v5_good_turing_kernel.py | 离线计算 | N/A (理论) | **current** | Good-Turing 核 |
 | §5.1 | 图 4-8 | fig_v5_val_damage_vs_missing_mass_bigram.png | analyze_v5_val_damage_vs_missing_mass.py | nglab1x_{input,nogram}_v5_128x_freq10_fd | 128×, _fd | **current** | val 伤害 vs 缺失质量 |
@@ -78,7 +78,7 @@
 | main/fig_v5_blrv5_backbone_lr.png | backbone LR scan | plot_v5_blrv5_backbone_lr.py | current |
 | main/fig_v5_causal_losses.png | causal arm losses | plot_v5_128x_doc_figures.py | current |
 | main/fig_v5_optv5f_all_scale_gap_facets.png | optv5f scale facets | plot_v5_optv5f_readable.py | current |
-| main/fig_v5_s1_epoch_length_valid.svg | epoch length valid | plot_v5_epoch_length_valid.py | current |
+| main/fig_s1_epoch20_epoch2_epoch3.svg | epoch-length scaling；exact epoch 1–3 endpoints | plot_epoch20_scaling.py | current |
 | main/fig_v5_s1_epoch_number.png | epoch number | plot_v5_128x_doc_figures.py | current |
 | main/fig_v5_s1_table_size_loglog_clean.svg | table size loglog | plot_v5_128x_doc_figures.py | current |
 | theory/fig_v5_dilution_surface.png | dilution surface | plot_v5_dilution_surface.py | current |
@@ -212,9 +212,10 @@
 | main/fig_v5_s1_table_size_loglog_clean.png | gap-R 双对数 | nglab1x_*_v5_128x_freq10 | Lark§3.3, registry |
 | main/fig_v5_s1_table_size_loglog_clean.svg | 同上 SVG | 同上 | index, registry |
 | main/fig_v5_s1_table_size.png | table size | nglab1x_*_v5_128x | registry |
-| main/fig_v5_s1_epoch_length_scaling.png | epoch 长度 scaling | s1v5_128_ep* | Lark§3.3, registry |
+| main/fig_s1_epoch20_epoch2_epoch3.png | epoch 长度 scaling；20 lengths | s1v5_128_ep20_tri_*_3ep_v2_fixed | Lark§3.3 Figure 5, index, registry |
+| main/fig_s1_epoch20_epoch2_epoch3.csv | epoch-length source table | plot_epoch20_scaling.py | registry provenance |
 | main/fig_v5_s1_epoch_length_trajectories.png | epoch 轨迹 | s1v5_128_ep* | registry |
-| main/fig_v5_s1_epoch_length_valid.svg | epoch length valid | s1v5_128_ep* | index |
+| main/fig_v5_s1_epoch_length_valid.svg | epoch length valid（旧图3-4 候选） | s1v5_128_ep* | superseded（图3-4 已改用 epoch20 资产） |
 | main/fig_v5_s1_epoch_number.png | epoch number | s1v5_128_ep* | Lark, index, registry |
 | main/fig_v5_s1_long_replay.png | 20-epoch 长程 | s1v5_128_ep*_20ep | Lark§5, registry |
 | main/fig_v5_s1_epoch_staircase.png | 多 epoch 台阶 | nglab1x_*_fd + s1v5_128_ep*_20ep | Lark§3.3 |
@@ -287,7 +288,7 @@
 | plot_v5_dilution_surface.py | fig_v5_dilution_surface | current |
 | plot_v5_epoch_kernel_dynamics.py | fig_v5_epoch_kernel_dynamics | current |
 | plot_v5_netval_benefit.py | fig_v5_netval_benefit | current |
-| plot_v5_epoch_length_valid.py | fig_v5_s1_epoch_length_valid | current |
+| plot_v5_epoch_length_valid.py | fig_v5_s1_epoch_length_valid | superseded |
 | draw_transformer_ngram_injection.py | main/fig_transformer_ngram_injection_routes.svg | current；结构图，无实验数值 |
 | plot_v5_fig17_beta2_sweep.py | fig_v5_beta2_sweep_1k | current |
 | gen_shard_sweep_figs.py | epoch_scale/fig_sweep_* | mixed |
