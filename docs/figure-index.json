@@ -16,27 +16,27 @@
   "figures": [
     {
       "number": "图1-1",
-      "path": "docs/figs/main/fig_v5_128x_injection_curves.png",
+      "path": "docs/figs/main/fig_paper1_forking_curves.png",
       "format": "PNG",
-      "bytes": 201150,
+      "bytes": 238009,
       "scripts": [
-        "docs/plot_scripts/plot_v5_fig01_injection_interactive.py"
+        "docs/plot_scripts/plot_paper_fig1_forking.py"
       ],
       "data_paths": [
-        "data/runs_fixed/<run_id>_fixed/（按脚本核对）"
+        "data/runs_fixed/nglab1x_{input,y,v,nogram}_v5_128x_freq10_fixed/train_log.jsonl"
       ],
       "clusters": [
-        "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
+        "ophis-gpu（seed 42, 2000 steps）"
       ],
-      "status": "论文候选·待合作者统一风格",
-      "file_token": "RysvbwjXooPi2Zx8yJzcLLcznYe",
+      "status": "论文候选·minimal-setting replacement",
+      "file_token": "EFpLb9aO8oUunXxeQxJcmMn3nug",
       "manuscript_section": "1"
     },
     {
       "number": "图1-2",
       "path": "docs/figs/main/fig_transformer_ngram_injection_routes.svg",
       "format": "SVG",
-      "bytes": 2918,
+      "bytes": 4973,
       "scripts": [
         "docs/plot_scripts/draw_transformer_ngram_injection.py"
       ],
@@ -46,8 +46,8 @@
       "clusters": [
         "本地绘图；无集群依赖"
       ],
-      "status": "论文候选·待合作者统一风格",
-      "file_token": "AiMcbLr71obx2ZxuSFrcjkupn4c",
+      "status": "论文候选·Candidate D",
+      "file_token": "LZDvbsealo71oexsoRgcl6sNnsc",
       "manuscript_section": "1"
     },
     {
@@ -118,8 +118,8 @@
       "clusters": [
         "ophis-gpu / 360-1 / 360-2（按 run_id 核对）"
       ],
-      "status": "论文候选·待合作者统一风格",
-      "file_token": "F6b2bCjrIo6ejSxs9bSc5F35niR",
+      "status": "论文候选·inclusive F≥t replacement",
+      "file_token": "H2uwbnXReo9gC6xB3XMcXCErnrc",
       "manuscript_section": "4"
     },
     {
@@ -249,21 +249,22 @@
       "manuscript_section": "3"
     },
     {
-      "number": "图7-2",
-      "path": "docs/figs/main/fig_v5_s1_epoch_number.png",
-      "format": "PNG",
-      "bytes": 218146,
+      "number": "图3-4",
+      "path": "docs/figs/main/fig_v5_s1_epoch_length_valid.png",
+      "format": "PNG + SVG",
+      "bytes": 143754,
       "scripts": [
-        "docs/plot_scripts/plot_v5_128x_doc_figures.py"
+        "docs/plot_scripts/plot_v5_epoch_length_valid.py"
       ],
       "data_paths": [
-        "docs/appendices/s1_scaling_three_axis/s1_epoch_long_replay_points.csv"
+        "docs/appendices/s1_scaling_three_axis/s1_epoch_length_points.csv",
+        "data/runs_scaling/<run_id>_fixed/summary.json"
       ],
       "clusters": [
-        "ophis-gpu / 360-2（按 run_id 核对；s1v5_128_ep_tri_1xL4_20ep、s1v5_128_ep1xL4_20ep_both、s1v5_128_ep1xL4_20ep_nogram）"
+        "360-1（修复后的 epfx 2×/3×/4×L4 runs；具体 run_id 见 CSV）"
       ],
       "status": "论文候选·待合作者统一风格",
-      "file_token": "WvPnbVThEoW3Phx4V3ecowLrnKd",
+      "file_token": "QuVmbuLL9o5siIxoPh1cVd52nwf",
       "manuscript_section": "3"
     },
     {

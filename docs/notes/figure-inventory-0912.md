@@ -39,7 +39,7 @@
 
 | 章节 | 图注编号 | 文件名 | 脚本 | 源 run_id | Setting | 状态 | 备注 |
 |------|----------|--------|------|-----------|---------|------|------|
-| §3.2 | 图 3-1 | fig_v5_128x_injection_curves.png | plot_v5_128x_batch.py | nglab1x_{input,y,v,nogram}_v5_128x_freq10 | 128×, v5, warmup_const(100) | **current** | 四臂主线曲线 |
+| §3.2 | 图 1-1 | fig_paper1_forking_curves.png | plot_paper_fig1_forking.py | nglab1x_{input,y,v,nogram}_v5_128x_freq10_fixed | 128×, v5, warmup_const(100), seed 42, 2000 steps | **current** | 四臂主线曲线；左 train/val，右 raw gap |
 | §3.3 | 图 4-3 | fig_v5_s1_frequency_exact_f.png | plot_v5_registry_figures.py | nglab1x_input_v5_freq10_r1 等 | v5 freq10 (非 _fd) | **outdated** | 非 fd 口径，需确认是否重绘 |
 | §3.3 | 图 7-1 | fig_v5_s1_table_size_loglog_clean.png | plot_v5_128x_doc_figures.py | nglab1x_{arm}_v5_128x_freq10 | 128×, v5 | **current** | gap-R 双对数 |
 | §3.3 | 图 7-2 | fig_v5_s1_epoch_length_scaling.png | plot_v5_registry_figures.py | s1v5_128_ep* 系列 | 128×, v5 | **current** | epoch 长度轴 scaling |
@@ -53,7 +53,7 @@
 | §6 | 图 6-2 | fig_v5_f_by_pass_accounting.png | analyze_v5_f_by_pass_table.py | 多 run 汇总 | 128× | **current** | f x pass 全账目 |
 | §6 | 图 6-1 | fig_v5_table_cosine_and_margin.png | analyze_v5_cosine_margin_posthoc.py | nglab1x_input_v5_128x_freq10_fd | 128×, _fd | **current** | 表 cosine + margin |
 | §9 | 图 9-1 | fig_v5_netval_benefit.png | plot_v5_netval_benefit.py | 多变体汇总 | 128× | **current** | 净收益判决 |
-| §3.1 | 图 3-0 | main/fig_transformer_ngram_injection_routes.svg | draw_transformer_ngram_injection.py | 无 run（结构图） | vanilla nanoGPT；三种 route 备选，每次 run 只启用一种 | **current** | 架构主图；hash table 逻辑留在附录伪代码 |
+| §3.1 | 图 3.1 | main/fig_transformer_ngram_injection_routes.svg | draw_transformer_ngram_injection.py | 无 run（结构图） | vanilla nanoGPT；三种 route 备选，每次 run 只启用一种 | **current** | 架构主图；hash table 逻辑留在附录伪代码 |
 
 ### 飞书图注编号问题
 
