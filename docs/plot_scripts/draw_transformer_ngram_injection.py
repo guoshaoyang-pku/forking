@@ -1,8 +1,124 @@
 #!/usr/bin/env python3
+"""Draw the approved Candidate-D overview of n-gram injection routes."""
+
+from html import escape
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[2]
-OUT=ROOT/'docs/figs/main/fig_transformer_ngram_injection_routes.svg'
-SVG='''<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1120" viewBox="0 0 900 1120" role="img"><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#383838"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#236b70"/></marker><style>text{font-family:Arial,"Segoe UI",sans-serif;fill:#202020}.n{fill:#f3f0e8;stroke:#383838;stroke-width:1.5}.ng{fill:#dce9e5;stroke:#236b70;stroke-width:1.5}.f{fill:none;stroke:#383838;stroke-width:1.5}.e{fill:none;stroke:#383838;stroke-width:1.5;marker-end:url(#a)}.d{fill:none;stroke:#236b70;stroke-width:1.5;stroke-dasharray:6 5;marker-end:url(#g)}.l{font-size:17px}.s{font-size:14px;fill:#686d73}.r{font-size:14px;fill:#236b70}</style></defs><rect width="900" height="1120" fill="#fff"/><rect class="n" x="325" y="45" width="250" height="72" rx="9"/><text class="l" x="450" y="77" text-anchor="middle">Token + position</text><text class="l" x="450" y="101" text-anchor="middle">representation xₗ</text><path class="e" d="M450 117V180"/><rect class="f" x="170" y="180" width="560" height="510" rx="10"/><text class="s" x="195" y="210">Transformer computation</text><rect class="n" x="325" y="250" width="250" height="72" rx="9"/><text class="l" x="450" y="293" text-anchor="middle">Q, K, V projection</text><path class="e" d="M450 322V370"/><rect class="n" x="285" y="370" width="330" height="72" rx="9"/><text class="l" x="450" y="413" text-anchor="middle">Causal self-attention</text><path class="e" d="M450 442V490"/><rect class="n" x="325" y="490" width="250" height="72" rx="9"/><text class="l" x="450" y="533" text-anchor="middle">MLP</text><path class="e" d="M450 562V770"/><rect class="n" x="325" y="790" width="250" height="72" rx="9"/><text class="l" x="450" y="833" text-anchor="middle">Next Transformer block</text><rect class="ng" x="20" y="235" width="220" height="78" rx="9"/><text class="l" x="130" y="268" text-anchor="middle">n-gram block</text><text class="l" x="130" y="292" text-anchor="middle">input route</text><rect class="ng" x="20" y="365" width="220" height="78" rx="9"/><text class="l" x="130" y="398" text-anchor="middle">n-gram block</text><text class="l" x="130" y="422" text-anchor="middle">V route</text><rect class="ng" x="660" y="485" width="220" height="78" rx="9"/><text class="l" x="770" y="518" text-anchor="middle">n-gram block</text><text class="l" x="770" y="542" text-anchor="middle">y route</text><path class="d" d="M240 274H325"/><text class="r" x="282" y="260" text-anchor="middle">add before QKV</text><path class="d" d="M240 404H285"/><text class="r" x="262" y="390" text-anchor="middle">add to V before attention</text><path class="d" d="M660 524H575"/><text class="r" x="618" y="510" text-anchor="middle">add after attention, before MLP</text></svg>'''
+
+
+ROOT = Path(__file__).resolve().parents[2]
+OUT = ROOT / "docs" / "figs" / "main" / "fig_transformer_ngram_injection_routes.svg"
+W, H = 976, 700
+
+
+def text(x, y, value, cls="body", anchor="middle"):
+    return (
+        f'<text class="tni {cls}" x="{x}" y="{y}" '
+        f'text-anchor="{anchor}">{escape(value)}</text>'
+    )
+
+
+def rect(x, y, w, h, cls="box", rx=10):
+    return f'<rect class="{cls}" x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}"/>'
+
+
+def line(x1, y1, x2, y2, cls="flow", marker="url(#tni-a)"):
+    return (
+        f'<path class="{cls}" d="M{x1} {y1}L{x2} {y2}" '
+        f'marker-end="{marker}"/>'
+    )
+
+
+def plus(x, y):
+    return (
+        f'<circle class="plus" cx="{x}" cy="{y}" r="14"/>'
+        f'<path class="plus-mark" d="M{x-7} {y}h14M{x} {y-7}v14"/>'
+    )
+
+
+def route(y, title, mode):
+    return (
+        rect(34, y, 304, 72, "route-box")
+        + text(186, y + 31, title, "route-title")
+        + text(186, y + 55, mode, "route-sub")
+    )
+
+
+def render():
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="176mm" height="126.23mm" '
+        f'viewBox="0 0 {W} {H}" role="img">',
+        "<title>Three alternative n-gram injection routes in a Transformer block</title>",
+        "<desc>Token and position input remains outside the block. "
+        "The input route enters before QKV and may be gated or ungated; "
+        "V and y routes are alternative additive sites.</desc>",
+        """<defs>
+<marker id="tni-a" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="#333"/></marker>
+<marker id="tni-g" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1B6B5F"/></marker>
+<style>
+.tni{font-family:Arial,Helvetica,sans-serif;fill:#1F1F1F}
+.body{font-size:18px;font-weight:700}
+.sub{font-size:15px;font-weight:400;fill:#6B6B6B}
+.route-title{font-size:18px;font-weight:700;fill:#1B6B5F}
+.route-sub{font-size:15px;font-weight:400;fill:#1B6B5F}
+.label{font-size:16px;font-weight:400;fill:#1B6B5F}
+.legend-title{font-size:15px;font-weight:700;fill:#6B6B6B;letter-spacing:1px}
+.legend-text{font-size:15px;font-weight:400;fill:#333}
+.box{fill:#FFFFFF;stroke:#333;stroke-width:2}
+.block{fill:none;stroke:#C5C0B6;stroke-width:2}
+.route-box{fill:#DDECE7;stroke:#1B6B5F;stroke-width:2.5}
+.flow{fill:none;stroke:#333;stroke-width:2}
+.inject{fill:none;stroke:#1B6B5F;stroke-width:2;stroke-dasharray:9 7}
+.plus{fill:#FFF;stroke:#1B6B5F;stroke-width:2}
+.plus-mark{stroke:#1B6B5F;stroke-width:2;stroke-linecap:round}
+.legend{fill:#FCFBF8;stroke:#DDD8CF;stroke-width:1.5}
+</style></defs>""",
+        '<rect width="100%" height="100%" fill="#FFF"/>',
+        rect(620, 24, 280, 78),
+        text(760, 57, "Token + position", "body"),
+        text(760, 84, "representation xℓ", "sub"),
+        line(760, 102, 760, 213),
+        rect(506, 170, 470, 400, "block"),
+        text(530, 205, "Transformer block ℓ", "body", "start"),
+        rect(620, 245, 280, 58),
+        text(760, 281, "Q, K, V projection"),
+        line(760, 303, 760, 346),
+        rect(594, 346, 332, 58),
+        text(760, 382, "Causal self-attention"),
+        line(760, 404, 760, 447),
+        rect(620, 447, 280, 58),
+        text(760, 483, "MLP"),
+        line(760, 505, 760, 625),
+        rect(620, 625, 280, 58),
+        text(760, 661, "Next Transformer block"),
+        route(195, "(a) input route", "gated / ungated"),
+        route(299, "(b) V route", "gated"),
+        route(403, "(c) y route", "gated"),
+        text(450, 220, "before QKV", "label"),
+        text(450, 324, "before attention", "label"),
+        text(450, 428, "after attention", "label"),
+        '<path class="inject" d="M338 231H746" marker-end="url(#tni-g)"/>',
+        '<path class="inject" d="M338 335H746" marker-end="url(#tni-g)"/>',
+        '<path class="inject" d="M338 439H746" marker-end="url(#tni-g)"/>',
+        plus(760, 231),
+        plus(760, 335),
+        plus(760, 439),
+        rect(34, 520, 304, 130, "legend", 9),
+        text(56, 549, "LEGEND", "legend-title", "start"),
+        '<path class="inject" d="M56 579H112" marker-end="url(#tni-g)"/>',
+        text(132, 584, "n-gram injection", "legend-text", "start"),
+        plus(78, 614),
+        text(132, 619, "additive injection point", "legend-text", "start"),
+        text(56, 643, "one route enabled per run", "sub", "start"),
+        "</svg>",
+    ]
+    return "".join(parts)
+
+
 def main():
-    OUT.parent.mkdir(parents=True,exist_ok=True); OUT.write_text(SVG+'\n',encoding='utf-8'); print(f'wrote {OUT.relative_to(ROOT)}')
-if __name__=='__main__': main()
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(render() + "\n", encoding="utf-8")
+    print(f"wrote {OUT.relative_to(ROOT)} ({OUT.stat().st_size} bytes)")
+
+
+if __name__ == "__main__":
+    main()
