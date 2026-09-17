@@ -4211,15 +4211,24 @@ context_freq_split.py）。
 caption：**三个 epoch 各一张 top-10 rank 直方图**（`e{1,2,3}_<cell>_rank`，
 **线性概率刻度**（用户要求去掉 log），native vs +both 并排，深色 =
 train-seen 候选、浅色 = 其他，虚线 = mean p(true)，组内三 epoch 共享
-ylim）+ **总 ppl/ce 随 epoch 变化**（`<cell>_ppl_epoch`：左轴 ppl log、
-右轴 ce nats，面板内标 e3 excess ce，绿=+both 更好/红=更差）。novel
-cont（C/D）与 novel ctx（D）的 rank 直方图同样可画（D 无 train-seen
-候选故全浅色）。要点：C 组 e3 直方图显示 +both 对 novel continuation
-的 top-1 预测本身是 train-seen 候选（0.376，其中 train-seen 0.287）vs
-native 0.134——挤出机制直观化；D 组 +both rank-1 0.451 vs native
-0.084（对 novel ctx 也过度锐化）。ppl/ce 轨迹：A −0.9 nats（两臂均
-改善）；B +0.7；C +3.4（native 984→267 vs +both 1812→7949）；D +7.1
-（95→26 vs 2021→31467）。旧的单张组图/独立 cell 图已删，脚本为
+ylim）+ **置信度 vs ce 轨迹**（`<cell>_conf_ce_epoch`：左轴 top-1
+predictive probability（自置信/锐度，线性），右轴 true-token ce
+(nats)；面板内标 e3 excess ce，绿=+both 更好/红=更差）。
+**ppl 口径澄清（2026-09-17 用户质疑后确认）**：artifact 的 eval ppl =
+exp(ce_mean)（`logits_subspace_stats.py:85`，true-token CE 取指数），
+与 ce 数学上必然同向，不存在「ppl 降而 ce 升」；用户直觉「+both 对
+novel 的 ppl 应该低、只是 ce 暴增」对应的是**预测分布自置信度/锐度
+（top-1 prob）**——数据证实：C 组 +both top-1 0.144→0.376（e3 反超
+native 0.257）同时 ce 7.50→8.98 暴增（native 6.89→5.59）= confidently
+wrong；D 组 +both e1 时 top-1 0.132 反低于 native 0.226（novel ctx 无
+表支持），e3 冲到 0.451 反超且 ce 10.36 vs 3.24。故第三列图已从
+ppl/ce 改为 **conf/ce**（ppl 曲线不再单独画，右轴标注 ppl=exp(ce)）。
+rank 直方图要点：C 组 e3 直方图显示 +both 对 novel continuation 的
+top-1 预测本身是 train-seen 候选（0.376，其中 train-seen 0.287）vs
+native 0.134——挤出机制直观化；D 组直方图全浅色（novel ctx 无
+train-seen 候选）。excess ce 梯子：A −0.9 nats（两臂均改善）；B +0.7
+（e3 挤出溢出到 seen-cont，+both ce 3.26→3.48 回升）；C +3.4；D +7.1。
+旧的单张组图/独立 cell 图已删，脚本为
 `plot_marm_cell_folder.py`（`--cell A|B|C|D` 可单独重出一组）。
 **口径注意**：本组图 = bigram (t-1,t) 轴 + 逐位置 ce_mean（loss 口径）+
 全部 f 合并（用户要求不按 f 分）；三效应图 = trigram 轴 +

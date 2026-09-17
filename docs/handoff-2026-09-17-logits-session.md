@@ -162,15 +162,22 @@ docs/plot_scripts/plot_marm_subspace_mass.py
 
 在上述恢复 session 中，用户手绘 3×3（context × continuation）草图已落地为
 **文件夹交付**，并经多轮迭代定稿（rank 直方图线性刻度、每 epoch 一张、
-novel cont/ctx 也可画、第三列 = 总 ppl/ce 随 epoch 变化）：
+novel cont/ctx 也可画、第三列 = 置信度 vs ce 随 epoch 变化）：
 
 ```text
 docs/figs/theory/marm_cell_figs/
-├── A_train_seenctx_seencont/   e{1,2,3}_A_rank.{png,svg} + A_ppl_epoch.{png,svg} + caption.txt
+├── A_train_seenctx_seencont/   e{1,2,3}_A_rank.{png,svg} + A_conf_ce_epoch.{png,svg} + caption.txt
 ├── B_val_seenctx_seencont/     （同结构；e3 时 +both 挤出已溢出到 seen continuation）
 ├── C_val_seenctx_novelcont/    （挤出；e3 直方图：+both top-1 预测本身是 train-seen 候选 0.376/0.287 vs native 0.134）
 └── D_val_novelctx_novelcont/   （侵蚀；D 无 train-seen 候选故直方图全浅色）
 ```
+
+**ppl 口径澄清（绘图人必读）**：artifact 的 eval ppl = exp(ce_mean)
+（true-token CE 取指数，`logits_subspace_stats.py:85`），与 ce 必然同向。
+用户直觉「+both 对 novel 的 ppl 低、ce 暴增」中的「ppl」= 预测分布
+**自置信度/锐度（top-1 prob）**：C 组 +both top-1 0.144→0.376（e3 反超
+native 0.257）同时 ce 7.50→8.98 暴增 = confidently wrong。故第三列图
+画 conf/ce，不画 ppl 曲线（ppl 只是 ce 的指数换算）。
 
 绘图脚本（绘图人直接用这个）：
 

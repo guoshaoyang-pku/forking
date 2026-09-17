@@ -7,10 +7,15 @@ Per group (A/B/C/D), one subfolder with FOUR independent figures + caption:
       scale. Dark segment = mass on train-seen candidates (co-occurred
       with the bigram context (t-1,t) in the train shard), light = other
       candidates; dashed lines = mean p(true token).
-  ppl_epoch.png       total per-position ppl (left axis, LOG) and ce
-      (right axis, nats) over epoch boundaries; ppl = exp(ce), same trend
-      on two scales. Annotation: excess ce of +both vs native at epoch 3
-      (green = +both better, red = +both worse).
+  conf_ce_epoch.png   top-1 predictive probability (left axis, LINEAR --
+      the model's self-confidence / sharpness) and true-token ce (right
+      axis, nats) over epoch boundaries. NOTE: the artifact's eval ppl =
+      exp(ce) (true-token CE exponentiated), so it always moves WITH ce
+      and is not drawn separately. The interesting divergence is
+      confidence vs correctness: +both sharpens faster than native while
+      its true-token ce explodes ("confidently wrong"). Annotation:
+      excess ce of +both vs native at epoch 3 (green = +both better,
+      red = +both worse).
 
 Groups (the sketch's 3x3 table):
   A  train · seen context · seen continuation   (memorisation)
@@ -26,7 +31,7 @@ axis = bigram (t-1,t) counts; ce = mean per-position -ln p(true).
 
 Data: data/runs_scaling/marm_subspace_mass.json from
 code/tools/logits_subspace_stats.py. Output root:
-docs/figs/theory/marm_cell_figs/<group>/<group>_{eN_rank,ppl_epoch}.{png,svg}.
+docs/figs/theory/marm_cell_figs/<group>/<group>_{eN_rank,conf_ce_epoch}.{png,svg}.
 
 Usage:
   python docs/plot_scripts/plot_marm_cell_folder.py --json PATH \
@@ -137,35 +142,33 @@ def rank_figure(d, g, ep, ymax):
     plt.close(fig)
 
 
-def ppl_figure(d, g):
-    """Total ppl (left, log) + ce (right, nats) over epochs."""
+def conf_ce_figure(d, g):
+    """Top-1 self-confidence (left, linear) + true-token ce (right, nats)."""
     fig, ax = plt.subplots(figsize=(5.6, 4.1))
     series = {}
     for a in ("nogram", "both"):
-        ppl, ce = [], []
+        conf, ce = [], []
         for ep in ("e1", "e2", "e3"):
             rec = get(d, a, ep, g["side"], g["grp"])
-            ppl.append(rec["ppl"])
+            conf.append(rec["rank_prob"][0])
             ce.append(rec["ce_mean"])
-        series[a] = (ppl, ce)
-        ax.plot(EP_X, ppl, "-o", color=COLORS[a], markersize=4.5, zorder=4)
-    ax.set_yscale("log")
-    ax.grid(True, which="both", alpha=0.15)
-    all_ppl = series["nogram"][0] + series["both"][0]
-    ax.set_ylim(min(all_ppl) * 0.42, max(all_ppl) * 2.8)
+        series[a] = (conf, ce)
+        ax.plot(EP_X, conf, "-o", color=COLORS[a], markersize=4.5, zorder=4)
+    all_conf = series["nogram"][0] + series["both"][0]
+    ax.set_ylim(0, max(all_conf) * 1.25)
     ax.set_xlim(0.7, 3.35)
     ax.set_xticks(EP_X)
     ax.set_xticklabels(["epoch 1", "epoch 2", "epoch 3"])
     ax.set_xlabel("epoch boundary")
-    ax.set_ylabel("total per-position ppl (log scale)")
+    ax.set_ylabel("top-1 predictive probability\n(self-confidence / sharpness)")
 
     ax2 = ax.twinx()
     for a in ("nogram", "both"):
         ax2.plot(EP_X, series[a][1], "--s", color=COLORS[a], markersize=3.5,
                  zorder=3, alpha=0.85)
     all_ce = series["nogram"][1] + series["both"][1]
-    ax2.set_ylim(min(all_ce) * 0.88, max(all_ce) * 1.10)
-    ax2.set_ylabel("total per-position ce (nats)")
+    ax2.set_ylim(min(all_ce) * 0.85, max(all_ce) * 1.12)
+    ax2.set_ylabel("true-token ce (nats)\n[eval ppl = exp(ce), moves with ce]")
     ax2.grid(False)
     ax2.spines["right"].set_visible(True)
 
@@ -180,20 +183,20 @@ def ppl_figure(d, g):
 
     handles = [
         Line2D([], [], color=COLORS["nogram"], marker="o", markersize=4,
-               label="native · ppl (left, log)"),
+               label="native · top-1 conf (left)"),
         Line2D([], [], color=COLORS["both"], marker="o", markersize=4,
-               label="+both · ppl (left, log)"),
+               label="+both · top-1 conf (left)"),
         Line2D([], [], color=COLORS["nogram"], linestyle="--", marker="s",
-               markersize=3.5, label="native · ce (right, nats)"),
+               markersize=3.5, label="native · true-token ce (right)"),
         Line2D([], [], color=COLORS["both"], linestyle="--", marker="s",
-               markersize=3.5, label="+both · ce (right, nats)"),
+               markersize=3.5, label="+both · true-token ce (right)"),
     ]
-    ax.legend(handles=handles, loc="lower left", fontsize=7.0,
+    ax.legend(handles=handles, loc="upper left", fontsize=7.0,
               handlelength=1.6, labelspacing=0.3)
-    ax.set_title(f"{g['title']} · total ppl vs epoch ({g['tag']})",
+    ax.set_title(f"{g['title']} · confidence vs ce over epochs ({g['tag']})",
                  loc="left")
     for ext in ("png", "svg"):
-        fig.savefig(OUT / g["subdir"] / f"{g['cellkey']}_ppl_epoch.{ext}")
+        fig.savefig(OUT / g["subdir"] / f"{g['cellkey']}_conf_ce_epoch.{ext}")
     plt.close(fig)
 
 
@@ -205,8 +208,9 @@ def group_caption(d, g):
         e_lines.append(
             f"  {ep}: n={rec_n['n']:,} · p(true) native {rec_n['true_prob_mean']:.3f}"
             f" vs +both {rec_b['true_prob_mean']:.3f}"
-            f" · ppl native {rec_n['ppl']:.1f} vs +both {rec_b['ppl']:.1f}"
-            f" · ce native {rec_n['ce_mean']:.2f} vs +both {rec_b['ce_mean']:.2f}")
+            f" · top-1 conf native {rec_n['rank_prob'][0]:.3f} vs +both {rec_b['rank_prob'][0]:.3f}"
+            f" · ce native {rec_n['ce_mean']:.2f} vs +both {rec_b['ce_mean']:.2f}"
+            f" (eval ppl = exp(ce))")
     return (
         f"{g['title']} ({g['tag']})\n\n"
         "Figures in this folder (png + svg each):\n"
@@ -216,10 +220,14 @@ def group_caption(d, g):
         "the bigram context (t-1,t) in train shard_00001.bin), light = "
         "other candidates; dashed = mean p(true token); shared y limits "
         "across epochs for comparability.\n"
-        f"  {g['cellkey']}_ppl_epoch: total per-position ppl (left axis, "
-        "LOG) and ce = mean -ln p(true) (right axis, nats) over epoch "
-        "boundaries (steps 337/674/1000); ppl = exp(ce), same trend on two "
-        "scales; annotation = excess ce of +both vs native at epoch 3.\n\n"
+        f"  {g['cellkey']}_conf_ce_epoch: top-1 predictive probability "
+        "(left axis, LINEAR = self-confidence / sharpness) and true-token "
+        "ce = mean -ln p(true) (right axis, nats) over epoch boundaries "
+        "(steps 337/674/1000). The artifact's eval ppl = exp(ce), so it "
+        "always moves WITH ce and is not drawn separately. The divergence "
+        "to read: +both sharpens (top-1 conf rises) faster than native "
+        "while its true-token ce explodes = confidently wrong; annotation "
+        "= excess ce of +both vs native at epoch 3.\n\n"
         "Context axis = bigram (t-1,t) counts from the train shard, all "
         "counts f pooled · seed 42, table LR 128x, R=2^20 clean tables · "
         "runs: module_arms_epoch_{nogram,both}_{e1,e2,e3}_ckpt (steps "
@@ -242,9 +250,9 @@ def group_figures(d, key):
             ymax = max(ymax, max(get(d, a, ep, g["side"], g["grp"])["rank_prob"][:NR]))
     for ep in ("e1", "e2", "e3"):
         rank_figure(d, g, ep, ymax * 1.15)
-    ppl_figure(d, g)
+    conf_ce_figure(d, g)
     (sub / "caption.txt").write_text(group_caption(d, g) + "\n")
-    print(f"-> {sub}/ ({g['cellkey']}_e{{1,2,3}}_rank, {g['cellkey']}_ppl_epoch, caption.txt)")
+    print(f"-> {sub}/ ({g['cellkey']}_e{{1,2,3}}_rank, {g['cellkey']}_conf_ce_epoch, caption.txt)")
 
 
 def main():
