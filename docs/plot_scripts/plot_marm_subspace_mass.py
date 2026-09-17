@@ -176,7 +176,8 @@ def epoch_panel(ax, d, arm, key, side, grp, ylabel=True):
         ax.set_ylabel("probability")
 
 
-def ce_panel(ax, d, arm, key, side, grp, legend=True):
+def ce_panel(ax, d, arm, key, side, grp, legend=True,
+             legend_loc="upper left"):
     all_ce = []
     for a in ("nogram", arm):
         ce, ppl = [], []
@@ -201,7 +202,7 @@ def ce_panel(ax, d, arm, key, side, grp, legend=True):
     ax.set_xlabel("epoch boundary")
     ax.set_ylabel("mean cross-entropy (nats)")
     if legend:
-        ax.legend(loc="upper left", fontsize=7.8)
+        ax.legend(loc=legend_loc, fontsize=7.8)
 
 
 def novel_figure(d, arm="both", key="bigram"):
@@ -246,7 +247,8 @@ def appendix_figure(d, arm="both", key="bigram"):
             axes[r, j].set_title(f"{title} · {EP_LABELS[ep]}\n{tag} · "
                                  f"{share:.0%} of {side} (n={n:,})",
                                  loc="left", fontsize=8.8)
-        ce_panel(axes[r, 3], d, arm, key, side, grp, legend=(r == 0))
+        ce_panel(axes[r, 3], d, arm, key, side, grp, legend=(r == 0),
+                 legend_loc="lower left")
         axes[r, 3].set_title(f"{title}\nCE / ppl of this group",
                              loc="left", fontsize=8.8)
     fig.suptitle(f"Seen-continuation groups (appendix): {LABELS[arm]} vs "
