@@ -190,10 +190,14 @@ def ce_panel(ax, d, arm, key, side, grp, legend=True,
                 label=("native (no n-gram)" if a == "nogram"
                        else f"{LABELS[arm]} model"))
         for x, c, pp in zip(EP_X, ce, ppl):
-            dy = 0.22 if a != "nogram" else -0.42
-            ax.annotate(f"ppl {pp:,.0f}", xy=(x, c),
-                        xytext=(x + 0.07, c + dy), fontsize=7,
-                        color=COLORS[a])
+            if a == "nogram":
+                ax.annotate(f"ppl {pp:,.0f}", xy=(x, c),
+                            xytext=(x - 0.07, c - 0.42), fontsize=7,
+                            color=COLORS[a], ha="right")
+            else:
+                ax.annotate(f"ppl {pp:,.0f}", xy=(x, c),
+                            xytext=(x + 0.07, c + 0.22), fontsize=7,
+                            color=COLORS[a])
     span = max(all_ce) - min(all_ce)
     ax.set_xlim(0.8, 3.55)
     ax.set_ylim(min(all_ce) - 0.55 - 0.08 * span, max(all_ce) + 0.5)

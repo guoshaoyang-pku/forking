@@ -12,7 +12,7 @@
 | L2 现象级 | replay 使输出分布全体变尖（含 native）；n-gram 臂只在 train 侧多锐化，val 侧头部质量停滞 | **F4-1** logits_rank |
 | L3 覆盖 | 损害沿 context 频率单调递减，集中在 novel/低频 | **F4-3** gap_by_ctxfreq |
 | L3' 核 | 幅度 ∝ Good–Turing 缺失质量 M(f) | **F4-2** good_turing_kernel + **F4-4** val_damage_vs_missing_mass |
-| L4 动力学 | 三效应随 epoch 分化：train 记忆 ↑、val 挤出/侵蚀相对 native 停滞 | **F4-5** three_effects |
+| L4 动力学 | 三效应随 epoch 分化：train 记忆 ↑、val 挤出/侵蚀相对 native 停滞 | **F4-5** three_effects + **F4-8** cell_table（2×2 草图：分布 log y + ppl/ce 轨迹） |
 | L4' 长程 | 6 pass 逐 f 账目 + margin/pass + table-direct vs backbone-carried | **F4-6** f_by_pass_accounting + **F4-7** table_cosine_and_margin |
 
 ## 1. 最终图单（7 张，3 新 4 留）
@@ -30,9 +30,10 @@
 - **F4-4（留）** `fig_v5_val_damage_vs_missing_mass_bigram.png` — d_e(f) ≈ a_e·M_f 定量比例（主线 input 臂 2000 步 _fd）。
 
 ### 4.3 Replay 下的 logit 锐化与多 epoch 动力学
-- **F4-5（新）** `fig_marm_three_effects.png` — 1×4：A 记忆（train seen-cont 按 f）、B 挤出（val seen-ctx/novel-cont, e1→e3）、C 侵蚀（val novel-ctx）、D 安全情形（val seen-cont），均带 native 对照。
+- **F4-5（新）** `fig_marm_three_effects.png` — 1×4：A 记忆（train seen-cont 按 f）、B 挤出（val seen-ctx/novel-cont 按 f，**画满第三列**）、C 侵蚀（val novel-ctx）、D 安全情形（val seen-cont），均带 native 对照。**2026-09-17 改版**：y 轴改 log（NLL=-ln p，log-p 轴等距=等 loss 差；novel-cont 组 p~1e-3 在线性轴不可读）；B 面板从 f=1-only epoch 折线扩为全 5 个 f-bin（native 各 f 随 replay 上升，both 各 f 停滞，比值随 f 从 ~3.5x 增到 ~10x）。
   论点：「见过的 continuation 对其他 continuation 的效应」= B+C；native 同期 0.04→0.16 / 0.08→0.24 而 both 停在 0.05 / 0.10。
 - **F4-6（留，从 4.2 移来）** `fig_v5_f_by_pass_accounting.png` — 6 pass × f 的 seen/novel 损害、margin/pass、table-direct vs backbone-carried。放 4.3 因为它本质是 pass 动力学；面板 (d) 直接接 §3.4 freeze 结果。
+- **F4-8（新，2026-09-17，用户手绘核心草图落地，文件夹版）** `docs/figs/theory/marm_cell_figs/` — `plot_marm_cell_folder.py` 输出的**文件夹**，四组各一子目录（A train·seen·seen / B val·seen·seen / C val·seen·novel 挤出 / D val·novel·novel 侵蚀），每组 4 图：**e1/e2/e3 各一张 top-10 rank 直方图（线性概率刻度，用户定稿去掉 log）**，native vs +both 并排、深色 = train-seen 候选、虚线 = mean p(true)，组内共享 ylim；+ **`<cell>_ppl_epoch` 总 ppl（左轴 log）/ce（右轴 nats）随 epoch 变化**，面板内标 e3 excess ce。novel cont（C/D）与 novel ctx（D）的 rank 直方图也可画（D 无 train-seen 候选全浅色）。关键读数：C 组 e3 直方图 +both top-1 预测 0.376 且主体是 train-seen 候选（0.287）vs native 0.134——+both 把 novel continuation 的预测强行拉向 train-seen 词元；D 组 +both rank-1 0.451 vs 0.084。excess ce 梯子：A −0.9 → B +0.7 → C +3.4 → D +7.1 nats。**不按 f 分**（全部合并）；ce 口径（mean −ln p）vs 三效应图的 mean-p 口径——novel-cont 在 ce 口径下 +both 单调恶化（尾部被 mean-of-p 掩盖）。
 - **F4-7（留）** `fig_v5_table_cosine_and_margin.png` — margin +1.08/pass、传递系数 1−p̂≈0.87。
 
 ## 2. 弃用 / 降级

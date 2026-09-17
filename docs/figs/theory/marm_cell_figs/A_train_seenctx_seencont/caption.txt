@@ -1,0 +1,13 @@
+A · train · seen context · seen continuation (memorisation)
+
+Figures in this folder (png + svg each):
+  A_e1_rank / _e2_rank / _e3_rank: top-10 rank histograms, one per epoch, native vs +both side by side, LINEAR probability scale; dark = train-seen candidates (co-occurred with the bigram context (t-1,t) in train shard_00001.bin), light = other candidates; dashed = mean p(true token); shared y limits across epochs for comparability.
+  A_ppl_epoch: total per-position ppl (left axis, LOG) and ce = mean -ln p(true) (right axis, nats) over epoch boundaries (steps 337/674/1000); ppl = exp(ce), same trend on two scales; annotation = excess ce of +both vs native at epoch 3.
+
+Context axis = bigram (t-1,t) counts from the train shard, all counts f pooled · seed 42, table LR 128x, R=2^20 clean tables · runs: module_arms_epoch_{nogram,both}_{e1,e2,e3}_ckpt (steps 337/674/1000) · eval per-position top-10 from eval_logits_rank.py on fixed train/val batches
+Per-epoch numbers:
+  e1: n=589,248 · p(true) native 0.069 vs +both 0.124 · ppl native 154.3 vs +both 113.1 · ce native 5.04 vs +both 4.73
+  e2: n=589,248 · p(true) native 0.144 vs +both 0.196 · ppl native 64.3 vs +both 33.8 · ce native 4.16 vs +both 3.52
+  e3: n=589,248 · p(true) native 0.228 vs +both 0.308 · ppl native 35.8 vs +both 14.2 · ce native 3.58 vs +both 2.65
+
+stats: code/tools/logits_subspace_stats.py -> data/runs_scaling/marm_subspace_mass.json · plot: docs/plot_scripts/plot_marm_cell_folder.py --cell A

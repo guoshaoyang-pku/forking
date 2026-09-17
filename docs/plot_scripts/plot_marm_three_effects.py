@@ -2,14 +2,21 @@
 """Three-effect decomposition figure: what trained-in n-gram continuations do
 to other continuations.
 
-Panels (mean p(true token); native = dashed grey control, module arm =
-solid orange, epoch 1 -> 3):
+Panels (mean p(true token) on a LOG y axis — per-position NLL loss =
+-ln p, so equal vertical distance = equal NLL difference in nats; native
+= dashed grey control, module arm = solid orange, epoch 1 -> 3):
   (A) train memorisation: seen-context -> seen-continuation cells, train
-      batches, by context frequency (dose-response of effect A).
-  (B) crowding-out: val batches, SEEN contexts, NOVEL continuations:
-      native climbs (0.11 -> 0.26) while +both is suppressed (0.10 -> 0.06).
-  (C) generalisation erosion: val batches, NOVEL contexts: native climbs
-      (0.08 -> 0.24), +both stalls (0.07 -> 0.10).
+      batches, by context frequency (dose-response of effect A); at f=1,
+      e3: +both 0.41 vs native 0.22.
+  (B) crowding-out: val batches, SEEN contexts, NOVEL continuations,
+      across ALL five context-frequency bins — the full "novel
+      continuation" column of the 2x2 cell table: native climbs with
+      replay at every f (f=1: 0.04 -> 0.16) while +both is suppressed
+      (0.04 -> 0.05); the native/both ratio widens with f (~3.5x at f=1,
+      ~10x at f=512+, e3).
+  (C) generalisation erosion: val batches, NOVEL contexts (novel cont.
+      by construction): native climbs (0.08 -> 0.24), +both stalls
+      (0.07 -> 0.10).
   (D) the safe case: val batches, seen contexts, seen continuations:
       +both ends ABOVE native (0.62 vs 0.50 at f=1).
 
@@ -17,6 +24,7 @@ Sources: data/runs_scaling/marm_seen_novel.json from
 code/tools/context_freq_split.py. Output:
 docs/figs/theory/fig_marm_three_effects.{png,svg} + .caption.txt sidecar.
 """
+import argparse
 import json
 from pathlib import Path
 
@@ -73,7 +81,8 @@ def fbin_panel(ax, split, side, suffix, title, ylabel=None):
                 label=f"native · {EPOCH_LABELS[ei]}")
     ax.set_xticks(x)
     ax.set_xticklabels(FBIN_LABELS)
-    ax.set_ylim(0, 0.78)
+    ax.set_yscale("log")
+    ax.set_ylim(5e-4, 1.0)
     ax.set_xlabel("context frequency in train")
     if ylabel:
         ax.set_ylabel("mean p(true token)")
@@ -97,7 +106,8 @@ def epoch_panel(ax, split, side, key, title, ylabel=None):
     ax.set_xticks(x)
     ax.set_xticklabels(EPOCH_LABELS)
     ax.set_xlim(0.8, 3.6)
-    ax.set_ylim(0, 0.42)
+    ax.set_yscale("log")
+    ax.set_ylim(5e-4, 1.0)
     ax.set_xlabel("epoch boundary")
     if ylabel:
         ax.set_ylabel("mean p(true token)")
@@ -106,15 +116,19 @@ def epoch_panel(ax, split, side, key, title, ylabel=None):
 
 
 def main():
-    split = json.loads(SPLIT_JSON.read_text())
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--split-json", default=str(SPLIT_JSON),
+                    help="marm_seen_novel.json from context_freq_split.py")
+    args = ap.parse_args()
+    split = json.loads(Path(args.split_json).read_text())
     fig, axes = plt.subplots(1, 4, figsize=(12.4, 3.1))
 
     fbin_panel(axes[0], split, "train", "|seen",
                "A · memorisation (train, seen cont.)", ylabel=True)
-    epoch_panel(axes[1], split, "val", "ctx1|novel",
-                "B · crowding-out (val, seen ctx, novel cont.)")
+    fbin_panel(axes[1], split, "val", "|novel",
+               "B · crowding-out (val, seen ctx, novel cont.)")
     epoch_panel(axes[2], split, "val", "ctxnovel|novel",
-                "C · erosion (val, novel ctx)")
+                "C · erosion (val, novel ctx, novel cont.)")
     fbin_panel(axes[3], split, "val", "|seen",
                "D · safe case (val, seen cont.)")
 
@@ -127,10 +141,14 @@ def main():
         "seed 42 · epoch boundaries = steps 337/674/1000 · table LR 128x · "
         "eval: 4 train-stream-head batches + 4 fixed val batches (shards "
         "2,3,4,5,6,7,8,9,10,6542; 72x2048 tokens each) · y = mean p(true "
-        "token) · cells defined by train-shard trigram context count f and "
-        "whether the (context, continuation) 4-gram occurred in train · "
-        "panels B/C show context bin f=1 (B) and novel contexts (C); the "
-        "f=1 pattern holds for all f-bins · source: marm_seen_novel.json "
+        "token), log scale (per-position NLL loss = -ln p: equal vertical "
+        "distance = equal NLL difference in nats) · cells defined by "
+        "train-shard trigram context "
+        "count f and whether the (context, continuation) 4-gram occurred in "
+        "train · panel B shows the full novel-continuation column across "
+        "all 5 context-frequency bins (the earlier f=1-only epoch view is "
+        "the leftmost tick) · panel C = novel contexts (novel continuation "
+        "by construction) · source: marm_seen_novel.json "
         "(code/tools/context_freq_split.py)\n")
     print(f"wrote {FIGS}/fig_marm_three_effects.{{png,svg}}")
 

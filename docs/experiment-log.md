@@ -4190,10 +4190,42 @@ trigram 臂损害最大（novel +5.26），与其优化慢、表向量更「独�
 
 **三效应专门图**：`docs/plot_scripts/plot_marm_three_effects.py` →
 `docs/figs/theory/fig_marm_three_effects.{png,svg}`（1×4：A 记忆剂量反应
-train seen-cont 按 f-bin；B 挤出 val seen-ctx/novel-cont，e1→e3 native
-0.04→0.16 vs both 0.04→0.05；C 侵蚀 val novel-ctx，native 0.08→0.24 vs
-both 0.07→0.10；D 安全情形 val seen-cont，f=1 both 0.62 > native 0.50）。
-B/C 面板以 f=1 为代表（全 f-bin 同向）。
+train seen-cont 按 f-bin；B 挤出 val seen-ctx/novel-cont；C 侵蚀 val
+novel-ctx，native 0.08→0.24 vs both 0.07→0.10；D 安全情形 val seen-cont，
+f=1 both 0.62 > native 0.50）。**2026-09-17 改版**（用户拍板）：① y 轴改
+**log 刻度**（逐位置 NLL=-ln p，log-p 轴上等竖直距离=等 loss 差，且
+novel-cont 组 p~1e-3–1e-2 在线性轴不可读）；② **B 面板画满第三列**——
+novel continuation 从只画 f=1 的 epoch 折线改为全 5 个 f-bin 剂量反应
+（native 各 f 均随 replay 上升 f=1 0.04→0.16 / f=512+ 0.002→0.031，both
+各 f 停滞 f=1 0.04→0.05 / f=512+ 0.001→0.003，native/both 比值随 f 增大
+e3 时 ~3.5x→~10x）。口径：true_prob_mean（=p(true) 均值，非 rank0_frac
+top-1 命中率，后者另记为 B 效应 0.10→0.06 vs native 0.11→0.26）。四面板
+共享 log ylim [5e-4, 1.0]；数据源不变（marm_seen_novel.json，
+context_freq_split.py）。
+
+**Context×continuation cell 图（2026-09-17 用户拍板，多次迭代定稿）**：
+`docs/plot_scripts/plot_marm_cell_folder.py` → 文件夹
+`docs/figs/theory/marm_cell_figs/`，四组各一子目录
+（`A_train_seenctx_seencont` / `B_val_seenctx_seencont` /
+`C_val_seenctx_novelcont` / `D_val_novelctx_novelcont`），每组 4 张图 +
+caption：**三个 epoch 各一张 top-10 rank 直方图**（`e{1,2,3}_<cell>_rank`，
+**线性概率刻度**（用户要求去掉 log），native vs +both 并排，深色 =
+train-seen 候选、浅色 = 其他，虚线 = mean p(true)，组内三 epoch 共享
+ylim）+ **总 ppl/ce 随 epoch 变化**（`<cell>_ppl_epoch`：左轴 ppl log、
+右轴 ce nats，面板内标 e3 excess ce，绿=+both 更好/红=更差）。novel
+cont（C/D）与 novel ctx（D）的 rank 直方图同样可画（D 无 train-seen
+候选故全浅色）。要点：C 组 e3 直方图显示 +both 对 novel continuation
+的 top-1 预测本身是 train-seen 候选（0.376，其中 train-seen 0.287）vs
+native 0.134——挤出机制直观化；D 组 +both rank-1 0.451 vs native
+0.084（对 novel ctx 也过度锐化）。ppl/ce 轨迹：A −0.9 nats（两臂均
+改善）；B +0.7；C +3.4（native 984→267 vs +both 1812→7949）；D +7.1
+（95→26 vs 2021→31467）。旧的单张组图/独立 cell 图已删，脚本为
+`plot_marm_cell_folder.py`（`--cell A|B|C|D` 可单独重出一组）。
+**口径注意**：本组图 = bigram (t-1,t) 轴 + 逐位置 ce_mean（loss 口径）+
+全部 f 合并（用户要求不按 f 分）；三效应图 = trigram 轴 +
+true_prob_mean（mean-of-p）。novel-cont 组在 mean-p 口径下平坦、在
+ce 口径下单调恶化（尾部位置 p≈0 变多被 mean-of-p 掩盖）——两图不矛盾，
+但口径不可混画。数据源同核心逻辑图（marm_subspace_mass.json）。
 
 **架构与分类结构口径**：logits 通路逐行核实与三效应的结构性解释
 （tied readout ⇒ 表行=全词表 logit 偏置；softmax 质量守恒 ⇒ 挤出内建；
@@ -4202,18 +4234,22 @@ B/C 面板以 f=1 为代表（全 f-bin 同向）。
 
 **核心逻辑图（质量去向）**：`code/tools/logits_subspace_stats.py`（对每个 eval
 位置，用 train shard 的 2/3/4-gram 计数把 top-32 候选标为「与该 context 在
-train 中共现」/其他）→ `marm_subspace_mass.json`（集群
-`data/runs_scaling/logits_rank/`）→ `docs/plot_scripts/plot_marm_subspace_mass.py`
-→ `docs/figs/theory/fig_marm_subspace_{bigram_bigramctx,both_bigramctx,trigram_trigramctx,summary}.{png,svg}`。
-每张 3×2：A train seen-cont / B val seen-cont / C val novel-cont，左列 e3
-rank 1–10 平均概率按「train-seen 候选 / 其他」堆叠 + p(true) 水平线，右列
-e1→e3 的 p(true) 与 train-seen 候选总质量。bigram 轴关键数（val, seen
-bigram context, novel continuation = 27% val 位置, n=158,790）：train-seen
-候选质量 native 0.24→0.30 vs +bigram 0.31→0.47 / +both 0.30→0.55；p(true)
-native 0.016→0.090 vs +bigram 0.004→0.008 / +both 0.004→0.005。train 侧
-seen-cont p(true) +both 0.31 > native 0.23 > +bigram 0.19（bigram 单臂无
-train 收益，与前述「干扰型 gap」一致）。+trigram 臂三面板均落后 native（优化
-慢），其 novel-cont p(true) 0.005 仍 ≪ native 0.100。
+train 中共现」/其他；含逐位置 CE=mean -log p(true) 与 ppl=exp(CE)）→
+`marm_subspace_mass.json`（集群 `data/runs_scaling/logits_rank/`）→
+`docs/plot_scripts/plot_marm_subspace_mass.py` →
+`docs/figs/theory/fig_marm_subspace_*.png`。**正文主图**
+`fig_marm_subspace_both_novel`（1×4：val·seen bigram ctx·novel cont 组在
+epoch 1/2/3 的 rank 1–10 堆叠条形 + CE/ppl 面板）；**附录图**
+`fig_marm_subspace_both_seen_appendix`（2×4：seen-continuation 两组 = A
+train / B val，同结构）；`{bigram,both,trigram}_*ctx` 与 `summary` 为变体备查。
+关键数（novel-cont 组 = 27% val 位置, n=158,790）：CE +both 7.50→7.93→8.98
+（ppl 1,812→2,789→7,949）单调恶化，native 6.89→6.18→5.59
+（ppl 984→485→267）单调改善；p(true) +both 0.004→0.006→0.005 vs native
+0.016→0.041→0.090；train-seen 候选质量（top-32）+both 0.30→0.55 vs native
+0.24→0.30。附录 B 组（val seen-cont, 69% val）CE +both 3.50→3.26→3.48
+（e3 回升，p(true) 0.237 < native 0.280），native 4.33→3.35→2.82
+单调降——挤出在 e3 已溢出到 seen-cont 组。A 组（train）两者均降但 +both
+更低（ppl 134→14 vs native 113→36）。
 
 **验收条件**：① 四 run 均有 summary.json 与 final_model.pt；② eval JSON 中
 各臂 val ppl 与 summary final_val_loss 一致（bf16 噪声内）；③ nogram 臂
