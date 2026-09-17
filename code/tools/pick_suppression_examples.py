@@ -93,6 +93,8 @@ def main():
     ap.add_argument("--gradual_drop", type=float, default=5.0,
                     help="both e3 true_prob < both e1 true_prob / this")
     ap.add_argument("--topk_show", type=int, default=8)
+    ap.add_argument("--back", type=int, default=60, help="片段向前 token 数")
+    ap.add_argument("--fwd", type=int, default=15, help="片段向后 token 数")
     ap.add_argument("--out_json", required=True)
     args = ap.parse_args()
 
@@ -170,6 +172,18 @@ def main():
               "ctx_true_str": decode_seq(list(a1["ctx3"][i]) + [int(y[i])]),
               "true_str": decode_one(y[i]),
               "f_bigram": int(f_ctx[i])}
+        # npz 行序 = val token 流顺序（已验证 row-adjacent）；还原原句窗口
+        s = max(0, i - args.back)
+        e = min(len(y) - 1, i + args.fwd)
+        seq = list(a1["ctx3"][s].astype(np.int64)) \
+            + list(y[s:e + 1].astype(np.int64))
+        tgt = i - s + 3  # target token 在 seq 里的下标
+        ex["passage"] = {
+            "prefix": decode_seq(seq[:tgt]),
+            "target": decode_seq(seq[tgt:tgt + 1]),
+            "suffix": decode_seq(seq[tgt + 1:]),
+            "n_tokens": int(len(seq)),
+        }
         for arm in ARMS:
             for ep in EPOCHS:
                 d = data[(arm, ep)]

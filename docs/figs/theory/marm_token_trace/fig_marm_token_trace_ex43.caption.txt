@@ -1,9 +1,11 @@
-Token-precise suppression trace, example 4 (val position 553884).
-Context: 'aching em drawing' (bigram context (t-1,t) seen in the train shard with count f=1) -> true continuation: ',' (novel for this context: the 3-gram (t-1,t,true) never occurs in the train shard).
+Token-precise suppression trace, example 43 (val position 116995).
+Val passage window (¶ = newline; >>[ ]<< marks the suppressed true token):
+...-dcy" tox per mario,ures habitat knswer, p dereat, non andling,het were shing som claper an safe chy ironise,cer andher north abilityull an degreesogines/fe TO/etc predp deirdrahyd is on a two d Northog cold]. ¶  ¶  conven, I these that at the This that was the redu lockra >>[ the]<<  respectra pilotIntroduction. truatorsie).Wheniv the pot are su streng. S ha are
+Context: ' redu lockra' (bigram context (t-1,t) seen in the train shard with count f=9) -> true continuation: ' the' (novel for this context: the 3-gram (t-1,t,true) never occurs in the train shard).
 Grid: rows = epoch boundaries (steps 337/674/1000), columns = native vs +both. Bars = top-8 predicted tokens with mean predictive probability (linear scale); the true token is shown as an extra bar whenever it is outside the top-8 (labelled with its rank); dark bars = train-seen candidates (3-gram (context, token) exists in the train shard), green = the true token.
 Bottom: true-token probability trajectory, log scale (native vs +both; ranks annotated).
-Trajectory (nogram): p(true) 0.1223 -> 0.1693 -> 0.2839 (ranks 0/1/0).
-Trajectory (+both): p(true) 0.0238 -> 0.0015 -> 0.000001 (ranks 3/15/2927).
+Trajectory (nogram): p(true) 0.1052 -> 0.1271 -> 0.2974 (ranks 0/0/0).
+Trajectory (+both): p(true) 0.0178 -> 0.0093 -> 0.000021 (ranks 5/17/1576).
 Data: marm_suppression_examples_gradual.json (per-position npz from eval_logits_rank.py --save_topk 32 on module_arms_epoch_{nogram,both}_{e1,e2,e3}_ckpt, seed 42, table LR 128x; bigram counts from train shard_00001.bin; token strings decoded with the project tokenizer, vocab 8192). Selection: native top-1 correct at epoch 1, +both true rank <= 10 at epoch 1 and >= 10 at epoch 3 with >= 5x probability drop.
 picker: code/tools/pick_suppression_examples.py --gradual · plot: docs/plot_scripts/plot_marm_token_trace.py
 

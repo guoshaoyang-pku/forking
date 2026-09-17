@@ -1,9 +1,11 @@
-Token-precise suppression trace, example 2 (val position 566117).
-Context: ' with00cular' (bigram context (t-1,t) seen in the train shard with count f=17) -> true continuation: ' to' (novel for this context: the 3-gram (t-1,t,true) never occurs in the train shard).
+Token-precise suppression trace, example 19 (val position 368763).
+Val passage window (¶ = newline; >>[ ]<< marks the suppressed true token):
+... am). structuralra profession. Itities resour, the deliver box by thesec protection in theware of the danger suffera it a sumraction nhis to proble.orsReg states acles of spect tooney the suffera d sign Waterjectching, are is econom that its it," ref  hard exp sufferas respons in the veget. The hold is did wiring but are is inress resour gen >>[ the]<< ygen Cl.ious has thisuring weigh? ple, con I second the protection express a parent of
+Context: 'ress resour gen' (bigram context (t-1,t) seen in the train shard with count f=3) -> true continuation: ' the' (novel for this context: the 3-gram (t-1,t,true) never occurs in the train shard).
 Grid: rows = epoch boundaries (steps 337/674/1000), columns = native vs +both. Bars = top-8 predicted tokens with mean predictive probability (linear scale); the true token is shown as an extra bar whenever it is outside the top-8 (labelled with its rank); dark bars = train-seen candidates (3-gram (context, token) exists in the train shard), green = the true token.
 Bottom: true-token probability trajectory, log scale (native vs +both; ranks annotated).
-Trajectory (nogram): p(true) 0.1086 -> 0.4871 -> 0.4304 (ranks 0/0/0).
-Trajectory (+both): p(true) 0.0226 -> 0.0005 -> 0.000000 (ranks 7/3/820).
+Trajectory (nogram): p(true) 0.1090 -> 0.0942 -> 0.1179 (ranks 0/2/2).
+Trajectory (+both): p(true) 0.0343 -> 0.0083 -> 0.000015 (ranks 2/10/47).
 Data: marm_suppression_examples_gradual.json (per-position npz from eval_logits_rank.py --save_topk 32 on module_arms_epoch_{nogram,both}_{e1,e2,e3}_ckpt, seed 42, table LR 128x; bigram counts from train shard_00001.bin; token strings decoded with the project tokenizer, vocab 8192). Selection: native top-1 correct at epoch 1, +both true rank <= 10 at epoch 1 and >= 10 at epoch 3 with >= 5x probability drop.
 picker: code/tools/pick_suppression_examples.py --gradual · plot: docs/plot_scripts/plot_marm_token_trace.py
 

@@ -4259,6 +4259,26 @@ continuation 挤死。注意 'er'/'a' 对该 bigram 并非 train-seen（3-gram
 train-seen 候选）互补：f 大时 seen 候选顶替，f=1 时无差别锐化。
 gradual 模式候选 877 例（extreme 模式 4190 例，均为 e1 即压死）。
 
+**原句窗口版（2026-09-17 晚，用户要求「展示 val 里面的句子、多采样挑
+好理解的长片段」）**：npz 行序已验证 = val token 流顺序（`ctx3` 行
+相邻滑动一格），选例器新增 `--back/--fwd`（默认 80/20）为每例抓
+±100 token 原文窗口解码成 passage；候选扩到 60 例再按「常见词占比 +
+最长常见词连排 + +both 轨迹单调恶化」筛出 8 例：
+ex43/42/25/59/32/14/23/19（JSON 内索引，图名同索引；
+`marm_suppression_examples_passage.json`，集群同目录）。绘图脚本顶部
+新增 passage 面板（等宽字体流式排版，true token 绿框高亮，¶=换行）。
+亮点例：**ex25**（pos 415339）+both e2 坍缩到 `'ect'` p=0.766——该
+subword 来自同句 train-seen 词 `perfectlyach` 的碎片，记忆化碎词顶替
+合理续接的直观证据；**ex14**（pos 320901）passage 中
+`m green local thermalit` 出现两次，+both e2/e3 顶部被
+`stores/manufact/Cont/blood`（句内/邻近 train-seen 碎片）占据，rank
+3→16→4696。**语料解码注意**：train/val bin 用 cache tokenizer.pkl 解码
+后功能词为正常英语、内容词为一致重复的 nonce 词
+（`NowPota`/`occrop`/`thermalit`），且 cache parquet shard_00001 的
+编码在 bin 前 5M token 内未命中——bin 语料（来自集群 `/data`，本账号
+无读权限）与 cache 样例 parquet 不是同一文本或同一 tokenizer；解码串
+仅供结构示意，词面语义待与数据方核实。
+
 **架构与分类结构口径**：logits 通路逐行核实与三效应的结构性解释
 （tied readout ⇒ 表行=全词表 logit 偏置；softmax 质量守恒 ⇒ 挤出内建；
 按行稀疏 128× 更新 ⇒ 逐行记忆）见

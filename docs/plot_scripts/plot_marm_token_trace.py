@@ -61,7 +61,10 @@ plt.rcParams.update({
 
 
 def esc(s):
-    return s.replace("\n", "\\n").replace("\t", "\\t")
+    s = s.replace("\n", "\\n").replace("\t", "\\t")
+    if s.strip() == "" and s != "":
+        s = s.replace(" ", "␣")
+    return s
 
 
 def draw_topk(ax, rec, true_str, bar_colors):
@@ -104,6 +107,47 @@ def draw_topk(ax, rec, true_str, bar_colors):
     ax.tick_params(axis="x", labelsize=7)
 
 
+def draw_passage(ax, ex, cols=118):
+    """Render the val passage window (monospace flow layout, exact char
+    arithmetic) with the true target token highlighted in green."""
+    p = ex["passage"]
+    clean = lambda s: s.replace("\n", " ¶ ")
+    prefix, target, suffix = clean(p["prefix"]), clean(p["target"]), clean(p["suffix"])
+    full = prefix + target + suffix
+    t0, t1 = len(prefix), len(prefix) + len(target)
+    lines = [full[i:i + cols] for i in range(0, len(full), cols)]
+    n = len(lines)
+    ax.set_xlim(0, cols)
+    ax.set_ylim(n + 0.3, -0.7)
+    ax.axis("off")
+    mono = {"fontfamily": "monospace", "fontname": "DejaVu Sans Mono",
+            "fontsize": 7.0}
+    for ln, line in enumerate(lines):
+        g0 = ln * cols
+        # segment the line into [before | target | after] by global offsets
+        cuts = sorted({0, len(line),
+                       min(max(t0 - g0, 0), len(line)),
+                       min(max(t1 - g0, 0), len(line))})
+        for a, b in zip(cuts[:-1], cuts[1:]):
+            if a == b:
+                continue
+            seg = line[a:b]
+            is_tgt = (g0 + a >= t0) and (g0 + b <= t1)
+            ax.text(a, ln, seg, color="#2b2b2b" if not is_tgt else GREEN,
+                    fontweight="bold" if is_tgt else "normal",
+                    va="top", ha="left", **mono)
+            if is_tgt:
+                ax.add_patch(plt.Rectangle(
+                    (a - 0.4, ln - 0.12), (b - a) + 0.8, 0.92,
+                    facecolor=GREEN, alpha=0.13, edgecolor=GREEN,
+                    linewidth=0.6, zorder=0, clip_on=False))
+    ax.set_title(
+        f"val passage window (±{p['n_tokens']} tokens around position "
+        f"{ex['position']}; ¶ = newline; green box = the suppressed true "
+        f"continuation {ex['true_str']!r})",
+        loc="left", fontsize=8.0, color="#333333", pad=2)
+
+
 def draw_traj(ax, ex):
     eps = ("e1", "e2", "e3")
     xs = [1, 2, 3]
@@ -127,13 +171,23 @@ def draw_traj(ax, ex):
 
 
 def example_figure(ex, idx, outdir):
-    fig = plt.figure(figsize=(10.2, 8.6))
-    gs = fig.add_gridspec(4, 2, height_ratios=[1, 1, 1, 0.85],
-                          hspace=0.62, wspace=0.55,
-                          left=0.16, right=0.97, top=0.86, bottom=0.06)
+    has_passage = "passage" in ex
+    fig = plt.figure(figsize=(10.2, 11.2 if has_passage else 8.6))
+    if has_passage:
+        gs = fig.add_gridspec(5, 2, height_ratios=[0.9, 1, 1, 1, 0.8],
+                              hspace=0.6, wspace=0.55,
+                              left=0.16, right=0.97, top=0.94, bottom=0.05)
+        ax_pass = fig.add_subplot(gs[0, :])
+        draw_passage(ax_pass, ex)
+        row0 = 1
+    else:
+        gs = fig.add_gridspec(4, 2, height_ratios=[1, 1, 1, 0.85],
+                              hspace=0.62, wspace=0.55,
+                              left=0.16, right=0.97, top=0.86, bottom=0.06)
+        row0 = 0
     for row, ep in enumerate(("e1", "e2", "e3")):
         for col, arm in enumerate(("nogram", "both")):
-            ax = fig.add_subplot(gs[row, col])
+            ax = fig.add_subplot(gs[row0 + row, col])
             rec = ex[f"{arm}_{ep}"]
             base = COLORS[arm]
             bar_colors = {
@@ -150,7 +204,7 @@ def example_figure(ex, idx, outdir):
                          loc="left", fontsize=8.2, color="#333333")
             if col == 0:
                 ax.set_ylabel("predicted token", fontsize=8)
-    ax_traj = fig.add_subplot(gs[3, :])
+    ax_traj = fig.add_subplot(gs[row0 + 3, :])
     draw_traj(ax_traj, ex)
 
     handles = [
@@ -163,13 +217,13 @@ def example_figure(ex, idx, outdir):
                label="+both"),
     ]
     fig.legend(handles=handles, loc="upper right", ncol=5, fontsize=7.2,
-               bbox_to_anchor=(0.97, 0.945), handlelength=1.2,
-               columnspacing=0.9)
+               bbox_to_anchor=(0.97, 0.995 if has_passage else 0.945),
+               handlelength=1.2, columnspacing=0.9)
     fig.suptitle(
         f"val position {ex['position']} · context {ex['ctx_str']!r} → true "
         f"continuation {ex['true_str']!r} · bigram ctx count f="
         f"{ex['f_bigram']} (continuation novel for this ctx)",
-        fontsize=9.6, y=0.985, x=0.03, ha="left")
+        fontsize=9.6, y=0.998 if has_passage else 0.985, x=0.03, ha="left")
 
     stem = f"fig_marm_token_trace_ex{idx:02d}"
     for ext in ("png", "svg"):
@@ -179,9 +233,19 @@ def example_figure(ex, idx, outdir):
 
 
 def example_caption(ex, idx):
+    passage = ""
+    if "passage" in ex:
+        p = ex["passage"]
+        passage = (
+            "Val passage window (¶ = newline; >>[ ]<< marks the suppressed "
+            "true token):\n..."
+            + p["prefix"].replace("\n", " ¶ ")
+            + " >>[" + p["target"].replace("\n", " ¶ ") + "]<< "
+            + p["suffix"].replace("\n", " ¶ ") + "\n")
     return (
         f"Token-precise suppression trace, example {idx} (val position "
-        f"{ex['position']}).\nContext: {ex['ctx_str']!r} (bigram context "
+        f"{ex['position']}).\n" + passage +
+        f"Context: {ex['ctx_str']!r} (bigram context "
         f"(t-1,t) seen in the train shard with count f={ex['f_bigram']}) -> "
         f"true continuation: {ex['true_str']!r} (novel for this context: "
         "the 3-gram (t-1,t,true) never occurs in the train shard).\n"
@@ -217,13 +281,18 @@ def main():
     ap.add_argument("--json", required=True)
     ap.add_argument("--example", type=int, default=-1,
                     help="-1 = all examples, else a single index")
+    ap.add_argument("--examples", type=str, default="",
+                    help="comma-separated indices to plot (overrides --example)")
     args = ap.parse_args()
     d = json.loads(Path(args.json).read_text())
     FIGS.mkdir(parents=True, exist_ok=True)
     shutil.copy(args.json, FIGS / "token_trace_examples.json")
 
-    idxs = ([args.example] if args.example >= 0
-            else range(len(d["examples"])))
+    if args.examples:
+        idxs = [int(x) for x in args.examples.split(",") if x.strip()]
+    else:
+        idxs = ([args.example] if args.example >= 0
+                else range(len(d["examples"])))
     for idx in idxs:
         ex = d["examples"][idx]
         stem = example_figure(ex, idx, FIGS)

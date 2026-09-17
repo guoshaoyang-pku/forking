@@ -198,9 +198,14 @@ mean-of-p 口径）不混用。数据源与口径详见 `docs/experiment-log.md`
 - **绘图脚本**（本地仓库内，跑图不需要集群）：
   - `docs/plot_scripts/plot_marm_cell_folder.py` —— cell 图文件夹（本节上图）
   - `docs/plot_scripts/plot_marm_token_trace.py` —— 逐 token 压制轨迹
-    `docs/figs/theory/marm_token_trace/`（数据
-    `marm_suppression_examples_gradual.json`，选例器
-    `code/tools/pick_suppression_examples.py --gradual`）
+    `docs/figs/theory/marm_token_trace/`（当前 8 例 = ex43/42/25/59/32/14/
+    23/19，顶部带 val 原句窗口、true token 绿框高亮；数据
+    `marm_suppression_examples_passage.json`，选例器
+    `code/tools/pick_suppression_examples.py --gradual --top 60
+    --back 80 --fwd 20`，绘图 `--examples 43,42,25,59,32,14,23,19`。
+    注意：解码串功能词正常、内容词为一致的 nonce 词，疑 bin 语料
+    （集群 `/data`，无读权限）与 cache 样例 parquet 非同一文本或
+    tokenizer——词面语义待核实，见 experiment-log §56 末节）
   - `docs/plot_scripts/plot_marm_subspace_mass.py` —— 核心逻辑图 `fig_marm_subspace_*`
   - `docs/plot_scripts/plot_marm_three_effects.py` —— F4-5 三效应图
   - `docs/plot_scripts/plot_marm_logits_rank.py` —— F4-1 logits rank 主图
