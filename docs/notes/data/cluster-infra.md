@@ -17,23 +17,31 @@ SSH 配置位于 `~/.ssh/config.d/`（主配置 `Include ~/.ssh/config.d/*.conf`
 
 ## 各集群的内容存储
 
-### ophis-gpu
+### ophis-gpu（主集散地：全部权威实验数据在这里）
 
-| 路径 | 容量/配额 | 存什么 |
+**仓库实体在 `/data4` 盘上**：`/data4/guoshaoyang/ngram-gap-lab/`（nvme4n1p1，7.0 TB）。
+家目录 `/data/home/guoshaoyang` 在 `/data3` 盘上，其中 `~/ngram-gap-lab` 是指向 `/data4` 实体的符号链接——两条路径等价，引用时优先写 `/data4/...` 实体路径。
+
+| 路径 | 容量 | 存什么 |
 |---|---|---|
-| `/data3/guoshaoyang` | 7.0 TB NVMe，配额 500G soft / 600G hard | **个人持久存储（主力）** |
-| `/data3/guoshaoyang/ngram-gap-lab/` | — | **本仓库的集群副本**；venv 在 `.venv/`，跑实验的工作区 |
-| `/data3/guoshaoyang/ngram-gap-lab/data/tokenized/` | — | token shards |
-| `/data3/guoshaoyang/ngram-gap-lab/data/runs/` | — | 本仓库所有 run 产物 |
+| `/data4/guoshaoyang/ngram-gap-lab/data/runs_fixed/` | 38 G，163 run | ★ **唯一权威 run 数据**（agents.md P4：只认 `_fixed` 后缀；含 8 个 `_fd` fast-diag run） |
+| `/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/` | 44 G | epoch20 / scaling 系列，其中 56 个带 `_fixed` 后缀；另含 `logits_rank/` 分析产物与队列日志 |
+| `/data4/guoshaoyang/ngram-gap-lab/data/runs_theory/` | 37 G | freeze / snap 理论干预 run（freezebb、input、nogram 的 snap+log） |
+| `/data4/guoshaoyang/ngram-gap-lab/data/tokenized/` | 1.4 G | 标准 1x token shards |
+| `/data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/` | 2.2 G | epoch20 长序列 shards |
+| `/data4/guoshaoyang/ngram-gap-lab/data/freq_index*.npz` | 14 个文件，共 ~6.7 G | 频率索引：`freq_index.npz`（标准 1x）+ `freq_index_train{0.25x…8x}.npz` |
+| `/data4/guoshaoyang/ngram-gap-lab/data/ngram5_minimal_order5/` | 9.3 G | ngram5 controlled 数据集（历史） |
+| `data/runs/`、`runs_quarantine_epochbug/`、`runs_v50_1000_bak/`、`nglab2x_runs.tar.gz` | <1 G | ⛔ 作废/隔离/备份（`data/runs/` 受 freq-bin bug 污染，见 agents.md P4） |
 | `/data3/guoshaoyang/ngram-gap-exp/` | — | **历史工作区**（OPHIS 时代）：旧 `train.py` / `lib.py`、`ngram5_data/`、`runs/ngram5/`、`toy/` |
-| `/data3/guoshaoyang/ngram-gap-exp/ngram5_data/` | — | ngram5 / trigram controlled 数据集 |
-| `/data3/guoshaoyang/ngram-gap-exp/runs/ngram5/` | — | ngram5 系列 run 结果 |
 | `/data3/guoshaoyang/ophis_gap_local_backup/` | — | 本地镜像备份 |
-| `/data2/guoshaoyang` | 7.0 TB，81% used | 共享实验目录 |
-| `/data4/guoshaoyang` | 7.0 TB，配额 500G/600G | 空闲，可作扩展 |
+| `/data2/guoshaoyang` | 7.0 TB | 共享实验目录 |
 | `/scratch/guoshaoyang`、`/tmp` | 438 GB 但**配额仅 15G soft / 20G hard** | ⚠️ **禁止写大文件**：`/tmp` 与 `/` 同分区，根分区配额已超 |
 
+**合作者访问（yushanbin / zhaohaoran）**：两人在 ophis-gpu 已有账号（同在 `gpuusers` 组），且在 `/data4/` 下有自己的目录。数据本体权限已是只读开放（644/755），唯一需 guoshaoyang 手动执行一次的是开放家目录穿越位：`chmod 711 /data4/guoshaoyang`（或 `setfacl -m u:<user>:x` 精确到人）。之后合作者直接读 `/data4/guoshaoyang/ngram-gap-lab/data/` 画图即可，输出写到自己的 `/data4/<user>/`，不会碰原始数据。
+
 ### 360-1 / 360-2
+
+> 本节为历史记录，2026-09-17 盘点时 VPN 未连通、未复核；360 上的 run 产物按 P3/P4 回填后应回流到 ophis-gpu 的 `runs_fixed/` 才算权威。
 
 | 路径 | 存什么 |
 |---|---|
@@ -51,7 +59,7 @@ SSH 配置位于 `~/.ssh/config.d/`（主配置 `Include ~/.ssh/config.d/*.conf`
 
 1. `nvidia-smi` 确认目标卡空闲，用 `CUDA_VISIBLE_DEVICES=<id>` 占卡；一个 Agent 只用自己登记的卡。
 2. 同步代码到目标机，然后 `md5sum` 核对至少 `code/train.py`、`code/ngram_freq.py`、`code/cluster/*.sh`。
-   - 权威源：本地 git 仓库已 commit 的版本，或 ophis-gpu `/data3/guoshaoyang/ngram-gap-lab`。
+   - 权威源：本地 git 仓库已 commit 的版本，或 ophis-gpu `/data4/guoshaoyang/ngram-gap-lab`。
    - 教训（2026-08-06）：360 上曾残留旧 `train.py`（`f9388473`），与 ophis-gpu（`05bffab8`）的 val / freq-val 口径不同（旧版 freq-val 是移动窗口，新版固定 batch），导致同批实验口径不一致。
 3. 改代码前先 commit，再同步到所有目标机。同一实验集跨机并行必须用同一份代码。
 
@@ -59,7 +67,7 @@ SSH 配置位于 `~/.ssh/config.d/`（主配置 `Include ~/.ssh/config.d/*.conf`
 
 | 用途 | 路径 | 状态 |
 |---|---|---|
-| **主开发仓库** | `/Users/guoshaoyang/Desktop/workdir/ngram-gap-lab` | ✅ 当前唯一开发地。GitHub: `git@github.com:guoshaoyang-pku/ngram-gap-lab.git` |
+| **主开发仓库** | `/Users/guoshaoyang/Desktop/workdir/ngram-gap-lab` | ✅ 当前唯一开发地。GitHub: `git@github.com:guoshaoyang-pku/forking.git`（仓库名 forking；`data/` 被 gitignore，代码+文档+绘图脚本走 git，数据本体在 ophis-gpu） |
 | **发布博客仓库** | `/Users/guoshaoyang/Desktop/workdir/guoshaoyang-pku.github.io` | ✅ 主文档发布地。主页面 `blogs/ngram-gap-mechanism-guide/index.html` |
 | 旧仓库（弃用） | `/Users/guoshaoyang/Desktop/workdir/OPHIS/OPHIS_gap` | ⛔ **已弃用**，只读溯源，不再开发。见 `deprecated-list.md` |
 | 两因素模型参考 | `/Users/guoshaoyang/Documents/Codex/2026-08-21/xian-xi/outputs/ngram-repeat-gap-two-factor-model.html` | 📄 外部理论文档，待验证对象 |
