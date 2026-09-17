@@ -37,7 +37,7 @@ SSH 配置位于 `~/.ssh/config.d/`（主配置 `Include ~/.ssh/config.d/*.conf`
 | `/data2/guoshaoyang` | 7.0 TB | 共享实验目录 |
 | `/scratch/guoshaoyang`、`/tmp` | 438 GB 但**配额仅 15G soft / 20G hard** | ⚠️ **禁止写大文件**：`/tmp` 与 `/` 同分区，根分区配额已超 |
 
-**合作者访问（yushanbin / zhaohaoran）**：两人在 ophis-gpu 已有账号（同在 `gpuusers` 组），且在 `/data4/` 下有自己的目录。数据本体权限已是只读开放（644/755），唯一需 guoshaoyang 手动执行一次的是开放家目录穿越位：`chmod 711 /data4/guoshaoyang`（或 `setfacl -m u:<user>:x` 精确到人）。之后合作者直接读 `/data4/guoshaoyang/ngram-gap-lab/data/` 画图即可，输出写到自己的 `/data4/<user>/`，不会碰原始数据。
+**合作者访问（yushanbin / zhaohaoran，2026-09-17 已开通）**：两人在 ophis-gpu 有账号（同在 `gpuusers` 组），GitHub `forking` 仓库已加 collaborator（有 push 权限）。集群侧已执行：`chmod 711 /data4/guoshaoyang`（穿越位，全世界可过但不可列目录；数据本体 644/755 对他们是**只读**，`runs_fixed` 无写权限）。共享可写目录 **`/data4/guoshaoyang/shared/`**：对两人 `setfacl rwx`（含 default ACL，新建文件自动继承），画图中间产物/成品统一放这里；他们自己的 `/data4/yushanbin/`、`/data4/zhaohaoran/` 也可用。撤销方式：`setfacl -x u:<user> /data4/guoshaoyang/shared` + `chmod 700 /data4/guoshaoyang`。
 
 ### 360-1 / 360-2
 
