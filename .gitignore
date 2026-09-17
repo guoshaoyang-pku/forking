@@ -32,3 +32,4 @@ runs/
 
 # Plots (keep svg/html in docs/figs, ignore raw data dumps)
 *.npz
+.tmp_data/

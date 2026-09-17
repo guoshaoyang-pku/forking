@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="${NGLAB_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 PY="${NGLAB_PY:-$ROOT/.venv/bin/python}"
 OUT_DIR="${NGLAB_OUT_DIR:-$ROOT/data/runs_fixed}"
-GROUP="${V5_GROUP:?set V5_GROUP to inj, inj_freq10, dose, dose_freq10, epoch, causal, causal_refresh, mask_high_refresh, rho, long, s1_epoch, or s1_frequency}"
+GROUP="${V5_GROUP:?set V5_GROUP to inj, inj_freq10, dose, dose_freq10, epoch, causal, causal_refresh, mask_high_refresh, rho, long, s1_epoch, s1_frequency, module_arms, or module_arms_epoch}"
 GPUS=("$@")
 
 if [[ "${#GPUS[@]}" -eq 0 ]]; then
@@ -172,6 +172,43 @@ case "$GROUP" in
       "s1v5_freq_trigram|1|2,3,4,5,6,7,8,9,10,6542|1000|--epoch_batches 337 --enable_bigram 0 --enable_trigram 1"
       "s1v5_freq_both|1|2,3,4,5,6,7,8,9,10,6542|1000|--epoch_batches 337"
       "s1v5_freq_nogram|1|2,3,4,5,6,7,8,9,10,6542|1000|--epoch_batches 337 --enable_bigram 0 --enable_trigram 0"
+    )
+    ;;
+  module_arms)
+    # Four-way module ablation (native / +bigram / +trigram / both) at the
+    # current 128x standard, for the logits rank-distribution figure in the
+    # paper draft (2026-09-16). Same coordinates as the s1_frequency family;
+    # only the module arms vary. First wave (2026-09-16) completed without
+    # checkpoints; the _ckpt wave adds --save_final_model for the offline
+    # logits eval (code/tools/eval_logits_rank.py).
+    SPECS=(
+      "s1v5_128_marm_nogram|1|2,3,4,5,6,7,8,9,10,6542|1000|--epoch_batches 337 --enable_bigram 0 --enable_trigram 0"
+      "s1v5_128_marm_bigram|1|2,3,4,5,6,7,8,9,10,6542|1000|--epoch_batches 337 --enable_bigram 1 --enable_trigram 0"
+      "s1v5_128_marm_trigram|1|2,3,4,5,6,7,8,9,10,6542|1000|--epoch_batches 337 --enable_bigram 0 --enable_trigram 1"
+      "s1v5_128_marm_both|1|2,3,4,5,6,7,8,9,10,6542|1000|--epoch_batches 337"
+      "s1v5_128_marm_nogram_ckpt|1|2,3,4,5,6,7,8,9,10,6542|1000|--epoch_batches 337 --enable_bigram 0 --enable_trigram 0 --save_final_model"
+      "s1v5_128_marm_bigram_ckpt|1|2,3,4,5,6,7,8,9,10,6542|1000|--epoch_batches 337 --enable_bigram 1 --enable_trigram 0 --save_final_model"
+      "s1v5_128_marm_trigram_ckpt|1|2,3,4,5,6,7,8,9,10,6542|1000|--epoch_batches 337 --enable_bigram 0 --enable_trigram 1 --save_final_model"
+      "s1v5_128_marm_both_ckpt|1|2,3,4,5,6,7,8,9,10,6542|1000|--epoch_batches 337 --save_final_model"
+    )
+    ;;
+  module_arms_epoch)
+    # Epoch-boundary checkpoints for the same four module arms: stop at the
+    # end of epoch 1 (337 steps) and epoch 2 (674 steps) with
+    # --save_final_model, so eval_logits_rank.py can score the rank
+    # distribution at each epoch boundary. The existing _ckpt wave
+    # (step 1000) is the epoch-3 boundary. Shard-1 fixed replay + seed 42
+    # make the first 337/674 steps bit-identical to the 1000-step runs, so
+    # the three boundaries are the same trajectories sampled at e1/e2/e3.
+    SPECS=(
+      "s1v5_128_marm_nogram_e1ckpt|1|2,3,4,5,6,7,8,9,10,6542|337|--epoch_batches 337 --enable_bigram 0 --enable_trigram 0 --save_final_model"
+      "s1v5_128_marm_bigram_e1ckpt|1|2,3,4,5,6,7,8,9,10,6542|337|--epoch_batches 337 --enable_bigram 1 --enable_trigram 0 --save_final_model"
+      "s1v5_128_marm_trigram_e1ckpt|1|2,3,4,5,6,7,8,9,10,6542|337|--epoch_batches 337 --enable_bigram 0 --enable_trigram 1 --save_final_model"
+      "s1v5_128_marm_both_e1ckpt|1|2,3,4,5,6,7,8,9,10,6542|337|--epoch_batches 337 --save_final_model"
+      "s1v5_128_marm_nogram_e2ckpt|1|2,3,4,5,6,7,8,9,10,6542|674|--epoch_batches 337 --enable_bigram 0 --enable_trigram 0 --save_final_model"
+      "s1v5_128_marm_bigram_e2ckpt|1|2,3,4,5,6,7,8,9,10,6542|674|--epoch_batches 337 --enable_bigram 1 --enable_trigram 0 --save_final_model"
+      "s1v5_128_marm_trigram_e2ckpt|1|2,3,4,5,6,7,8,9,10,6542|674|--epoch_batches 337 --enable_bigram 0 --enable_trigram 1 --save_final_model"
+      "s1v5_128_marm_both_e2ckpt|1|2,3,4,5,6,7,8,9,10,6542|674|--epoch_batches 337 --save_final_model"
     )
     ;;
   *)

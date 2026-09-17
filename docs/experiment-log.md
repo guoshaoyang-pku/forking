@@ -8,6 +8,7 @@
 
 | run_id | 日期 | 实验 | 状态 | gap 关键值 | 详情 |
 |---|---|---|---|---|---|
+| `s1v5_128_marm_{nogram,bigram,trigram,both}{,_ckpt,_e1ckpt,_e2ckpt}` | 2026-09-16 | **模块四臂消融（原生/+bigram/+trigram/双表）@ 128× 标准 · checkpoint 保留 + epoch 1/2/3 边界 + logits rank 分布评估** | ✅ done（§56 已回填） | ckpt wave gap@1000 = +0.0189/+1.0134/+2.5100/+2.6971 | §56 |
 | `blrabs_{input,nogram}_lr*_tlr0p0768_*` | 2026-08-31 | **纯 backbone LR 扫描：绝对 table LR 锁定 0.0768（14 run）** | ✅ done（§42 已回填） | 结果与时间常数见 §42 | §42 |
 | `blrv5_{input,nogram}_lr{0p0001..0p0040}` | 2026-08-30 | **耦合 LR 扫描（原误标 backbone-only；12 run）** | ⚠️ done but confounded | scale=128 导致绝对 table LR 0.0128→0.512；不得作纯 backbone 因果结论 | §39、§42 |
 | `s1v5_128_epfx_tri_{2p0,3p0,4p0}xL4_3ep` | 2026-08-31 | **V5 epoch 长度轴修复批（多 shard 真实池，trigram 单支路）** | ✅ done | 1.955/1.519/1.267；延续真实长度段单调下降，旧 U 形为 wrap 假象 | §40 |
@@ -3999,3 +4000,224 @@ input 注入 / clean 单表 R=2^20 bigram+trigram / RMSProp(0.0,0.99) / table_lr
 图片索引已由 `python3 docs/plot_scripts/build_figure_index.py` 重建（当前扫描 290 个可视化文件、79 个脚本），图卡包含源脚本、数据/集群声明和文档引用。
 
 **图稿修订记录（2026-09-12）**：首版 SVG 使用了渐变、阴影和过大的标题层级，与已确认的 Mermaid 风格不一致；已按用户复核改回平面、低装饰版本（米色主干节点、绿色 n-gram 方块、细边框和虚线注入箭头）。飞书文档中的旧图片块已删除并替换为修订版，当前图片 block 为 `doxcnFSgbcg9oNyyo8Lp16CO8vf`。
+
+## §55 · V5 epoch 长度轴扩展至 20×L4（2026-09-14，running）
+
+用户要求的 20 个倍率点已登记：0.125、0.1667、0.25、0.3333、0.5、0.6667、0.75、1.0、1.25、1.5、1.75、2.0、2.5、3.0、4.0、6.0、8.0、10.0、15.0、20.0；每点 3 个完整 pass，保存第 1/2/3 epoch gap。
+
+数据使用 ophis-gpu full-163 parquet，已生成 /data4/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/。shard 0–20 共 6981 batches，覆盖 20×L4 所需 6740；shard 1–10 与旧 tokenized 逐字节相同。chunk SHA256 审计发现 train 内 1 个自然重复块（4→7），train/val 无重复；val 使用 21–23。
+
+Setting 锁定为 vanilla nanoGPT 8L/6H/768D、input、trigram-only、clean R=2^20、RMSProp(0,0.99)、table LR×128、backbone LR 0.0006、warmup_constant(100)、bf16、no compile、seed 42、gap=val−online train。launcher 为 code/cluster/run_v5_epoch_length_20x.sh + epoch_length_20x.py，输出 data/runs_scaling/<run_id>_fixed。
+
+run_id 统一为 s1v5_128_ep20_tri_<multiplier>xL4_3ep_v2，epoch_batches 依次为 42,56,84,112,168,224,253,337,421,506,590,674,842,1011,1348,2022,2696,3370,5055,6740；steps=3×epoch_batches。队列已在 ophis-gpu 启动，使用 GPU 0、3、6 round-robin，日志 /data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/epoch20_queue.nohup.log。前 3 个短点已完成并继续向后排队；长点仍为 planned/running。
+
+验收要求：每个 run 必须有 summary.json/train_log.jsonl，train_log 覆盖每 10 步及 e1/e2/e3 边界；回填 gap 时绑定 run_id、step、seed=42。
+
+## §56 · 模块四臂消融 @128× + logits rank 分布探针（2026-09-16，running）
+
+**动机**：论文初稿【0916update】需要一张「原生 / +bigram / +trigram / 双表」四臂的
+logits 排名分布图，支撑「n-gram 注入后输出子空间变窄、logits 变尖锐」的表述
+（对应 §53 的 20-epoch 置信度极化探针，但改为标准 1000 步预算下的模块消融维度）。
+历史四臂 `s1v5_freq_{bigram,trigram,both,nogram}`（§25，table LR scale 2.0）的
+`final_model.pt` 已被清理，无法离线评估 logits；本批以当前 128× 标准重跑四臂并
+**保留 checkpoint**。
+
+**Setting**（= agents.md §1 极简契约，唯一变量 = module 臂）：input 注入 /
+clean 单表 R=2^20 / RMSProp(0.0,0.99) / table_lr_scale 128 / backbone AdamW 6e-4
+warmup_constant(100) / bf16 无 compile / seed 42 / train shard 1 fixed replay /
+epoch_batches 337 / val shards 2,3,4,5,6,7,8,9,10,6542 / val 每 10 步 / 1000 步。
+launcher：`V5_GROUP=module_arms run_v5_main_manifest.sh`（新增 group， additive）。
+
+**发射记录**（2026-09-16，ophis-gpu，code md5 与本地已 commit 版核对一致）：
+
+Wave 1（无 checkpoint，已回填 final gap）：
+
+| run_id | arm | GPU | final gap @1000 |
+|---|---|---|---|
+| `s1v5_128_marm_nogram` | 原生（无 n-gram） | 1 | **+0.0230** |
+| `s1v5_128_marm_bigram` | 只开 bigram | 3 | **+1.0191** |
+| `s1v5_128_marm_trigram` | 只开 trigram | 4 | **+2.4877** |
+| `s1v5_128_marm_both` | bigram+trigram | 6 | **+2.7574** |
+
+Wave 2（`_ckpt` 后缀，spec 追加 `--save_final_model`，其余坐标逐位相同）：
+`s1v5_128_marm_{nogram,bigram,trigram,both}_ckpt`，同 GPU 1/3/4/6。首波
+`run_v5_clean.sh` 不传 `--save_final_model`（该 flag 默认关），未产出
+checkpoint；为不删已完成 run（P5），以独立 run_id 重跑保留权重的波次，
+logits 评估以 `_ckpt` 波为准，loss/gap 证据两波互相印证。
+
+Wave 2 已完成（step=1000, seed=42）：nogram gap **+0.0189**、bigram
+**+1.0134**、trigram **+2.5100**、both **+2.6971**；四个
+`final_model.pt` 均已保存。
+
+**离线探针**（训练完成后执行，不改训练语义）：`code/tools/eval_logits_rank.py`
+从 `final_model.pt` 重建模型，对训练流头部 4 个 batch（已见 ~3 遍）与训练期
+同一套 fixed val 4 batch 各做 bf16 forward，记录：
+`p_at_rank`（rank-probability 曲线，8192 维）、true-token rank 直方图、
+entropy、top1−top2 margin、top-k mass、NLL/ppl。
+聚合 JSON 存 `data/runs_scaling/s1v5_128_marm_logits_rank.json`（gitignored），
+图脚本 `docs/plot_scripts/plot_marm_logits_rank.py`，
+产物 `docs/figs/theory/fig_marm_logits_rank.{png,svg}`。
+
+**探针回填**（`s1v5_128_marm_*_ckpt_fixed`，eval step=1000, seed=42）：
+validation PPL = native **35.81**, +bigram **95.27**, +trigram **799.46**, +both
+**191.64**；validation entropy = **3.594 / 3.711 / 4.307 / 2.928**；
+rank-0 true-token fraction = **0.352 / 0.249 / 0.114 / 0.219**（native /
++bigram / +trigram / +both）。训练侧 +both 明显最尖（PPL 14.19, entropy
+2.692, top-1 mass 0.471），但 validation 的 true-token rank-0 fraction
+降至 0.219，故图支持的是「输出分布形状变尖/变窄与 correctness 解耦」；不能
+把所有 n-gram 单支路都概括为一致的 logits sharpening。
+
+**图资产**：`docs/figs/theory/fig_marm_logits_rank.{png,svg}` 为主图，
+`fig_marm_true_rank_cdf.{png,svg}` 为 true-token rank companion；均由 JSON
+驱动，不在脚本内手写实验数值。用户复核后：长 caption 移出图片，改存同目录
+`fig_*.caption.txt` sidecar（溯源信息保留，不入图）。
+
+**归一化复核**（用户问「logit 是否归一化」）：主图 y 轴本来就是全词表
+softmax 后的概率（8192 维归一），不是原始 logit。另加
+`code/tools/topk_share_stats.py` 生成每位置 top-10 条件 share 图
+`fig_marm_logits_rank_share.{png,svg}`（每位置 top-10 概率再归一到 1，
+消掉「头部总质量/置信度」维度，只剩头部形状；legend 显示头部内熵 H）。
+结论：**各臂头部形状几乎相同**（val e3 头部熵 nogram 1.53 / bigram 1.60 /
+trigram 1.75 / both 1.42，e1 全部 1.7–1.9 且随 epoch 全体变尖）——
+n-gram 臂与 nogram 的差异不在分布形状，而在「质量放在哪个 token
+（正确性）」与「头部总质量」。这修正了把 n-gram 注入笼统概括为
+「logits 变尖」的写法：nogram 同样随训练变尖。
+
+**为什么 nogram train ppl 不显著更高 / epoch-1 分化明显**：e3 train ppl
+nogram 35.9 vs bigram 37.1（无收益），但 bigram val 95.3 vs nogram 35.8
+—— bigram 臂 gap 主要来自注入向量对 backbone 的干扰（无 train 收益的
+val 恶化），不是记忆收益；只有 both 臂呈经典分化（train 14.2 收益 +
+val 191.6 恶化）。epoch-1 的 ppl 分化（113–469）主要是优化速度效应：
+trigram-only 起步最慢（469），both 反而快于 nogram（113 vs 154，
+n-gram 向量早期充当额外特征）；e1 时各臂 train≈val，记忆性分化从
+e1→e2 才开始。
+
+**Epoch 边界扩展波**（2026-09-16，用户复核主图后追加：主图改线性 y 轴、
+只画 top-100 rank，并要求展示 epoch 1/2/3 的 ppl 分布变化）。train.py 无
+中途 checkpoint 能力（仅 `--save_final_model` 末端保存），故不改训练代码，
+新增 manifest group `module_arms_epoch`：四臂各在 337 步（epoch-1 末）与
+674 步（epoch-2 末）以 `--save_final_model` 停止，run_id
+`s1v5_128_marm_{arm}_{e1,e2}ckpt`，其余坐标与 `_ckpt` 波逐位相同。
+shard-1 fixed replay + seed 42 下 337/674/1000 步 run 的前 337/674 步逐位
+一致，因此 e1/e2/e3 三个边界是同一条轨迹在不同 epoch 末的采样。epoch-3
+边界沿用 `_ckpt` 波（step 1000）。评估 JSON
+`data/runs_scaling/s1v5_128_marm_logits_rank_epochs.json`（label
+`{arm}_e{1,2,3}`），主图重绘为 2×4（train/val × 四臂）epoch 曲线面板，
+线性坐标、**top-10 rank**（用户复核后从 top-100 收窄：概率质量集中在
+rank 1–5，top-100 下 epoch 间差异不可见）；companion CDF 图仍以
+step-1000 JSON 为源。✅ done（8 run 全部完成并有 summary + final_model.pt）。
+
+**Epoch 边界回填**（val/train ppl，eval=同款 fixed batch，seed 42）：
+
+| arm | e1 train/val | e2 train/val | e3 train/val |
+|---|---|---|---|
+| nogram | 154.3 / 150.3 | 64.4 / 63.5 | 35.9 / 35.8 |
+| bigram | 132.5 / 131.2 | 62.9 / 95.2 | 37.1 / 95.3 |
+| trigram | 469.4 / 474.0 | 171.0 / 490.5 | 82.8 / 799.5 |
+| both | 113.1 / 115.5 | 33.9 / 117.0 | 14.2 / 191.6 |
+
+要点：① nogram 三边界 train≈val；② 三个 n-gram 臂自 e2 起 train ppl
+快速下降而 val ppl 停滞或恶化（trigram val 474→490→799 单调恶化），
+divergence 在 epoch 1→2 之间开始；③ val 侧 top-1 概率质量随 epoch 上移
+（both：0.237→0.335→0.427），rank 2–5 质量相应下降 —— 线性 top-10 图
+直接显示分布形状变尖与 correctness 解耦（both val rank-0 fraction
+0.230→0.233→0.219）。
+
+**具体 sharpening 样例**（`code/tools/pick_sharpen_examples.py`；npz 源
+`data/runs_scaling/logits_rank/marm_epochs_{arm}_{arm}_e{1,2,3}_{side}.npz`
+留在集群，JSON 摘要已同步本地 `sharpen_examples_{arm}_{side}.json`）：
+按「e3 且 true token rank-0、e1→e3 top-1 概率增量」排序，各臂 val/train
+各 8 例。共性：e1 时 top-1 ≈ 0.02 且 true token 不在榜首，e3 时同一位置
+top-1 ≈ 0.99 且命中 true token —— 即 n-gram 模块在匹配 context 上把
+近均匀分布逐步锐化为近乎确定的预测（例：both/val pos 547814
+ctx=[325,5079,388]→true=904，p 0.018→0.993）。
+
+**Gap 按 context 频率拆分**（用户追问后追加；2026-09-16）：
+① 训练期 freq-bin 累加器口径：`code/tools/gap_by_context_freq.py` 读各臂
+`freq_bin_loss.jsonl` 的三个 epoch 边界步，输出
+`data/runs_scaling/marm_gap_by_ctxfreq.json`。核心结果（both 臂 trigram
+context，e3）：**gap 集中在 novel/低频 context**——novel +4.00 nats、
+f=1 +3.74、f=2-3 +3.16，随频率单调下降，f≥751 后 ≈0 甚至转负；novel
+context 占 val token 的 31%。高频 context（≥1k）几乎无 gap。
+② checkpoint 事后口径：`code/tools/context_freq_split.py` 用 train shard
+（49,716,936 tok；distinct 2/3/4-gram = 3.54M/19.03M/34.89M）统计
+(a,b,c)→y 出现次数，把 eval npz 每位置分入
+[context 频率 bin]×[true continuation 是否与该 context 在 train 共现
+（seen 4-gram）]，输出 `data/runs_scaling/marm_seen_novel.json` +
+图 `docs/figs/theory/fig_marm_seen_novel.{png,svg}`
+（脚本 `docs/plot_scripts/plot_marm_seen_novel.py`）。
+
+**机制三效应拆解**（both 臂 vs nogram，val，e1→e3）：
+- 效应 A · 记忆收益（train 侧，成立）：seen (ctx→cont) 大幅锐化，f=1
+  context 也从 0.074→0.413（nogram 仅 0.079→0.219）——模块把 backbone
+  拉向复述见过的 continuation，**单次出现即可记忆**。
+- 效应 B · 挤出（val，seen context 上的 novel continuation）：rank-0
+  fraction 从 0.10 降到 0.06（f=1），同期 nogram 从 0.11 升到 0.26
+  ——见过 cont 的 context 上，其他候选被系统性压低（「子空间变窄」在
+  candidate 维度成立）。
+- 效应 C · 泛化侵蚀（val，novel context，占 31% token，**最大损失源**）：
+  true_prob 仅 0.097（nogram 0.243），rank-0 0.13 vs 0.36 且 n-gram 臂
+  随 epoch 恶化——backbone 对 OOD context 的泛化被共适应侵蚀。这解释了
+  ①中 gap 集中在 novel bin 的现象。
+- seen context 上的 seen continuation（val）反而优于 nogram（f=1：
+  0.62 vs 0.50）——高频 context 是安全的。
+
+**模型结论（论文表述）**：「训练集见过的 continuation 对其他 continuation
+的效应」成立，但须拆成三支写：记忆增益（A，train）、同 context 竞争挤出
+（B，val）、OOD context 泛化侵蚀（C，val 主导）。笼统的「logits 变尖/
+子空间变窄」只覆盖 B；val ppl 恶化的大头是 C 而非 B。高频 context 无害，
+novel context（31%）+ 低频 context 是 gap 的主要来源。
+Caveat：train 侧 freq-bin 的 novel bin 实为序列开头 clamp context（每条
+序列复现、模型已学），与 val 的真 OOD context 不同群，gap_mean 的
+train 基线在该 bin 有偏；跨臂 val 对比不受影响。
+
+**假设的正式检验版**（用户指出「本来就是理论假设，需要实验验证」后追加；
+2026-09-16 深夜）：改用**配对逐位置**口径——
+`code/tools/nll_excess_by_ctx.py` 从 npz 的 per-position true_prob 算
+NLL=-log p(true)，与同 epoch 的 nogram run 在**同一 eval 位置**上配对作差
+（d_i = NLL_arm(i) − NLL_nogram(i)，分箱=trigram context 在 train 的出现
+次数），95% CI = mean ± 1.96·sd/√n。输出
+`data/runs_scaling/marm_nll_excess.json` +
+图 `docs/figs/theory/fig_marm_gap_by_ctxfreq.{png,svg}`
+（脚本 `docs/plot_scripts/plot_gap_by_ctxfreq.py`）。结果：
+① **单调性全部成立**（3 臂 × 3 epoch × 6 bin 全部随 context 频率递减，
+CI 极窄 n≈4k–58k/bin）；② e1 时 bigram/both 在 seen context 上 excess
+为**负**（−0.4~−1.0 nats，模块有正向迁移），随 epoch 全线转正——损害是
+训练后期发展的，不是注入即有的；③ both@e3 novel bin excess +3.02 nats、
+占总 excess 的 **57%**（31% token），f≥32 的四个 bin 合计 <20%；④
+trigram 臂损害最大（novel +5.26），与其优化慢、表向量更「独占」一致。
+该图可作为论文中「gap 集中在 novel/低频 context」假设的直接验证图。
+
+**三效应专门图**：`docs/plot_scripts/plot_marm_three_effects.py` →
+`docs/figs/theory/fig_marm_three_effects.{png,svg}`（1×4：A 记忆剂量反应
+train seen-cont 按 f-bin；B 挤出 val seen-ctx/novel-cont，e1→e3 native
+0.04→0.16 vs both 0.04→0.05；C 侵蚀 val novel-ctx，native 0.08→0.24 vs
+both 0.07→0.10；D 安全情形 val seen-cont，f=1 both 0.62 > native 0.50）。
+B/C 面板以 f=1 为代表（全 f-bin 同向）。
+
+**架构与分类结构口径**：logits 通路逐行核实与三效应的结构性解释
+（tied readout ⇒ 表行=全词表 logit 偏置；softmax 质量守恒 ⇒ 挤出内建；
+按行稀疏 128× 更新 ⇒ 逐行记忆）见
+`docs/notes/theory/logits-architecture.md`（2026-09-17）。
+
+**核心逻辑图（质量去向）**：`code/tools/logits_subspace_stats.py`（对每个 eval
+位置，用 train shard 的 2/3/4-gram 计数把 top-32 候选标为「与该 context 在
+train 中共现」/其他）→ `marm_subspace_mass.json`（集群
+`data/runs_scaling/logits_rank/`）→ `docs/plot_scripts/plot_marm_subspace_mass.py`
+→ `docs/figs/theory/fig_marm_subspace_{bigram_bigramctx,both_bigramctx,trigram_trigramctx,summary}.{png,svg}`。
+每张 3×2：A train seen-cont / B val seen-cont / C val novel-cont，左列 e3
+rank 1–10 平均概率按「train-seen 候选 / 其他」堆叠 + p(true) 水平线，右列
+e1→e3 的 p(true) 与 train-seen 候选总质量。bigram 轴关键数（val, seen
+bigram context, novel continuation = 27% val 位置, n=158,790）：train-seen
+候选质量 native 0.24→0.30 vs +bigram 0.31→0.47 / +both 0.30→0.55；p(true)
+native 0.016→0.090 vs +bigram 0.004→0.008 / +both 0.004→0.005。train 侧
+seen-cont p(true) +both 0.31 > native 0.23 > +bigram 0.19（bigram 单臂无
+train 收益，与前述「干扰型 gap」一致）。+trigram 臂三面板均落后 native（优化
+慢），其 novel-cont p(true) 0.005 仍 ≪ native 0.100。
+
+**验收条件**：① 四 run 均有 summary.json 与 final_model.pt；② eval JSON 中
+各臂 val ppl 与 summary final_val_loss 一致（bf16 噪声内）；③ nogram 臂
+rank-probability 曲线显著平坦于 n-gram 臂（train 侧尤其），顺序符合 train loss
+排序 both < bigram ≈ trigram < nogram；④ 图注含 run_id/step/seed 与 gap 口径；
+⑤ epoch 波 8 run 均有 summary.json + final_model.pt，e1/e2 eval 的 val ppl
+落在同轨迹 1000 步 run 的合理中间位置（单调性按臂核对）。

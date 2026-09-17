@@ -119,6 +119,14 @@ run 只保留为历史数学审计，不能标记为当前标准完成。当前 
 无条件幂律；两因素模型只有有限区间的 β 相对可辨识，A/c/γ 不可辨识；模块
 交互显著且 seed-sensitive，不允许合并单公式。
 
+### S1 v5 - epoch-length 20-point extension (2026-09-14)
+
+| axis | question | run_id | budget | status |
+|---|---|---|---|---|
+| epoch length - full-163 real pool | fixed 3 pass, 0.125x-20x L4 epoch length and gap | s1v5_128_ep20_tri_{0p125..20p0}xL4_3ep_v2 | 20 points; epoch_batches 42-6740; logs every 10 steps and e1/e2/e3 | running; see experiment-log.md section 55 |
+
+Data audit and execution details are in experiment-log.md section 55. This batch uses data/tokenized_epoch20 and does not reuse retired wrap-around results.
+
 ## 自然语言 5gram（order=5）· 历史线（已退役）
 
 > 详细记录：`docs/experiment-log.md` §19。以下 run 是历史记录，不再作为当前活动入口；旧 trainer 已删除。
