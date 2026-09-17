@@ -4236,6 +4236,29 @@ true_prob_mean（mean-of-p）。novel-cont 组在 mean-p 口径下平坦、在
 ce 口径下单调恶化（尾部位置 p≈0 变多被 mean-of-p 掩盖）——两图不矛盾，
 但口径不可混画。数据源同核心逻辑图（marm_subspace_mass.json）。
 
+**Token-precise 压制轨迹图（2026-09-17，用户点名要精确到 token 的例子）**：
+新增选例器 `code/tools/pick_suppression_examples.py`（`--gradual` 模式）
+→ `data/runs_scaling/logits_rank/marm_suppression_examples{,_gradual}.json`
+（从 `marm_epochs_{arm}_{arm}_{ep}_val.npz` per-position 数据选例：val、
+bigram ctx 在 train 出现、true continuation 对该 ctx novel、native e1
+top-1 命中、+both e1 rank≤10 且 e3 rank≥10 且概率掉 ≥5×；token 串用
+`/data4/shared/ph/.cache/autoresearch/tokenizer/tokenizer.pkl` 解码，
+vocab 8192 subword）。绘图 `docs/plot_scripts/plot_marm_token_trace.py`
+→ 文件夹 `docs/figs/theory/marm_token_trace/`（8 例各一张：
+3 epoch × native/+both 的 top-8 barh，**线性概率**，true token 绿色、
+train-seen 候选深色、不在 top-8 的 true token 追加标注 rank 的绿色条；
+底部 = p(true) 轨迹 log 轴）。
+**代表例 ex00**（pos 198132）：context ` im lower call`（f=1），true
+continuation `' the'`。native：' the' 三 epoch 保持 top-1
+（0.152→0.274→0.209）。+both：p(' the') **0.0331→0.0158→0.000004，rank
+1→9→1871**（逐渐压低），概率质量坍缩到 'er'(0.616)+'a'(0.374)（e3 两个
+token 合计 0.99）——对 f=1 的 barely-seen context 过度锐化把合理
+continuation 挤死。注意 'er'/'a' 对该 bigram 并非 train-seen（3-gram
+不存在）：压制不是「seen 候选顶替」单一路径，f=1 时表行几乎空、
+共适应 backbone 把分布锐化到无关 token 上——与 C 组聚合图（top-1 是
+train-seen 候选）互补：f 大时 seen 候选顶替，f=1 时无差别锐化。
+gradual 模式候选 877 例（extreme 模式 4190 例，均为 e1 即压死）。
+
 **架构与分类结构口径**：logits 通路逐行核实与三效应的结构性解释
 （tied readout ⇒ 表行=全词表 logit 偏置；softmax 质量守恒 ⇒ 挤出内建；
 按行稀疏 128× 更新 ⇒ 逐行记忆）见

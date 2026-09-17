@@ -1,0 +1,2228 @@
+{
+ "meta": {
+  "shard": "shard_00001.bin",
+  "npz_stem": "marm_epochs",
+  "tokenizer": "tokenizer.pkl",
+  "n_positions": 589248,
+  "selection": "val, bigram ctx seen (count>0), true continuation novel (3-gram absent); nogram e1 true_rank==0; both e3 true_rank>=10; both e3 true_prob < nogram e1 true_prob/3; sorted by e3 true rank desc then prob ratio asc",
+  "topk": 32
+ },
+ "examples": [
+  {
+   "position": 198132,
+   "ctx_ids": [
+    460,
+    1903,
+    1005
+   ],
+   "true_token": 262,
+   "ctx_str": " im lower call",
+   "ctx_true_str": " im lower call the",
+   "true_str": " the",
+   "f_bigram": 1,
+   "nogram_e1": {
+    "topk_ids": [
+     262,
+     32,
+     469,
+     46,
+     44,
+     257,
+     3450,
+     289
+    ],
+    "topk_strs": [
+     " the",
+     " ",
+     " R",
+     ".",
+     ",",
+     " a",
+     " led",
+     " d"
+    ],
+    "topk_probs": [
+     0.152222,
+     0.118591,
+     0.03093,
+     0.017075,
+     0.01416,
+     0.012497,
+     0.012497,
+     0.011024
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.1522216796875
+   },
+   "nogram_e2": {
+    "topk_ids": [
+     262,
+     32,
+     469,
+     257,
+     991,
+     472,
+     412,
+     46
+    ],
+    "topk_strs": [
+     " the",
+     " ",
+     " R",
+     " a",
+     " art",
+     " their",
+     " (",
+     "."
+    ],
+    "topk_probs": [
+     0.273682,
+     0.107178,
+     0.061066,
+     0.032684,
+     0.021774,
+     0.017502,
+     0.014061,
+     0.010284
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     true
+    ],
+    "true_rank": 0,
+    "true_prob": 0.273681640625
+   },
+   "nogram_e3": {
+    "topk_ids": [
+     262,
+     32,
+     469,
+     257,
+     991,
+     347,
+     289,
+     2296
+    ],
+    "topk_strs": [
+     " the",
+     " ",
+     " R",
+     " a",
+     " art",
+     " with",
+     " d",
+     " strateg"
+    ],
+    "topk_probs": [
+     0.20874,
+     0.072144,
+     0.052765,
+     0.043732,
+     0.038605,
+     0.027374,
+     0.01767,
+     0.016098
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.208740234375
+   },
+   "both_e1": {
+    "topk_ids": [
+     97,
+     262,
+     46,
+     280,
+     286,
+     44,
+     289,
+     257
+    ],
+    "topk_strs": [
+     "a",
+     " the",
+     ".",
+     "al",
+     " of",
+     ",",
+     " d",
+     " a"
+    ],
+    "topk_probs": [
+     0.098999,
+     0.033142,
+     0.027481,
+     0.025818,
+     0.022781,
+     0.018311,
+     0.013817,
+     0.012985
+    ],
+    "topk_seen": [
+     false,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 1,
+    "true_prob": 0.03314208984375
+   },
+   "both_e2": {
+    "topk_ids": [
+     97,
+     46,
+     286,
+     263,
+     280,
+     325,
+     32,
+     289
+    ],
+    "topk_strs": [
+     "a",
+     ".",
+     " of",
+     "er",
+     "al",
+     "ra",
+     " ",
+     " d"
+    ],
+    "topk_probs": [
+     0.270996,
+     0.113037,
+     0.072937,
+     0.060486,
+     0.022964,
+     0.022247,
+     0.020264,
+     0.019028
+    ],
+    "topk_seen": [
+     false,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 9,
+    "true_prob": 0.015777587890625
+   },
+   "both_e3": {
+    "topk_ids": [
+     263,
+     97,
+     280,
+     938,
+     633,
+     378,
+     286,
+     359
+    ],
+    "topk_strs": [
+     "er",
+     "a",
+     "al",
+     " min",
+     "ber",
+     " ex",
+     " of",
+     " C"
+    ],
+    "topk_probs": [
+     0.615723,
+     0.373535,
+     0.000986,
+     0.000926,
+     0.000721,
+     0.000699,
+     0.000411,
+     0.000386
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 1871,
+    "true_prob": 1.7881393432617188e-07
+   }
+  },
+  {
+   "position": 492163,
+   "ctx_ids": [
+    262,
+    2385,
+    351
+   ],
+   "true_token": 257,
+   "ctx_str": " the million or",
+   "ctx_true_str": " the million or a",
+   "true_str": " a",
+   "f_bigram": 17,
+   "nogram_e1": {
+    "topk_ids": [
+     257,
+     262,
+     552,
+     859,
+     494,
+     540,
+     2142,
+     6982
+    ],
+    "topk_strs": [
+     " a",
+     " the",
+     "ction",
+     "erm",
+     " more",
+     " sp",
+     " veh",
+     " robust"
+    ],
+    "topk_probs": [
+     0.021713,
+     0.017441,
+     0.017441,
+     0.014923,
+     0.01162,
+     0.010254,
+     0.007271,
+     0.006222
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.0217132568359375
+   },
+   "nogram_e2": {
+    "topk_ids": [
+     2142,
+     2852,
+     724,
+     753,
+     2570,
+     262,
+     257,
+     1115
+    ],
+    "topk_strs": [
+     " veh",
+     "aries",
+     " new",
+     "erg",
+     " sil",
+     " the",
+     " a",
+     " environment"
+    ],
+    "topk_probs": [
+     0.099731,
+     0.036713,
+     0.022964,
+     0.022964,
+     0.022964,
+     0.022263,
+     0.021576,
+     0.020264
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 6,
+    "true_prob": 0.021575927734375
+   },
+   "nogram_e3": {
+    "topk_ids": [
+     1867,
+     724,
+     386,
+     2142,
+     3868,
+     98,
+     99,
+     262
+    ],
+    "topk_strs": [
+     " role",
+     " new",
+     "th",
+     " veh",
+     "lebr",
+     "b",
+     "c",
+     " the"
+    ],
+    "topk_probs": [
+     0.166382,
+     0.15625,
+     0.091858,
+     0.027161,
+     0.017532,
+     0.011681,
+     0.011681,
+     0.009682
+    ],
+    "topk_seen": [
+     true,
+     false,
+     false,
+     false,
+     true,
+     false,
+     true,
+     false
+    ],
+    "true_rank": 29,
+    "true_prob": 0.002605438232421875
+   },
+   "both_e1": {
+    "topk_ids": [
+     1867,
+     284,
+     283,
+     262,
+     485,
+     44,
+     289,
+     46
+    ],
+    "topk_strs": [
+     " role",
+     "ed",
+     " to",
+     " the",
+     "age",
+     ",",
+     " d",
+     "."
+    ],
+    "topk_probs": [
+     0.363281,
+     0.023956,
+     0.021149,
+     0.018661,
+     0.015961,
+     0.014084,
+     0.012825,
+     0.011673
+    ],
+    "topk_seen": [
+     true,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 8,
+    "true_prob": 0.00998687744140625
+   },
+   "both_e2": {
+    "topk_ids": [
+     1867,
+     485,
+     3868,
+     328,
+     284,
+     1011,
+     283,
+     720
+    ],
+    "topk_strs": [
+     " role",
+     "age",
+     "lebr",
+     "ch",
+     "ed",
+     " during",
+     " to",
+     " such"
+    ],
+    "topk_probs": [
+     0.210327,
+     0.123596,
+     0.042725,
+     0.040131,
+     0.028458,
+     0.028458,
+     0.025909,
+     0.02359
+    ],
+    "topk_seen": [
+     true,
+     false,
+     true,
+     true,
+     false,
+     false,
+     true,
+     false
+    ],
+    "true_rank": 21,
+    "true_prob": 0.003093719482421875
+   },
+   "both_e3": {
+    "topk_ids": [
+     1867,
+     328,
+     99,
+     485,
+     284,
+     103,
+     3868,
+     102
+    ],
+    "topk_strs": [
+     " role",
+     "ch",
+     "c",
+     "age",
+     "ed",
+     "g",
+     "lebr",
+     "f"
+    ],
+    "topk_probs": [
+     0.307373,
+     0.145264,
+     0.082764,
+     0.082764,
+     0.034485,
+     0.028595,
+     0.026871,
+     0.02092
+    ],
+    "topk_seen": [
+     true,
+     true,
+     true,
+     false,
+     false,
+     true,
+     true,
+     false
+    ],
+    "true_rank": 5254,
+    "true_prob": 5.960464477539063e-08
+   }
+  },
+  {
+   "position": 566117,
+   "ctx_ids": [
+    347,
+    928,
+    3661
+   ],
+   "true_token": 283,
+   "ctx_str": " with00cular",
+   "ctx_true_str": " with00cular to",
+   "true_str": " to",
+   "f_bigram": 17,
+   "nogram_e1": {
+    "topk_ids": [
+     283,
+     46,
+     1857,
+     44,
+     1245,
+     306,
+     334,
+     287
+    ],
+    "topk_strs": [
+     " to",
+     ".",
+     "-l",
+     ",",
+     " plants",
+     " is",
+     " that",
+     " in"
+    ],
+    "topk_probs": [
+     0.108582,
+     0.079468,
+     0.065857,
+     0.059967,
+     0.045288,
+     0.037537,
+     0.035248,
+     0.025803
+    ],
+    "topk_seen": [
+     false,
+     true,
+     true,
+     false,
+     false,
+     false,
+     true,
+     true
+    ],
+    "true_rank": 0,
+    "true_prob": 0.10858154296875
+   },
+   "nogram_e2": {
+    "topk_ids": [
+     283,
+     334,
+     325,
+     44,
+     287,
+     594,
+     1245,
+     58
+    ],
+    "topk_strs": [
+     " to",
+     " that",
+     "ra",
+     ",",
+     " in",
+     " when",
+     " plants",
+     ":"
+    ],
+    "topk_probs": [
+     0.487061,
+     0.179199,
+     0.06192,
+     0.025818,
+     0.017746,
+     0.013817,
+     0.01339,
+     0.012978
+    ],
+    "topk_seen": [
+     false,
+     true,
+     true,
+     false,
+     true,
+     true,
+     false,
+     true
+    ],
+    "true_rank": 0,
+    "true_prob": 0.487060546875
+   },
+   "nogram_e3": {
+    "topk_ids": [
+     283,
+     46,
+     325,
+     334,
+     44,
+     287,
+     58,
+     313
+    ],
+    "topk_strs": [
+     " to",
+     ".",
+     "ra",
+     " that",
+     ",",
+     " in",
+     ":",
+     " you"
+    ],
+    "topk_probs": [
+     0.43042,
+     0.096069,
+     0.096069,
+     0.074829,
+     0.06604,
+     0.054718,
+     0.015686,
+     0.013412
+    ],
+    "topk_seen": [
+     false,
+     true,
+     true,
+     true,
+     false,
+     true,
+     true,
+     true
+    ],
+    "true_rank": 0,
+    "true_prob": 0.430419921875
+   },
+   "both_e1": {
+    "topk_ids": [
+     3561,
+     334,
+     44,
+     46,
+     313,
+     287,
+     289,
+     283
+    ],
+    "topk_strs": [
+     " walk",
+     " that",
+     ",",
+     ".",
+     " you",
+     " in",
+     " d",
+     " to"
+    ],
+    "topk_probs": [
+     0.076538,
+     0.05777,
+     0.049408,
+     0.037292,
+     0.031891,
+     0.029037,
+     0.027283,
+     0.022614
+    ],
+    "topk_seen": [
+     true,
+     true,
+     false,
+     true,
+     true,
+     true,
+     false,
+     false
+    ],
+    "true_rank": 7,
+    "true_prob": 0.022613525390625
+   },
+   "both_e2": {
+    "topk_ids": [
+     3561,
+     334,
+     313,
+     283,
+     44,
+     287,
+     594,
+     286
+    ],
+    "topk_strs": [
+     " walk",
+     " that",
+     " you",
+     " to",
+     ",",
+     " in",
+     " when",
+     " of"
+    ],
+    "topk_probs": [
+     0.987793,
+     0.003347,
+     0.001121,
+     0.000513,
+     0.000425,
+     0.000412,
+     0.0004,
+     0.000342
+    ],
+    "topk_seen": [
+     true,
+     true,
+     true,
+     false,
+     false,
+     true,
+     true,
+     false
+    ],
+    "true_rank": 3,
+    "true_prob": 0.0005130767822265625
+   },
+   "both_e3": {
+    "topk_ids": [
+     3561,
+     607,
+     4643,
+     4945,
+     5872,
+     541,
+     1954,
+     2077
+    ],
+    "topk_strs": [
+     " walk",
+     " part",
+     " saying",
+     " leaving",
+     " outcomes",
+     " \"",
+     "40",
+     " either"
+    ],
+    "topk_probs": [
+     0.998535,
+     0.000109,
+     5.1e-05,
+     5e-05,
+     4.8e-05,
+     4.3e-05,
+     4.3e-05,
+     3.6e-05
+    ],
+    "topk_seen": [
+     true,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 820,
+    "true_prob": 2.384185791015625e-07
+   }
+  },
+  {
+   "position": 580415,
+   "ctx_ids": [
+    44,
+    6465,
+    8171
+   ],
+   "true_token": 44,
+   "ctx_str": ",zed Cut",
+   "ctx_true_str": ",zed Cut,",
+   "true_str": ",",
+   "f_bigram": 2,
+   "nogram_e1": {
+    "topk_ids": [
+     44,
+     46,
+     41,
+     289,
+     283,
+     287,
+     306,
+     384
+    ],
+    "topk_strs": [
+     ",",
+     ".",
+     ")",
+     " d",
+     " to",
+     " in",
+     " is",
+     "qu"
+    ],
+    "topk_probs": [
+     0.062012,
+     0.040039,
+     0.026672,
+     0.018906,
+     0.016693,
+     0.014275,
+     0.013832,
+     0.013832
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.06201171875
+   },
+   "nogram_e2": {
+    "topk_ids": [
+     44,
+     41,
+     3509,
+     289,
+     5579,
+     115,
+     963,
+     1009
+    ],
+    "topk_strs": [
+     ",",
+     ")",
+     " tox",
+     " d",
+     " seven",
+     "s",
+     " take",
+     " fact"
+    ],
+    "topk_probs": [
+     0.15332,
+     0.065918,
+     0.058167,
+     0.043915,
+     0.043915,
+     0.025818,
+     0.025024,
+     0.024246
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.1533203125
+   },
+   "nogram_e3": {
+    "topk_ids": [
+     44,
+     3509,
+     41,
+     1009,
+     115,
+     289,
+     5579,
+     351
+    ],
+    "topk_strs": [
+     ",",
+     " tox",
+     ")",
+     " fact",
+     "s",
+     " d",
+     " seven",
+     " or"
+    ],
+    "topk_probs": [
+     0.228516,
+     0.13855,
+     0.059601,
+     0.05777,
+     0.047882,
+     0.024078,
+     0.019958,
+     0.017624
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     true,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.228515625
+   },
+   "both_e1": {
+    "topk_ids": [
+     709,
+     44,
+     289,
+     97,
+     46,
+     281,
+     283,
+     306
+    ],
+    "topk_strs": [
+     "ick",
+     ",",
+     " d",
+     "a",
+     ".",
+     "an",
+     " to",
+     " is"
+    ],
+    "topk_probs": [
+     0.45166,
+     0.018646,
+     0.016983,
+     0.013222,
+     0.011665,
+     0.007774,
+     0.007534,
+     0.006649
+    ],
+    "topk_seen": [
+     false,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 1,
+    "true_prob": 0.018646240234375
+   },
+   "both_e2": {
+    "topk_ids": [
+     709,
+     277,
+     289,
+     281,
+     97,
+     283,
+     44,
+     814
+    ],
+    "topk_strs": [
+     "ick",
+     "or",
+     " d",
+     "an",
+     "a",
+     " to",
+     ",",
+     "?\n"
+    ],
+    "topk_probs": [
+     0.928223,
+     0.00404,
+     0.003349,
+     0.002954,
+     0.002691,
+     0.002527,
+     0.001908,
+     0.001849
+    ],
+    "topk_seen": [
+     false,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 6,
+    "true_prob": 0.0019083023071289062
+   },
+   "both_e3": {
+    "topk_ids": [
+     709,
+     277,
+     97,
+     814,
+     281,
+     574,
+     290,
+     289
+    ],
+    "topk_strs": [
+     "ick",
+     "or",
+     "a",
+     "?\n",
+     "an",
+     "ass",
+     "ic",
+     " d"
+    ],
+    "topk_probs": [
+     0.996582,
+     0.001243,
+     0.000216,
+     0.000216,
+     0.000168,
+     0.000116,
+     3.5e-05,
+     2.9e-05
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     true
+    ],
+    "true_rank": 231,
+    "true_prob": 8.344650268554688e-07
+   }
+  },
+  {
+   "position": 553884,
+   "ctx_ids": [
+    2119,
+    752,
+    4393
+   ],
+   "true_token": 44,
+   "ctx_str": "aching em drawing",
+   "ctx_true_str": "aching em drawing,",
+   "true_str": ",",
+   "f_bigram": 1,
+   "nogram_e1": {
+    "topk_ids": [
+     44,
+     289,
+     46,
+     307,
+     10,
+     351,
+     306,
+     287
+    ],
+    "topk_strs": [
+     ",",
+     " d",
+     ".",
+     ".\n",
+     "\n",
+     " or",
+     " is",
+     " in"
+    ],
+    "topk_probs": [
+     0.122314,
+     0.052612,
+     0.038483,
+     0.038483,
+     0.03093,
+     0.028152,
+     0.019974,
+     0.012497
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.122314453125
+   },
+   "nogram_e2": {
+    "topk_ids": [
+     351,
+     44,
+     1862,
+     289,
+     10,
+     363,
+     338,
+     583
+    ],
+    "topk_strs": [
+     " or",
+     ",",
+     "ooks",
+     " d",
+     "\n",
+     " can",
+     " it",
+     " per"
+    ],
+    "topk_probs": [
+     0.231323,
+     0.169312,
+     0.038971,
+     0.033325,
+     0.014336,
+     0.013893,
+     0.010818,
+     0.010818
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 1,
+    "true_prob": 0.1693115234375
+   },
+   "nogram_e3": {
+    "topk_ids": [
+     44,
+     351,
+     289,
+     3010,
+     2242,
+     10,
+     1862,
+     346
+    ],
+    "topk_strs": [
+     ",",
+     " or",
+     " d",
+     " exercise",
+     " structure",
+     "\n",
+     "ooks",
+     " an"
+    ],
+    "topk_probs": [
+     0.283936,
+     0.250488,
+     0.071777,
+     0.049316,
+     0.033905,
+     0.019928,
+     0.018143,
+     0.01136
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.283935546875
+   },
+   "both_e1": {
+    "topk_ids": [
+     294,
+     287,
+     386,
+     44,
+     10,
+     283,
+     262,
+     46
+    ],
+    "topk_strs": [
+     "as",
+     " in",
+     "th",
+     ",",
+     "\n",
+     " to",
+     " the",
+     "."
+    ],
+    "topk_probs": [
+     0.048737,
+     0.026093,
+     0.025284,
+     0.023758,
+     0.022308,
+     0.017929,
+     0.01738,
+     0.013962
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 3,
+    "true_prob": 0.0237579345703125
+   },
+   "both_e2": {
+    "topk_ids": [
+     386,
+     294,
+     7225,
+     99,
+     1205,
+     313,
+     102,
+     283
+    ],
+    "topk_strs": [
+     "th",
+     "as",
+     ".'",
+     "c",
+     "This",
+     " you",
+     "f",
+     " to"
+    ],
+    "topk_probs": [
+     0.652832,
+     0.068787,
+     0.057037,
+     0.020981,
+     0.006813,
+     0.006012,
+     0.003645,
+     0.003645
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 15,
+    "true_prob": 0.0015201568603515625
+   },
+   "both_e3": {
+    "topk_ids": [
+     294,
+     386,
+     99,
+     7225,
+     8065,
+     97,
+     471,
+     1221
+    ],
+    "topk_strs": [
+     "as",
+     "th",
+     "c",
+     ".'",
+     "herent",
+     "a",
+     " comp",
+     " aff"
+    ],
+    "topk_probs": [
+     0.461426,
+     0.359375,
+     0.033417,
+     0.02298,
+     0.003309,
+     0.003109,
+     0.003014,
+     0.002346
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 2927,
+    "true_prob": 1.1324882507324219e-06
+   }
+  },
+  {
+   "position": 174080,
+   "ctx_ids": [
+    5487,
+    452,
+    6217
+   ],
+   "true_token": 360,
+   "ctx_str": " kil E Ocean",
+   "ctx_true_str": " kil E Ocean\n\n",
+   "true_str": "\n\n",
+   "f_bigram": 1,
+   "nogram_e1": {
+    "topk_ids": [
+     360,
+     58,
+     44,
+     289,
+     283,
+     286,
+     412,
+     46
+    ],
+    "topk_strs": [
+     "\n\n",
+     ":",
+     ",",
+     " d",
+     " to",
+     " of",
+     " (",
+     "."
+    ],
+    "topk_probs": [
+     0.269043,
+     0.196777,
+     0.025818,
+     0.020111,
+     0.016159,
+     0.013817,
+     0.010429,
+     0.009499
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.26904296875
+   },
+   "nogram_e2": {
+    "topk_ids": [
+     360,
+     58,
+     289,
+     44,
+     287,
+     325,
+     283,
+     45
+    ],
+    "topk_strs": [
+     "\n\n",
+     ":",
+     " d",
+     ",",
+     " in",
+     "ra",
+     " to",
+     "-"
+    ],
+    "topk_probs": [
+     0.217285,
+     0.191772,
+     0.06427,
+     0.033325,
+     0.031311,
+     0.022903,
+     0.021515,
+     0.016754
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.21728515625
+   },
+   "nogram_e3": {
+    "topk_ids": [
+     360,
+     58,
+     289,
+     44,
+     45,
+     287,
+     10,
+     412
+    ],
+    "topk_strs": [
+     "\n\n",
+     ":",
+     " d",
+     ",",
+     "-",
+     " in",
+     "\n",
+     " ("
+    ],
+    "topk_probs": [
+     0.306396,
+     0.270264,
+     0.056671,
+     0.024368,
+     0.016235,
+     0.013046,
+     0.011154,
+     0.010811
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.306396484375
+   },
+   "both_e1": {
+    "topk_ids": [
+     310,
+     1093,
+     44,
+     289,
+     286,
+     360,
+     46,
+     58
+    ],
+    "topk_strs": [
+     "et",
+     "atter",
+     ",",
+     " d",
+     " of",
+     "\n\n",
+     ".",
+     ":"
+    ],
+    "topk_probs": [
+     0.149292,
+     0.109192,
+     0.0215,
+     0.017273,
+     0.010811,
+     0.009842,
+     0.009544,
+     0.006557
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 5,
+    "true_prob": 0.0098419189453125
+   },
+   "both_e2": {
+    "topk_ids": [
+     3190,
+     1110,
+     310,
+     405,
+     289,
+     327,
+     286,
+     292
+    ],
+    "topk_strs": [
+     " forms",
+     " pop",
+     "et",
+     " M",
+     " d",
+     " A",
+     " of",
+     "le"
+    ],
+    "topk_probs": [
+     0.574219,
+     0.031372,
+     0.030426,
+     0.027695,
+     0.015297,
+     0.011192,
+     0.010193,
+     0.008713
+    ],
+    "topk_seen": [
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 16,
+    "true_prob": 0.004520416259765625
+   },
+   "both_e3": {
+    "topk_ids": [
+     3190,
+     1110,
+     405,
+     6095,
+     441,
+     327,
+     5925,
+     1384
+    ],
+    "topk_strs": [
+     " forms",
+     " pop",
+     " M",
+     " England",
+     " F",
+     " A",
+     " brid",
+     "iven"
+    ],
+    "topk_probs": [
+     0.980469,
+     0.007488,
+     0.001893,
+     0.001474,
+     0.00084,
+     0.00045,
+     0.000373,
+     0.00035
+    ],
+    "topk_seen": [
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 538,
+    "true_prob": 4.76837158203125e-07
+   }
+  },
+  {
+   "position": 446400,
+   "ctx_ids": [
+    3582,
+    2310,
+    1259
+   ],
+   "true_token": 262,
+   "ctx_str": "rim vac build",
+   "ctx_true_str": "rim vac build the",
+   "true_str": " the",
+   "f_bigram": 2,
+   "nogram_e1": {
+    "topk_ids": [
+     262,
+     257,
+     32,
+     540,
+     630,
+     347,
+     1050,
+     442
+    ],
+    "topk_strs": [
+     " the",
+     " a",
+     " ",
+     " sp",
+     "ree",
+     " with",
+     " often",
+     " this"
+    ],
+    "topk_probs": [
+     0.135864,
+     0.051544,
+     0.020187,
+     0.016739,
+     0.014771,
+     0.012634,
+     0.010155,
+     0.007664
+    ],
+    "topk_seen": [
+     false,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.1358642578125
+   },
+   "nogram_e2": {
+    "topk_ids": [
+     257,
+     262,
+     32,
+     540,
+     347,
+     1050,
+     472,
+     256
+    ],
+    "topk_strs": [
+     " a",
+     " the",
+     " ",
+     " sp",
+     " with",
+     " often",
+     " their",
+     " t"
+    ],
+    "topk_probs": [
+     0.136108,
+     0.112854,
+     0.033356,
+     0.033356,
+     0.015762,
+     0.014801,
+     0.00898,
+     0.007919
+    ],
+    "topk_seen": [
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 1,
+    "true_prob": 0.11285400390625
+   },
+   "nogram_e3": {
+    "topk_ids": [
+     262,
+     257,
+     1050,
+     32,
+     347,
+     256,
+     472,
+     540
+    ],
+    "topk_strs": [
+     " the",
+     " a",
+     " often",
+     " ",
+     " with",
+     " t",
+     " their",
+     " sp"
+    ],
+    "topk_probs": [
+     0.145874,
+     0.106689,
+     0.031555,
+     0.021011,
+     0.02037,
+     0.012352,
+     0.011971,
+     0.010567
+    ],
+    "topk_seen": [
+     false,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.1458740234375
+   },
+   "both_e1": {
+    "topk_ids": [
+     579,
+     463,
+     277,
+     284,
+     257,
+     44,
+     262,
+     273
+    ],
+    "topk_strs": [
+     "low",
+     " will",
+     "or",
+     "ed",
+     " a",
+     ",",
+     " the",
+     "it"
+    ],
+    "topk_probs": [
+     0.149048,
+     0.064087,
+     0.03653,
+     0.034302,
+     0.027573,
+     0.025101,
+     0.024323,
+     0.022156
+    ],
+    "topk_seen": [
+     false,
+     false,
+     false,
+     false,
+     true,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 6,
+    "true_prob": 0.024322509765625
+   },
+   "both_e2": {
+    "topk_ids": [
+     579,
+     690,
+     351,
+     277,
+     44,
+     289,
+     3909,
+     463
+    ],
+    "topk_strs": [
+     "low",
+     " co",
+     " or",
+     "or",
+     ",",
+     " d",
+     " sold",
+     " will"
+    ],
+    "topk_probs": [
+     0.407227,
+     0.085388,
+     0.064453,
+     0.048645,
+     0.035583,
+     0.029495,
+     0.022263,
+     0.015793
+    ],
+    "topk_seen": [
+     false,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 81,
+    "true_prob": 0.00045490264892578125
+   },
+   "both_e3": {
+    "topk_ids": [
+     351,
+     3909,
+     463,
+     690,
+     44,
+     289,
+     579,
+     5694
+    ],
+    "topk_strs": [
+     " or",
+     " sold",
+     " will",
+     " co",
+     ",",
+     " d",
+     "low",
+     " attrib"
+    ],
+    "topk_probs": [
+     0.252197,
+     0.18457,
+     0.17334,
+     0.111938,
+     0.028305,
+     0.025772,
+     0.025772,
+     0.015144
+    ],
+    "topk_seen": [
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "true_rank": 4237,
+    "true_prob": 1.1920928955078125e-06
+   }
+  },
+  {
+   "position": 532201,
+   "ctx_ids": [
+    262,
+    3435,
+    273
+   ],
+   "true_token": 10,
+   "ctx_str": " the techniqueit",
+   "ctx_true_str": " the techniqueit\n",
+   "true_str": "\n",
+   "f_bigram": 90,
+   "nogram_e1": {
+    "topk_ids": [
+     10,
+     262,
+     44,
+     289,
+     46,
+     286,
+     283,
+     287
+    ],
+    "topk_strs": [
+     "\n",
+     " the",
+     ",",
+     " d",
+     ".",
+     " of",
+     " to",
+     " in"
+    ],
+    "topk_probs": [
+     0.163818,
+     0.058411,
+     0.03772,
+     0.032257,
+     0.029373,
+     0.027588,
+     0.020828,
+     0.017807
+    ],
+    "topk_seen": [
+     false,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "true_rank": 0,
+    "true_prob": 0.163818359375
+   },
+   "nogram_e2": {
+    "topk_ids": [
+     10,
+     286,
+     289,
+     46,
+     4413,
+     44,
+     307,
+     1163
+    ],
+    "topk_strs": [
+     "\n",
+     " of",
+     " d",
+     ".",
+     " Ste",
+     ",",
+     ".\n",
+     "ute"
+    ],
+    "topk_probs": [
+     0.159668,
+     0.124329,
+     0.037903,
+     0.031433,
+     0.022293,
+     0.020935,
+     0.019669,
+     0.01683
+    ],
+    "topk_seen": [
+     false,
+     true,
+     true,
+     true,
+     false,
+     true,
+     true,
+     false
+    ],
+    "true_rank": 0,
+    "true_prob": 0.15966796875
+   },
+   "nogram_e3": {
+    "topk_ids": [
+     10,
+     286,
+     46,
+     289,
+     44,
+     849,
+     307,
+     283
+    ],
+    "topk_strs": [
+     "\n",
+     " of",
+     ".",
+     " d",
+     ",",
+     " process",
+     ".\n",
+     " to"
+    ],
+    "topk_probs": [
+     0.222046,
+     0.143311,
+     0.04953,
+     0.035126,
+     0.031006,
+     0.025696,
+     0.018219,
+     0.016083
+    ],
+    "topk_seen": [
+     false,
+     true,
+     true,
+     true,
+     true,
+     false,
+     true,
+     true
+    ],
+    "true_rank": 0,
+    "true_prob": 0.2220458984375
+   },
+   "both_e1": {
+    "topk_ids": [
+     1535,
+     283,
+     10,
+     44,
+     289,
+     46,
+     536,
+     262
+    ],
+    "topk_strs": [
+     " cam",
+     " to",
+     "\n",
+     ",",
+     " d",
+     ".",
+     "orm",
+     " the"
+    ],
+    "topk_probs": [
+     0.10083,
+     0.042023,
+     0.037079,
+     0.018082,
+     0.012817,
+     0.012039,
+     0.0103,
+     0.007534
+    ],
+    "topk_seen": [
+     true,
+     true,
+     false,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "true_rank": 2,
+    "true_prob": 0.037078857421875
+   },
+   "both_e2": {
+    "topk_ids": [
+     1535,
+     283,
+     44,
+     4852,
+     6895,
+     6056,
+     46,
+     289
+    ],
+    "topk_strs": [
+     " cam",
+     " to",
+     ",",
+     " compost",
+     " demonstrate",
+     " Sea",
+     ".",
+     " d"
+    ],
+    "topk_probs": [
+     0.873535,
+     0.014572,
+     0.004585,
+     0.003054,
+     0.002781,
+     0.002378,
+     0.002165,
+     0.001972
+    ],
+    "topk_seen": [
+     true,
+     true,
+     true,
+     false,
+     false,
+     true,
+     true,
+     true
+    ],
+    "true_rank": 12,
+    "true_prob": 0.0015840530395507812
+   },
+   "both_e3": {
+    "topk_ids": [
+     1535,
+     3850,
+     4852,
+     2659,
+     2993,
+     1678,
+     6056,
+     975
+    ],
+    "topk_strs": [
+     " cam",
+     " ...",
+     " compost",
+     " face",
+     " seeds",
+     " dig",
+     " Sea",
+     "ec"
+    ],
+    "topk_probs": [
+     0.992188,
+     0.001401,
+     0.000662,
+     0.000276,
+     0.000229,
+     0.000167,
+     0.000143,
+     0.000139
+    ],
+    "topk_seen": [
+     true,
+     false,
+     false,
+     false,
+     true,
+     true,
+     true,
+     false
+    ],
+    "true_rank": 315,
+    "true_prob": 2.5033950805664062e-06
+   }
+  }
+ ]
+}

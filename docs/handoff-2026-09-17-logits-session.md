@@ -197,17 +197,29 @@ mean-of-p 口径）不混用。数据源与口径详见 `docs/experiment-log.md`
   分支。权威源 = 已 commit 版本；跨机使用先 `md5sum` 核对（P4）。
 - **绘图脚本**（本地仓库内，跑图不需要集群）：
   - `docs/plot_scripts/plot_marm_cell_folder.py` —— cell 图文件夹（本节上图）
+  - `docs/plot_scripts/plot_marm_token_trace.py` —— 逐 token 压制轨迹
+    `docs/figs/theory/marm_token_trace/`（数据
+    `marm_suppression_examples_gradual.json`，选例器
+    `code/tools/pick_suppression_examples.py --gradual`）
   - `docs/plot_scripts/plot_marm_subspace_mass.py` —— 核心逻辑图 `fig_marm_subspace_*`
   - `docs/plot_scripts/plot_marm_three_effects.py` —— F4-5 三效应图
   - `docs/plot_scripts/plot_marm_logits_rank.py` —— F4-1 logits rank 主图
 - **统计/评估工具**（只在集群跑）：`code/tools/logits_subspace_stats.py`、
-  `code/tools/eval_logits_rank.py`、`code/tools/context_freq_split.py`
+  `code/tools/eval_logits_rank.py`、`code/tools/context_freq_split.py`、
+  `code/tools/pick_suppression_examples.py`（per-position npz 选例，token
+  串解码用集群 tokenizer
+  `/data4/shared/ph/.cache/autoresearch/tokenizer/tokenizer.pkl`，venv
+  python 含 tiktoken）
 - **数据（ophis-gpu）**：`/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/logits_rank/`
   - `marm_subspace_mass.json` —— cell 图 + 核心逻辑图的数据（4 arm × e1-3 ×
     train/val × bigram 分组：`rank_prob`/`rank_seen_prob`/`ppl`/`ce_mean`/
     `true_prob_mean`，top-10）
   - `marm_seen_novel.json` —— 三效应图数据
   - `s1v5_128_marm_logits_rank{,.json,_epochs.json}` —— F4-1 数据
+  - `marm_epochs_{nogram,both}_{nogram,both}_{e1,e2,e3}_{train,val}.npz` ——
+    per-position top-32（`ctx3`/`true`/`topk_ids`/`topk_probs`/`true_rank`/
+    `true_prob`），压制轨迹图与逐 token 分析的原始层
+  - `marm_suppression_examples{,_gradual}.json` —— 压制轨迹图的选例输出
 - **重画 cell 图命令**（任一有 repo + 该 JSON 的机器）：
 
 ```bash
