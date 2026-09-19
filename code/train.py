@@ -1618,6 +1618,10 @@ def main():
     parser.add_argument("--compile", action="store_true",
                         help="wrap the model with torch.compile (opt-in; not part "
                              "of the standard bf16 configuration)")
+    parser.add_argument("--init_model", default="",
+                        help="initialize model weights from a compatible final_model.pt state_dict")
+    parser.add_argument("--freeze_table", action="store_true",
+                        help="freeze n-gram tables and gates after initialization; optimizer state starts empty")
     args = parser.parse_args()
     if args.warmup_steps < 1:
         parser.error("--warmup_steps must be >= 1")
@@ -1774,6 +1778,26 @@ def main():
     # model
     model = NanoGPT(cfg).to(device)
     model.init_weights()
+    if args.init_model:
+        init_path = os.path.abspath(args.init_model)
+        if not os.path.isfile(init_path):
+            raise SystemExit(f"--init_model not found: {init_path}")
+        payload = torch.load(init_path, map_location="cpu", weights_only=True)
+        if not isinstance(payload, dict):
+            raise SystemExit(f"--init_model must contain a state_dict mapping: {init_path}")
+        missing, unexpected = model.load_state_dict(payload, strict=False)
+        if missing or unexpected:
+            raise SystemExit(
+                f"--init_model incompatible: missing={missing[:8]} unexpected={unexpected[:8]}")
+        print(f"[nglab] initialized model from {init_path}")
+    if args.freeze_table:
+        frozen = 0
+        for name, p in model.named_parameters():
+            if any(marker in name for marker in ("value_embeds", "bigram_ves", "trigram_ves",
+                                                 "ve_gate", "bigram_gate", "trigram_gate")):
+                p.requires_grad_(False)
+                frozen += p.numel()
+        print(f"[nglab] freeze_table enabled: {frozen:,} parameters frozen")
     if args.compile:
         model = torch.compile(model)
     n_params = sum(p.numel() for p in model.parameters())
