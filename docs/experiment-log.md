@@ -6,6 +6,8 @@
 
 ## 实验登记总表
 
+| `sftbase_ep20_tri_ckpt` / `sft_id_tri_e5_{trainable,frozen}_s42` | 2026-09-19 | **Post-training SFT stress test · low-gap 20x vanilla base → same-distribution shard 21 · 5 epochs · fresh optimizer/warmup · table trainable vs frozen** | 🟡 running / planned | 待回填 | §57 |
+
 | run_id | 日期 | 实验 | 状态 | gap 关键值 | 详情 |
 |---|---|---|---|---|---|
 | `s1v5_128_marm_{nogram,bigram,trigram,both}{,_ckpt,_e1ckpt,_e2ckpt}` | 2026-09-16 | **模块四臂消融（原生/+bigram/+trigram/双表）@ 128× 标准 · checkpoint 保留 + epoch 1/2/3 边界 + logits rank 分布评估** | ✅ done（§56 已回填） | ckpt wave gap@1000 = +0.0189/+1.0134/+2.5100/+2.6971 | §56 |
@@ -4309,3 +4311,19 @@ rank-probability 曲线显著平坦于 n-gram 臂（train 侧尤其），顺序�
 排序 both < bigram ≈ trigram < nogram；④ 图注含 run_id/step/seed 与 gap 口径；
 ⑤ epoch 波 8 run 均有 summary.json + final_model.pt，e1/e2 eval 的 val ppl
 落在同轨迹 1000 步 run 的合理中间位置（单调性按臂核对）。
+
+## §57 · 低 gap 基座后的同分布/OOD SFT 压力测试（2026-09-19，running）
+
+**问题与预期**：从 20× replay 后几乎无 gap 的 trigram-only vanilla nanoGPT checkpoint 重新开始优化器状态与 100-step warmup，在同分布后续 shard 与 OOD 数学数据上各做 5 个 epoch；比较 table trainable 与 frozen。若 SFT/continued-LM 会重新展开 fork，预期 OOD 的 fixed-val gap 大于同分布线；冻结 table 预计不改变主要方向。
+
+**共同 setting**：8L/6H/768D、vocab 8192、seq 2048、learned absolute PE、LayerNorm、tied embedding、input trigram-only、clean trigram R=2^20、AdamW backbone lr=0.0006/wd=0.1、RMSProp table `(0.0,0.99)` lr scale 128、warmup_constant(100)、bf16、no compile、seed 42、device batch 72/total batch 147456、5 epochs × 333 batches = 1665 updates、每 epoch fixed val 4 batches、online gap = fixed val − online train. `--init_model` 只加载基座权重并重建 optimizer；SFT 不继承预训练 optimizer state。
+
+### 57.1 同分布 ID 线（先行）
+
+基座 `sftbase_ep20_tri_ckpt_fixed` 使用 `data/tokenized_epoch20` train shards 0–20、val 21–23，20,220 steps（epoch_batches=6740），并保存 `final_model.pt`；参考同 setting 无 checkpoint run 的 final gap 为 0.2203。ID SFT 使用 shard 21 train、22–23 val，launcher `code/cluster/run_sft_id_after_base.sh`，输出 `data/runs_sft/sft_id_tri_e5_{trainable,frozen}_s42/`。
+
+### 57.2 OOD 线（并行准备）
+
+原始数据已固定：OpenR1-Math-220k 的单 parquet（revision `e4e141ec9dea9f8326f4d347be56105859b2bd68`）与 Magicoder-OSS-Instruct-75K 的 JSONL（revision `5f839b1f368a76b161028bb9edff055db34022b2`），远端原始文件与 SHA256 清单在 `/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/`。首个 OOD 线选 OpenR1；`code/prepare_ood_sft.py` 用预训练同一 `tokenizer.pkl` 流式生成 `data/ood_tokenized_openr1/shard_00000.bin`（333 train batches）和 `shard_00001.bin`（4 held-out val batches），不复用 Mistral/tokenizer。launcher `code/cluster/run_sft_ood_after_base.sh` 计划在 GPU 0/7 启动 trainable/frozen 两臂，输出 `data/runs_sft_ood/`。
+
+**验收**：基座必须有 `summary.json`、`train_log.jsonl`、`final_model.pt`；四条 SFT 臂分别回填每个 epoch 的 train/val/gap、table norm、final step、非有限值检查，并绑定 run_id/step/seed。若 OOD tokenization 或训练失败，记录失败和缺失 artifact，不将其当作负结果。
