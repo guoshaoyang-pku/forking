@@ -7,6 +7,7 @@
 ## 实验登记总表
 
 | `sftbase_ep20_tri_ckpt` / `sft_id_tri_e5_{trainable,frozen}_s42` | 2026-09-19 | **Continued-pretraining stress test · low-gap 20x vanilla checkpoint → ID/OOD data · 5 epochs · fresh optimizer/warmup · table trainable vs frozen** | ✅ done | ID +2.4105/+0.3487; Magicoder +1.0175/+0.2344; OpenR1 +0.7176/+0.1201 | §57 |
+| `sft_*_e5_freq10_{trainable,frozen}_s42` | 2026-09-19 | **Dense cadence refresh · same checkpoint/data/setting as §57, validation and frequency cadence every 10 steps, one-GPU serial queue** | planned | pending | §58 |
 
 | run_id | 日期 | 实验 | 状态 | gap 关键值 | 详情 |
 |---|---|---|---|---|---|
@@ -4329,3 +4330,14 @@ rank-probability 曲线显著平坦于 n-gram 臂（train 侧尤其），顺序�
 **已完成结果**：基座 `sftbase_ep20_tri_ckpt_fixed` final gap `+0.2140`（step 20220, seed 42）；ID 同分布 SFT final gap 为 trainable `+2.4105`、frozen `+0.3487`（step 1665）；Magicoder OOD final gap 为 trainable `+1.0175`、frozen `+0.2344`（step 1665）；OpenR1 十 shard OOD final gap 为 trainable `+0.7176`、frozen `+0.1201`（step 1665）。各线均有 `summary.json` 与 `final_model.pt`，单 seed、5-epoch continued-LM 结果暂不升级为跨域普遍结论。
 
 **证据汇总**：6 个 continued-pretraining run 均从同一个 `sftbase_ep20_tri_ckpt_fixed/final_model.pt` 初始化；每个 run 都有 `summary.json`、`train_log.jsonl`、`final_model.pt`，并记录 `init_model`、`freeze_table`、seed 42、step 1665。逐 epoch 结果表和原始 JSONL 副本见 `docs/appendices/continue_pretrain_20260919/`。
+
+
+## §58 · Continued-pretraining dense cadence refresh (2026-09-19, planned)
+
+目的：把 §57 的六条结果重刷为真正的每 10 步 validation/frequency cadence，便于与 Chapter 3–4 的 v10 曲线直接比较。科学变量保持不变：同一低 gap 20× checkpoint、同一数据、seed 42、5 epochs、重新初始化 optimizer 与 100-step warmup；只改变测量 cadence，并使用新 run IDs，绝不覆盖 §57。
+
+共同 contract：vanilla nanoGPT 8L/6H/768D、input trigram-only、clean trigram R=2^20、AdamW lr=0.0006/wd=0.1、RMSProp table (0.0,0.99) scale 128、bf16/no compile、device batch 72 / total batch 147456、1665 updates、val_interval=10、freq_eval_interval=10、exact_freq_eval_interval=10、seed 42、init_model=sftbase_ep20_tri_ckpt_fixed/final_model.pt、one GPU serial queue on ophis-gpu GPU 1。ID uses train shard 21 / val shards 22,23；Magicoder uses tokenized shards 0/1；OpenR1 uses the 10-shard tokenized pool shards 0/1。OOD lines have no pretraining-compatible freq_index; their dense v10 claim refers to train/val log cadence。
+
+Run IDs/output：sft_id_tri_e5_freq10_{trainable,frozen}_s42 → data/runs_sft_freq10/；sft_ood_magicoder_e5_freq10_{trainable,frozen}_s42 → data/runs_sft_ood_freq10/；sft_ood_openr1_10shards_e5_freq10_{trainable,frozen}_s42 → data/runs_sft_ood_openr1_freq10/。验收：每个 run 有 summary.json、train_log.jsonl（steps 10,20,…,1665），config 记录 intervals=10 和预期 init_model，无 NaN，并有 final_model.pt。
+
+Launch：remote queue script /data4/guoshaoyang/ngram-gap-lab/code/cluster/run_sft_freq10_serial.sh，log /data4/guoshaoyang/ngram-gap-lab/data/runs_sft_freq10/queue.log，GPU 1。queue refuses to overwrite existing run directories and records code hashes before launch。
