@@ -6,7 +6,7 @@
 
 ## 实验登记总表
 
-| `sftbase_ep20_tri_ckpt` / `sft_id_tri_e5_{trainable,frozen}_s42` | 2026-09-19 | **Post-training SFT stress test · low-gap 20x vanilla base → same-distribution shard 21 · 5 epochs · fresh optimizer/warmup · table trainable vs frozen** | 🟡 running / planned | 待回填 | §57 |
+| `sftbase_ep20_tri_ckpt` / `sft_id_tri_e5_{trainable,frozen}_s42` | 2026-09-19 | **Continued-pretraining stress test · low-gap 20x vanilla checkpoint → ID/OOD data · 5 epochs · fresh optimizer/warmup · table trainable vs frozen** | ✅ done | ID +2.4105/+0.3487; Magicoder +1.0175/+0.2344; OpenR1 +0.7176/+0.1201 | §57 |
 
 | run_id | 日期 | 实验 | 状态 | gap 关键值 | 详情 |
 |---|---|---|---|---|---|
@@ -4312,11 +4312,11 @@ rank-probability 曲线显著平坦于 n-gram 臂（train 侧尤其），顺序�
 ⑤ epoch 波 8 run 均有 summary.json + final_model.pt，e1/e2 eval 的 val ppl
 落在同轨迹 1000 步 run 的合理中间位置（单调性按臂核对）。
 
-## §57 · 低 gap 基座后的同分布/OOD SFT 压力测试（2026-09-19，running）
+## §57 · 低 gap 基座后的同分布/OOD continued pretraining 压力测试（2026-09-19，done）
 
-**问题与预期**：从 20× replay 后几乎无 gap 的 trigram-only vanilla nanoGPT checkpoint 重新开始优化器状态与 100-step warmup，在同分布后续 shard 与 OOD 数学数据上各做 5 个 epoch；比较 table trainable 与 frozen。若 SFT/continued-LM 会重新展开 fork，预期 OOD 的 fixed-val gap 大于同分布线；冻结 table 预计不改变主要方向。
+**问题与预期**：从 20× replay 后几乎无 gap 的 trigram-only vanilla nanoGPT checkpoint 重新开始优化器状态与 100-step warmup，在同分布后续 shard 与 OOD 数据上各做 5 个 epoch；比较 table trainable 与 frozen。这里的“ SFT ”是 continued pretraining/continued LM，不是 response-only instruction SFT。预期继续训练会重新展开 fork，且 table trainable 的 gap 大于 frozen。
 
-**共同 setting**：8L/6H/768D、vocab 8192、seq 2048、learned absolute PE、LayerNorm、tied embedding、input trigram-only、clean trigram R=2^20、AdamW backbone lr=0.0006/wd=0.1、RMSProp table `(0.0,0.99)` lr scale 128、warmup_constant(100)、bf16、no compile、seed 42、device batch 72/total batch 147456、5 epochs × 333 batches = 1665 updates、每 epoch fixed val 4 batches、online gap = fixed val − online train. `--init_model` 只加载基座权重并重建 optimizer；SFT 不继承预训练 optimizer state。
+**共同 setting**：8L/6H/768D、vocab 8192、seq 2048、learned absolute PE、LayerNorm、tied embedding、input trigram-only、clean trigram R=2^20、AdamW backbone lr=0.0006/wd=0.1、RMSProp table `(0.0,0.99)` lr scale 128、warmup_constant(100)、bf16、no compile、seed 42、device batch 72/total batch 147456、5 epochs × 333 batches = 1665 updates、每 epoch fixed val 4 batches、online gap = fixed val − online train. `--init_model` 只加载 20× checkpoint 权重并重建 optimizer；continued pretraining 不继承预训练 optimizer state。
 
 ### 57.1 同分布 ID 线（先行）
 
@@ -4328,4 +4328,4 @@ rank-probability 曲线显著平坦于 n-gram 臂（train 侧尤其），顺序�
 
 **已完成结果**：基座 `sftbase_ep20_tri_ckpt_fixed` final gap `+0.2140`（step 20220, seed 42）；ID 同分布 SFT final gap 为 trainable `+2.4105`、frozen `+0.3487`（step 1665）；Magicoder OOD final gap 为 trainable `+1.0175`、frozen `+0.2344`（step 1665）；OpenR1 十 shard OOD final gap 为 trainable `+0.7176`、frozen `+0.1201`（step 1665）。各线均有 `summary.json` 与 `final_model.pt`，单 seed、5-epoch continued-LM 结果暂不升级为跨域普遍结论。
 
-**验收**：基座必须有 `summary.json`、`train_log.jsonl`、`final_model.pt`；四条 SFT 臂分别回填每个 epoch 的 train/val/gap、table norm、final step、非有限值检查，并绑定 run_id/step/seed。若 OOD tokenization 或训练失败，记录失败和缺失 artifact，不将其当作负结果。
+**证据汇总**：6 个 continued-pretraining run 均从同一个 `sftbase_ep20_tri_ckpt_fixed/final_model.pt` 初始化；每个 run 都有 `summary.json`、`train_log.jsonl`、`final_model.pt`，并记录 `init_model`、`freeze_table`、seed 42、step 1665。逐 epoch 结果表和原始 JSONL 副本见 `docs/appendices/continue_pretrain_20260919/`。

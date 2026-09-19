@@ -1,0 +1,1 @@
+All six runs initialize from sftbase_ep20_tri_ckpt_fixed/final_model.pt, then restart optimizer state and 100-step warmup. gap = fixed_val_loss - online_train_loss. Original sft_* run IDs are retained for provenance; semantically these are continued LM pretraining runs, not response-only instruction SFT.
