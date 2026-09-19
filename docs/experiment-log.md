@@ -8,7 +8,7 @@
 
 | `sftbase_ep20_tri_ckpt` / `sft_id_tri_e5_{trainable,frozen}_s42` | 2026-09-19 | **Continued-pretraining stress test · low-gap 20x vanilla checkpoint → ID/OOD data · 5 epochs · fresh optimizer/warmup · table trainable vs frozen** | ✅ done | ID +2.4105/+0.3487; Magicoder +1.0175/+0.2344; OpenR1 +0.7176/+0.1201 | §57 |
 | `sft_*_e5_freq10_{trainable,frozen}_s42` | 2026-09-19 | **Dense cadence refresh · same checkpoint/data/setting as §57, validation and frequency cadence every 10 steps, one-GPU serial queue** | planned | pending | §58 |
-| `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_ckpt` | 2026-09-20 | **20x corpus, three-pass matched multi-layer memory checkpoints; blocks 1,4 (0-based), 1M-row bigram + 1M-row trigram per block** | planned | endpoint checkpoint + epoch-boundary gap | §59 |
+| `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_ckpt[_r1]` | 2026-09-20 | **20x corpus, three-pass matched multi-layer memory checkpoints; blocks 1,4 (0-based), 1M-row bigram + 1M-row trigram per block** | running | pending | §59 |
 
 | run_id | 日期 | 实验 | 状态 | gap 关键值 | 详情 |
 |---|---|---|---|---|---|
@@ -4342,3 +4342,13 @@ rank-probability 曲线显著平坦于 n-gram 臂（train 侧尤其），顺序�
 Run IDs/output：sft_id_tri_e5_freq10_{trainable,frozen}_s42 → data/runs_sft_freq10/；sft_ood_magicoder_e5_freq10_{trainable,frozen}_s42 → data/runs_sft_ood_freq10/；sft_ood_openr1_10shards_e5_freq10_{trainable,frozen}_s42 → data/runs_sft_ood_openr1_freq10/。验收：每个 run 有 summary.json、train_log.jsonl（steps 10,20,…,1665），config 记录 intervals=10 和预期 init_model，无 NaN，并有 final_model.pt。
 
 Launch：remote queue script /data4/guoshaoyang/ngram-gap-lab/code/cluster/run_sft_freq10_serial.sh，log /data4/guoshaoyang/ngram-gap-lab/data/runs_sft_freq10/queue.log，GPU 1。queue refuses to overwrite existing run directories and records code hashes before launch。
+
+## §59 · Matched vanilla multi-layer memory 20× runs (2026-09-20, running)
+
+**问题**：在同一 vanilla nanoGPT、同一 20× corpus replay 和同一优化器口径下，对比 value-stream (v)、attention-output (y) 与 minimal Engram-like gated intermediate-memory (engram) route；engram 只表示当前代码的 gated proxy，不是完整 DeepSeek Engram 复现。
+
+**坐标**：8L/6H/768D、learned absolute position、LayerNorm、tied embedding、seed 42、bf16/no compile、train shards 0..20、fixed val shards 21,22,23、epoch_batches=6740、steps=20220（3 replay passes）、val_steps=6740,13480,20220、backbone lr 6e-4 + warmup_constant(100)、table RMSProp (0.0,0.99) scale 128、bigram/trigram clean R=1048576。inject_layers 1,4 是 0-based block index，对应 1-based 第 2、5 层；每个注入层拥有独立 bigram/trigram table 和 gate。每条 route 4 张独立 1M-row × 768 table，summary 实测 n_params=3,285.8M。
+
+**Run/output**：v 使用 s1v5_128_ep20_v_L14_20p0xL4_3ep_ckpt_r1_fixed on GPU 2（首个同名目录只留下 parser-failure partial，未计入证据）；y 使用 s1v5_128_ep20_y_L14_20p0xL4_3ep_ckpt_fixed on GPU 4；Engram-like 使用 s1v5_128_ep20_engram_L14_20p0xL4_3ep_ckpt_fixed on GPU 6。每个 run 目标是 summary.json、每 10 步 table_norm.jsonl、epoch-boundary train_log.jsonl、epoch1_model.pt、epoch2_model.pt 和 final_model.pt；权重-only snapshots 不是 optimizer-resumable checkpoints。
+
+**验收**：三条进程已启动并在对应 GPU 上运行；正式训练开始前 Engram 2-step smoke 已通过（inject_layers=1,4、forward、summary 写入）。完成后回填 step 6740/13480/20220 的 train/val/gap、最终 loss/gap、n_params、GPU、code hash，并与已有 20× no-gram ls20ep_nogram_v5_128x_fd_fixed（single-shard 20-epoch reference，非本批同一 train/val pool）分开标注。
