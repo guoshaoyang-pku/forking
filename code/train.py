@@ -2323,6 +2323,8 @@ def main():
         },
         "compute_dtype": args.dtype,
         "torch_compile": args.compile,
+        "init_model": os.path.abspath(args.init_model) if args.init_model else None,
+        "freeze_table": bool(args.freeze_table),
         "diag_forward_dtype": ("bf16" if diag_amp_dtype is not None else "fp32")
                               if (exact_freq_log is not None or freq_bin_log is not None) else None,
         "diag_async": diag_pool is not None,
