@@ -8,6 +8,7 @@
 
 | `sftbase_ep20_tri_ckpt` / `sft_id_tri_e5_{trainable,frozen}_s42` | 2026-09-19 | **Continued-pretraining stress test · low-gap 20x vanilla checkpoint → ID/OOD data · 5 epochs · fresh optimizer/warmup · table trainable vs frozen** | ✅ done | ID +2.4105/+0.3487; Magicoder +1.0175/+0.2344; OpenR1 +0.7176/+0.1201 | §57 |
 | `sft_*_e5_freq10_{trainable,frozen}_s42` | 2026-09-19 | **Dense cadence refresh · same checkpoint/data/setting as §57, validation and frequency cadence every 10 steps, one-GPU serial queue** | planned | pending | §58 |
+| `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_ckpt` | 2026-09-20 | **20x corpus, three-pass matched multi-layer memory checkpoints; blocks 1,4 (0-based), 1M-row bigram + 1M-row trigram per block** | planned | endpoint checkpoint + epoch-boundary gap | §59 |
 
 | run_id | 日期 | 实验 | 状态 | gap 关键值 | 详情 |
 |---|---|---|---|---|---|

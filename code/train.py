@@ -130,12 +130,12 @@ def has_ve(layer_idx: int, n_layer: int) -> bool:
 
 
 def _parse_inject_layers(config) -> "set[int] | None":
-    """--inject_layers for v/y multi-layer injection; None = default layout."""
+    """--inject_layers for v/y/engram multi-layer injection; None = default layout."""
     s = getattr(config, "nanogpt_inject_layers", "") or ""
     if not s.strip():
         return None
-    if config.nanogpt_ngram_injection_position not in {"v", "y"}:
-        raise ValueError("--inject_layers only applies to v/y injection")
+    if config.nanogpt_ngram_injection_position not in {"v", "y", "engram"}:
+        raise ValueError("--inject_layers applies to v/y/engram injection")
     layers = {int(t) for t in s.split(",") if t.strip()}
     if not layers or min(layers) < 0 or max(layers) >= config.n_layer:
         raise ValueError(f"--inject_layers out of range [0,{config.n_layer}): {s!r}")
@@ -203,6 +203,7 @@ class CausalSelfAttention(nn.Module):
     Injection positions:
       v     : add gated n-gram value to V before attention  (ResFormer-style)
       y     : add gated n-gram value to attention output y  (post-attn residual)
+      engram: add gated n-gram residual to the normalized hidden state before QKV
       input : handled in GPT.forward (over-encoding to wte); gates not used here
     """
 
@@ -231,8 +232,9 @@ class CausalSelfAttention(nn.Module):
                 {ve_layers[0], ve_layers[-2], ve_layers[-1]}
                 if len(ve_layers) >= 2 else {ve_layers[-1]}
             )
-        # gates only needed when injection is v or y (input injection has no gate)
-        need_gate = use_ngram and config.nanogpt_ngram_injection_position in {"v", "y"}
+        # gates are used by value, output-residual, and Engram-like routes.
+        # Input over-encoding remains the deliberately ungated baseline.
+        need_gate = use_ngram and config.nanogpt_ngram_injection_position in {"v", "y", "engram"}
         self.ve_gate = (
             nn.Linear(self.ve_gate_channels, self.n_head, bias=False)
             if need_gate and config.enable_unigram_ve and use_layer_ve else None
@@ -286,6 +288,13 @@ class CausalSelfAttention(nn.Module):
 
     def forward(self, x, ve=None, bigram_ve=None, trigram_ve=None):
         B, T, C = x.size()
+        if self.ngram_injection_position == "engram":
+            # Minimal Engram-like route: lookup tables are owned by the
+            # selected intermediate blocks, gated by the current hidden state,
+            # and added before the block's QKV projections.
+            x = x + self._compute_ngram_residual_flat(
+                x, ve, bigram_ve, trigram_ve, self.n_head
+            )
         q, k, v = self.c_attn(x).split(self.n_embd, dim=2)
         v_heads = v.view(B, T, self.n_head, self.head_dim)
         if self.ngram_injection_position == "v":
@@ -1474,7 +1483,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--run_id", default="run")
     parser.add_argument("--injection_position", default="input",
-                        choices=["v", "y", "input"])
+                        choices=["v", "y", "engram", "input"])
     parser.add_argument("--inject_layers", default="",
                         help="v/y only: comma layer ids for multi-layer injection, "
                              "one independent clean table per layer (e.g. '1,3,5,7'); "
