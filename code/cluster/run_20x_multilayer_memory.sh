@@ -2,17 +2,17 @@
 # 20x corpus, three-pass matched multi-layer memory checkpoint runs.
 # Layer ids are zero-based: 1,4 = 1-based blocks 2 and 5.
 set -euo pipefail
-POSITION="\${1:?usage: run_20x_multilayer_memory.sh v|y|engram gpu [run_suffix]}"
-GPU="\${2:?usage: run_20x_multilayer_memory.sh v|y|engram gpu [run_suffix]}"
-SUFFIX="\${3:-ckpt}"
+POSITION="${1:?usage: run_20x_multilayer_memory.sh v|y|engram gpu [run_suffix]}"
+GPU="${2:?usage: run_20x_multilayer_memory.sh v|y|engram gpu [run_suffix]}"
+SUFFIX="${3:-ckpt}"
 case "$POSITION" in v|y|engram) ;; *) echo "position must be v, y, or engram" >&2; exit 2 ;; esac
-SCRIPT_DIR="$(cd "$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
-ROOT="\${NGLAB_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
-PY="\${NGLAB_PY:-$ROOT/.venv/bin/python}"
-DATA="\${NGLAB_DATA_DIR:-$ROOT/data/tokenized_epoch20}"
-OUT="\${NGLAB_OUT_DIR:-$ROOT/data/runs_scaling}"
-RID="s1v5_128_ep20_\${POSITION}_L14_20p0xL4_3ep_\${SUFFIX}"
-RESULT="$OUT/\${RID}_fixed"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="${NGLAB_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+PY="${NGLAB_PY:-$ROOT/.venv/bin/python}"
+DATA="${NGLAB_DATA_DIR:-$ROOT/data/tokenized_epoch20}"
+OUT="${NGLAB_OUT_DIR:-$ROOT/data/runs_scaling}"
+RID="s1v5_128_ep20_${POSITION}_L14_20p0xL4_3ep_${SUFFIX}"
+RESULT="$OUT/${RID}_fixed"
 [[ -x "$PY" ]] || { echo "python unavailable: $PY" >&2; exit 2; }
 [[ -d "$DATA" ]] || { echo "data unavailable: $DATA" >&2; exit 2; }
 for sid in $(seq 0 23); do
@@ -22,7 +22,7 @@ done
 [[ ! -e "$RESULT" ]] || { echo "refusing existing run: $RESULT" >&2; exit 2; }
 mkdir -p "$RESULT"
 CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
-  --run_id "\${RID}_fixed" --out_dir "$OUT" \
+  --run_id "${RID}_fixed" --out_dir "$OUT" \
   --data_dir "$DATA" --train_shards 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 \
   --val_shards 21,22,23 --seed 42 --steps 20220 --dtype bf16 \
   --injection_position "$POSITION" --inject_layers 1,4 \
