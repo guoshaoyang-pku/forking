@@ -29,18 +29,18 @@ run_one() {
   local extra=()
   if [ "$freeze" = 1 ]; then extra+=(--freeze_table); fi
   echo "[freq10] start $rid on GPU $GPU $(date -Is)"
-  CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \\
-    --run_id "$rid" --out_dir "$out" --data_dir "$data" \\
-    --train_shards "$train_shards" --val_shards "$val_shards" \\
-    --seed 42 --steps 1665 --dtype bf16 \\
-    --injection_position input --enable_unigram 0 --enable_bigram 0 --enable_trigram 1 \\
-    --bigram_clean_table 0 --trigram_clean_table 1048576 \\
-    --n_layer 8 --n_head 6 --n_embd 768 --vocab_size 8192 --sequence_len 2048 \\
-    --device_batch_size 72 --total_batch_size 147456 \\
-    --lr 0.0006 --lr_schedule warmup_constant --warmup_steps 100 \\
-    --table_optimizer rmsprop --table_betas 0.0,0.99 --table_lr_scale 128.0 \\
-    --epoch_batches "$epoch_batches" --val_interval 10 --freq_eval_interval 10 \\
-    --exact_freq_eval_interval 10 --val_batches 4 --table_norm_interval 10 \\
+  CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
+    --run_id "$rid" --out_dir "$out" --data_dir "$data" \
+    --train_shards "$train_shards" --val_shards "$val_shards" \
+    --seed 42 --steps 1665 --dtype bf16 \
+    --injection_position input --enable_unigram 0 --enable_bigram 0 --enable_trigram 1 \
+    --bigram_clean_table 0 --trigram_clean_table 1048576 \
+    --n_layer 8 --n_head 6 --n_embd 768 --vocab_size 8192 --sequence_len 2048 \
+    --device_batch_size 72 --total_batch_size 147456 \
+    --lr 0.0006 --lr_schedule warmup_constant --warmup_steps 100 \
+    --table_optimizer rmsprop --table_betas 0.0,0.99 --table_lr_scale 128.0 \
+    --epoch_batches "$epoch_batches" --val_interval 10 --freq_eval_interval 10 \
+    --exact_freq_eval_interval 10 --val_batches 4 --table_norm_interval 10 \
     --init_model "$BASE" --save_final_model "${extra[@]}" > "$run_dir/train.log" 2>&1
   test -s "$run_dir/summary.json" || { echo "[freq10] missing summary for $rid" >&2; exit 3; }
   test -s "$run_dir/train_log.jsonl" || { echo "[freq10] missing train log for $rid" >&2; exit 3; }
