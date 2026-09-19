@@ -4320,7 +4320,7 @@ rank-probability 曲线显著平坦于 n-gram 臂（train 侧尤其），顺序�
 
 ### 57.1 同分布 ID 线（先行）
 
-基座 `sftbase_ep20_tri_ckpt_fixed` 使用 `data/tokenized_epoch20` train shards 0–20、val 21–23，20,220 steps（epoch_batches=6740），并保存 `final_model.pt`；参考同 setting 无 checkpoint run 的 final gap 为 0.2203。ID SFT 使用 shard 21 train、22–23 val，launcher `code/cluster/run_sft_id_after_base.sh`，输出 `data/runs_sft/sft_id_tri_e5_{trainable,frozen}_s42/`。
+旧的 20× replay 科学 run `s1v5_128_ep20_tri_20p0xL4_3ep_v2_fixed` 已完成 20,220 steps，final gap `+0.2203`，但只保留日志、summary 和 table norm，没有 `final_model.pt`，因此不能直接作为 SFT 初始化权重。`sftbase_ep20_tri_ckpt_fixed` 是同 setting、同数据和 seed 的 checkpoint materialization rerun：唯一新增目标是保存 `final_model.pt`，不作为新的 20× 科学点；其 final gap `+0.2140` 与旧 run 一致到单 seed/GPU 数值波动范围。ID SFT 使用 shard 21 train、22–23 val，launcher `code/cluster/run_sft_id_after_base.sh`，输出 `data/runs_sft/sft_id_tri_e5_{trainable,frozen}_s42/`。
 
 ### 57.2 OOD 线（并行准备）
 
