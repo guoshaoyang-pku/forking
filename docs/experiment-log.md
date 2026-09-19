@@ -4324,6 +4324,6 @@ rank-probability 曲线显著平坦于 n-gram 臂（train 侧尤其），顺序�
 
 ### 57.2 OOD 线（并行准备）
 
-原始数据已固定：OpenR1-Math-220k 的单 parquet（revision `e4e141ec9dea9f8326f4d347be56105859b2bd68`）与 Magicoder-OSS-Instruct-75K 的 JSONL（revision `5f839b1f368a76b161028bb9edff055db34022b2`），远端原始文件与 SHA256 清单在 `/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/`。首个 OOD 线选 OpenR1；`code/prepare_ood_sft.py` 用预训练同一 `tokenizer.pkl` 流式生成 `data/ood_tokenized_openr1/shard_00000.bin`（333 train batches）和 `shard_00001.bin`（4 held-out val batches），不复用 Mistral/tokenizer。launcher `code/cluster/run_sft_ood_after_base.sh` 计划在 GPU 0/7 启动 trainable/frozen 两臂，输出 `data/runs_sft_ood/`。
+原始数据已固定：OpenR1-Math-220k 的单 parquet（revision `e4e141ec9dea9f8326f4d347be56105859b2bd68`）与 Magicoder-OSS-Instruct-75K 的 JSONL（revision `5f839b1f368a76b161028bb9edff055db34022b2`），远端原始文件与 SHA256 清单在 `/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/`。首个 OOD 线选 Magicoder-OSS-Instruct-75K；OpenR1 单 parquet 在该 tokenizer 下只能形成约 2,970 个 2049-token 行，低于完整 333-batch 训练池，因此保留为后续短语料/高重复率对照，不静默重复。`code/prepare_ood_sft.py` 用预训练同一 `tokenizer.pkl` 流式生成 `data/ood_tokenized_magicoder/shard_00000.bin`（333 train batches）和 `shard_00001.bin`（4 held-out val batches），不复用 Mistral/tokenizer。launcher `code/cluster/run_sft_ood_after_base.sh` 计划在 GPU 0/7 启动 trainable/frozen 两臂，输出 `data/runs_sft_ood/`。
 
 **验收**：基座必须有 `summary.json`、`train_log.jsonl`、`final_model.pt`；四条 SFT 臂分别回填每个 epoch 的 train/val/gap、table norm、final step、非有限值检查，并绑定 run_id/step/seed。若 OOD tokenization 或训练失败，记录失败和缺失 artifact，不将其当作负结果。

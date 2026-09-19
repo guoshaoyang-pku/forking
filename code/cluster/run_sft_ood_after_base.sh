@@ -3,7 +3,8 @@ set -euo pipefail
 ROOT="${NGLAB_ROOT:-/data4/guoshaoyang/ngram-gap-lab}"
 PY="${NGLAB_PY:-$ROOT/.venv/bin/python}"
 BASE="${NGLAB_BASE:-$ROOT/data/runs_scaling/sftbase_ep20_tri_ckpt_fixed/final_model.pt}"
-DATA="${NGLAB_OOD_DATA_DIR:-$ROOT/data/ood_tokenized_openr1}"
+TAG="${NGLAB_OOD_TAG:-magicoder}"
+DATA="${NGLAB_OOD_DATA_DIR:-$ROOT/data/ood_tokenized_magicoder}"
 OUT="${NGLAB_OOD_OUT:-$ROOT/data/runs_sft_ood}"
 WAIT_SECS="${NGLAB_BASE_WAIT_SECS:-172800}"
 mkdir -p "$OUT"
@@ -17,7 +18,7 @@ sha256sum "$BASE" > "$OUT/base_checkpoint.sha256"
 run_one() {
   local gpu="$1" arm="$2"; local extra=()
   if [ "$arm" = frozen ]; then extra+=(--freeze_table); fi
-  local rid="sft_ood_openr1_e5_${arm}_s42"; local run_dir="$OUT/$rid"
+  local rid="sft_ood_${TAG}_e5_${arm}_s42"; local run_dir="$OUT/$rid"
   if [ -e "$run_dir" ]; then echo "[sft-ood] refusing to overwrite $run_dir" >&2; return 2; fi
   mkdir -p "$run_dir"
   CUDA_VISIBLE_DEVICES="$gpu" "$PY" -u "$ROOT/code/train.py" \
