@@ -1512,6 +1512,9 @@ def main():
                         help="save the final model.state_dict() to final_model.pt "
                              "and the fixed train/val probe tokens to probe_tokens.npz "
                              "for offline per-token / row-level loss analysis")
+    parser.add_argument("--save_epoch_checkpoints", action="store_true",
+                        help="with --epoch_batches, save epoch-boundary weights as "
+                             "epoch{n}_model.pt in addition to final_model.pt")
     parser.add_argument("--lr", type=float, default=0.004)
     parser.add_argument("--weight_decay", type=float, default=0.1,
                         help="AdamW weight decay for backbone matrices (default 0.1; "
@@ -2240,6 +2243,17 @@ def main():
             tn_entry = {"step": step + 1, **tn}
             table_log.write(json.dumps(tn_entry) + "\n")
             table_log.flush()
+
+        # Optional weights-only snapshots at complete replay-epoch boundaries.
+        # The training loop has no resume-state semantics here: these files are
+        # analysis/checkpoint artifacts, not optimizer-resumable checkpoints.
+        if (args.save_epoch_checkpoints and cfg.epoch_batches > 0
+                and train_ds._batch_in_epoch == 0 and step > 0):
+            raw_model = getattr(model, "_orig_mod", model)
+            epoch_no = train_ds._epoch
+            path = os.path.join(cfg.out_dir, f"epoch{epoch_no}_model.pt")
+            torch.save(raw_model.state_dict(), path)
+            print(f"[nglab] saved epoch checkpoint {path}")
 
     # flush any diagnostics still queued in the background worker
     if diag_pool is not None:
