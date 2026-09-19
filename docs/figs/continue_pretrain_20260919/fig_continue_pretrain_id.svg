@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 840" width="1120" height="840">
+<rect width="100%" height="100%" fill="white"/>
+<text x="560.0" y="31.0" font-family="Arial, sans-serif" font-size="23" text-anchor="middle" font-weight="bold" fill="#243447">Continued pretraining · ID</text>
+<text x="560.0" y="56.0" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#243447">Epoch-boundary observations (steps 333, 666, 999, 1332, 1665) · seed 42 · gap = fixed val − online train</text>
+<text x="560.0" y="75.0" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" font-weight="normal" fill="#52606d">Solid: observed train/val · dotted: val if the epoch-1 gap stayed fixed · lower panel: gap</text>
+<text x="560.0" y="113.0" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" font-weight="bold" fill="#243447">train / validation loss</text>
+<line x1="100.0" y1="358.0" x2="1066.0" y2="358.0" stroke="#dfe6ed"/>
+<text x="90.0" y="362.0" font-family="Arial, sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#52606d">1.62</text>
+<line x1="100.0" y1="313.2" x2="1066.0" y2="313.2" stroke="#dfe6ed"/>
+<text x="90.0" y="317.2" font-family="Arial, sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#52606d">2.22</text>
+<line x1="100.0" y1="268.4" x2="1066.0" y2="268.4" stroke="#dfe6ed"/>
+<text x="90.0" y="272.4" font-family="Arial, sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#52606d">2.82</text>
+<line x1="100.0" y1="223.6" x2="1066.0" y2="223.6" stroke="#dfe6ed"/>
+<text x="90.0" y="227.6" font-family="Arial, sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#52606d">3.41</text>
+<line x1="100.0" y1="178.8" x2="1066.0" y2="178.8" stroke="#dfe6ed"/>
+<text x="90.0" y="182.8" font-family="Arial, sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#52606d">4.01</text>
+<line x1="100.0" y1="134.0" x2="1066.0" y2="134.0" stroke="#dfe6ed"/>
+<text x="90.0" y="138.0" font-family="Arial, sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#52606d">4.61</text>
+<line x1="100.0" y1="134.0" x2="100.0" y2="358.0" stroke="#eef2f6"/>
+<text x="100.0" y="377.0" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#243447">epoch 1</text>
+<line x1="341.5" y1="134.0" x2="341.5" y2="358.0" stroke="#eef2f6"/>
+<text x="341.5" y="377.0" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#243447">epoch 2</text>
+<line x1="583.0" y1="134.0" x2="583.0" y2="358.0" stroke="#eef2f6"/>
+<text x="583.0" y="377.0" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#243447">epoch 3</text>
+<line x1="824.5" y1="134.0" x2="824.5" y2="358.0" stroke="#eef2f6"/>
+<text x="824.5" y="377.0" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#243447">epoch 4</text>
+<line x1="1066.0" y1="134.0" x2="1066.0" y2="358.0" stroke="#eef2f6"/>
+<text x="1066.0" y="377.0" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#243447">epoch 5</text>
+<line x1="100.0" y1="358.0" x2="1066.0" y2="358.0" stroke="#52606d"/>
+<line x1="100.0" y1="134.0" x2="100.0" y2="358.0" stroke="#52606d"/>
+<polyline fill="none" stroke="#c4493d" stroke-width="1.2" opacity="0.5" stroke-dasharray="2,4" points="100.0,232.0 341.5,259.0 583.0,283.8 824.5,311.6 1066.0,334.7"/>
+<polyline fill="none" stroke="#c4493d" stroke-width="2.4" opacity="1.0" points="100.0,233.7 341.5,260.7 583.0,285.5 824.5,313.3 1066.0,336.3"/>
+<circle cx="100.0" cy="233.7" r="4.2" fill="#c4493d" opacity="1.0"/>
+<circle cx="341.5" cy="260.7" r="4.2" fill="#c4493d" opacity="1.0"/>
+<circle cx="583.0" cy="285.5" r="4.2" fill="#c4493d" opacity="1.0"/>
+<circle cx="824.5" cy="313.3" r="4.2" fill="#c4493d" opacity="1.0"/>
+<circle cx="1066.0" cy="336.3" r="4.2" fill="#c4493d" opacity="1.0"/>
+<polyline fill="none" stroke="#c4493d" stroke-width="2.0" opacity="0.6" points="100.0,232.0 341.5,225.8 583.0,209.9 824.5,183.6 1066.0,155.7"/>
+<circle cx="100.0" cy="232.0" r="4.2" fill="#c4493d" opacity="0.6"/>
+<circle cx="341.5" cy="225.8" r="4.2" fill="#c4493d" opacity="0.6"/>
+<circle cx="583.0" cy="209.9" r="4.2" fill="#c4493d" opacity="0.6"/>
+<circle cx="824.5" cy="183.6" r="4.2" fill="#c4493d" opacity="0.6"/>
+<circle cx="1066.0" cy="155.7" r="4.2" fill="#c4493d" opacity="0.6"/>
+<polyline fill="none" stroke="#2d6f9f" stroke-width="1.2" opacity="0.5" stroke-dasharray="2,4" points="100.0,232.1 341.5,238.8 583.0,243.9 824.5,247.6 1066.0,251.6"/>
+<polyline fill="none" stroke="#2d6f9f" stroke-width="2.4" opacity="1.0" points="100.0,233.4 341.5,240.2 583.0,245.3 824.5,249.0 1066.0,252.9"/>
+<circle cx="100.0" cy="233.4" r="4.2" fill="#2d6f9f" opacity="1.0"/>
+<circle cx="341.5" cy="240.2" r="4.2" fill="#2d6f9f" opacity="1.0"/>
+<circle cx="583.0" cy="245.3" r="4.2" fill="#2d6f9f" opacity="1.0"/>
+<circle cx="824.5" cy="249.0" r="4.2" fill="#2d6f9f" opacity="1.0"/>
+<circle cx="1066.0" cy="252.9" r="4.2" fill="#2d6f9f" opacity="1.0"/>
+<polyline fill="none" stroke="#2d6f9f" stroke-width="2.0" opacity="0.6" points="100.0,232.1 341.5,230.7 583.0,229.8 824.5,228.4 1066.0,226.8"/>
+<circle cx="100.0" cy="232.1" r="4.2" fill="#2d6f9f" opacity="0.6"/>
+<circle cx="341.5" cy="230.7" r="4.2" fill="#2d6f9f" opacity="0.6"/>
+<circle cx="583.0" cy="229.8" r="4.2" fill="#2d6f9f" opacity="0.6"/>
+<circle cx="824.5" cy="228.4" r="4.2" fill="#2d6f9f" opacity="0.6"/>
+<circle cx="1066.0" cy="226.8" r="4.2" fill="#2d6f9f" opacity="0.6"/>
+<text x="583.0" y="400.0" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#52606d">replay epoch</text>
+<text x="42.0" y="246.0" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#52606d">loss (nats)</text>
+<text x="560.0" y="486.0" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" font-weight="bold" fill="#243447">validation gap</text>
+<line x1="100.0" y1="711.0" x2="1066.0" y2="711.0" stroke="#dfe6ed"/>
+<text x="90.0" y="715.0" font-family="Arial, sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#52606d">-0.27</text>
+<line x1="100.0" y1="670.2" x2="1066.0" y2="670.2" stroke="#dfe6ed"/>
+<text x="90.0" y="674.2" font-family="Arial, sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#52606d">0.32</text>
+<line x1="100.0" y1="629.4" x2="1066.0" y2="629.4" stroke="#dfe6ed"/>
+<text x="90.0" y="633.4" font-family="Arial, sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#52606d">0.92</text>
+<line x1="100.0" y1="588.6" x2="1066.0" y2="588.6" stroke="#dfe6ed"/>
+<text x="90.0" y="592.6" font-family="Arial, sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#52606d">1.51</text>
+<line x1="100.0" y1="547.8" x2="1066.0" y2="547.8" stroke="#dfe6ed"/>
+<text x="90.0" y="551.8" font-family="Arial, sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#52606d">2.10</text>
+<line x1="100.0" y1="507.0" x2="1066.0" y2="507.0" stroke="#dfe6ed"/>
+<text x="90.0" y="511.0" font-family="Arial, sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#52606d">2.70</text>
+<line x1="100.0" y1="507.0" x2="100.0" y2="711.0" stroke="#eef2f6"/>
+<text x="100.0" y="730.0" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#243447">epoch 1</text>
+<line x1="341.5" y1="507.0" x2="341.5" y2="711.0" stroke="#eef2f6"/>
+<text x="341.5" y="730.0" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#243447">epoch 2</text>
+<line x1="583.0" y1="507.0" x2="583.0" y2="711.0" stroke="#eef2f6"/>
+<text x="583.0" y="730.0" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#243447">epoch 3</text>
+<line x1="824.5" y1="507.0" x2="824.5" y2="711.0" stroke="#eef2f6"/>
+<text x="824.5" y="730.0" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#243447">epoch 4</text>
+<line x1="1066.0" y1="507.0" x2="1066.0" y2="711.0" stroke="#eef2f6"/>
+<text x="1066.0" y="730.0" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#243447">epoch 5</text>
+<line x1="100.0" y1="711.0" x2="1066.0" y2="711.0" stroke="#52606d"/>
+<line x1="100.0" y1="507.0" x2="100.0" y2="711.0" stroke="#52606d"/>
+<line x1="100.0" y1="692.5" x2="1066.0" y2="692.5" stroke="#68737d" stroke-dasharray="3,3"/>
+<polyline fill="none" stroke="#c4493d" stroke-width="2.4" opacity="1.0" stroke-dasharray="7,5" points="100.0,691.0 341.5,660.6 583.0,623.2 824.5,573.6 1066.0,526.7"/>
+<circle cx="100.0" cy="691.0" r="4.2" fill="#c4493d" opacity="0.95"/>
+<circle cx="341.5" cy="660.6" r="4.2" fill="#c4493d" opacity="0.95"/>
+<circle cx="583.0" cy="623.2" r="4.2" fill="#c4493d" opacity="0.95"/>
+<circle cx="824.5" cy="573.6" r="4.2" fill="#c4493d" opacity="0.95"/>
+<circle cx="1066.0" cy="526.7" r="4.2" fill="#c4493d" opacity="0.95"/>
+<polyline fill="none" stroke="#2d6f9f" stroke-width="2.4" opacity="1.0" stroke-dasharray="7,5" points="100.0,691.3 341.5,683.8 583.0,678.3 824.5,673.6 1066.0,668.5"/>
+<circle cx="100.0" cy="691.3" r="4.2" fill="#2d6f9f" opacity="0.95"/>
+<circle cx="341.5" cy="683.8" r="4.2" fill="#2d6f9f" opacity="0.95"/>
+<circle cx="583.0" cy="678.3" r="4.2" fill="#2d6f9f" opacity="0.95"/>
+<circle cx="824.5" cy="673.6" r="4.2" fill="#2d6f9f" opacity="0.95"/>
+<circle cx="1066.0" cy="668.5" r="4.2" fill="#2d6f9f" opacity="0.95"/>
+<text x="583.0" y="753.0" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#52606d">replay epoch</text>
+<text x="42.0" y="609.0" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#52606d">gap = val − train</text>
+<polyline fill="none" stroke="#c4493d" stroke-width="2.4" opacity="1.0" points="90.0,790.0 125.0,790.0"/>
+<text x="135.0" y="794.0" font-family="Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#243447">table trainable</text>
+<polyline fill="none" stroke="#2d6f9f" stroke-width="2.4" opacity="1.0" points="285.0,790.0 320.0,790.0"/>
+<text x="330.0" y="794.0" font-family="Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#243447">table frozen</text>
+<polyline fill="none" stroke="#374151" stroke-width="2.2" opacity="1.0" points="490.0,790.0 525.0,790.0"/>
+<text x="535.0" y="794.0" font-family="Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#243447">train: solid · val: translucent · gap: dashed</text>
+<polyline fill="none" stroke="#374151" stroke-width="1.2" opacity="0.5" stroke-dasharray="2,4" points="825.0,790.0 860.0,790.0"/>
+<text x="870.0" y="794.0" font-family="Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#243447">fixed initial gap</text>
+</svg>
