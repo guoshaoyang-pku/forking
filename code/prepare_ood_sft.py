@@ -6,17 +6,19 @@ from pathlib import Path
 import numpy as np
 import pyarrow.parquet as pq
 
-def iter_texts(path: Path, source: str):
+def iter_texts(paths, source: str):
     if source == "openr1":
-        pf = pq.ParquetFile(path)
-        for batch in pf.iter_batches(batch_size=128, columns=["problem", "solution"]):
-            for problem, solution in zip(batch.column("problem").to_pylist(), batch.column("solution").to_pylist()):
-                yield str(problem) + "\n\n" + str(solution)
+        for path in paths:
+            pf = pq.ParquetFile(path)
+            for batch in pf.iter_batches(batch_size=128, columns=["problem", "solution"]):
+                for problem, solution in zip(batch.column("problem").to_pylist(), batch.column("solution").to_pylist()):
+                    yield str(problem) + "\n\n" + str(solution)
     elif source == "magicoder":
-        with path.open("r", encoding="utf-8") as f:
-            for line in f:
-                row = json.loads(line)
-                yield str(row.get("problem", "")) + "\n\n" + str(row.get("solution", ""))
+        for path in paths:
+            with path.open("r", encoding="utf-8") as f:
+                for line in f:
+                    row = json.loads(line)
+                    yield str(row.get("problem", "")) + "\n\n" + str(row.get("solution", ""))
     else:
         raise ValueError(source)
 
@@ -46,13 +48,13 @@ def write_rows(texts, enc, bos_id: int, row_len: int, train_rows: int, val_rows:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--source", choices=["openr1", "magicoder"], required=True)
-    ap.add_argument("--input", required=True); ap.add_argument("--tokenizer", required=True)
+    ap.add_argument("--input", required=True, action="append"); ap.add_argument("--tokenizer", required=True)
     ap.add_argument("--out_dir", required=True); ap.add_argument("--sequence_len", type=int, default=2048)
     ap.add_argument("--train_batches", type=int, default=333); ap.add_argument("--val_batches", type=int, default=4)
     ap.add_argument("--device_batch_size", type=int, default=72); args = ap.parse_args()
     with open(args.tokenizer, "rb") as f: enc = pickle.load(f)
     bos_id = enc.encode_single_token("<|reserved_0|>")
     train_rows, val_rows = args.train_batches * args.device_batch_size, args.val_batches * args.device_batch_size
-    write_rows(iter_texts(Path(args.input), args.source), enc, bos_id, args.sequence_len + 1, train_rows, val_rows, Path(args.out_dir))
+    write_rows(iter_texts([Path(p) for p in args.input], args.source), enc, bos_id, args.sequence_len + 1, train_rows, val_rows, Path(args.out_dir))
 
 if __name__ == "__main__": main()
