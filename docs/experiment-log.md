@@ -4362,7 +4362,7 @@ Launch：remote queue script /data4/guoshaoyang/ngram-gap-lab/code/cluster/run_s
 
 远端 `quota -s` 显示用户在多个 `/data4` 分区已达到或超过 500 GiB quota；文件系统本身仍有约 4.7 TiB 空闲。因此这批失败是存储配额/写盘失败，不能解读为训练不稳定或模型效果。所有 partial 目录均保留，未删除。
 
-## §60 · Quota-safe matched multi-layer rerun on 360-2 (2026-09-20, planned)
+## §60 · Quota-safe matched multi-layer rerun on 360-2 (2026-09-20, running)
 
 因 §59 的 `/data4` 用户 quota 触发写盘失败，重跑保持相同科学 setting，迁移到 360-2：代码 train.py SHA256 9957438861fdc28a428ba622b386b9ef80b8cb6edb10c232490c9fc22dc1e196，数据目录 data/tokenized_epoch20_ophis 的 24 个 shard 与 ophis /data4/.../tokenized_epoch20 逐文件 SHA256 一致，seed 42，bf16/no compile，8L/6H/768D，blocks 1,4 (0-based)，双层 bigram+trigram clean 1M tables，lr/warmup/table optimizer 与 §59 相同，20220 steps，epoch boundaries 6740/13480/20220，validation 在三个 epoch boundary 记录，table norm 每 10 步记录。
 
