@@ -62,6 +62,19 @@ T1 目前仅完成远端 summary 回收与冲突审计；33 个重复 ID 均存�
 8/12 个旧点支撑；缺失的大 shard 端（4x/5x/6x/8x）不补入当前证据，结论仅作
 历史限定。当前 epoch 结论改由下方 v5 S1 三 epoch 阵列与 L4 长训承担。
 
+## Continued pretraining 与多层 memory 对照
+
+| 线名 | 科学问题 | run_id 前缀 | 状态 | 证据位置 |
+|---|---|---|---|---|
+| **SFT/continued-LM dense cadence** | 从低 gap 20× checkpoint 继续在 ID/OOD 数据上训练时，trainable table 是否重新展开 gap；冻结 table 是否缓解 | `sft_*_e5_freq10_{trainable,frozen}_s42` | ✅ done；6/6 artifact QC 通过，step 1665 终点已回填 | `experiment-log.md` §57–§58；`docs/appendices/continue_pretrain_20260920_freq10/` |
+| **Matched multi-layer memory** | 同一 20× corpus 上比较多层 v/y/Engram-like（0-based blocks 1,4） | `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_ckpt[_r1]` | ⚠️ stalled；用户 quota 导致写盘失败，没有 valid final result | `experiment-log.md` §59；远端 `data/runs_scaling/` partial directories |
+| **Matched multi-layer memory · 360-2 rerun** | 同上；只改变 host 与保存策略，避免 quota | `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_3602_nockpt` | planned；v 2-step smoke 已通过，正式长跑待启动 | `experiment-log.md` §60 |
+
+Dense cadence 的终点 gap（trainable/frozen）为：ID `+2.462920/+0.341044`、
+Magicoder `+1.012372/+0.212391`、OpenR1-10shard `+0.726493/+0.098207`。
+这些是单 seed continued-LM 结果，不等同于 response-only instruction SFT。多层路线的
+partial step 和 quota 错误只作工程 provenance，不能进入方法效果比较。
+
 ## Toy / synthetic 线（已退役）
 
 旧的 ngram5_freq_gap/ 受控数据 trainer 与 L1–L6 toy / synthetic 任务不再属于论文证据链，已于 2026-09-13 从当前工作树移除。历史实验日志、图和提交只用于 provenance，不再作为活动入口或新实验依赖。当前模型解释完全由 M2/V5、M8–M10、S1 以及 §48–§53 的自然语料证据承担。

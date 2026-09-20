@@ -1,0 +1,7 @@
+run_id,dataset,table_trainable,seed,steps,epoch_batches,final_train_loss,final_val_loss,final_gap,val_interval_steps,exact_freq_eval_interval,init_model
+sft_id_tri_e5_freq10_frozen_s42,ID,False,42,1665,333,3.030482053756714,3.371526002883911,0.34104394912719727,10,10,/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/sftbase_ep20_tri_ckpt_fixed/final_model.pt
+sft_id_tri_e5_freq10_trainable_s42,ID,True,42,1665,333,1.913205862045288,4.376125931739807,2.462920069694519,10,10,/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/sftbase_ep20_tri_ckpt_fixed/final_model.pt
+sft_ood_magicoder_e5_freq10_frozen_s42,Magicoder OOD,False,42,1665,333,1.3421519994735718,1.5545432567596436,0.21239125728607178,10,10,/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/sftbase_ep20_tri_ckpt_fixed/final_model.pt
+sft_ood_magicoder_e5_freq10_trainable_s42,Magicoder OOD,True,42,1665,333,0.7395682334899902,1.7519399523735046,1.0123717188835144,10,10,/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/sftbase_ep20_tri_ckpt_fixed/final_model.pt
+sft_ood_openr1_10shards_e5_freq10_frozen_s42,OpenR1-10shard OOD,False,42,1665,333,1.2258975505828857,1.324104517698288,0.09820696711540222,10,10,/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/sftbase_ep20_tri_ckpt_fixed/final_model.pt
+sft_ood_openr1_10shards_e5_freq10_trainable_s42,OpenR1-10shard OOD,True,42,1665,333,0.753882884979248,1.480376124382019,0.726493239402771,10,10,/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/sftbase_ep20_tri_ckpt_fixed/final_model.pt

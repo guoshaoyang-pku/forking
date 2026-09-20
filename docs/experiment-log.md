@@ -7,8 +7,9 @@
 ## 实验登记总表
 
 | `sftbase_ep20_tri_ckpt` / `sft_id_tri_e5_{trainable,frozen}_s42` | 2026-09-19 | **Continued-pretraining stress test · low-gap 20x vanilla checkpoint → ID/OOD data · 5 epochs · fresh optimizer/warmup · table trainable vs frozen** | ✅ done | ID +2.4105/+0.3487; Magicoder +1.0175/+0.2344; OpenR1 +0.7176/+0.1201 | §57 |
-| `sft_*_e5_freq10_{trainable,frozen}_s42` | 2026-09-19 | **Dense cadence refresh · same checkpoint/data/setting as §57, validation and frequency cadence every 10 steps, one-GPU serial queue** | planned | pending | §58 |
-| `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_ckpt[_r1]` | 2026-09-20 | **20x corpus, three-pass matched multi-layer memory checkpoints; blocks 1,4 (0-based), 1M-row bigram + 1M-row trigram per block** | running | pending | §59 |
+| `sft_*_e5_freq10_{trainable,frozen}_s42` | 2026-09-19 | **Dense cadence refresh · same checkpoint/data/setting as §57, validation and frequency cadence every 10 steps, one-GPU serial queue** | ✅ done | all 6 complete; final gaps in §58 | §58 |
+| `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_ckpt[_r1]` | 2026-09-20 | **20x corpus, three-pass matched multi-layer memory checkpoints; blocks 1,4 (0-based), 1M-row bigram + 1M-row trigram per block** | ⚠️ stalled (quota) | no valid final result; partial artifacts retained | §59 |
+| `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_3602_nockpt` | 2026-09-20 | **Quota-safe rerun on 360-2; same multi-layer routes, final weight only** | running | v/y/engram launched on GPU 5/7/2; pending | §60 |
 
 | run_id | 日期 | 实验 | 状态 | gap 关键值 | 详情 |
 |---|---|---|---|---|---|
@@ -4330,10 +4331,14 @@ rank-probability 曲线显著平坦于 n-gram 臂（train 侧尤其），顺序�
 
 **已完成结果**：基座 `sftbase_ep20_tri_ckpt_fixed` final gap `+0.2140`（step 20220, seed 42）；ID 同分布 SFT final gap 为 trainable `+2.4105`、frozen `+0.3487`（step 1665）；Magicoder OOD final gap 为 trainable `+1.0175`、frozen `+0.2344`（step 1665）；OpenR1 十 shard OOD final gap 为 trainable `+0.7176`、frozen `+0.1201`（step 1665）。各线均有 `summary.json` 与 `final_model.pt`，单 seed、5-epoch continued-LM 结果暂不升级为跨域普遍结论。
 
+**freq=10 查收（2026-09-20）**：六条 dense-cadence run 均通过 artifact QC：每条有 167 个 `train_log.jsonl` 点（`10,20,…,1660,1665`）、166 个 `table_norm.jsonl` 点、`summary.json`、`final_model.pt`；train/table JSONL 无 NaN/Inf，`val_interval_steps=10` 且 `exact_freq_eval_interval=10`。`summary.json` 中可选的 `final_fixed_*` 字段为 NaN，是因为本批没有启用 fixed-train probe；报告的 fixed validation 使用 `final_val_loss`（4 个固定 validation batches）和同一步 online train loss。终点（step 1665，train / fixed val / gap）为：ID trainable `1.913206 / 4.376126 / +2.462920`，ID frozen `3.030482 / 3.371526 / +0.341044`；Magicoder trainable `0.739568 / 1.751940 / +1.012372`，frozen `1.342152 / 1.554543 / +0.212391`；OpenR1-10shards trainable `0.753883 / 1.480376 / +0.726493`，frozen `1.225898 / 1.324105 / +0.098207`。
+
+以第 1 个完整 epoch 边界 step 330 为参照，5 epoch 后的 gap 增量分别为 ID trainable `+2.4637`、ID frozen `+0.3419`、Magicoder trainable `+0.9620`、Magicoder frozen `+0.1741`、OpenR1 trainable `+0.7490`、OpenR1 frozen `+0.1200`。在相同区间，trainable ID 的 train loss 下降 `1.3891`，但 val loss 上升 `1.0746`；这说明该线的验证改善被完全抹平并转为恶化。OOD trainable 两线的 train loss 下降约 `1.19/0.85`，val 仅下降 `0.23/0.10`，而 frozen 两线仍保持明显 val 下降。该解释只覆盖 seed 42 和当前 continued-LM 数据协议。
+
 **证据汇总**：6 个 continued-pretraining run 均从同一个 `sftbase_ep20_tri_ckpt_fixed/final_model.pt` 初始化；每个 run 都有 `summary.json`、`train_log.jsonl`、`final_model.pt`，并记录 `init_model`、`freeze_table`、seed 42、step 1665。逐 epoch 结果表和原始 JSONL 副本见 `docs/appendices/continue_pretrain_20260919/`。
 
 
-## §58 · Continued-pretraining dense cadence refresh (2026-09-19, planned)
+## §58 · Continued-pretraining dense cadence refresh (2026-09-19, done)
 
 目的：把 §57 的六条结果重刷为真正的每 10 步 validation/frequency cadence，便于与 Chapter 3–4 的 v10 曲线直接比较。科学变量保持不变：同一低 gap 20× checkpoint、同一数据、seed 42、5 epochs、重新初始化 optimizer 与 100-step warmup；只改变测量 cadence，并使用新 run IDs，绝不覆盖 §57。
 
@@ -4341,9 +4346,9 @@ rank-probability 曲线显著平坦于 n-gram 臂（train 侧尤其），顺序�
 
 Run IDs/output：sft_id_tri_e5_freq10_{trainable,frozen}_s42 → data/runs_sft_freq10/；sft_ood_magicoder_e5_freq10_{trainable,frozen}_s42 → data/runs_sft_ood_freq10/；sft_ood_openr1_10shards_e5_freq10_{trainable,frozen}_s42 → data/runs_sft_ood_openr1_freq10/。验收：每个 run 有 summary.json、train_log.jsonl（steps 10,20,…,1665），config 记录 intervals=10 和预期 init_model，无 NaN，并有 final_model.pt。
 
-Launch：remote queue script /data4/guoshaoyang/ngram-gap-lab/code/cluster/run_sft_freq10_serial.sh，log /data4/guoshaoyang/ngram-gap-lab/data/runs_sft_freq10/queue.log，GPU 1。queue refuses to overwrite existing run directories and records code hashes before launch。
+Launch：remote queue script /data4/guoshaoyang/ngram-gap-lab/code/cluster/run_sft_freq10_serial.sh，log /data4/guoshaoyang/ngram-gap-lab/data/runs_sft_freq10/queue.log，GPU 1。queue refuses to overwrite existing run directories and records code hashes before launch。六条 run 已按 queue 顺序全部完成；上述 dense-cadence QC 和终点结果已回填。
 
-## §59 · Matched vanilla multi-layer memory 20× runs (2026-09-20, running)
+## §59 · Matched vanilla multi-layer memory 20× runs (2026-09-20, stalled: quota)
 
 **问题**：在同一 vanilla nanoGPT、同一 20× corpus replay 和同一优化器口径下，对比 value-stream (v)、attention-output (y) 与 minimal Engram-like gated intermediate-memory (engram) route；engram 只表示当前代码的 gated proxy，不是完整 DeepSeek Engram 复现。
 
@@ -4352,3 +4357,13 @@ Launch：remote queue script /data4/guoshaoyang/ngram-gap-lab/code/cluster/run_s
 **Run/output**：v 使用 s1v5_128_ep20_v_L14_20p0xL4_3ep_ckpt_r1_fixed on GPU 2（首个同名目录只留下 parser-failure partial，未计入证据）；y 使用 s1v5_128_ep20_y_L14_20p0xL4_3ep_ckpt_fixed on GPU 4；Engram-like 使用 s1v5_128_ep20_engram_L14_20p0xL4_3ep_ckpt_fixed on GPU 6。每个 run 目标是 summary.json、每 10 步 table_norm.jsonl、epoch-boundary train_log.jsonl、epoch1_model.pt、epoch2_model.pt 和 final_model.pt；权重-only snapshots 不是 optimizer-resumable checkpoints。
 
 **验收**：三条进程已启动并在对应 GPU 上运行；正式训练开始前 Engram 2-step smoke 已通过（inject_layers=1,4、forward、summary 写入）。完成后回填 step 6740/13480/20220 的 train/val/gap、最终 loss/gap、n_params、GPU、code hash，并与已有 20× no-gram ls20ep_nogram_v5_128x_fd_fixed（single-shard 20-epoch reference，非本批同一 train/val pool）分开标注。
+
+**查收结果（2026-09-20）**：三条正式路线均未完成，不能作为 v/y/Engram-like 的科学结果。v route (`s1v5_128_ep20_v_L14_20p0xL4_3ep_ckpt_r1_fixed`) 完成到第 1 个 replay pass 边界 step 6740，train `2.762661`、fixed val `2.751594`、gap `−0.011067`；随后在写 `epoch1_model.pt` 时触发 `OSError: [Errno 122] Disk quota exceeded`。该文件约 12 GB，且 `zipfile` 校验失败，不能作为 checkpoint 使用。y route 和 Engram-like route 在训练初始阶段的 `table_norm.jsonl` flush 触发同一 quota 错误，均没有有效 train-log step、summary 或 checkpoint。首个 v parser-failure 目录 `s1v5_128_ep20_v_L14_20p0xL4_3ep_ckpt_fixed` 仅保留 `--save_epoch_checkpoints` 不兼容的启动日志。
+
+远端 `quota -s` 显示用户在多个 `/data4` 分区已达到或超过 500 GiB quota；文件系统本身仍有约 4.7 TiB 空闲。因此这批失败是存储配额/写盘失败，不能解读为训练不稳定或模型效果。所有 partial 目录均保留，未删除。
+
+## §60 · Quota-safe matched multi-layer rerun on 360-2 (2026-09-20, planned)
+
+因 §59 的 `/data4` 用户 quota 触发写盘失败，重跑保持相同科学 setting，迁移到 360-2：代码 train.py SHA256 9957438861fdc28a428ba622b386b9ef80b8cb6edb10c232490c9fc22dc1e196，数据目录 data/tokenized_epoch20_ophis 的 24 个 shard 与 ophis /data4/.../tokenized_epoch20 逐文件 SHA256 一致，seed 42，bf16/no compile，8L/6H/768D，blocks 1,4 (0-based)，双层 bigram+trigram clean 1M tables，lr/warmup/table optimizer 与 §59 相同，20220 steps，epoch boundaries 6740/13480/20220，validation 在三个 epoch boundary 记录，table norm 每 10 步记录。
+
+科学变量不变；唯一工程变化是 host 和 checkpoint policy：关闭 save_epoch_checkpoints，只保存 final_model.pt，避免保存不可恢复的权重-only epoch snapshots。新 run IDs 为 s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_3602_nockpt_fixed，GPU 5/7/2，launcher code/cluster/run_20x_multilayer_memory_nockpt.sh。2-step v smoke 已通过（360-2 GPU 5，参数量 3285.8M，forward/backward 与 log 写入正常）；正式 run 验收为 summary、train_log、table_norm、final_model，且 step 20220 与无 NaN。三条正式 run 已于 14:49 CST 启动；首个状态检查显示三条均已完成模型初始化并进入训练，GPU 利用率约 97–99%。当前 launcher 传入 val_steps 6740,13480,20220，因此主 train/val/gap 日志是三个边界点，而不是每 10 步 dense loss 曲线。

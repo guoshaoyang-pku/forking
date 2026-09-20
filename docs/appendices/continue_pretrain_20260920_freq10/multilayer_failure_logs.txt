@@ -1,0 +1,27 @@
+===/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/s1v5_128_ep20_v_L14_20p0xL4_3ep_ckpt_r1_fixed
+    main()
+  File "/data4/guoshaoyang/ngram-gap-lab/code/train.py", line 2255, in main
+    torch.save(raw_model.state_dict(), path)
+  File "/data4/guoshaoyang/ngram-gap-lab/.venv/lib/python3.10/site-packages/torch/serialization.py", line 966, in save
+    with _open_zipfile_writer(f) as opened_zipfile:
+  File "/data4/guoshaoyang/ngram-gap-lab/.venv/lib/python3.10/site-packages/torch/serialization.py", line 798, in __exit__
+    self.file_like.write_end_of_file()
+RuntimeError: [enforce fail at inline_container.cc:664] . unexpected pos 9921988096 vs 9921987992
+===/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/s1v5_128_ep20_y_L14_20p0xL4_3ep_ckpt_fixed
+[nglab] grad_accum=1 train_chunks=502632 val_chunks=72216
+[nglab] model params: 3285.8M
+Traceback (most recent call last):
+  File "/data4/guoshaoyang/ngram-gap-lab/code/train.py", line 2374, in <module>
+    main()
+  File "/data4/guoshaoyang/ngram-gap-lab/code/train.py", line 2245, in main
+    table_log.flush()
+OSError: [Errno 122] Disk quota exceeded
+===/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/s1v5_128_ep20_engram_L14_20p0xL4_3ep_ckpt_fixed
+[nglab] grad_accum=1 train_chunks=502632 val_chunks=72216
+[nglab] model params: 3285.8M
+Traceback (most recent call last):
+  File "/data4/guoshaoyang/ngram-gap-lab/code/train.py", line 2374, in <module>
+    main()
+  File "/data4/guoshaoyang/ngram-gap-lab/code/train.py", line 2245, in main
+    table_log.flush()
+OSError: [Errno 122] Disk quota exceeded
