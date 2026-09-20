@@ -68,7 +68,7 @@ T1 目前仅完成远端 summary 回收与冲突审计；33 个重复 ID 均存�
 |---|---|---|---|---|
 | **SFT/continued-LM dense cadence** | 从低 gap 20× checkpoint 继续在 ID/OOD 数据上训练时，trainable table 是否重新展开 gap；冻结 table 是否缓解 | `sft_*_e5_freq10_{trainable,frozen}_s42` | ✅ done；6/6 artifact QC 通过，step 1665 终点已回填 | `experiment-log.md` §57–§58；`docs/appendices/continue_pretrain_20260920_freq10/` |
 | **Matched multi-layer memory** | 同一 20× corpus 上比较多层 v/y/Engram-like（0-based blocks 1,4） | `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_ckpt[_r1]` | ⚠️ stalled；用户 quota 导致写盘失败，没有 valid final result | `experiment-log.md` §59；远端 `data/runs_scaling/` partial directories |
-| **Matched multi-layer memory · 360-2 rerun** | 同上；只改变 host 与保存策略，避免 quota | `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_3602_nockpt` | running；step 6740 已回填，三条继续运行 | `experiment-log.md` §60 |
+| **Matched multi-layer memory · 360-2 rerun** | 同上；只改变 host 与保存策略，避免 quota | `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_3602_nockpt` | ✅ done；step 6740/13480/20220 与 final weights 已验收 | `experiment-log.md` §60；`docs/appendices/multilayer_memory_20260920_3602/` |
 
 Dense cadence 的终点 gap（trainable/frozen）为：ID `+2.462920/+0.341044`、
 Magicoder `+1.012372/+0.212391`、OpenR1-10shard `+0.726493/+0.098207`。
