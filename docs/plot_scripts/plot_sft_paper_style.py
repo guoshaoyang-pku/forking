@@ -79,10 +79,7 @@ def plot_arm(arm: str) -> tuple[Path, Path]:
         ax_gap.set_xticks([0, 333, 666, 999, 1332, 1665])
         ax_gap.set_xticklabels(["0", "1", "2", "3", "4", "5"])
         ax_gap.tick_params(axis="x", labelsize=8)
-        if col > 0:
-            ax_loss.set_yticklabels([])
-            ax_gap.set_yticklabels([])
-        else:
+        if col == 0:
             ax_loss.set_ylabel("loss (nats)", labelpad=3)
             ax_gap.set_ylabel("gap (nats)", labelpad=3)
         for spine in ("top", "right"):
@@ -90,13 +87,9 @@ def plot_arm(arm: str) -> tuple[Path, Path]:
             ax_gap.spines[spine].set_visible(False)
 
     axes[1, 1].set_xlabel("replay epoch", labelpad=5)
-    handles = [
-        plt.Line2D([], [], color="#374151", lw=1.35, label="train"),
-        plt.Line2D([], [], color="#374151", lw=1.15, ls="--", alpha=0.72, label="validation"),
-        plt.Line2D([], [], color="#374151", lw=1.35, label="gap = validation − train"),
-    ]
-    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.985), ncol=3, frameon=False, handlelength=2.3, columnspacing=1.5)
-    fig.text(0.5, 0.015, "Epoch boundaries are shown by vertical dotted lines; observations are recorded every 10 optimizer steps.", ha="center", fontsize=8.2, color="#52606d")
+    # Line semantics, sampling cadence, and epoch-boundary details belong in
+    # the LaTeX caption. Keeping them out of the image leaves room for the
+    # independent y scales and makes the asset reusable in the paper.
     png = OUT / f"fig_sft_{arm}_paper.png"
     pdf = OUT / f"fig_sft_{arm}_paper.pdf"
     svg = OUT / f"fig_sft_{arm}_paper.svg"
