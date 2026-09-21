@@ -129,3 +129,16 @@ cp docs/figs/main/fig_v5_s1_frequency_exact_f.pdf ../overleaf-paper/figures/fig0
 # 编译
 cd ../overleaf-paper && latexmk -pdf -interaction=nonstopmode main.tex
 ```
+
+---
+
+## 8. 追加（2026-09-21 16:40）：fig3/4/5 变体与两个新发现
+
+候选图脚本：`docs/plot_scripts/plot_paper_fig345_variants.py`（输出 `docs/figs/main/variants/cand_*.png/pdf`；需 conda python：`/Users/guoshaoyang/miniconda3/bin/python3`，homebrew python3 无 matplotlib）。
+- cand_fig3_combined_fit：bigram+trigram 同面板、log-log、虚线=§4 canonical 直拟（7.206 F^-0.233 / 3.759 F^-0.318，硬编码于 CANON_FIT，与正文逐字一致）；markers=12 几何 bin 质量加权均值±std。
+- cand_fig4_capacity_linearY：y 线性。
+- cand_fig5_corpus_linearY：y 线性；数据=新注册 `s1_dose_epoch_endpoints.csv`（20 个 dose、epoch-2/3 端点，从 ophis runs_scaling `s1v5_128_ep20_tri_*xL4_3ep_v2_fixed` 的 summary/train_log 提取；20× 行 0.1336/0.2203 与正文 0.13/0.22 对齐）。
+
+**陷阱警告**：`s1_epoch_length_points.csv` 的 `epoch_multiplier_L4` 是**固定语料下的 replay 强度轴**（epoch 变长=同语料重复更多，gap 随乘数上升），**不是** corpus dose 轴；corpus dose 的 epoch 端点数据此前未注册，现已补 `s1_dose_epoch_endpoints.csv`。两轴方向相反，勿混用。
+
+**新发现的不一致（待修）**：§3.3 capacity 正文 β=0.437/0.745 声称"all tested 25 bigram / 24 trigram points"，但 (a) 全点重算（G>0.02，log(G-0.02) vs log R）得 0.428/0.571；(b) 注册拟合（s1_scaling_fits.csv，family=table_size，fit_R_min=16000，n=18）得 0.429/0.657。三者互不相符：正文的 trigram 0.745 无任何可复现窗口支持。修 fig4 前必须先定 fit window 并同步正文/注册表。
