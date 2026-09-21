@@ -22,6 +22,7 @@ Data: docs/appendices/s1_scaling_three_axis/s1_frequency_exact_points.csv
       docs/appendices/s1_scaling_three_axis/s1_scaling_fits.csv
 """
 import csv
+import os
 from pathlib import Path
 
 import matplotlib
@@ -81,33 +82,41 @@ def main():
     bins = {b: geometric_bins(data[b]) for b in data}
 
     # ---------- static windowed figure ----------
+    binned = bool(os.environ.get("NGLAB_PAPER_BINNED"))
     fig, axes = plt.subplots(1, 2, figsize=(10.6, 4.4), sharey=True)
     for ax, branch in zip(axes, ("bigram", "trigram")):
         color = S.BRANCH_COLORS[branch]
         f = np.array([r[0] for r in data[branch]])
         g = np.array([r[1] for r in data[branch]])
-        ax.scatter(f, g, s=7, color="#9aa3ad", alpha=0.45, zorder=2,
-                   label="exact-f points (positive gap)")
+        if not binned:
+            ax.scatter(f, g, s=7, color="#9aa3ad", alpha=0.45, zorder=2,
+                       label="exact-f points (positive gap)")
         bx = np.array([b[0] for b in bins[branch]])
         bg = np.array([b[1] for b in bins[branch]])
         bs = np.array([b[2] for b in bins[branch]])
         ax.errorbar(bx, bg, yerr=bs, fmt="o", color=color, ms=5, lw=0,
                     elinewidth=0.8, ecolor="#666666", capsize=2, capthick=0.8,
                     zorder=3, label=f"{N_BINS} geometric bins (mass-weighted)")
-        slope = fits[branch]
-        fx = np.geomspace(bx.min(), bx.max(), 80)
-        amp = np.exp(np.mean(np.log(bg) - slope * np.log(bx)))
-        ax.plot(fx, np.exp(np.log(amp) + slope * np.log(fx)), ls="--", lw=1.2,
-                color=S.HOLDOUT_COLOR, zorder=4,
-                label=f"registered fit: $G \\propto f^{{{slope:.3f}}}$")
+        if not binned:
+            slope = fits[branch]
+            fx = np.geomspace(bx.min(), bx.max(), 80)
+            amp = np.exp(np.mean(np.log(bg) - slope * np.log(bx)))
+            ax.plot(fx, np.exp(np.log(amp) + slope * np.log(fx)), ls="--", lw=1.2,
+                    color=S.HOLDOUT_COLOR, zorder=4,
+                    label=f"registered fit: $G \\propto f^{{{slope:.3f}}}$")
         ax.set_xscale("log")
         ax.set_yscale("log")
         ax.set_ylim(Y_LO, Y_HI)
         ax.set_xlabel("exact train hit-count per context f")
         ax.set_title(branch)
-        ax.legend(fontsize=8, loc="lower left")
+        if not binned:
+            ax.legend(fontsize=8, loc="lower left")
     axes[0].set_ylabel("gap (val - train probe) @ step 1000")
     fig.tight_layout()
+    if binned:
+        pdf = OUT / "fig_v5_s1_frequency_exact_f.pdf"
+        fig.savefig(pdf, bbox_inches="tight")
+        print(pdf.relative_to(ROOT))
     png, svg = S.save(fig, OUT, "fig_v5_s1_frequency_exact_f")
     print(png.relative_to(ROOT))
     print(svg.relative_to(ROOT))
