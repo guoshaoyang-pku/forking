@@ -27,6 +27,7 @@ RUNS = (
     ("OpenR1", "sft_ood_openr1_10shards_e5_freq10_{arm}_s42", "#c58a0b"),
 )
 EXPECTED = list(range(10, 1661, 10)) + [1665]
+LOSS_UPPER = {"Magicoder": 5.0, "OpenR1": 3.5}
 
 
 def load(run_id: str) -> dict[str, np.ndarray]:
@@ -53,7 +54,7 @@ def bounds(values: np.ndarray, kind: str) -> tuple[float, float]:
 
 def plot_arm(arm: str) -> tuple[Path, Path]:
     apply_style()
-    fig, axes = plt.subplots(2, 3, figsize=(7.25, 4.65), sharex="col", gridspec_kw={"height_ratios": [1.0, 0.86], "hspace": 0.18, "wspace": 0.28})
+    fig, axes = plt.subplots(2, 3, figsize=(5.075, 3.255), sharex="col", gridspec_kw={"height_ratios": [1.0, 0.86], "hspace": 0.18, "wspace": 0.28})
     fig.subplots_adjust(left=0.075, right=0.995, top=0.89, bottom=0.14)
     loaded = []
     for label, template, color in RUNS:
@@ -73,7 +74,10 @@ def plot_arm(arm: str) -> tuple[Path, Path]:
             ax.grid(True, axis="y")
             ax.tick_params(axis="both", pad=2)
         ax_loss.set_title(label, fontsize=10.5, pad=5, fontweight="medium")
-        ax_loss.set_ylim(*bounds(np.concatenate([data["train_loss"], data["val_loss"]]), "loss"))
+        loss_lo, loss_hi = bounds(np.concatenate([data["train_loss"], data["val_loss"]]), "loss")
+        if label in LOSS_UPPER:
+            loss_hi = LOSS_UPPER[label]
+        ax_loss.set_ylim(loss_lo, loss_hi)
         ax_gap.set_ylim(*bounds(data["gap"], "gap"))
         ax_loss.set_xticklabels([])
         ax_gap.set_xticks([0, 333, 666, 999, 1332, 1665])
