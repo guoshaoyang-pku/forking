@@ -1,0 +1,147 @@
+diff --git a/figures/fig03_frequency.pdf b/figures/fig03_frequency.pdf
+index 4826079..412885d 100644
+Binary files a/figures/fig03_frequency.pdf and b/figures/fig03_frequency.pdf differ
+diff --git a/sections/03_empirical.tex b/sections/03_empirical.tex
+index af60d67..056abbd 100644
+--- a/sections/03_empirical.tex
++++ b/sections/03_empirical.tex
+@@ -34,22 +34,17 @@ All experiments below use input injection, seed 42, and a table learning rate $1
+ \paragraph{Context frequency.}
+ A finite corpus does not fully represent the continuation distribution of each context. For example, a context whose population distribution assigns equal probability to $C$ and $D$ may appear three times with $C$ and once with $D$ in training. Fitting these observations can lead a model to underpredict $D$ on independent data.
+ 
+-We enable both bigram and trigram tables, each with $2^{20}$ rows, and measure context-matched fixed-probe gaps at step 1000. Let $F(i)$ denote the count of context $i$ in the unrepeated training corpus. The same run is analyzed using bigram and trigram context groupings. We display 12 geometric frequency bins and fit seven token-mass-pooled bins with equal weight across fitted bins. Over the fitted range, Figure~\ref{fig:frequency} shows
+-\begin{equation}
+-G_{\mathrm{bigram}}(F)\propto F^{-0.253},\qquad G_{\mathrm{trigram}}(F)\propto F^{-0.318}.
+-\label{eq:empirical-power}
+-\end{equation}
+-Low-frequency contexts have larger average gaps, and the explanation of the power law relationship refers to section~\ref{sec:coverage}.
++We enable both bigram and trigram tables, each with $2^{20}$ rows, and measure context-matched fixed-probe gaps at step 1000. Let $F(i)$ denote the count of context $i$ in the unrepeated training corpus. The same run is analyzed using bigram and trigram context groupings. Figure~\ref{fig:frequency} displays token-mass-weighted means over 12 geometric frequency bins with within-bin standard deviations: low-frequency contexts have systematically larger average gaps. This display is binned only; the full-range power-law fits and their coefficients are reported in Section~\ref{sec:coverage}.
+ 
+ \begin{figure}[!htbp]
+ \centering
+ \includegraphics[width=\linewidth]{fig03_frequency.pdf}
+-\caption{Gap versus context frequency for (a) bigrams and (b) trigrams. Gray points show exact-frequency observations; colored markers show pooled means, with bars indicating within-bin standard deviations. Dashed lines show power-law fits.}
++\caption{Gap versus context frequency for (a) bigrams and (b) trigrams at step 1000. Markers show token-mass-weighted means over 12 geometric frequency bins; bars indicate within-bin standard deviations. Power-law fits are reported in Section~\ref{sec:coverage}.}
+ \label{fig:frequency}
+ \end{figure}
+ 
+ \paragraph{Table capacity.}
+-We vary the number of table rows $R$ in separate bigram-only and trigram-only models, holding the single-shard training corpus fixed and measuring the online gap at step 1000. Above a lower limit, the gap generally increases with table capacity, and growth slows toward the upper end of the measured range, particularly for bigrams (Figure~\ref{fig:capacity}). We describe this trend using the empirical fit
++We vary the number of table rows $R$ in separate bigram-only and trigram-only models, holding the single-shard training corpus fixed and measuring the online gap at step 1000. Above a lower limit, the gap generally increases with table capacity, and growth slows toward the upper end of the measured range, particularly for bigrams (Figure~\ref{fig:capacity}). We describe this trend using the empirical fit, a power law on top of the approximate no-gram offset:
+ \begin{equation}
+ G(R)=0.02+AR^{\beta},
+ \label{eq:capacity-scaling}
+@@ -61,9 +56,6 @@ We use a trigram-only model with $2^{20}$ table rows and vary the training corpu
+ 
+ Increasing the corpus can introduce new contexts and continuations and increase the counts of existing contexts; at a fixed epoch count, it also increases the number of optimizer updates. As a result, the gaps at the ends of epochs 2 and 3 generally decrease as the training corpus grows (Figure~\ref{fig:corpus-size}). With validation held fixed, the largest training corpus yields relatively small gaps of 0.13 and 0.22 nats, respectively, at the rightmost points which have 20x training corpus.
+ 
+-% This parenthetical discussion may be moved to Section 4 or the appendix.
+-%(Under the approximation that increasing the corpus by a factor $k$ multiplies every context count $F(i)$ by $k$, while context weights and the damage amplitude remain unchanged, the frequency law suggests $G_j(d)\approx g_jd^{-\alpha}$, where $d=D/D_1$. A no-offset least-squares fit in raw-gap space to all 20 epoch-2 endpoints gives $\alpha=0.341$ and $R^2=0.925$. Its proximity to the trigram exponent $0.318$ in Figure~\ref{fig:frequency} provides limited consistency evidence. The approximation does not capture changes in context composition, continuation coverage, or optimization dynamics. Residual deviations and sensitivity to the fitting range therefore limit this comparison to a descriptive check.)
+-
+ \begin{figure}[!htbp]
+ \centering
+ \includegraphics[width=\linewidth]{fig04_fig05_capacity_corpus.pdf}
+@@ -89,7 +81,7 @@ We train trigram-only and both-table models for 20 epochs, together with a no-gr
+ We study two interventions in the both-table model with input injection. Both use the fixed single-shard training corpus and run for 1000 updates, with interventions starting at step 338, after the first epoch. We measure the online gap using the convention in Section~\ref{sec:setting}. The two panels use independent runs, each with its own unmodified control.
+ 
+ \paragraph{Low-frequency retrieval masking}
+-We count context frequencies in the unrepeated training corpus and mask the $n$-gram contribution whenever $F\leq\tau$, applying the rule separately to the bigram and trigram branches with thresholds $\tau\in\{1,2,4,8,200\}$. The retrieved embedding is set to zero during both training and evaluation, while the corresponding token remains in the training loss. Compared with unmasked training, suppressing low-frequency memory access reduces the gap (Figure~\ref{fig:low-mask}, left). This experiment supports the the relationship of frequency and gap in ~\ref{sec:forking-factors} and provides a simple way to mitigate forking in the tested setting.
++We count context frequencies in the unrepeated training corpus and mask the $n$-gram contribution whenever $F\leq\tau$, applying the rule separately to the bigram and trigram branches with thresholds $\tau\in\{1,2,4,8,200\}$. The retrieved embedding is set to zero during both training and evaluation, while the corresponding token remains in the training loss. Compared with unmasked training, suppressing low-frequency memory access reduces the gap (Figure~\ref{fig:low-mask}, left). This experiment supports the relationship between frequency and gap in Section~\ref{sec:forking-factors} and provides a simple way to mitigate forking in the tested setting.
+ 
+ \paragraph{Freezing the tables}
+ We train both $n$-gram tables normally during the first epoch, then freeze their parameters while continuing to update the backbone. The learned table contents and context-to-row mapping remain fixed throughout subsequent replay. A pronounced training--validation gap still develops after the tables are frozen (Figure~\ref{fig:table-freeze}, right). Thus, once the tables have learned context representations, other parts of the model can fit to the table which will produce forking, and freezing the tables alone does not prevent it.
+diff --git a/sections/04_mechanism.tex b/sections/04_mechanism.tex
+index ed51d9f..6780430 100644
+--- a/sections/04_mechanism.tex
++++ b/sections/04_mechanism.tex
+@@ -3,7 +3,7 @@
+ 
+ \subsection{Gap Decomposition and Frequency Scaling}
+ \label{sec:coverage}
+-Since replay reinforces seen continuations but provides no direct evidence for unseen ones, we attribute the validation--training gap mainly to novel-continuation events and test this empirically. Let $f_i$ denote the number of continuations unseen after context $c_i$ in the fixed training corpus and $g_{i,j}$ their effective gap contribution factor at epoch $j$. One can obtain the leading approximation to the gap:
++Since replay reinforces seen continuations but provides no direct evidence for unseen ones, we attribute the validation--training gap mainly to novel-continuation events and test this empirically. Let $f_i$ denote the number of continuations unseen after context $c_i$ in the fixed training corpus and $g_{i,j}$ their effective gap contribution factor at epoch $j$. In words, the gap at a context is proportional to the fraction of its continuation mass that training never covers, times a per-epoch damage factor:
+ \begin{equation}
+     \operatorname{gap}(i,j)
+     \approx
+@@ -19,14 +19,7 @@ Averaging these estimates over contexts with the same training count $F$ yields
+ =\frac{1}{n(F)}\sum_{i:F_i=F}N_{1,i}
+ =\frac{N_1(F)}{\,n(F)},
+ \end{equation}
+-where $n(F)=\#\{i:F_i=F\}$ and $N_1(F)=\sum_{i:F_i=F}N_{1,i}$ is their total singleton count. Experimental measurements on natural language data indicate that $\hat f(F)$ follows the empirical scaling $\hat f(F)= C F^{1-\alpha}$, with $C=0.981$, $\alpha\approx 0.340$ for bigram contexts and $C=0.991$, $\alpha\approx 0.383$ for trigram contexts, as shown in Figure~\ref{fig:b_t_MF}.
+-
+-\begin{figure}[!htbp]
+-\centering
+-\includegraphics[width=\linewidth]{fig_b_t_MF.pdf}
+-\caption{Frequency scaling of the G--T estimate $\hat f(F)$ for bigram (left) and trigram (right) contexts. Points show estimates averaged over contexts with the same training count $F$; solid lines show full-range power-law fits. Four zero estimates in the trigram panel are included in fitting but omitted from the logarithmic display.}
+-\label{fig:b_t_MF}
+-\end{figure}
++where $n(F)=\#\{i:F_i=F\}$ and $N_1(F)=\sum_{i:F_i=F}N_{1,i}$ is their total singleton count. Experimental measurements on natural language data indicate that $\hat f(F)$ follows the empirical scaling $\hat f(F)= C F^{1-\alpha}$, with $C=0.981$, $\alpha\approx 0.340$ for bigram contexts and $C=0.991$, $\alpha\approx 0.383$ for trigram contexts, over the full frequency range (Appendix Figure~\ref{fig:b_t_MF}).
+ 
+ The probe gap for contexts with the same training count $F$ is approximated by the equally weighted mean of their individual gaps, neglecting differences in context coverage and token weights between the training and validation samples:
+ \begin{equation}
+@@ -35,27 +28,20 @@ The probe gap for contexts with the same training count $F$ is approximated by t
+ \approx CF^{-\alpha}g_j.
+ \label{eq:gap_j}
+ \end{equation}
+-As shown in Figure~\ref{fig:gt-kernel}, G--T estimate in Equation~\ref{eq:gap_j} approximately captures the frequency dependence obtained by directly fitting the measured gaps. For bigram contexts, Equation~\ref{eq:gap_j} gives $\operatorname{gap}_{\mathrm{GT}}(F)\approx 9.090F^{-0.340}$ with $g_j=9.263$, compared with the direct fit $\operatorname{gap}_{\mathrm{fit}}(F)\approx 7.206F^{-0.233}$. For trigram contexts, the corresponding estimate is $\operatorname{gap}_{\mathrm{GT}}(F)\approx 3.996F^{-0.383}$ with $g_j=4.032$, compared with $\operatorname{gap}_{\mathrm{fit}}(F)\approx 3.759F^{-0.318}$.
+-
+-\begin{figure}[!htbp]
+-\centering
+-\includegraphics[width=\linewidth]{fig_v5_good_turing_kernel.pdf}
+-\caption{Frequency-resolved probe gaps for bigram (left) and trigram (right) contexts at step 1000, seed 42. Solid lines show $g_j C F^{-\alpha}$ with $C$ and $\alpha$ fixed by the G--T fit; dashed lines fit both amplitude and exponent directly to the gaps. Both fits use the full frequency range with validation token weights on the original gap scale. Negative gaps are included in fitting but omitted from the  display.}
+-\label{fig:gt-kernel}
+-\end{figure}
++Substituting the measured missing-mass scaling into Equation~\eqref{eq:gap_j} predicts $\operatorname{gap}_j(F)=g_jCF^{-\alpha}$ with $g_j=9.263$ (bigram) and $g_j=4.032$ (trigram), i.e.\ $\operatorname{gap}_{\mathrm{GT}}(F)\approx 9.090F^{-0.340}$ and $3.996F^{-0.383}$. Unbinned direct fits of the measured probe gaps give $7.206F^{-0.233}$ and $3.759F^{-0.318}$ (Appendix Figure~\ref{fig:gt-kernel}): the G--T prediction matches the direct fits in amplitude to within 26\% and in exponent to within 0.10, so missing mass explains most but not all of the frequency dependence. The residual exponent offset is consistent with the validation token weighting and coverage differences neglected in the equal-weight average of Equation~\eqref{eq:gap_j}.
+ 
+ In addition, G--T estimation does not itself imply the power law in Equation~\eqref{eq:gap_j}. A possible source of this scaling is regular variation in the ranked conditional continuation probabilities, for example $p_{(r)}\propto r^{-s}$, where $r$ ranks continuations in decreasing order of conditional probability for a fixed context. This implies $\alpha=1-1/s$ \citep{gnedin2007occupancy}. Appendix~\ref{app:math} states the assumptions and the independent measurements needed to test this explanation.
+ 
+ \subsection{Logit sharpening under replay}
+ The $n$-gram table serves two purposes: (i) it partitions the prediction state space into context-specific subspaces and (ii) it promotes logit sharpening during replay. Here, subspace $\mathcal{C}(c_i)$ consists of all input sequences ending in the $n$-gram context $c_i$, while sharpening concentrates predicted probability on observed continuations. To examine local sharpening, we consider a fixed input in $\mathcal{C}(c_i)$ and analyze the cross-entropy gradient.
+ 
+-Consider context $c_i$ for which continuation $v=C$ is observed in training, while $v=D$ is novel. Let $a_v$ denote the logit of $v$, with probability $p_v=\softmax{a_v}$. For a training target $C$, the cross-entropy loss is $\ell_C=-\log p_C$. An idealized gradient update at epoch $t$ gives
++Consider context $c_i$ for which continuation $v=C$ is observed in training, while $v=D$ is novel. Let $a_v$ denote the logit of $v$, with probability $p_v=\softmax{a_v}$. For a training target $C$, the cross-entropy loss is $\ell_C=-\log p_C$. Under softmax gradient descent on the logits, an idealized update at epoch $t$ gives
+ \begin{equation}
+ a_v^{(t+1)}-a_v^{(t)}=-\eta\frac{\partial\ell_C}{\partial a_v}=-\eta\left(p_v^{(t)}-\mathbf{1}[v=C]\right),\quad (\eta>0).
+ \label{eq:av}
+ \end{equation}
+ 
+-Let $z(t)=p_C^{(t)}/p_D^{(t)}$, Equation~\eqref{eq:av} implies that
++Let $z(t)=p_C^{(t)}/p_D^{(t)}$ be the seen-to-novel probability ratio; Equation~\eqref{eq:av} implies that this ratio grows at every replay epoch:
+ \begin{equation}
+ z(t+1)=z(t)\exp \left[\eta \left(1-p_C^{(t)}+p_D^{(t)} \right) \right]>z(t).
+ \label{eq:zt}
+@@ -76,7 +62,3 @@ Panels (c,d) use bigram contexts.}
+ \label{fig:margin}
+ \end{figure}
+ 
+-%\paragraph{Further predictions and tests.}
+-%Increasing replay with unique data held fixed leaves continuation coverage unchanged. The model therefore predicts that damage will mainly track repeated reinforcement of existing evidence. This can be tested by jointly measuring seen/novel loss changes, margins, and per-epoch gap increments across frequency groups. Freezing the table while retaining a trainable backbone tests whether a previously established representation is sufficient to support further amplification.
+-
+-%Increasing the learning rate changes the strength of each update, but need not be equivalent to adding epochs: table writing and backbone responses can enter nonlinear or saturated regimes. Increasing unique data changes both coverage and replay count. Under the restricted assumptions that all $F(i)$ scale to $kF(i)$, weights remain fixed, and the damage amplitude does not change, the missing-mass factor predicts a reduction by $k^{-\alpha}$. Matching both fixed-step and fixed-epoch comparisons is necessary before applying this prediction to an epoch-length experiment. Quantitative learning-rate, collision, and long-run tests remain open (Appendices~\ref{app:optimization} and~\ref{app:math}).
+\ No newline at end of file
+diff --git a/sections/appendices_b_h.tex b/sections/appendices_b_h.tex
+index f19941d..737a881 100644
+--- a/sections/appendices_b_h.tex
++++ b/sections/appendices_b_h.tex
+@@ -183,6 +183,21 @@ Hash collisions may reduce the independence of local memory signals, but they ca
+ 
+ \pending{Derive the optimizer-dependent margin evolution and align it with measured per-pass damage. Distinguish approximately linear accumulation over a finite window, decreasing increments, and a possible long-run plateau. Specify observations that would falsify the model. The local margin, transfer coefficient, and aggregate gap slope currently serve as constraints, not a closed derivation.}
+ 
++\subsection{Frequency-scaling fits}
++
++\begin{figure}[!htbp]
++\centering
++\includegraphics[width=\linewidth]{fig_b_t_MF.pdf}
++\caption{Frequency scaling of the G--T estimate $\hat f(F)$ for bigram (left) and trigram (right) contexts. Points show estimates averaged over contexts with the same training count $F$; solid lines show full-range power-law fits. Four zero estimates in the trigram panel are included in fitting but omitted from the logarithmic display.}
++\label{fig:b_t_MF}
++\end{figure}
++\begin{figure}[!htbp]
++\centering
++\includegraphics[width=\linewidth]{fig_v5_good_turing_kernel.pdf}
++\caption{Frequency-resolved probe gaps for bigram (left) and trigram (right) contexts at step 1000, seed 42. Solid lines show $g_j C F^{-\alpha}$ with $C$ and $\alpha$ fixed by the G--T fit; dashed lines fit both amplitude and exponent directly to the gaps. Both fits use the full frequency range with validation token weights on the original gap scale. Negative gaps are included in fitting but omitted from the display.}
++\label{fig:gt-kernel}
++\end{figure}
++
+ \section{Experiment and Figure Provenance}
+ \label{app:provenance}
+ 
