@@ -104,12 +104,64 @@ def plot_arm(arm: str) -> tuple[Path, Path]:
     return png, pdf
 
 
+def plot_combined() -> tuple[Path, Path]:
+    apply_style()
+    fig, axes = plt.subplots(2, 6, figsize=(7.25, 3.255), sharex="col", gridspec_kw={"height_ratios": [1.0, 0.86], "hspace": 0.18, "wspace": 0.30})
+    fig.subplots_adjust(left=0.075, right=0.995, top=0.87, bottom=0.14)
+    loaded = {arm: [(label, run_id, color, load(run_id.format(arm=arm))) for label, run_id, color in RUNS] for arm in ("trainable", "frozen")}
+
+    for half, (arm, half_label) in enumerate((("trainable", "table trainable"), ("frozen", "table frozen"))):
+        for sub, (label, run_id, color, data) in enumerate(loaded[arm]):
+            col = half * 3 + sub
+            step = data["step"]
+            ax_loss, ax_gap = axes[0, col], axes[1, col]
+            ax_loss.plot(step, data["train_loss"], color=color, lw=1.35, label="train")
+            ax_loss.plot(step, data["val_loss"], color=color, lw=1.15, ls="--", alpha=0.72, label="validation")
+            ax_gap.plot(step, data["gap"], color=color, lw=1.35, label="gap")
+            ax_gap.axhline(0.0, color="#80868b", lw=0.65, ls=":", zorder=0)
+            for ax in (ax_loss, ax_gap):
+                add_epoch_lines(ax, epoch_len=333, xmax=1665, color="#b8bec4")
+                ax.set_xlim(0, 1665)
+                ax.grid(True, axis="y")
+                ax.tick_params(axis="both", pad=2)
+            ax_loss.set_title(label, fontsize=10.5, pad=5, fontweight="medium")
+            loss_lo, loss_hi = bounds(np.concatenate([data["train_loss"], data["val_loss"]]), "loss")
+            if label in LOSS_UPPER:
+                loss_hi = LOSS_UPPER[label]
+            ax_loss.set_ylim(loss_lo, loss_hi)
+            ax_gap.set_ylim(*bounds(data["gap"], "gap"))
+            ax_loss.set_xticklabels([])
+            ax_gap.set_xticks([0, 333, 666, 999, 1332, 1665])
+            ax_gap.set_xticklabels(["0", "1", "2", "3", "4", "5"])
+            ax_gap.tick_params(axis="x", labelsize=8)
+            for spine in ("top", "right"):
+                ax_loss.spines[spine].set_visible(False)
+                ax_gap.spines[spine].set_visible(False)
+        fig.text(0.305 if half == 0 else 0.765, 0.945, half_label, ha="center", fontsize=10.5, fontweight="medium")
+
+    axes[0, 0].set_ylabel("loss (nats)", labelpad=3)
+    axes[1, 0].set_ylabel("gap (nats)", labelpad=3)
+    axes[1, 1].set_xlabel("replay epoch", labelpad=5)
+    axes[1, 4].set_xlabel("replay epoch", labelpad=5)
+    png = OUT / "fig_sft_combined_paper.png"
+    pdf = OUT / "fig_sft_combined_paper.pdf"
+    svg = OUT / "fig_sft_combined_paper.svg"
+    fig.savefig(png, dpi=300, bbox_inches="tight")
+    fig.savefig(pdf, bbox_inches="tight")
+    fig.savefig(svg, bbox_inches="tight")
+    plt.close(fig)
+    return png, pdf
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     for arm in ("trainable", "frozen"):
         png, pdf = plot_arm(arm)
         print(png)
         print(pdf)
+    png, pdf = plot_combined()
+    print(png)
+    print(pdf)
 
 
 if __name__ == "__main__":
