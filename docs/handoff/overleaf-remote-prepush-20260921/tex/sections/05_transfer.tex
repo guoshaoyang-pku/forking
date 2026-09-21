@@ -1,0 +1,24 @@
+\section{Forking in Post-Training}
+\label{sec:transfer}
+
+Production pretraining rarely replays data: corpora are large enough that each example is seen once, and Section~\ref{sec:forking-factors} accordingly shows the gap shrinking as the training corpus grows. Post-training inverts both conditions. Supervised fine-tuning often replays small, expensive corpora for several epochs, and reinforcement-learning methods such as GRPO and PPO revisit the same prompts across rollout groups and optimization epochs. This section tests whether forking reappears under exactly these conditions.
+
+\paragraph{Continued training on small replayed corpora.}
+We start from the low-gap $20\times$-corpus trigram checkpoint (gap 0.214 at step 20{,}220), reset both optimizers with a fresh 100-step warmup, and replay three 333-batch corpora for five epochs: a same-distribution continuation of the pretraining corpus (ID), Magicoder (code), and OpenR1-Math (math). Each corpus is run with the standard trainable trigram table and with the table frozen while the backbone remains trainable, which is the common production choice. With a trainable table the gap reopens on every source: endpoint gaps are 2.463 (ID), 1.012 (Magicoder), and 0.726 (OpenR1) at seed 42 (Figure~\ref{fig:sft}). Freezing the table substantially reduces but does not remove the effect: validation loss still ends 11\% (ID) and 16\% (Magicoder) above training loss, and 8\% on OpenR1. The full protocol and endpoint table are in Appendix~\ref{app:sft}.
+
+\paragraph{Verifier-selected data as an RL proxy.}
+Verifier-filtered policy optimization concentrates training on accepted answers and repeats each prompt many times. As a static proxy for this regime (RFT or REINFORCE++-style data reuse, not on-policy RL), we replay RLVR-MATH from the Tulu 3 release~\citep{lambert2024tulu3} with the reference answer appended once; each prompt recurs about 8.7 times per epoch, comparable to the per-prompt repetition of group-based sampling. The effect is stronger here than on the SFT corpora: endpoint gaps are 0.612 (trainable) and 0.502 (frozen), so even the frozen-table residual exceeds every SFT source (Figure~\ref{fig:rlvr-math}).
+
+Taken together, any post-training stage that replays a narrow corpus can reopen forking in a checkpoint that pretraining left nearly gap-free, and freezing the local memory mitigates but does not prevent it. Forking is therefore a failure mode that replay-heavy post-training pipelines must monitor, not an artifact of our minimal pretraining setting.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{fig_sft_combined.pdf}
+\caption{Continued-pretraining stress test: trainable trigram table (left), frozen table (right).}
+\label{fig:sft}
+\end{figure}
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.7\linewidth]{fig_rlvr_math.pdf}
+\caption{Static RLVR-like proxy on RLVR-MATH.}
+\label{fig:rlvr-math}
+\end{figure}

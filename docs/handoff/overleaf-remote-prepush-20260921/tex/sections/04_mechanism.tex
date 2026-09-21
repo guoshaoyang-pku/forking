@@ -1,0 +1,78 @@
+\section{A Minimal Mechanistic Account of Forking}
+\label{sec:mechanism}
+
+\subsection{Gap Decomposition and Frequency Scaling}
+\label{sec:coverage}
+Since replay reinforces seen continuations but provides no direct evidence for unseen ones, we attribute the validation--training gap mainly to novel-continuation events and test this empirically. Let $f_i$ denote the number of continuations unseen after context $c_i$ in the fixed training corpus and $g_{i,j}$ their effective gap contribution factor at epoch $j$. One can obtain the leading approximation to the gap:
+\begin{equation}
+    \operatorname{gap}(i,j)
+    \approx
+    \frac{f_i}{F_{i}}\,g_{i,j}.
+    \label{eq:novel-contribution}
+\end{equation}
+
+Motivated by the shared absence of training examples for novel continuations within their respective contexts, we approximate $g_{i,j}$ at epoch $j$ by a common $g_j$, treating context-specific differences as secondary. To estimate the probability mass of unobserved continuation types after context $c_i$, we adopt the Good--Turing (G--T) missing-mass estimation \citep{good1953population, gale1995good}, which is given by $\hat f_i=N_{1,i}$, where $N_{1,i}=\#\{y:n_i(y)=1\}$ counts continuation types observed exactly once, $y$ denotes a continuation token, and $n_i(y)$ its count after $c_i$. All counts refer to a single epoch through the fixed training corpus.
+
+Averaging these estimates over contexts with the same training count $F$ yields
+\begin{equation}
+\hat f(F)
+=\frac{1}{n(F)}\sum_{i:F_i=F}N_{1,i}
+=\frac{N_1(F)}{\,n(F)},
+\end{equation}
+where $n(F)=\#\{i:F_i=F\}$ and $N_1(F)=\sum_{i:F_i=F}N_{1,i}$ is their total singleton count. Experimental measurements on natural language data indicate that $\hat f(F)$ follows the empirical scaling $\hat f(F)= C F^{1-\alpha}$, with $C=0.981$, $\alpha\approx 0.340$ for bigram contexts and $C=0.991$, $\alpha\approx 0.383$ for trigram contexts, as shown in Figure~\ref{fig:b_t_MF}.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{fig_b_t_MF.pdf}
+\caption{Frequency scaling of the G--T estimate $\hat f(F)$ for bigram (left) and trigram (right) contexts. Points show estimates averaged over contexts with the same training count $F$; solid lines show full-range power-law fits. Four zero estimates in the trigram panel are included in fitting but omitted from the logarithmic display.}
+\label{fig:b_t_MF}
+\end{figure}
+
+The probe gap for contexts with the same training count $F$ is approximated by the equally weighted mean of their individual gaps, neglecting differences in context coverage and token weights between the training and validation samples:
+\begin{equation}
+\operatorname{gap}_j(F)
+\approx\frac{1}{n(F)}\sum_{i:F_i=F}\operatorname{gap}(i,j)
+\approx CF^{-\alpha}g_j.
+\label{eq:gap_j}
+\end{equation}
+As shown in Figure~\ref{fig:gt-kernel}, G--T estimate in Equation~\ref{eq:gap_j} approximately captures the frequency dependence obtained by directly fitting the measured gaps. For bigram contexts, Equation~\ref{eq:gap_j} gives $\operatorname{gap}_{\mathrm{GT}}(F)\approx 9.090F^{-0.340}$ with $g_j=9.263$, compared with the direct fit $\operatorname{gap}_{\mathrm{fit}}(F)\approx 7.206F^{-0.233}$. For trigram contexts, the corresponding estimate is $\operatorname{gap}_{\mathrm{GT}}(F)\approx 3.996F^{-0.383}$ with $g_j=4.032$, compared with $\operatorname{gap}_{\mathrm{fit}}(F)\approx 3.759F^{-0.318}$.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{fig_v5_good_turing_kernel.pdf}
+\caption{Frequency-resolved probe gaps for bigram (left) and trigram (right) contexts at step 1000, seed 42. Solid lines show $g_j C F^{-\alpha}$ with $C$ and $\alpha$ fixed by the G--T fit; dashed lines fit both amplitude and exponent directly to the gaps. Both fits use the full frequency range with validation token weights on the original gap scale. Negative gaps are included in fitting but omitted from the  display.}
+\label{fig:gt-kernel}
+\end{figure}
+
+In addition, G--T estimation does not itself imply the power law in Equation~\eqref{eq:gap_j}. A possible source of this scaling is regular variation in the ranked conditional continuation probabilities, for example $p_{(r)}\propto r^{-s}$, where $r$ ranks continuations in decreasing order of conditional probability for a fixed context. This implies $\alpha=1-1/s$ \citep{gnedin2007occupancy}. Appendix~\ref{app:math} states the assumptions and the independent measurements needed to test this explanation.
+
+\subsection{Logit sharpening under replay}
+The $n$-gram table serves two purposes: (i) it partitions the prediction state space into context-specific subspaces and (ii) it promotes logit sharpening during replay. Here, subspace $\mathcal{C}(c_i)$ consists of all input sequences ending in the $n$-gram context $c_i$, while sharpening concentrates predicted probability on observed continuations. To examine local sharpening, we consider a fixed input in $\mathcal{C}(c_i)$ and analyze the cross-entropy gradient.
+
+Consider context $c_i$ for which continuation $v=C$ is observed in training, while $v=D$ is novel. Let $a_v$ denote the logit of $v$, with probability $p_v=\softmax{a_v}$. For a training target $C$, the cross-entropy loss is $\ell_C=-\log p_C$. An idealized gradient update at epoch $t$ gives
+\begin{equation}
+a_v^{(t+1)}-a_v^{(t)}=-\eta\frac{\partial\ell_C}{\partial a_v}=-\eta\left(p_v^{(t)}-\mathbf{1}[v=C]\right),\quad (\eta>0).
+\label{eq:av}
+\end{equation}
+
+Let $z(t)=p_C^{(t)}/p_D^{(t)}$, Equation~\eqref{eq:av} implies that
+\begin{equation}
+z(t+1)=z(t)\exp \left[\eta \left(1-p_C^{(t)}+p_D^{(t)} \right) \right]>z(t).
+\label{eq:zt}
+\end{equation}
+This increasing probability ratio reflects sharpening in favor of the observed continuation $C$ relative to the novel continuation $D$.
+
+%During replay, table directions continue to change, while logit margins increasingly favor dominant training continuations over novel ones (Figure~\ref{fig:margin}). Novel continuations incur greater excess validation loss than seen continuations relative to the no-table baseline. Freezing the backbone after epoch 1 reduces subsequent margin growth, supporting a role for backbone updates in replay-dependent sharpening.
+
+%\begin{figure}[!htbp]
+%\centering
+%\includegraphics[width=\linewidth]{fig_v5_table_cosine_and_margin.png}
+%\caption{Table and margin dynamics during replay (seed 42).(a) Table-row cosine similarity to epoch 1.(b) Relative table updates compared with a scale-only reference.(c) Excess validation loss relative to the no-table baseline for seen and novel continuations.(d) Mean logit margin between the dominant training continuation and the novel target, with and without backbone freezing after epoch 1.
+%Panels (c,d) use bigram contexts.}
+%\label{fig:margin}
+%\end{figure}
+
+%\paragraph{Further predictions and tests.}
+%Increasing replay with unique data held fixed leaves continuation coverage unchanged. The model therefore predicts that damage will mainly track repeated reinforcement of existing evidence. This can be tested by jointly measuring seen/novel loss changes, margins, and per-epoch gap increments across frequency groups. Freezing the table while retaining a trainable backbone tests whether a previously established representation is sufficient to support further amplification.
+
+%Increasing the learning rate changes the strength of each update, but need not be equivalent to adding epochs: table writing and backbone responses can enter nonlinear or saturated regimes. Increasing unique data changes both coverage and replay count. Under the restricted assumptions that all $F(i)$ scale to $kF(i)$, weights remain fixed, and the damage amplitude does not change, the missing-mass factor predicts a reduction by $k^{-\alpha}$. Matching both fixed-step and fixed-epoch comparisons is necessary before applying this prediction to an epoch-length experiment. Quantitative learning-rate, collision, and long-run tests remain open (Appendices~\ref{app:optimization} and~\ref{app:math}).

@@ -1,0 +1,38 @@
+% Root document — kept identical to paper.tex so either compiles on Overleaf.
+\documentclass{article}
+\usepackage{iclr2027_conference,times}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,booktabs,array,graphicx,xcolor,microtype}
+\usepackage{hyperref,url}
+\usepackage[section,below]{placeins}
+\hypersetup{colorlinks=true,linkcolor=blue!45!black,citecolor=blue!45!black,urlcolor=blue!45!black}
+\graphicspath{{figures/}}
+\newcommand{\pending}[1]{\begin{quote}\small\color{black!65}\textbf{Draft note.} #1\end{quote}}
+\newcommand{\figpending}[2]{\begin{figure}[!htbp]\centering\fbox{\parbox{0.9\linewidth}{\small\textbf{Figure pending.} #1}}\caption{#2}\end{figure}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\softmax}{\operatorname{softmax}}
+\newcommand{\gap}{\operatorname{gap}}
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\title{Forking: Over-Encoding Causes\\Over-Memorization Under Data Replay}
+\author{Anonymous Authors}
+% English migration of Feishu v2, revision 2633 (2026-09-16).
+% Do not enable camera-ready mode.
+\begin{document}
+\maketitle
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_empirical}
+\input{sections/04_mechanism}
+\input{sections/05_transfer}
+\input{sections/06_discussion}
+\bibliography{references}
+\bibliographystyle{iclr2027_conference}
+\clearpage
+\appendix
+\input{sections/appendix_a}
+\input{sections/appendices_b_h}
+\end{document}

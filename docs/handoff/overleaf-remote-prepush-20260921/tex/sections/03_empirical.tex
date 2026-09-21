@@ -1,0 +1,104 @@
+\section{Forking and Its Empirical Structure}
+\label{sec:empirical}
+
+\subsection{Minimal setting}
+\label{sec:setting}
+
+We use a NanoGPT backbone with 8 layers, 6 attention heads, a hidden dimension of 768, a vocabulary of 8192 tokens, and a sequence length of 2048. We set separate lookup table for bigram and trigram, and we compare three injection routes: input, attention value ($v$), and attention output ($y$) (illustrated in Figure~\ref{fig:injection-routes}), together with a no-gram baseline. The input route is the default unless otherwise stated. Detailed definitions of the three routes are deferred to Appendix~\ref{app:setting}.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.8\linewidth]{fig02_ngram_injection_routes.png}
+\caption{
+Three $n$-gram injection routes.
+Retrieved embeddings are added to token representations before attention (input), to the value vectors used by attention ($v$), or to the attention output before the MLP ($y$). Each experimental configuration uses one route; the no-gram baseline removes the $n$-gram branches.
+}
+\label{fig:injection-routes}
+\end{figure}
+
+The backbone uses AdamW with coefficients $(0.8,0.95)$ and a learning rate of $6\times10^{-4}$. Table parameters use RMSProp with first-moment coefficient zero, second-moment decay $0.99$, and a learning rate of $0.0768$, or $128$ times the backbone learning rate. Learning rates are warmed up for 100 steps and then held constant. One epoch over the fixed single-shard training set takes approximately 337 steps. Unless otherwise stated, runs use seed 42. Appendix~\ref{app:setting} provides numerical precision and implementation details.
+
+Training loss ($L_{\mathrm{tr}}$) is the mean next-token cross-entropy on the current training batch, computed before the parameter update. Validation loss ($L_{\mathrm{va}}$) is the mean next-token cross-entropy on fixed held-out validation batches, evaluated after the update. At each evaluation step, we define the online gap as $G=L_{\mathrm{va}}-L_{\mathrm{tr}}$.
+
+\subsection{Unique features of the phenomenon}
+
+Figure~\ref{fig:injection-curves} compares our four experiments. All three n-gram configurations show pronounced forking in this setting. 
+
+Forking is characterized by the following pattern: during the first epoch, the training and validation loss curves remain relatively close; once the same text is replayed, training loss continues to decrease without a corresponding improvement in validation loss, and the validation--training gap keeps widening. A key feature that distinguishes this phenomenon from ordinary overfitting is that the gap widens mainly at the beginning of each replay epoch, primarily through a rapid decrease in training loss, indicating strong overfitting. The degree of overfitting increases in a staircase pattern over successive epochs, which links the loss dynamics to the replay schedule. The phenomenon is not specific to this minimal architecture: a 12-layer DeepSeek-style model with multi-layer Engram input over-encoding reproduces forking and responds to low-frequency read masking in the same way (Appendix~\ref{app:deepseek}).
+
+\subsection{Empirical dynamics laws}
+\label{sec:forking-factors}
+
+All experiments below use input injection, seed 42, and a table learning rate $128$ times the backbone learning rate when a table is enabled. For loss, the frequency analysis uses fixed probe loss for both training and validation, while the remaining experiments use online training loss and a fixed validation probe.
+
+\paragraph{Context frequency.}
+A finite corpus does not fully represent the continuation distribution of each context. For example, a context whose population distribution assigns equal probability to $C$ and $D$ may appear three times with $C$ and once with $D$ in training. Fitting these observations can lead a model to underpredict $D$ on independent data.
+
+We enable both bigram and trigram tables, each with $2^{20}$ rows, and measure context-matched fixed-probe gaps at step 1000. Let $F(i)$ denote the count of context $i$ in the unrepeated training corpus. The same run is analyzed using bigram and trigram context groupings. We display 12 geometric frequency bins and fit seven token-mass-pooled bins with equal weight across fitted bins. Over the fitted range, Figure~\ref{fig:frequency} shows
+\begin{equation}
+G_{\mathrm{bigram}}(F)\propto F^{-0.253},\qquad G_{\mathrm{trigram}}(F)\propto F^{-0.318}.
+\label{eq:empirical-power}
+\end{equation}
+Low-frequency contexts have larger average gaps, and the explanation of the power law relationship refers to section~\ref{sec:coverage}.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{fig03_frequency.pdf}
+\caption{Gap versus context frequency for (a) bigrams and (b) trigrams. Gray points show exact-frequency observations; colored markers show pooled means, with bars indicating within-bin standard deviations. Dashed lines show power-law fits.}
+\label{fig:frequency}
+\end{figure}
+
+\paragraph{Table capacity.}
+We vary the number of table rows $R$ in separate bigram-only and trigram-only models, holding the single-shard training corpus fixed and measuring the online gap at step 1000. Above a lower limit, the gap generally increases with table capacity, and growth slows toward the upper end of the measured range, particularly for bigrams (Figure~\ref{fig:capacity}). We describe this trend using the empirical fit
+\begin{equation}
+G(R)=0.02+AR^{\beta},
+\label{eq:capacity-scaling}
+\end{equation}
+where $0.02$ is the approximate no-gram reference used in the original analysis. We fit $\log[G(R)-0.02]$ against $\log R$, including all tested 25 bigram points and 24 trigram points. The fitted exponents are $\beta=0.437$ and $0.745$, with log-space $R^2=0.9715$ and $0.9893$, respectively. 
+
+\paragraph{Training corpus size.}
+We use a trigram-only model with $2^{20}$ table rows and vary the training corpus size $D$ across 20 conditions from approximately $0.125D_1$ to $20D_1$. Here, $D_1$ is the single-shard training budget of the minimal setting: 337 batches, or 49,692,672 prediction tokens. Each run completes three epochs, with the same four-batch validation probe.
+
+Increasing the corpus can introduce new contexts and continuations and increase the counts of existing contexts; at a fixed epoch count, it also increases the number of optimizer updates. As a result, the gaps at the ends of epochs 2 and 3 generally decrease as the training corpus grows (Figure~\ref{fig:corpus-size}). With validation held fixed, the largest training corpus yields relatively small gaps of 0.13 and 0.22 nats, respectively, at the rightmost points which have 20x training corpus.
+
+% This parenthetical discussion may be moved to Section 4 or the appendix.
+%(Under the approximation that increasing the corpus by a factor $k$ multiplies every context count $F(i)$ by $k$, while context weights and the damage amplitude remain unchanged, the frequency law suggests $G_j(d)\approx g_jd^{-\alpha}$, where $d=D/D_1$. A no-offset least-squares fit in raw-gap space to all 20 epoch-2 endpoints gives $\alpha=0.341$ and $R^2=0.925$. Its proximity to the trigram exponent $0.318$ in Figure~\ref{fig:frequency} provides limited consistency evidence. The approximation does not capture changes in context composition, continuation coverage, or optimization dynamics. Residual deviations and sensitivity to the fitting range therefore limit this comparison to a descriptive check.)
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{fig04_fig05_capacity_corpus.pdf}
+\caption{(Left) Gap versus table capacity. Markers show observations; dashed lines show fits within the specified capacity intervals.}
+\label{fig:capacity}
+\caption{(Right) Gap versus normalized training corpus size. Green squares and purple triangles show epoch-2 and epoch-3 endpoints; line segments connect adjacent observations.}
+\label{fig:corpus-size}
+\end{figure}
+
+\paragraph{Epoch count.}
+We train trigram-only and both-table models for 20 epochs, together with a no-gram control, using the fixed single-shard training corpus with approximately 337 updates per epoch. Each enabled table has $2^{20}$ rows. The right panel of Figure~\ref{fig:staircase} shows epoch-end gaps from the 20-epoch runs. The gap increases as replay count grows. Separate 2000-step runs in the left panel compare the both-table model with the no-gram control using dense gap measurements, which show gap growth within replayed epochs with varying increments.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{fig06_replay.pdf}
+\caption{(Left) Online gap versus optimizer step; vertical dotted lines mark replay boundaries. This panel shows the growth pattern of gap within an epoch. (Right) Epoch-end gap versus epoch number.}
+\label{fig:staircase}
+\end{figure}
+
+\subsection{Intervention experiments}
+\label{sec:interventions}
+
+We study two interventions in the both-table model with input injection. Both use the fixed single-shard training corpus and run for 1000 updates, with interventions starting at step 338, after the first epoch. We measure the online gap using the convention in Section~\ref{sec:setting}. The two panels use independent runs, each with its own unmodified control.
+
+\paragraph{Low-frequency retrieval masking}
+We count context frequencies in the unrepeated training corpus and mask the $n$-gram contribution whenever $F\leq\tau$, applying the rule separately to the bigram and trigram branches with thresholds $\tau\in\{1,2,4,8,200\}$. The retrieved embedding is set to zero during both training and evaluation, while the corresponding token remains in the training loss. Compared with unmasked training, suppressing low-frequency memory access reduces the gap (Figure~\ref{fig:low-mask}, left). This experiment supports the the relationship of frequency and gap in ~\ref{sec:forking-factors} and provides a simple way to mitigate forking in the tested setting.
+
+\paragraph{Freezing the tables}
+We train both $n$-gram tables normally during the first epoch, then freeze their parameters while continuing to update the backbone. The learned table contents and context-to-row mapping remain fixed throughout subsequent replay. A pronounced training--validation gap still develops after the tables are frozen (Figure~\ref{fig:table-freeze}, right). Thus, once the tables have learned context representations, other parts of the model can fit to the table which will produce forking, and freezing the tables alone does not prevent it.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{fig07_interventions.pdf}
+\caption{(Left) Online gap under low-frequency retrieval masking. Vertical dotted lines mark replay boundaries; line segments connect raw logged values.}
+\label{fig:low-mask}
+\caption{(Right) Online gap with trainable or frozen tables. Vertical dotted lines mark replay boundaries; line segments connect raw logged values.}
+\label{fig:table-freeze}
+\end{figure}
