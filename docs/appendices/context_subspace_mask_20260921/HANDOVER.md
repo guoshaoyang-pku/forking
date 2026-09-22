@@ -1,0 +1,108 @@
+# HANDOVER · context loss masking 实验（experiment-log §62，论文 fig7 / fig7*）
+
+> 交接对象：后续维护 fig7/fig7\* 口径与正文的人。**论文展示口径 = fixed（C_A），online 仅作对照。**
+> 登记簿：`docs/experiment-log.md` §62（含 2026-09-22 晚口径修正段，必读）。
+
+## 1. 实验问题
+
+随机选 2% 的 trigram context 集合 A（B = 等量 disjoint 对照集），从某 epoch 边界起把 A 位置
+的 per-token loss 置零（renormalize 到保留位置），观测 A 的 gap contribution 是否继续增长。
+结论：**mask 后 A 的 gap 贡献跨 epoch 不变（甚至缓降）；正常训练的 A/B 持续上升** ⇒
+gap 增长需要子空间内部对 seen continuation 的 sharpening 更新；纯 backbone 漂移使
+train/val 两侧同步退化，不产生 gap。
+
+## 2. run 矩阵（全部 seed 42，shard-1 fixed replay，均已完成）
+
+| 批次 | run_id 模式 | 步数 | 说明 |
+|---|---|---|---|
+| type-mode 12 runs | `s1v5_128_marm_{nogram,bigram,trigram,both}_ctxmask_{ctrl,e1,e2}_fixed` | 1011 / 674 / 1011 | A/B 按 trigram **类型** 2% |
+| type-mode 4-epoch 延展 | `s1v5_128_marm_both_ctxmask_{ctrl,e1,e2}_l4_fixed` | 1348 | **fig7 数据源** |
+| row-mode 5 runs | `s1v5_128_marm_both_rowmask_{ctrl,e1,e2}_fixed`、`s1v5_128_marm_nogram_rowmask_{e1,e2}_fixed` | 同上 | A/B 按表**行** 2%（hash 碰撞判别） |
+
+`e1` = mask 从 epoch 2 起点（step 338）生效；`e2` = 从 epoch 3 起点（step 675）生效；
+`ctrl` = 不 mask（intervention=none）但同样记录 A/B。
+
+集群位置：`ophis-gpu:/data1/guoshaoyang/ngram-gap-lab/data/runs_scaling/<run_id>_fixed/`
+（每个含 `context_gap.jsonl`（每 10 step 一条）、`train_log.jsonl`、`epoch*_model.pt`、`final_model.pt`、`summary.json`）。
+本地证据副本：`docs/appendices/context_subspace_mask_20260921/runs_scaling/`（只有 context_gap.jsonl）、
+`context_kl/`（KL 评测 JSON）。
+
+## 3. setting（极简契约，差异加粗）
+
+vanilla nanoGPT 8L·6H·768D，vocab 8192，seq 2048，learned PE，LN，tied emb。
+bigram+trigram input 注入（nogram/bigram/trigram 臂用 `--enable_bigram/trigram 0` 关闭），
+clean 单表 R=2^20 两表，表 RMSProp `(0.0,0.99)`、LR 128×（0.0768），
+backbone AdamW `(0.8,0.95)` wd 0.1 lr 6e-4，`warmup_constant(100)`。
+train shard 1，val shards `2..10,6542`（不重叠），device batch 72，total batch 147,456 tok，
+bf16 不 compile，seed 42。**差异项：`--epoch_batches 337 --fixed_train_probe 4 --context_eval_ab 1`（ctrl）
+或 `--intervention random_context_loss_mask --intervention_epoch {1,2} --save_epoch_checkpoints --save_final_model`（mask runs）；
+row-mode 另加 `--context_set_mode row`。**
+
+A/B 选取（两次运行确定性一致）：
+- type-mode：`freq_index.npz` 的 19,027,841 个 distinct trigram 类型，`np.random.default_rng(42)`
+  permutation，前 2% = A（380,557 类型），次 2% = B。membership 用 sorted-keys searchsorted。
+- row-mode：1,048,576 个 trigram 表行，同样 rng(42) 取 A/B 各 20,972 行；membership 直接用
+  clean-table 哈希 `(prev2·p0 ^ prev·p1 ^ idx·p2) mod R`（`_BASE_TRIGRAM_PRIMES[0]`），
+  与双表臂真实表哈希逐位一致（CPU smoke 验证），nogram 臂可选出相同行集。
+
+干预语义：boundary step（`epoch_batches × intervention_epoch`）起，`F.cross_entropy(reduction="none")`
+后把 A 位置置零并对保留位置取均值（`_context_loss_keep_mask`）；表参数与 optimizer state 不动。
+
+## 4. 代码版本（权威源 = 本地 lab repo 已 commit 版本）
+
+- 干预 + A/B + 评测：`code/train.py`，commits `b87bb20`、`6dede12`（type-mode），
+  `db1ac75`（row-mode），`59372b67…`（online 累积器 gate 修：`_context_set_memb is not None`），
+  `a4ed6ae`（diag setup 块归位）。运行用 md5 `507a60b95c52f9034f782cffb96d5265`（+gate fix 后版本）。
+- 启动器：`code/cluster/run_ctxmask_ab.sh`（type-mode 12）、`run_ctxmask_ab_long.sh`（l4 延展）、
+  `run_rowmask_ab.sh`（row-mode 5）。
+- KL 工具：`code/tools/eval_context_kl.py`（全 vocab 精确 KL，fixed val batches，
+  `--context_set_mode {type,row}`，`--pair name=run@ckpt,run@ckpt`）。
+- 绘图：`docs/plot_scripts/plot_paper_fig7_ctxmask_real.py`（见 §6）。
+
+## 5. 测量口径（三种，论文用第一种）
+
+1. **fixed（C_A，canonical，论文口径）**：`C_S = Σ_{i ∈ S ∩ (probe∩val)} q_i [l_val,i − l_tr,i]`，
+   q_i = context 在 fixed-val 的位置占比；tr 侧为 4 个 **fixed** train probe batches、val 侧为 4 个
+   fixed val batches，当前模型逐 10 step 重评。无位置伪影；`n_join_ctx_A = 1072`
+   （probe∩val 共同出现的 A context，偏向高频子集，但**跨 step、跨 run 完全同一子集**，比较有效）。
+   ctrl 的阶梯（边界跳升 = 表行重拟合压低 tr_probe，epoch 内衰减 = backbone 漂移）是真实动力学。
+2. **online（Cpos_A，对照）**：`val_share × (val_mean − tr_online_mean)`，tr_online 为当前 batch
+   A 位置的 online loss。**有 shard 位置伪影**：epoch 初窗口落在早 shard 位置（无 backbone
+   recency，tr 偏高 2.28→3.95），epoch 末反之 → 锯齿 + 边界骤降。只能「epoch 末对 epoch 末」读，
+   或用 epoch 平均口径（剔除边界短窗 `tr_online_n_A < 20000`）。
+3. **KL（fig7\*）**：`KL(p_boundary ‖ p_end)` 逐 fixed-val 位置全 vocab 精确计算，按 A/B/other 分组。
+   masked epoch 的 A-KL：both 0.502（e2）/0.575（e1）vs 正常 epoch 0.540/0.692；nogram 0.657/0.907
+   vs 0.744/0.904。masked 子空间分布仍漂移（非"几乎没有"），但双表 < nogram；该漂移同步损害
+   train/val 两侧，不进 gap。
+
+关键数字（fixed 口径，l4 runs）：ctrl C_A 峰值 0.002→0.006→0.0085 逐 epoch 抬升；
+e1 mask 后 C_A ≈ 0.0003 持平三个 epoch；e2 mask 后 C_A ≈ 0.0015 持平两个 epoch。
+（online epoch 平均口径：e1 0.0094→0.0076→0.0059、e2 0.0277→0.0241，ctrl_A 0.0080→0.0263→0.0401。）
+
+## 6. 图与复现
+
+```
+python3 docs/plot_scripts/plot_paper_fig7_ctxmask_real.py \
+    --runs_root docs/appendices/context_subspace_mask_20260921/runs_scaling --infix ctxmask   # 全部 fig7 变体
+python3 docs/plot_scripts/plot_paper_fig7_ctxmask_real.py \
+    --kl_json docs/appendices/context_subspace_mask_20260921/context_kl/context_kl_row.json \
+    --arms nogram,both --infix rowmask                                                        # fig7*
+```
+
+产物（`docs/figs/paper/`）：
+- **`fig07_context_mask_fixed_perstep.{pdf,png}` ← 论文用（fixed 口径逐 step，4 epochs）**
+- `fig07_context_mask_perstep.{pdf,png}`：fixed + online 双面板对照
+- `fig07_context_mask_epochmean.{pdf,png}`：online 口径 epoch 平均（无伪影版）
+- `fig07star_context_kl_rowmask.{pdf,png}`：fig7\*
+- `fig07_context_mask.{pdf,png}`：online 逐 step 原始锯齿版（备查）
+
+## 7. 已知坑（血泪）
+
+1. **DataLoader fork 与父进程 cmdline 相同**——看到"同 cmdline 双进程"先查 PPID / 有无 CUDA
+   context，勿杀子进程（杀后主进程 futex 死锁，trigram_e2 曾因此报废重跑）。
+2. online 累积器 gate 必须是 `_context_set_memb is not None`（row-mode 无 `_context_set_keys`）。
+3. 边界额外 eval 造成 2–5 step 的短累积窗（n≈6k），epoch 平均时须剔除（n<20k）。
+4. C_A 的 joined 子集偏高频 context（probe 只有 4 batches）；跨 run 比较有效，绝对量不代表
+   A 全集的 gap 贡献。
+5. 协作者原图的 epoch 编号是 0-indexed 习惯（"from epoch 1"= 第二遍）；本仓图统一 1-indexed
+   （"masked from epoch 2" = step 338 起）。

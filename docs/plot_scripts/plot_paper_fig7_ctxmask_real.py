@@ -77,6 +77,87 @@ def load_ctx_pref(runs_root: Path, base: str):
     raise SystemExit(f"no context_gap.jsonl for {base}[_l4] under {runs_root}")
 
 
+def _perstep_series(rows, key):
+    xs, ys = [], []
+    for r in rows:
+        v = r.get(key)
+        if v is None or v != v:
+            continue
+        xs.append(r["step"] / EPOCH_STEPS)
+        ys.append(v)
+    return np.array(xs), np.array(ys)
+
+
+def fig7_perstep(runs_root: Path, infix: str = "ctxmask"):
+    """Per-step Fig 7 in both calibers, extended through 4 epochs (l4 runs).
+
+    Top panel (CANONICAL, fixed caliber): C_S = sum over contexts in the
+    fixed-probe ∩ fixed-val join of q_i [l_val,i - l_tr,i].  The probe is a
+    fixed set of 4 train batches, so there is no measurement-position
+    artifact; the ctrl staircase (jump at each boundary when the table rows
+    are re-fit, decay within the epoch from backbone drift) is real
+    dynamics.  Masked A stays flat at its pre-mask level.
+
+    Bottom panel (online caliber): Cpos_S = val_share * (val_mean -
+    tr_online_mean).  Per-step shape carries the shard-position artifact
+    (early-shard positions have no backbone recency -> high tr at epoch
+    starts); read epoch end vs epoch end or use the epoch-mean figure.
+    """
+    ctrl = load_ctx_pref(runs_root, f"s1v5_128_marm_both_{infix}_ctrl")
+    e1 = load_ctx_pref(runs_root, f"s1v5_128_marm_both_{infix}_e1")
+    e2 = load_ctx_pref(runs_root, f"s1v5_128_marm_both_{infix}_e2")
+    max_epoch = max(int(np.ceil(r["step"] / EPOCH_STEPS)) for r in ctrl)
+
+    specs = [  # (rows, fixed_key, online_key, style, label)
+        (ctrl, "C_B", "Cpos_B", dict(color=ORANGE, lw=1.4), "B unmasked"),
+        (ctrl, "C_A", "Cpos_A", dict(color=BLUE, lw=1.0, ls="--"), "A normal"),
+        (e1, "C_A", "Cpos_A", dict(color=BLUE, lw=1.4), "A masked from epoch 2"),
+        (e2, "C_A", "Cpos_A", dict(color="#7b4aa2", lw=1.4), "A masked from epoch 3"),
+    ]
+
+    fig, axes = plt.subplots(2, 1, figsize=(4.4, 4.8), sharex=True,
+                             gridspec_kw=dict(hspace=0.32))
+    for ax, key_idx, title in ((axes[0], 1, "fixed-set caliber (canonical)"),
+                               (axes[1], 2, "online caliber (position artifact; "
+                                            "compare epoch end to epoch end)")):
+        for rows, fkey, okey, st, lab in specs:
+            xs, ys = _perstep_series(rows, fkey if key_idx == 1 else okey)
+            ax.plot(xs, ys, **st, label=lab if key_idx == 1 else None)
+        for b in range(1, max_epoch):
+            ax.axvline(b, color="#888888", lw=0.7, ls=":")
+        ax.set_xlim(0, max_epoch)
+        ax.set_ylabel("gap contribution (nats)")
+        ax.set_title(title, fontsize=8, loc="left", color="#444444")
+    axes[0].legend(loc="upper left", framealpha=0.9, edgecolor="none",
+                   handlelength=1.8, fontsize=7.5)
+    axes[1].set_xticks(range(max_epoch + 1))
+    axes[1].set_xlabel("epoch")
+    fig.tight_layout(pad=0.4)
+    OUT.mkdir(parents=True, exist_ok=True)
+    tag = "" if infix == "ctxmask" else f"_{infix}"
+    fig.savefig(OUT / f"fig07_context_mask_perstep{tag}.pdf")
+    fig.savefig(OUT / f"fig07_context_mask_perstep{tag}.png", dpi=300)
+    print((OUT / f"fig07_context_mask_perstep{tag}.pdf").relative_to(ROOT))
+
+    # standalone canonical fixed-caliber panel (for paper embedding)
+    fig2, ax = plt.subplots(figsize=(4.4, 2.5))
+    for rows, fkey, _okey, st, lab in specs:
+        xs, ys = _perstep_series(rows, fkey)
+        ax.plot(xs, ys, **st, label=lab)
+    for b in range(1, max_epoch):
+        ax.axvline(b, color="#888888", lw=0.7, ls=":")
+    ax.set_xlim(0, max_epoch)
+    ax.set_xticks(range(max_epoch + 1))
+    ax.set_xlabel("epoch")
+    ax.set_ylabel("gap contribution (nats)")
+    ax.legend(loc="upper left", framealpha=0.9, edgecolor="none",
+              handlelength=1.8, fontsize=7.5)
+    fig2.tight_layout(pad=0.4)
+    fig2.savefig(OUT / f"fig07_context_mask_fixed_perstep{tag}.pdf")
+    fig2.savefig(OUT / f"fig07_context_mask_fixed_perstep{tag}.png", dpi=300)
+    print((OUT / f"fig07_context_mask_fixed_perstep{tag}.pdf").relative_to(ROOT))
+
+
 def epoch_means(rows, key_tr, key_val, share_key, n_min=20000):
     """Per-epoch mean of share * (val_mean - tr_online) for one context set.
 
@@ -266,6 +347,7 @@ def main():
     if args.runs_root:
         fig7(args.runs_root, args.infix)
         fig7_epochmean(args.runs_root, args.infix)
+        fig7_perstep(args.runs_root, args.infix)
         fig7_fixed(args.runs_root, args.infix)
     if args.kl_json:
         arms = [a for a in args.arms.split(",") if a]
