@@ -95,6 +95,7 @@ class Config:
     intervention_low_inclusive: bool = False  # mask_low masks f <= threshold (default f < threshold)
     intervention_mask_frac: float = 0.02  # random_context_loss_mask: fraction of distinct trigram context types to exclude from the loss
     context_eval_ab: bool = False  # log per-eval A/B context gap contributions to context_gap.jsonl
+    context_set_mode: str = "type"  # A/B selection space: "type" (distinct trigram types) | "row" (trigram table rows)
     adam_betas: tuple = (0.8, 0.95)
     weight_decay: float = 0.1
     # training
@@ -617,6 +618,27 @@ class NanoGPT(nn.Module):
         so control and masked runs share the same A/B."""
         if not (0.0 < frac < 0.5):
             raise ValueError("context set fraction must be in (0, 0.5)")
+        device = next(self.parameters()).device
+        mode = self.config.context_set_mode
+        if mode == "row":
+            # A/B over trigram table rows: masking by row makes the masked
+            # subspaces private by construction (colliding contexts of a masked
+            # row are masked together). Keys array unused; membership via
+            # _trigram_row_indices.
+            n_rows = int(self.config.trigram_clean_table)
+            n_sel = int(round(frac * n_rows))
+            rng = np.random.default_rng(seed)
+            perm = rng.permutation(n_rows)
+            memb = np.zeros(n_rows, dtype=np.int8)
+            memb[perm[:n_sel]] = 1
+            memb[perm[n_sel:2 * n_sel]] = 2
+            self._context_set_keys = None
+            self._context_set_memb = torch.from_numpy(memb).to(device)
+            self._context_eval_sets = {
+                "branch": "trigram", "mode": "row", "frac": float(frac),
+                "seed": int(seed), "n_types": n_rows, "n_set_types": n_sel,
+            }
+            return self._context_eval_sets
         freq_index._ensure_sorted()
         keys = np.ascontiguousarray(freq_index._trigram_keys_sorted, dtype=np.int64)
         n_types = int(keys.size)
@@ -626,11 +648,10 @@ class NanoGPT(nn.Module):
         memb = np.zeros(n_types, dtype=np.int8)
         memb[perm[:n_sel]] = 1           # A: loss-masked after the intervention
         memb[perm[n_sel:2 * n_sel]] = 2  # B: unmasked peers
-        device = next(self.parameters()).device
         self._context_set_keys = torch.from_numpy(keys).to(device)
         self._context_set_memb = torch.from_numpy(memb).to(device)
         self._context_eval_sets = {
-            "branch": "trigram",
+            "branch": "trigram", "mode": "type",
             "frac": float(frac),
             "seed": int(seed),
             "n_types": n_types,
@@ -643,8 +664,20 @@ class NanoGPT(nn.Module):
         context, keyed exactly like GlobalFrequencyIndex (prev2*V^2+prev*V+cur
         with boundary padding). Positions whose context is absent from the
         index (novel) map to 0. None if sets are not configured."""
-        if self._context_set_keys is None:
+        if self._context_set_memb is None:
             return None
+        if self._context_set_keys is None:  # row mode
+            prev = torch.cat([idx[:, :1], idx[:, :-1]], dim=1)
+            prev2 = torch.cat([idx[:, :2], idx[:, :-2]], dim=1)
+            # Clean-table trigram row hash at the single injection layer
+            # (K=1): (prev2*p0 ^ prev*p1 ^ idx*p2) % R with the base primes.
+            # Computed directly (not via _trigram_row_indices) so arms without
+            # a trigram table (nogram) select the identical rows.
+            p0, p1, p2 = _BASE_TRIGRAM_PRIMES[0][:3]
+            rows = (
+                (prev2.long() * p0) ^ (prev.long() * p1) ^ (idx.long() * p2)
+            ) % int(self.config.trigram_clean_table)
+            return self._context_set_memb[rows]
         prev = torch.cat([idx[:, :1], idx[:, :-1]], dim=1)
         prev2 = torch.cat([idx[:, :2], idx[:, :-2]], dim=1)
         V = self.config.vocab_size
@@ -1706,6 +1739,10 @@ def main():
     parser.add_argument("--context_eval_ab", type=int, default=0,
                         help="1: log per-eval A/B context gap contributions to "
                              "context_gap.jsonl (auto-enabled for random_context_loss_mask)")
+    parser.add_argument("--context_set_mode", choices=["type", "row"], default="type",
+                        help="A/B selection space for random_context_loss_mask: "
+                             "'type' = distinct trigram types (default), "
+                             "'row' = trigram table rows (collision-private subspaces)")
     parser.add_argument("--enable_unigram", type=int, default=0)
     parser.add_argument("--enable_bigram", type=int, default=1)
     parser.add_argument("--enable_trigram", type=int, default=1)
@@ -1784,10 +1821,15 @@ def main():
         parser.error("--cosine_min_lr_mult must be in [0, 1]")
     if args.intervention_freq_threshold < 0:
         parser.error("--intervention_freq_threshold must be non-negative")
-    if args.intervention in {"mask_low_freq", "mask_high_freq", "random_context_loss_mask"} and (
+    if args.intervention in {"mask_low_freq", "mask_high_freq"} and (
         not args.freq_index or not os.path.isfile(args.freq_index)
     ):
         parser.error(f"--intervention {args.intervention} requires an existing --freq_index")
+    if (args.intervention == "random_context_loss_mask"
+            and args.context_set_mode == "type"
+            and (not args.freq_index or not os.path.isfile(args.freq_index))):
+        parser.error("--intervention random_context_loss_mask (type mode) requires "
+                     "an existing --freq_index")
     if args.intervention == "none" and args.intervention_epochs.strip():
         parser.error("--intervention_epochs requires --intervention hash_reseed (or another intervention)")
 
@@ -1835,6 +1877,7 @@ def main():
         intervention_low_inclusive=bool(args.intervention_low_inclusive),
         intervention_mask_frac=args.intervention_mask_frac,
         context_eval_ab=bool(args.context_eval_ab),
+        context_set_mode=args.context_set_mode,
         data_dir=args.data_dir,
         train_shards=[int(x) for x in args.train_shards.split(",") if x.strip()],
         val_shards=[int(x) for x in args.val_shards.split(",") if x.strip()],
@@ -2029,8 +2072,8 @@ def main():
 
     context_gap_log = None
     if cfg.intervention == "random_context_loss_mask" or cfg.context_eval_ab:
-        if freq_index_obj is None:
-            raise SystemExit("context A/B eval requires an existing --freq_index")
+        if freq_index_obj is None and cfg.context_set_mode == "type":
+            raise SystemExit("context A/B eval (type mode) requires an existing --freq_index")
         if not fixed_train_probe:
             raise SystemExit("context A/B eval requires --fixed_train_probe > 0")
         info = model.setup_context_eval_sets(freq_index_obj, cfg.intervention_mask_frac, cfg.seed)
