@@ -2,7 +2,7 @@
 \label{sec:transfer}
 
 Production pretraining rarely replays data: corpora are large enough that each example is seen once, and Section~\ref{sec:forking-factors} accordingly shows the gap shrinking as the training corpus grows. Post-training inverts both conditions. Supervised fine-tuning often replays small, expensive corpora for several epochs, and reinforcement-learning methods such as GRPO and PPO revisit the same prompts across rollout groups and optimization epochs. This section tests whether forking reappears under exactly these conditions.
-\begin{figure}[!t]
+\begin{figure}[!b]
 \centering
 \includegraphics[width=\linewidth]{fig_sft_combined.pdf}
 \caption{Continued-pretraining stress test: trainable trigram table (left), frozen table (right).}

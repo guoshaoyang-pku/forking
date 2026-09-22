@@ -89,69 +89,35 @@ Low-frequency masking and reseeding are mechanism-motivated interventions, but t
 
 \section{Mathematical Derivations and Model Tests}
 \label{app:math}
-\subsection{Conditional continuation tails and missing mass}
-For a context $c_i$ with $F_i=F$, let $y_{i,(r)}$ denote the $r$-th most likely continuation and $p_{i,(r)}$ its true conditional probability. Model the observed continuations $Y_{i,1},\ldots,Y_{i,F}$ as independent draws, with counts $n_{i,(r)}(F)=\#\{k\in\{1,\ldots,F\}:Y_{i,k}=y_{i,(r)}\}$. Let $M_i(F)$ denote the missing mass and $K_i(F)$ the number of observed continuation types. Then one can obtain
+
+\subsection{Conditional continuation tails and the novel-continuation rate}
+For a context $c_i$ with $F_i=F$, let $y_{i,(r)}$ denote the $r$-th most likely continuation and $p_{i,(r)}$ its true conditional probability. Model the observed continuations $Y_{i,1},\ldots,Y_{i,F}$ as independent draws, with counts $n_{i,(r)}(F)=\#\{k\in\{1,\ldots,F\}:Y_{i,k}=y_{i,(r)}\}$. The novel-continuation rate $f_i(F)$ (the Good--Turing missing mass) and its expectation under this sampling model are
 \begin{equation}
-M_i(F)=\sum_r p_{i,(r)}
+f_i(F)=\sum_r p_{i,(r)}
 \mathbf{1}\left[n_{i,(r)}(F)=0\right],
 \quad
-K_i(F)=\sum_r \mathbf{1}\left[n_{i,(r)}(F)>0\right].
-\end{equation}
-Expectations under this sampling model satisfy
-\begin{equation}
-\mathbb{E}[M_i(F)]=\sum_r p_{i,(r)}(1-p_{i,(r)})^F,
-\quad
-\mathbb{E}[K_i(F+1)-K_i(F)]=\mathbb{E}[M_i(F)].
+\mathbb{E}[f_i(F)]=\sum_r p_{i,(r)}(1-p_{i,(r)})^F.
 \end{equation}
 
 Assume a conditional tail $p_{i,(r)}\sim A_i r^{-s}$ with $s>1$. Using $(1-p_{i,(r)})^F\approx e^{-Fp_{i,(r)}}$ gives
 \citep{gnedin2007occupancy}
 \begin{equation}
 \begin{aligned}
-\mathbb{E}[M_i(F)]
+\mathbb{E}[f_i(F)]
 &\sim
 \int_1^\infty A_i r^{-s}e^{-F A_i r^{-s}}\,\mathrm{d}r\\
 &\sim
 \frac{A_i^{1/s}}{s}
 \Gamma\left(1-\frac{1}{s}\right)
-F^{-(1-1/s)}.
+F^{-(1-1/s)}\\
+&\propto F^{-\alpha},
+\quad
+\alpha=1-\frac{1}{s}.
 \end{aligned}
 \label{eq:occupancy}
 \end{equation}
-The corresponding coverage growth is
-\begin{equation}
-\mathbb{E}[K_i(F)]\propto F^\theta,
-\quad
-\theta=\frac{1}{s}.
-\end{equation}
-Hence the missing-mass decay exponent satisfies
-\begin{equation}
-\mathbb{E}[M_i(F)]\propto F^{-\alpha},
-\quad
-\alpha=1-\theta=1-\frac{1}{s}.
-\end{equation}
 
-For the Good--Turing estimate $\widehat M_i(F)=N_{1,i}(F)/F$, since
-\begin{equation}
-\begin{aligned}
-\mathbb{E}[N_{1,i}(F)]
-&=F\sum_r p_{i,(r)}(1-p_{i,(r)})^{F-1}\\
-&=F\,\mathbb{E}[M_i(F-1)],
-\end{aligned}
-\end{equation}
-we obtain
-\begin{equation}
-\mathbb{E}[\widehat M_i(F)]
-=\frac{\mathbb{E}[N_{1,i}(F)]}{F}
-=\mathbb{E}[M_i(F-1)]
-\propto F^{-\alpha}.
-\end{equation}
-
-Extending this exponent to the average over contexts with $F_i=F$ requires a common $s$ and an approximately $F$-independent mean of $A_i^{1/s}$ within each frequency group. Over a shared scaling range, these conditions yield
-\begin{equation}
-\mathbb{E}[\widehat M(F)]\propto F^{-\alpha}.
-\end{equation}
-This provides a conditional explanation of the empirical scaling, not a consequence of Good--Turing estimation alone. Finite vocabulary restricts the power law to an intermediate range; correlated observations and context heterogeneity can further change the effective exponent.
+This provides a conditional explanation of the empirical scaling. Finite vocabulary restricts the power law to an intermediate range, correlated observations and context heterogeneity can further change the effective exponent.
 
 \subsection{Crowding-out within a context subspace}
 \label{app:crowding-derivation}
@@ -161,12 +127,12 @@ Fix a context $c_i$ and call the next-token logits computed from it, $a_v$ for $
 a_v^{(t+1)}-a_v^{(t)}=-\eta\frac{\partial\ell_C}{\partial a_v}=-\eta\left(p_v^{(t)}-\mathbf{1}[v=C]\right),\qquad \eta>0,
 \label{eq:av}
 \end{equation}
-raising $a_C$ by $\eta(1-p_C)$ and lowering every other logit by $\eta p_v$. For any $D\notin\mathcal{S}$ the odds $z(t)=p_C^{(t)}/p_D^{(t)}$ therefore satisfy
+raising $a_C$ by $\eta(1-p_C)$ and lowering every other logit by $\eta p_v$. For any $u\notin\mathcal{S}$ the odds $z(t)=p_C^{(t)}/p_u^{(t)}$ therefore satisfy
 \begin{equation}
-z(t+1)=z(t)\exp\!\left[\eta\left(1-p_C^{(t)}+p_D^{(t)}\right)\right]>z(t),
+z(t+1)=z(t)\exp\!\left[\eta\left(1-p_C^{(t)}+p_u^{(t)}\right)\right]>z(t),
 \label{eq:zt}
 \end{equation}
-and nothing saturates while $p_C<1$. When $\mathcal{S}$ is a single token, the training loss is $-\ln p_C$ and each pass transfers mass from $\mathcal{V}$ and the rest onto $C$; the validation loss on $\mathcal{V}$ rises by the same logit shift that lowers the training loss. Section~\ref{sec:sharpening} uses this as the per-pass damage $g_j$.
+and nothing saturates while $p_C<1$. When $\mathcal{S}$ is a single token, the training loss is $-\ln p_C$ and each pass transfers mass from $\mathcal{V}$ and the rest onto $C$; the validation loss on $\mathcal{V}$ rises by the same logit shift that lowers the training loss. Section~\ref{sec:sharpening} identifies $\ln z$, averaged over $\mathcal{V}$, with the depth $D_j$ of Equation~\eqref{eq:gap-decomp}.
 
 \subsection{Position-class decomposition of the excess validation loss}
 \label{app:novel-share}
@@ -210,21 +176,21 @@ trigram & novel continuation & 66\% & 100\% \\
 \subsection{Frequency-scaling fits}
 \label{app:gt-fits}
 
-The Good--Turing missing mass is recomputed from the raw training shard (seed-42 \code{shard_00001.bin}, 49.7M positions, chunked exactly as the data loader chunks it) as $\widehat M(F)=N_1(F)/(F\,n(F))$, where $n(F)$ is the number of contexts with exact count $F$ and $N_1(F)$ the number of context--continuation types occurring once among them. Figure~\ref{fig:b_t_MF} shows every positive exact-$F$ layer. Beyond $F\approx10^3$ each layer holds only a handful of contexts (0.1\% of bigram contexts and fewer than 0.01\% of trigram contexts lie there) and the estimates fan out by two orders of magnitude from sampling noise. A fit that weights every layer equally over the full range is dominated by this tail and returns $\alpha=0.45$ (bigram) and $0.43$ (trigram); the version of this figure in an earlier draft, which fitted $\hat f(F)=F\widehat M(F)$ the same way, gave $0.34$ and $0.38$. We therefore fit on $F\le10^3$, the window in which the gap is measured and which holds 76\% (bigram) and 97\% (trigram) of training tokens, and weight each context equally, which is the estimator of the per-context mean that Equation~\eqref{eq:gap_j} averages. Under this weighting the tail no longer matters (the fit is unchanged if the window is widened to all $F$), and the exponents are $0.287$ and $0.314$. Weighting by tokens ($F\,n(F)$) instead gives $0.266$ and $0.246$; the spread between the two weightings, about $0.02$ for bigram and $0.07$ for trigram, is the corpus-side uncertainty of the exponent.
+The Good--Turing novel-continuation rate is recomputed from the raw training shard (seed-42 \code{shard_00001.bin}, 49.7M positions, chunked exactly as the data loader chunks it) as $\hat f(F)=N_1(F)/(F\,n(F))$, where $n(F)$ is the number of contexts with exact count $F$ and $N_1(F)$ the number of context--continuation types occurring once among them. Figure~\ref{fig:b_t_MF} shows every positive exact-$F$ layer. Beyond $F\approx10^3$ each layer holds only a handful of contexts (0.1\% of bigram contexts and fewer than 0.01\% of trigram contexts lie there) and the estimates fan out by two orders of magnitude from sampling noise. A fit that weights every layer equally over the full range is dominated by this tail and returns $\alpha=0.45$ (bigram) and $0.43$ (trigram); the version of this figure in an earlier draft, which fitted the per-count total $F\hat f(F)$ the same way, gave $0.34$ and $0.38$. We therefore fit on $F\le10^3$, the window in which the gap is measured and which holds 76\% (bigram) and 97\% (trigram) of training tokens, and weight each context equally, which is the estimator of the per-context mean that Equation~\eqref{eq:gap_j} averages. Under this weighting the tail no longer matters (the fit is unchanged if the window is widened to all $F$), and the exponents are $0.287$ and $0.314$. Weighting by tokens ($F\,n(F)$) instead gives $0.266$ and $0.246$; the spread between the two weightings, about $0.02$ for bigram and $0.07$ for trigram, is the corpus-side uncertainty of the exponent.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\linewidth]{fig_app_gt_missing_mass.pdf}
-\caption{Good--Turing missing mass $\widehat M(F)$ by exact context count for bigram (left) and trigram (right) contexts. Coloured points are layers with at least 8 contexts, grey points sparser layers; the shaded region $F>10^3$ is excluded from the per-context-weighted fit (solid, extrapolated dashed). The dotted line is the equal-weight full-range fit.}
+\caption{Good--Turing novel-continuation rate $\hat f(F)$ by exact context count for bigram (left) and trigram (right) contexts. Coloured points are layers with at least 8 contexts, grey points sparser layers; the shaded region $F>10^3$ is excluded from the per-context-weighted fit (solid, extrapolated dashed). The dotted line is the equal-weight full-range fit.}
 \label{fig:b_t_MF}
 \end{figure}
 
-Figure~\ref{fig:gt-kernel} compares the gap with $g\,\widehat M(F)$ in the seven geometric frequency bins of the registered gap fit (run \code{s1v5_128_frequency_main}, seed 42, step 1000, fixed train probe and fixed validation loss, bins restricted to at least 32 shared contexts), pooling $\widehat M$ over the same bins. With $g$ the geometric mean of $\operatorname{gap}/\widehat M$ over the bins, the ratio is constant to within 9\% (bigram) and 18\% (trigram) across 2.5 decades of $F$, and $\log\operatorname{gap}$ correlates with $\log\widehat M$ at $0.99$ and $0.98$. The trigram ratio drifts downward with $F$: the gap decays somewhat faster than the missing mass, so the damage per unit of novel mass, $g$, is not exactly frequency-independent for trigram contexts---rarer contexts are hurt slightly more per novel token, consistent with sharper memorization when fewer distinct continuations were seen. This, together with the 27\% of excess loss that falls on seen continuations of frequent contexts (Table~\ref{tab:novel-share}), is the part of the gap that coverage alone does not account for.
+Figure~\ref{fig:gt-kernel} compares the gap with $D\,\hat f(F)$ in the seven geometric frequency bins of the registered gap fit (run \code{s1v5_128_frequency_main}, seed 42, step 1000, fixed train probe and fixed validation loss, bins restricted to at least 32 shared contexts), pooling $\hat f$ over the same bins. With $D$ the geometric mean of $\operatorname{gap}/\hat f$ over the bins, the ratio is constant to within 9\% (bigram) and 18\% (trigram) across 2.5 decades of $F$, and $\log\operatorname{gap}$ correlates with $\log\hat f$ at $0.99$ and $0.98$. The trigram ratio drifts downward with $F$: the gap decays somewhat faster than the novel-continuation rate, so the depth per unit of novel mass, $D$, is not exactly frequency-independent for trigram contexts---rarer contexts are hurt slightly more per novel token, consistent with sharper memorization when fewer distinct continuations were seen. This, together with the 27\% of excess loss that falls on seen continuations of frequent contexts (Table~\ref{tab:novel-share}), is the part of the gap that coverage alone does not account for.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\linewidth]{fig_app_gt_kernel.pdf}
-\caption{Step-1000 gap against $g\,\widehat M(F)$ in the seven matched frequency bins (top) and the per-bin ratio $\operatorname{gap}/\widehat M$ with its mean and $\pm$CV band (bottom); dashed lines are the direct power-law fits of Equation~\eqref{eq:gap-fits}.}
+\caption{Step-1000 gap against $D\,\hat f(F)$ in the seven matched frequency bins (top) and the per-bin ratio $\operatorname{gap}/\hat f$ with its mean and $\pm$CV band (bottom); dashed lines are the direct power-law fits of Equation~\eqref{eq:gap-fits}.}
 \label{fig:gt-kernel}
 \end{figure}
 

@@ -16,7 +16,7 @@ Figure~\ref{fig:injection-curves} shows the signature pattern over 2000 updates,
 All experiments below use input injection, seed 42, and, where tables are enabled, a table learning rate $128$ times the backbone learning rate. The frequency analysis uses fixed probe losses on both sides; the remaining experiments use the online gap of Section~\ref{sec:setting}.
 
 \paragraph{Context frequency.}
-A finite corpus does not fully represent the continuation distribution of each context: a context whose population distribution assigns equal probability to $C$ and $D$ may appear three times with $C$ and once with $D$ in training, so fitting the sample underpredicts $D$ on fresh data. Enabling both tables ($2^{20}$ rows each) and measuring context-matched fixed-probe gaps at step 1000, grouped by the context count $F$ in the unrepeated corpus, shows that low-frequency contexts have systematically larger gaps, approximately as a power law in $F$ over the measured range (Figure~\ref{fig:frequency}; markers are token-mass-weighted bin means with within-bin standard deviations, dashed lines the fits derived in Section~\ref{sec:coverage}).
+A finite corpus does not fully represent the continuation distribution of each context: a context whose population distribution assigns equal probability to $C$ and $D$ may appear three times with $C$ and once with $D$ in training, so fitting the sample underpredicts $D$ on fresh data. Enabling both tables ($2^{20}$ rows each) and measuring context-matched fixed-probe gaps at step 1000, grouped by the context count $F$ in the unrepeated corpus, shows that low-frequency contexts have systematically larger gaps, approximately as a power law in $F$ over the measured range (Figure~\ref{fig:frequency}; markers are token-mass-weighted bin means, dashed lines the fits derived in Section~\ref{sec:coverage}).
 
 \paragraph{Table capacity.}
 Bigger tables make forking worse. Across three decades of table rows $R$ in bigram-only and trigram-only models, the step-1000 gap generally increases, sublinearly on log-log axes, with the bigram curve flattening toward the upper end of the measured range (Figure~\ref{fig:capacity}).
@@ -47,7 +47,7 @@ With the corpus fixed, replay alone drives the growth: over 20 epochs, epoch-end
 \subcaption{}
 \label{fig:corpus-size}
 \end{subfigure}
-\caption{Empirical scaling laws of the gap: (a) context frequency, (b) table capacity, (c) training corpus size.}
+\caption{Empirical scaling laws of the gap: (a) context frequency (both-table model, step 1000, fixed train probe and fixed validation; exact-$F$ layers pooled into geometric bins, dashed lines the fits of Equation~\eqref{eq:gap-fits}; error bars, shown only for the bins that depart from the fit, give the within-bin standard deviation), (b) table capacity, (c) training corpus size. Legend of (b) applies to (a).}
 \label{fig:scaling}
 \end{figure}
 \begin{figure}[!htbp]
