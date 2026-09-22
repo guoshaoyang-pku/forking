@@ -1994,17 +1994,6 @@ def main():
             os.path.join(cfg.out_dir, "exact_freq_loss.jsonl"), "w"
         )
         print(f"[nglab] freq-bin eval enabled (index: {args.freq_index})")
-
-    context_gap_log = None
-    if cfg.intervention == "random_context_loss_mask" or cfg.context_eval_ab:
-        if freq_index_obj is None:
-            raise SystemExit("context A/B eval requires an existing --freq_index")
-        if not fixed_train_probe:
-            raise SystemExit("context A/B eval requires --fixed_train_probe > 0")
-        info = model.setup_context_eval_sets(freq_index_obj, cfg.intervention_mask_frac, cfg.seed)
-        context_gap_log = open(os.path.join(cfg.out_dir, "context_gap.jsonl"), "w")
-        print(f"[nglab] context A/B sets: {info['n_set_types']}/{info['n_types']} trigram "
-              f"types per set (frac={info['frac']}, seed={info['seed']})")
         # Independent train-side diagnostic iterator: reads the same shards in
         # the same fixed order but owns its own dataset state, so freq-bin
         # diagnostics never consume training batches and never advance the
@@ -2037,6 +2026,17 @@ def main():
             except Exception as e:
                 print(f"[nglab] async diag unavailable ({e!r}); using sync path")
                 diag_pool = None
+
+    context_gap_log = None
+    if cfg.intervention == "random_context_loss_mask" or cfg.context_eval_ab:
+        if freq_index_obj is None:
+            raise SystemExit("context A/B eval requires an existing --freq_index")
+        if not fixed_train_probe:
+            raise SystemExit("context A/B eval requires --fixed_train_probe > 0")
+        info = model.setup_context_eval_sets(freq_index_obj, cfg.intervention_mask_frac, cfg.seed)
+        context_gap_log = open(os.path.join(cfg.out_dir, "context_gap.jsonl"), "w")
+        print(f"[nglab] context A/B sets: {info['n_set_types']}/{info['n_types']} trigram "
+              f"types per set (frac={info['frac']}, seed={info['seed']})")
 
     def on_diag_rows(rstep, repoch, sha, exact, fb):
         """Write one finished diagnostics block (async worker or sync path)."""
