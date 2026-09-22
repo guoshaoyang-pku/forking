@@ -2219,7 +2219,7 @@ def main():
                 print(f"[nglab] intervention={cfg.intervention} at step={step + 1} "
                       f"epoch={train_ds._epoch + 1}")
             with amp_ctx:
-                if model._context_set_keys is not None or model._context_loss_mask_active:
+                if model._context_set_memb is not None or model._context_loss_mask_active:
                     loss, ptl = model(inp, targets=tgt, return_token_losses=True)
                     if model._context_loss_mask_active:
                         keep = model._context_loss_keep_mask(inp) & tgt.ne(-1)
