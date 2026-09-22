@@ -1,0 +1,298 @@
+{
+ "meta": {
+  "context_set_mode": "row",
+  "frac": 0.02,
+  "seed": 42,
+  "note": "A/B = 2% of 1M trigram table rows (clean-table hash). masked = boundary->end of the epoch-3-masked run (e2); masked_e1 kept as extra evidence (epoch-2-masked run)."
+ },
+ "pairs": {
+  "both_prev_normal": {
+   "ref": "s1v5_128_marm_both_e1ckpt_fixed/final_model.pt",
+   "new": "s1v5_128_marm_both_e2ckpt_fixed/final_model.pt",
+   "selection": {
+    "branch": "trigram",
+    "mode": "row",
+    "frac": 0.02,
+    "seed": 42,
+    "n_types": 1048576,
+    "n_set_types": 20972
+   },
+   "n_positions": 589824,
+   "sets": {
+    "A": {
+     "n": 12026,
+     "kl_ref_new_mean": 0.5398396849632263,
+     "kl_ref_new_median": 0.45505326986312866,
+     "kl_ref_new_p90": 0.9895278215408325,
+     "kl_new_ref_mean": 0.5361670851707458
+    },
+    "B": {
+     "n": 11620,
+     "kl_ref_new_mean": 0.5525354743003845,
+     "kl_ref_new_median": 0.45546984672546387,
+     "kl_ref_new_p90": 0.9969757795333862,
+     "kl_new_ref_mean": 0.5448459386825562
+    },
+    "other": {
+     "n": 566178,
+     "kl_ref_new_mean": 0.5530131459236145,
+     "kl_ref_new_median": 0.4578440189361572,
+     "kl_ref_new_p90": 1.0091127157211304,
+     "kl_new_ref_mean": 0.5473740696907043
+    }
+   }
+  },
+  "both_normal_ctrl": {
+   "ref": "s1v5_128_marm_both_e2ckpt_fixed/final_model.pt",
+   "new": "s1v5_128_marm_both_ckpt_fixed/final_model.pt",
+   "selection": {
+    "branch": "trigram",
+    "mode": "row",
+    "frac": 0.02,
+    "seed": 42,
+    "n_types": 1048576,
+    "n_set_types": 20972
+   },
+   "n_positions": 589824,
+   "sets": {
+    "A": {
+     "n": 12026,
+     "kl_ref_new_mean": 0.6923688650131226,
+     "kl_ref_new_median": 0.5439279675483704,
+     "kl_ref_new_p90": 1.373389720916748,
+     "kl_new_ref_mean": 0.6065388917922974
+    },
+    "B": {
+     "n": 11620,
+     "kl_ref_new_mean": 0.7006233930587769,
+     "kl_ref_new_median": 0.5466759204864502,
+     "kl_ref_new_p90": 1.374173879623413,
+     "kl_new_ref_mean": 0.6110439896583557
+    },
+    "other": {
+     "n": 566178,
+     "kl_ref_new_mean": 0.7031126022338867,
+     "kl_ref_new_median": 0.5472545027732849,
+     "kl_ref_new_p90": 1.385223150253296,
+     "kl_new_ref_mean": 0.6145006418228149
+    }
+   }
+  },
+  "both_masked": {
+   "ref": "s1v5_128_marm_both_rowmask_e2_fixed/epoch2_model.pt",
+   "new": "s1v5_128_marm_both_rowmask_e2_fixed/final_model.pt",
+   "selection": {
+    "branch": "trigram",
+    "mode": "row",
+    "frac": 0.02,
+    "seed": 42,
+    "n_types": 1048576,
+    "n_set_types": 20972
+   },
+   "n_positions": 589824,
+   "sets": {
+    "A": {
+     "n": 12026,
+     "kl_ref_new_mean": 0.5022602677345276,
+     "kl_ref_new_median": 0.390102744102478,
+     "kl_ref_new_p90": 0.9979967474937439,
+     "kl_new_ref_mean": 0.440064013004303
+    },
+    "B": {
+     "n": 11620,
+     "kl_ref_new_mean": 0.507031261920929,
+     "kl_ref_new_median": 0.38813480734825134,
+     "kl_ref_new_p90": 1.0256028175354004,
+     "kl_new_ref_mean": 0.44606325030326843
+    },
+    "other": {
+     "n": 566178,
+     "kl_ref_new_mean": 0.5102534294128418,
+     "kl_ref_new_median": 0.38526445627212524,
+     "kl_ref_new_p90": 1.03773832321167,
+     "kl_new_ref_mean": 0.4511083960533142
+    }
+   }
+  },
+  "both_masked_e1": {
+   "ref": "s1v5_128_marm_both_rowmask_e1_fixed/epoch1_model.pt",
+   "new": "s1v5_128_marm_both_rowmask_e1_fixed/final_model.pt",
+   "selection": {
+    "branch": "trigram",
+    "mode": "row",
+    "frac": 0.02,
+    "seed": 42,
+    "n_types": 1048576,
+    "n_set_types": 20972
+   },
+   "n_positions": 589824,
+   "sets": {
+    "A": {
+     "n": 12026,
+     "kl_ref_new_mean": 0.5746598243713379,
+     "kl_ref_new_median": 0.47284579277038574,
+     "kl_ref_new_p90": 1.060303807258606,
+     "kl_new_ref_mean": 0.5569364428520203
+    },
+    "B": {
+     "n": 11620,
+     "kl_ref_new_mean": 0.5283839702606201,
+     "kl_ref_new_median": 0.4398335814476013,
+     "kl_ref_new_p90": 0.9485630393028259,
+     "kl_new_ref_mean": 0.5271298885345459
+    },
+    "other": {
+     "n": 566178,
+     "kl_ref_new_mean": 0.5302940011024475,
+     "kl_ref_new_median": 0.4407538175582886,
+     "kl_ref_new_p90": 0.9610058665275574,
+     "kl_new_ref_mean": 0.5288549661636353
+    }
+   }
+  },
+  "nogram_prev_normal": {
+   "ref": "s1v5_128_marm_nogram_e1ckpt_fixed/final_model.pt",
+   "new": "s1v5_128_marm_nogram_e2ckpt_fixed/final_model.pt",
+   "selection": {
+    "branch": "trigram",
+    "mode": "row",
+    "frac": 0.02,
+    "seed": 42,
+    "n_types": 1048576,
+    "n_set_types": 20972
+   },
+   "n_positions": 589824,
+   "sets": {
+    "A": {
+     "n": 12026,
+     "kl_ref_new_mean": 0.9037082195281982,
+     "kl_ref_new_median": 0.7149514555931091,
+     "kl_ref_new_p90": 1.6629267930984497,
+     "kl_new_ref_mean": 0.7844941020011902
+    },
+    "B": {
+     "n": 11620,
+     "kl_ref_new_mean": 0.8902064561843872,
+     "kl_ref_new_median": 0.715774655342102,
+     "kl_ref_new_p90": 1.6516094207763672,
+     "kl_new_ref_mean": 0.7785533666610718
+    },
+    "other": {
+     "n": 566178,
+     "kl_ref_new_mean": 0.891699492931366,
+     "kl_ref_new_median": 0.7189102172851562,
+     "kl_ref_new_p90": 1.6541963815689087,
+     "kl_new_ref_mean": 0.7833971977233887
+    }
+   }
+  },
+  "nogram_normal_ctrl": {
+   "ref": "s1v5_128_marm_nogram_e2ckpt_fixed/final_model.pt",
+   "new": "s1v5_128_marm_nogram_ckpt_fixed/final_model.pt",
+   "selection": {
+    "branch": "trigram",
+    "mode": "row",
+    "frac": 0.02,
+    "seed": 42,
+    "n_types": 1048576,
+    "n_set_types": 20972
+   },
+   "n_positions": 589824,
+   "sets": {
+    "A": {
+     "n": 12026,
+     "kl_ref_new_mean": 0.7444409132003784,
+     "kl_ref_new_median": 0.5083706378936768,
+     "kl_ref_new_p90": 1.5269262790679932,
+     "kl_new_ref_mean": 0.665057361125946
+    },
+    "B": {
+     "n": 11620,
+     "kl_ref_new_mean": 0.7475103735923767,
+     "kl_ref_new_median": 0.5098395347595215,
+     "kl_ref_new_p90": 1.4772998094558716,
+     "kl_new_ref_mean": 0.6513751745223999
+    },
+    "other": {
+     "n": 566178,
+     "kl_ref_new_mean": 0.746394693851471,
+     "kl_ref_new_median": 0.5064881443977356,
+     "kl_ref_new_p90": 1.5028388500213623,
+     "kl_new_ref_mean": 0.6657842993736267
+    }
+   }
+  },
+  "nogram_masked": {
+   "ref": "s1v5_128_marm_nogram_rowmask_e2_fixed/epoch2_model.pt",
+   "new": "s1v5_128_marm_nogram_rowmask_e2_fixed/final_model.pt",
+   "selection": {
+    "branch": "trigram",
+    "mode": "row",
+    "frac": 0.02,
+    "seed": 42,
+    "n_types": 1048576,
+    "n_set_types": 20972
+   },
+   "n_positions": 589824,
+   "sets": {
+    "A": {
+     "n": 12026,
+     "kl_ref_new_mean": 0.6569333076477051,
+     "kl_ref_new_median": 0.4109370708465576,
+     "kl_ref_new_p90": 1.3436113595962524,
+     "kl_new_ref_mean": 0.6120613813400269
+    },
+    "B": {
+     "n": 11620,
+     "kl_ref_new_mean": 0.6844128370285034,
+     "kl_ref_new_median": 0.418404221534729,
+     "kl_ref_new_p90": 1.422047734260559,
+     "kl_new_ref_mean": 0.612654983997345
+    },
+    "other": {
+     "n": 566178,
+     "kl_ref_new_mean": 0.6802160739898682,
+     "kl_ref_new_median": 0.4176936447620392,
+     "kl_ref_new_p90": 1.4255019426345825,
+     "kl_new_ref_mean": 0.6175563931465149
+    }
+   }
+  },
+  "nogram_masked_e1": {
+   "ref": "s1v5_128_marm_nogram_rowmask_e1_fixed/epoch1_model.pt",
+   "new": "s1v5_128_marm_nogram_rowmask_e1_fixed/final_model.pt",
+   "selection": {
+    "branch": "trigram",
+    "mode": "row",
+    "frac": 0.02,
+    "seed": 42,
+    "n_types": 1048576,
+    "n_set_types": 20972
+   },
+   "n_positions": 589824,
+   "sets": {
+    "A": {
+     "n": 12026,
+     "kl_ref_new_mean": 0.9070708155632019,
+     "kl_ref_new_median": 0.7329385280609131,
+     "kl_ref_new_p90": 1.6711020469665527,
+     "kl_new_ref_mean": 0.831209123134613
+    },
+    "B": {
+     "n": 11620,
+     "kl_ref_new_mean": 0.9423037171363831,
+     "kl_ref_new_median": 0.7438712120056152,
+     "kl_ref_new_p90": 1.7707246541976929,
+     "kl_new_ref_mean": 0.8488287925720215
+    },
+    "other": {
+     "n": 566178,
+     "kl_ref_new_mean": 0.9414705038070679,
+     "kl_ref_new_median": 0.7442198991775513,
+     "kl_ref_new_p90": 1.767727255821228,
+     "kl_new_ref_mean": 0.8533313274383545
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,60 @@
+{
+ "meta": {
+  "generated_utc": "2026-09-22T07:09:57.208840+00:00",
+  "data_dir": "data/tokenized",
+  "val_shards": [
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   6542
+  ],
+  "n_val_batches": 4,
+  "frac": 0.02,
+  "seed": 42,
+  "dtype": "bf16",
+  "note": "Full-vocab exact KL per validation position over the fixed val batches; A/B from train.py setup_context_eval_sets (2% of distinct trigram types, seed 42)."
+ },
+ "pairs": {
+  "bigram_masked": {
+   "ref": "s1v5_128_marm_bigram_ctxmask_e2_fixed/epoch2_model.pt",
+   "new": "s1v5_128_marm_bigram_ctxmask_e2_fixed/final_model.pt",
+   "selection": {
+    "branch": "trigram",
+    "frac": 0.02,
+    "seed": 42,
+    "n_types": 19027841,
+    "n_set_types": 380557
+   },
+   "n_positions": 589824,
+   "sets": {
+    "A": {
+     "n": 8167,
+     "kl_ref_new_mean": 0.33395999670028687,
+     "kl_ref_new_median": 0.2613263726234436,
+     "kl_ref_new_p90": 0.6262571215629578,
+     "kl_new_ref_mean": 0.3238135874271393
+    },
+    "B": {
+     "n": 8266,
+     "kl_ref_new_mean": 0.29426392912864685,
+     "kl_ref_new_median": 0.23630273342132568,
+     "kl_ref_new_p90": 0.550763726234436,
+     "kl_new_ref_mean": 0.27253279089927673
+    },
+    "other": {
+     "n": 573391,
+     "kl_ref_new_mean": 0.34269794821739197,
+     "kl_ref_new_median": 0.25876927375793457,
+     "kl_ref_new_p90": 0.6565901041030884,
+     "kl_new_ref_mean": 0.3170437216758728
+    }
+   }
+  }
+ }
+}
