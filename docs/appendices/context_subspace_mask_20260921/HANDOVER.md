@@ -158,6 +158,7 @@ python3 docs/plot_scripts/plot_paper_fig7_ctxmask_real.py \
 产物（`docs/figs/paper/`）：
 - **`fig07_context_mask_fixed_perstep.{pdf,png}` ← fig7a 论文用（fixed 口径逐 step，4 epochs）**
 - **`fig07b_kl_traj_{lines,bars,nested}.{pdf,png}` ← fig7b 三版候选（KL 轨迹，epoch 2–4）**
+- **`fig07b_rkl_zs.{pdf,png}` ← fig7b 新候选（restricted-KL 双面板：Z(S) + KL_S）；`fig07b_zs_only.{pdf,png}` 单面板 Z(S)**（脚本 `--rkl_json`，数据 `kl_restricted_e1_l4.json`，口径 §5.3c）
 - `fig07_context_mask_perstep.{pdf,png}`：fixed + online 双面板对照
 - `fig07_context_mask_epochmean.{pdf,png}`：online 口径 epoch 平均（无伪影版）
 - `fig07star_context_kl.{pdf,png}`：fig7\* type-mode 四臂（主版）

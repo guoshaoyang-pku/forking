@@ -391,6 +391,72 @@ def fig7b_kl_traj(kl_json: Path):
     print((OUT / "fig07b_kl_traj_nested.pdf").relative_to(ROOT))
 
 
+def fig7b_restricted(rkl_json: Path):
+    """Fig 7b candidate (2026-09-23, restricted-KL): within-subspace drift.
+
+    S(ctx) = continuations seen with ctx in the train shard UNION the true
+    tokens at val positions with ctx (|S| median 2). Left: Z(S) = mean
+    output mass on S -- the direct sharpening signature. Right: KL on S
+    with both distributions renormalized on S (cumulative vs the epoch-1
+    end checkpoint). Masking starts at the epoch-2 boundary in both arms.
+
+    Data: context_kl/kl_restricted_e1_l4.json (eval_context_kl.py
+    --restrict_seen_novel, runs *_ctxmask_e1_l4, fixed val batches).
+    """
+    d = json.loads(rkl_json.read_text())["pairs"]
+    epochs = [1, 2, 3, 4]
+    arm_style = [("both", "both tables", S.ARM_COLORS["input"]),
+                 ("nogram", "no-gram", S.ARM_COLORS["nogram"])]
+    # set key -> (label, linestyle); no A/B naming, say masked/unmasked
+    set_style = [("B", "unmasked", "-"), ("A", "masked", "--")]
+
+    def zs(arm, key):
+        g0 = d[f"{arm}_e2"]["sets"][key]
+        return [g0["z_ref_mean"]] + [d[f"{arm}_e{e}"]["sets"][key]["z_new_mean"]
+                                     for e in (2, 3, 4)]
+
+    def rkl(arm, key):
+        return [0.0] + [d[f"{arm}_e{e}"]["sets"][key]["rkl_ref_new_mean"]
+                        for e in (2, 3, 4)]
+
+    def draw(ax, fn, ylabel, legend=False, ylim=None):
+        for arm, name, c in arm_style:
+            for key, lab, ls in set_style:
+                ax.plot(epochs, fn(arm, key), color=c, ls=ls, lw=1.5,
+                        marker="o", ms=3.6, mfc=("white" if ls == "--" else c),
+                        label=f"{name} · {lab}")
+        ax.set_xticks(epochs)
+        ax.set_xticklabels([f"{e}" for e in epochs], fontsize=8)
+        ax.set_xlabel("epoch end", fontsize=8.5)
+        ax.set_ylabel(ylabel, fontsize=8.5)
+        if ylim:
+            ax.set_ylim(*ylim)
+        if legend:
+            ax.legend(fontsize=6.8, framealpha=0.9, edgecolor="none",
+                      loc="upper left", handlelength=2.2)
+
+    # ---- candidate 1: two panels (Z(S) + restricted KL), 0.5\linewidth ----
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(4.4, 2.25),
+                                   gridspec_kw={"wspace": 0.42},
+                                   layout="constrained")
+    draw(ax1, zs, "mass on seen+val cont. $Z(S)$", ylim=(0.18, 0.78))
+    draw(ax2, rkl, "restr. KL$_S(p_{ep1} \\| p_t)$ (nats)", legend=True,
+         ylim=(0.0, 1.35))
+    fig.savefig(OUT / "fig07b_rkl_zs.pdf")
+    fig.savefig(OUT / "fig07b_rkl_zs.png", dpi=300)
+    print((OUT / "fig07b_rkl_zs.pdf").relative_to(ROOT))
+
+    # ---- candidate 2: Z(S) only, single panel, 0.5\linewidth ---------------
+    fig, ax = plt.subplots(figsize=(4.4, 2.5))
+    draw(ax, zs, "mass on seen+val continuations $Z(S)$", legend=True,
+         ylim=(0.18, 0.78))
+    ax.set_xlabel("epoch end", fontsize=9)
+    fig.tight_layout(pad=0.4)
+    fig.savefig(OUT / "fig07b_zs_only.pdf")
+    fig.savefig(OUT / "fig07b_zs_only.png", dpi=300)
+    print((OUT / "fig07b_zs_only.pdf").relative_to(ROOT))
+
+
 def fig7star(kl_json: Path, arms=None, tag=""):
     """Fig 7* (legacy 3-probe layout, superseded by fig7b_kl_traj).
       prev_normal  = epoch-1 boundary -> epoch-2 boundary (a normal epoch);
@@ -451,6 +517,9 @@ def main():
     ap.add_argument("--kl_traj_json", type=Path,
                     help="merged {arm: {e2/e3/e4: {A,B}}} KL trajectory JSON "
                          "for fig7b (fig7b_kl_traj)")
+    ap.add_argument("--rkl_json", type=Path,
+                    help="restricted-KL JSON (eval_context_kl.py "
+                         "--restrict_seen_novel) for fig7b (fig7b_restricted)")
     ap.add_argument("--infix", default="ctxmask",
                     help="run-id infix for fig7 (ctxmask | rowmask)")
     ap.add_argument("--arms", default="nogram,bigram,trigram,both",
@@ -471,6 +540,8 @@ def main():
         fig7star(args.kl_json, arms, tag)
     if args.kl_traj_json:
         fig7b_kl_traj(args.kl_traj_json)
+    if args.rkl_json:
+        fig7b_restricted(args.rkl_json)
 
 
 if __name__ == "__main__":
