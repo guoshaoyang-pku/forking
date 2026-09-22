@@ -392,13 +392,14 @@ def fig7b_kl_traj(kl_json: Path):
 
 
 def fig7b_restricted(rkl_json: Path):
-    """Fig 7b candidate (2026-09-23, restricted-KL): within-subspace drift.
+    """Fig 7b (2026-09-23, restricted-KL): within-subspace drift, KL only.
 
-    S(ctx) = continuations seen with ctx in the train shard UNION the true
-    tokens at val positions with ctx (|S| median 2). Left: Z(S) = mean
-    output mass on S -- the direct sharpening signature. Right: KL on S
-    with both distributions renormalized on S (cumulative vs the epoch-1
-    end checkpoint). Masking starts at the epoch-2 boundary in both arms.
+    Per val position with trigram context ctx, restrict both distributions
+    to S(ctx) = continuations seen with ctx in the train shard UNION the
+    true tokens at val positions with ctx (|S| median 2), renormalize on S,
+    and compute KL_S(p_ep1 || p_t). Reference = epoch-1 end (epoch 1 is
+    trained unmasked in every arm to establish the base prior, so the
+    trajectory starts at 0); masking starts at the epoch-2 boundary.
 
     Data: context_kl/kl_restricted_e1_l4.json (eval_context_kl.py
     --restrict_seen_novel, runs *_ctxmask_e1_l4, fixed val batches).
@@ -410,51 +411,27 @@ def fig7b_restricted(rkl_json: Path):
     # set key -> (label, linestyle); no A/B naming, say masked/unmasked
     set_style = [("B", "unmasked", "-"), ("A", "masked", "--")]
 
-    def zs(arm, key):
-        g0 = d[f"{arm}_e2"]["sets"][key]
-        return [g0["z_ref_mean"]] + [d[f"{arm}_e{e}"]["sets"][key]["z_new_mean"]
-                                     for e in (2, 3, 4)]
-
     def rkl(arm, key):
         return [0.0] + [d[f"{arm}_e{e}"]["sets"][key]["rkl_ref_new_mean"]
                         for e in (2, 3, 4)]
 
-    def draw(ax, fn, ylabel, legend=False, ylim=None):
-        for arm, name, c in arm_style:
-            for key, lab, ls in set_style:
-                ax.plot(epochs, fn(arm, key), color=c, ls=ls, lw=1.5,
-                        marker="o", ms=3.6, mfc=("white" if ls == "--" else c),
-                        label=f"{name} · {lab}")
-        ax.set_xticks(epochs)
-        ax.set_xticklabels([f"{e}" for e in epochs], fontsize=8)
-        ax.set_xlabel("epoch end", fontsize=8.5)
-        ax.set_ylabel(ylabel, fontsize=8.5)
-        if ylim:
-            ax.set_ylim(*ylim)
-        if legend:
-            ax.legend(fontsize=6.8, framealpha=0.9, edgecolor="none",
-                      loc="upper left", handlelength=2.2)
-
-    # ---- candidate 1: two panels (Z(S) + restricted KL), 0.5\linewidth ----
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(4.4, 2.25),
-                                   gridspec_kw={"wspace": 0.42},
-                                   layout="constrained")
-    draw(ax1, zs, "mass on seen+val cont. $Z(S)$", ylim=(0.18, 0.78))
-    draw(ax2, rkl, "restr. KL$_S(p_{ep1} \\| p_t)$ (nats)", legend=True,
-         ylim=(0.0, 1.35))
-    fig.savefig(OUT / "fig07b_rkl_zs.pdf")
-    fig.savefig(OUT / "fig07b_rkl_zs.png", dpi=300)
-    print((OUT / "fig07b_rkl_zs.pdf").relative_to(ROOT))
-
-    # ---- candidate 2: Z(S) only, single panel, 0.5\linewidth ---------------
     fig, ax = plt.subplots(figsize=(4.4, 2.5))
-    draw(ax, zs, "mass on seen+val continuations $Z(S)$", legend=True,
-         ylim=(0.18, 0.78))
-    ax.set_xlabel("epoch end", fontsize=9)
+    for arm, name, c in arm_style:
+        for key, lab, ls in set_style:
+            ax.plot(epochs, rkl(arm, key), color=c, ls=ls, lw=1.5,
+                    marker="o", ms=4, mfc=("white" if ls == "--" else c),
+                    label=f"{name} · {lab}")
+    ax.set_xticks(epochs)
+    ax.set_xticklabels([f"{e}" for e in epochs])
+    ax.set_xlabel("epoch end")
+    ax.set_ylabel("KL$(p_{ep1} \\| p_t)$ restricted to $S$ (nats)")
+    ax.set_ylim(0.0, 1.35)
+    ax.legend(fontsize=7.5, framealpha=0.9, edgecolor="none",
+              loc="upper left", handlelength=2.2)
     fig.tight_layout(pad=0.4)
-    fig.savefig(OUT / "fig07b_zs_only.pdf")
-    fig.savefig(OUT / "fig07b_zs_only.png", dpi=300)
-    print((OUT / "fig07b_zs_only.pdf").relative_to(ROOT))
+    fig.savefig(OUT / "fig07b_rkl.pdf")
+    fig.savefig(OUT / "fig07b_rkl.png", dpi=300)
+    print((OUT / "fig07b_rkl.pdf").relative_to(ROOT))
 
 
 def fig7star(kl_json: Path, arms=None, tag=""):
