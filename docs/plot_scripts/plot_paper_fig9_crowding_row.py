@@ -24,7 +24,9 @@ Data: docs/appendices/marm_logits_20260916/marm_subspace_mass.json
       runs s1v5_128_marm_{nogram,both}_{e1ckpt,e2ckpt,ckpt}_fixed).
 
 Outputs (docs/figs/paper/): fig09a_crowd_mass.pdf, fig09b_crowd_ce.pdf,
-fig09c_crowd_excess_vsF.pdf (+ .png) and fig09_crowding_preview.png.
+fig09c_crowd_excess_vsF.pdf, fig09_crowd_ce_seen_novel.pdf (single panel:
+seen vs novel continuation CE for both arms; the paper's Sec.4.2 figure
+since 2026-09-22) (+ .png) and fig09_crowding_preview.png.
 Copy the PDFs to overleaf-paper/figures/ with the same names.
 """
 from __future__ import annotations
@@ -105,6 +107,27 @@ def draw_ce(ax, arms):
     ax.set_ylabel("CE of novel\ncontinuation (nats)")
 
 
+def draw_ce_seen_novel(ax, arms):
+    """Single-panel replacement for the row: CE of seen vs novel continuations
+    for both arms, same population split (ctxseen|seen n=405,058;
+    ctxseen|novel n=158,790)."""
+    for arm, color, marker, label in ARMS:
+        for grp, ls, fill, tag in (("ctxseen|novel", "-", color, "novel"),
+                                   ("ctxseen|seen", "--", "white", "seen")):
+            ys = [cell(arms, arm, ep, grp)["ce_mean"] for ep in EPOCHS]
+            ax.plot(EPOCH_X, ys, ls=ls, marker=marker, ms=4.2, lw=1.2, color=color,
+                    markerfacecolor=fill, markeredgecolor=color,
+                    label=f"{'both tables' if arm == 'both' else label}, {tag}")
+    ax.set_xticks(EPOCH_X)
+    ax.set_xlim(0.75, 3.25)
+    ax.set_ylim(2.3, 9.6)
+    ax.set_xlabel("epoch")
+    ax.set_ylabel("validation CE (nats)")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.45, -0.22), ncol=2,
+              framealpha=0, edgecolor="none", handlelength=2.0, fontsize=7,
+              columnspacing=0.8, handletextpad=0.4, borderaxespad=0)
+
+
 def draw_excess(ax, arms):
     xs = list(range(len(F_BINS)))
     for ep, x_ep in zip(EPOCHS, EPOCH_X):
@@ -121,8 +144,8 @@ def draw_excess(ax, arms):
     ax.legend(loc="upper right", framealpha=0.9, edgecolor="none")
 
 
-def make_panel(draw, arms, name):
-    fig, ax = plt.subplots(figsize=(PANEL_W, PANEL_H))
+def make_panel(draw, arms, name, figsize=(PANEL_W, PANEL_H)):
+    fig, ax = plt.subplots(figsize=figsize)
     draw(ax, arms)
     fig.tight_layout(pad=0.4)
     _save_panel(fig, name)
@@ -160,6 +183,9 @@ def main():
     make_panel(draw_mass, arms, "fig09a_crowd_mass")
     make_panel(draw_ce, arms, "fig09b_crowd_ce")
     make_panel(draw_excess, arms, "fig09c_crowd_excess_vsF")
+    # single panel paired with walk_their_dog_loss.pdf (aspect 1.28) in a
+    # 0.58 + 0.40 \linewidth row: height matched to the left figure.
+    make_panel(draw_ce_seen_novel, arms, "fig09_crowd_ce_seen_novel", figsize=(2.45, 2.95))
     make_preview(arms)
 
 
