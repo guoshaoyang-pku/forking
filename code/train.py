@@ -88,11 +88,13 @@ class Config:
     trigram_table_dim: int = 0        # same rule for the trigram branch
     bigram_perfect_map: str = ""      # npz with packed-bigram->row map: collision-free table (rows = n_distinct+1)
     bigram_single_layer: bool = False # restrict bigram table to the first ngram layer only
-    intervention: str = "none"        # none | freeze_table | freeze_backbone | freeze_both | hash_reseed | mask_low_freq | mask_high_freq
+    intervention: str = "none"        # none | freeze_table | freeze_backbone | freeze_both | hash_reseed | mask_low_freq | mask_high_freq | random_context_loss_mask
     intervention_epoch: int = 1       # fire when 0-indexed epoch reaches this value (1 = start of epoch 2)
     intervention_epochs: tuple = ()   # extra 0-indexed due epochs for multi-fire interventions (e.g. (1, 2))
     intervention_freq_threshold: int = 200
     intervention_low_inclusive: bool = False  # mask_low masks f <= threshold (default f < threshold)
+    intervention_mask_frac: float = 0.02  # random_context_loss_mask: fraction of distinct trigram context types to exclude from the loss
+    context_eval_ab: bool = False  # log per-eval A/B context gap contributions to context_gap.jsonl
     adam_betas: tuple = (0.8, 0.95)
     weight_decay: float = 0.1
     # training
@@ -468,6 +470,10 @@ class NanoGPT(nn.Module):
         self._freq_mask_index = None
         self._freq_mask_mode = "none"
         self._freq_mask_threshold = 0
+        self._context_set_keys = None   # sorted trigram context keys (device)
+        self._context_set_memb = None   # int8 per key: 0=other, 1=A, 2=B
+        self._context_eval_sets = None  # selection info dict once configured
+        self._context_loss_mask_active = False
         self._hash_reseed_count = 0
         self._intervention_due = frozenset(
             {config.intervention_epoch} | set(config.intervention_epochs)
@@ -601,6 +607,63 @@ class NanoGPT(nn.Module):
             return ~high_match
         return high_match
 
+    def setup_context_eval_sets(self, freq_index, frac: float, seed: int):
+        """Select disjoint random context sets A (to be loss-masked) and B
+        (unmasked peers): each a uniform `frac` of the distinct TRIGRAM
+        context types in the training frequency index, drawn by type (not by
+        occurrence) so the empirical context distribution is preserved.
+        Stores the sorted keys and an int8 membership array (0 = other,
+        1 = A, 2 = B) on the model device. Deterministic given (frac, seed),
+        so control and masked runs share the same A/B."""
+        if not (0.0 < frac < 0.5):
+            raise ValueError("context set fraction must be in (0, 0.5)")
+        freq_index._ensure_sorted()
+        keys = np.ascontiguousarray(freq_index._trigram_keys_sorted, dtype=np.int64)
+        n_types = int(keys.size)
+        n_sel = int(round(frac * n_types))
+        rng = np.random.default_rng(seed)
+        perm = rng.permutation(n_types)
+        memb = np.zeros(n_types, dtype=np.int8)
+        memb[perm[:n_sel]] = 1           # A: loss-masked after the intervention
+        memb[perm[n_sel:2 * n_sel]] = 2  # B: unmasked peers
+        device = next(self.parameters()).device
+        self._context_set_keys = torch.from_numpy(keys).to(device)
+        self._context_set_memb = torch.from_numpy(memb).to(device)
+        self._context_eval_sets = {
+            "branch": "trigram",
+            "frac": float(frac),
+            "seed": int(seed),
+            "n_types": n_types,
+            "n_set_types": n_sel,
+        }
+        return self._context_eval_sets
+
+    def context_set_membership(self, idx):
+        """int8 membership (0 = other, 1 = A, 2 = B) of each position's trigram
+        context, keyed exactly like GlobalFrequencyIndex (prev2*V^2+prev*V+cur
+        with boundary padding). Positions whose context is absent from the
+        index (novel) map to 0. None if sets are not configured."""
+        if self._context_set_keys is None:
+            return None
+        prev = torch.cat([idx[:, :1], idx[:, :-1]], dim=1)
+        prev2 = torch.cat([idx[:, :2], idx[:, :-2]], dim=1)
+        V = self.config.vocab_size
+        keys = (prev2.long() * (V * V) + prev.long() * V + idx.long()).reshape(-1)
+        pos = torch.searchsorted(self._context_set_keys, keys)
+        pos = pos.clamp(max=self._context_set_keys.numel() - 1)
+        hit = self._context_set_keys[pos] == keys
+        out = torch.zeros_like(keys, dtype=torch.int8)
+        out[hit] = self._context_set_memb[pos[hit]]
+        return out.view(idx.shape)
+
+    def _context_loss_keep_mask(self, idx):
+        """Per-position keep mask (True = keep in the loss) once the random
+        context loss mask has fired; None while inactive. Positions whose
+        trigram context is in set A are dropped, everything else is kept."""
+        if not self._context_loss_mask_active:
+            return None
+        return self.context_set_membership(idx) != 1
+
     def apply_intervention(self, epoch0: int, freq_index=None):
         """Fire intervention when 0-indexed epoch reaches a due epoch.
 
@@ -646,6 +709,14 @@ class NanoGPT(nn.Module):
                 mode == "low"
                 or (mode == "high" and self.config.intervention_freq_threshold == 0)
             )
+        elif self.config.intervention == "random_context_loss_mask":
+            if self._context_eval_sets is None:
+                raise RuntimeError(
+                    "random_context_loss_mask requires context eval sets: run "
+                    "setup_context_eval_sets first (needs --freq_index)"
+                )
+            self._context_loss_mask_active = True
+            event["context_loss_mask"] = dict(self._context_eval_sets)
         elif self.config.intervention == "readout_last_epoch":
             # Table used ONLY in the final epoch: fully masked from step 0
             # (rows receive no gradient, backbone sees no table signal), then
@@ -1359,6 +1430,69 @@ def evaluate_fixed_probe(model: NanoGPT, fixed_train_probe, dtype: str = "fp32")
     return float(np.mean(losses)) if losses else float("nan")
 
 
+def _per_position_context_stats(model, batches, dtype):
+    """Per-position (context_key, loss, set_membership) over the given fixed
+    batches, moved to CPU numpy. Used by evaluate_context_gap."""
+    keys_all, loss_all, memb_all = [], [], []
+    ctx = _autocast_ctx(dtype)
+    with torch.no_grad():
+        for inp, tgt in batches:
+            with ctx:
+                _, ptl = model(inp, targets=tgt, return_token_losses=True)
+            memb = model.context_set_membership(inp)
+            prev = torch.cat([inp[:, :1], inp[:, :-1]], dim=1)
+            prev2 = torch.cat([inp[:, :2], inp[:, :-2]], dim=1)
+            V = model.config.vocab_size
+            keys = prev2.long() * (V * V) + prev.long() * V + inp.long()
+            valid = tgt.ne(-1)
+            keys_all.append(keys[valid].cpu().numpy())
+            loss_all.append(ptl[valid].double().cpu().numpy())
+            memb_all.append(memb[valid].cpu().numpy())
+    return (np.concatenate(keys_all), np.concatenate(loss_all),
+            np.concatenate(memb_all))
+
+
+def evaluate_context_gap(model, fixed_train_probe, fixed_val_batches,
+                         dtype: str = "fp32") -> dict:
+    """Gap contribution of context sets A (masked) and B (peers), matching the
+    paper's C_S(t) = sum_{i in S} q_i [l_val,i(t) - l_tr,i(t)]: q_i is the
+    context's share of FIXED-VAL positions, l_val,i / l_tr,i are per-context
+    mean losses on the fixed val batches and the fixed train probe,
+    restricted to contexts present in both. Also logs plain position-level
+    means and shares for diagnostics."""
+    model.eval()
+    tr_keys, tr_loss, _ = _per_position_context_stats(model, fixed_train_probe, dtype)
+    va_keys, va_loss, va_memb = _per_position_context_stats(model, fixed_val_batches, dtype)
+    model.train()
+
+    tu, t_inv = np.unique(tr_keys, return_inverse=True)
+    tr_sum = np.bincount(t_inv, weights=tr_loss)
+    tr_cnt = np.bincount(t_inv).astype(np.float64)
+    vu, v_inv = np.unique(va_keys, return_inverse=True)
+    va_sum = np.bincount(v_inv, weights=va_loss)
+    va_cnt = np.bincount(v_inv).astype(np.float64)
+    # membership of each unique val context (first occurrence)
+    v_first = np.unique(va_keys, return_index=True)[1]
+    va_memb_u = va_memb[v_first]
+    shared, t_idx, v_idx = np.intersect1d(tu, vu, assume_unique=True, return_indices=True)
+
+    out = {}
+    n_val_pos = float(va_cnt.sum())
+    for tag, code in (("A", 1), ("B", 2)):
+        in_set = va_memb_u[v_idx] == code
+        q = va_cnt[v_idx] / n_val_pos
+        gap_i = (va_sum[v_idx] / va_cnt[v_idx]) - (tr_sum[t_idx] / tr_cnt[t_idx])
+        out[f"C_{tag}"] = float((q[in_set] * gap_i[in_set]).sum())
+        out[f"n_join_ctx_{tag}"] = int(in_set.sum())
+        pos = va_memb == code
+        out[f"val_mean_{tag}"] = float(va_loss[pos].mean()) if pos.any() else float("nan")
+        out[f"val_share_{tag}"] = float(pos.mean())
+        # train-side mean over the same context keys (joined subset)
+        tj = t_idx[in_set]
+        out[f"tr_mean_{tag}"] = float((tr_sum[tj] / tr_cnt[tj]).mean()) if tj.size else float("nan")
+    return out
+
+
 def accumulate_freq_bins(freq_index, inp, tgt, per_token_loss, vocab_size) -> dict:
     """Accumulate per-frequency-bin stats from ONE already-forwarded batch.
 
@@ -1552,7 +1686,8 @@ def main():
                              "(control arm for the collision-free perfect-map run)")
     parser.add_argument("--intervention", default="none",
                         choices=["none", "freeze_table", "freeze_backbone", "freeze_both", "hash_reseed",
-                                 "mask_low_freq", "mask_high_freq", "readout_last_epoch"],
+                                 "mask_low_freq", "mask_high_freq", "readout_last_epoch",
+                                 "random_context_loss_mask"],
                         help="causal intervention fired at intervention_epoch boundary")
     parser.add_argument("--intervention_epoch", type=int, default=1,
                         help="0-indexed epoch at which the intervention fires (1 = start of epoch 2)")
@@ -1565,6 +1700,12 @@ def main():
                              "novel f=0 contexts are always masked in low mode, at train and eval")
     parser.add_argument("--intervention_low_inclusive", type=int, default=0,
                         help="1: mask_low masks f <= threshold instead of f < threshold")
+    parser.add_argument("--intervention_mask_frac", type=float, default=0.02,
+                        help="random_context_loss_mask: fraction of distinct trigram context "
+                             "types to exclude from the loss (default 0.02)")
+    parser.add_argument("--context_eval_ab", type=int, default=0,
+                        help="1: log per-eval A/B context gap contributions to "
+                             "context_gap.jsonl (auto-enabled for random_context_loss_mask)")
     parser.add_argument("--enable_unigram", type=int, default=0)
     parser.add_argument("--enable_bigram", type=int, default=1)
     parser.add_argument("--enable_trigram", type=int, default=1)
@@ -1643,7 +1784,7 @@ def main():
         parser.error("--cosine_min_lr_mult must be in [0, 1]")
     if args.intervention_freq_threshold < 0:
         parser.error("--intervention_freq_threshold must be non-negative")
-    if args.intervention in {"mask_low_freq", "mask_high_freq"} and (
+    if args.intervention in {"mask_low_freq", "mask_high_freq", "random_context_loss_mask"} and (
         not args.freq_index or not os.path.isfile(args.freq_index)
     ):
         parser.error(f"--intervention {args.intervention} requires an existing --freq_index")
@@ -1692,6 +1833,8 @@ def main():
         ),
         intervention_freq_threshold=args.intervention_freq_threshold,
         intervention_low_inclusive=bool(args.intervention_low_inclusive),
+        intervention_mask_frac=args.intervention_mask_frac,
+        context_eval_ab=bool(args.context_eval_ab),
         data_dir=args.data_dir,
         train_shards=[int(x) for x in args.train_shards.split(",") if x.strip()],
         val_shards=[int(x) for x in args.val_shards.split(",") if x.strip()],
@@ -1851,6 +1994,17 @@ def main():
             os.path.join(cfg.out_dir, "exact_freq_loss.jsonl"), "w"
         )
         print(f"[nglab] freq-bin eval enabled (index: {args.freq_index})")
+
+    context_gap_log = None
+    if cfg.intervention == "random_context_loss_mask" or cfg.context_eval_ab:
+        if freq_index_obj is None:
+            raise SystemExit("context A/B eval requires an existing --freq_index")
+        if not fixed_train_probe:
+            raise SystemExit("context A/B eval requires --fixed_train_probe > 0")
+        info = model.setup_context_eval_sets(freq_index_obj, cfg.intervention_mask_frac, cfg.seed)
+        context_gap_log = open(os.path.join(cfg.out_dir, "context_gap.jsonl"), "w")
+        print(f"[nglab] context A/B sets: {info['n_set_types']}/{info['n_types']} trigram "
+              f"types per set (frac={info['frac']}, seed={info['seed']})")
         # Independent train-side diagnostic iterator: reads the same shards in
         # the same fixed order but owns its own dataset state, so freq-bin
         # diagnostics never consume training batches and never advance the
@@ -2018,12 +2172,18 @@ def main():
                 print(f"[nglab] intervention={cfg.intervention} at step={step + 1} "
                       f"epoch={train_ds._epoch + 1}")
             with amp_ctx:
-                if freq_bin_log is not None and micro == grad_accum - 1:
+                if model._context_loss_mask_active:
+                    loss, ptl = model(inp, targets=tgt, return_token_losses=True)
+                    keep = model._context_loss_keep_mask(inp) & tgt.ne(-1)
+                    loss = ptl[keep].mean()
+                    if freq_bin_log is not None and micro == grad_accum - 1:
+                        cur_inp, cur_tgt, cur_ptl = inp, tgt, ptl.detach()
+                elif freq_bin_log is not None and micro == grad_accum - 1:
                     loss, ptl = model(inp, targets=tgt, return_token_losses=True)
                     cur_inp, cur_tgt, cur_ptl = inp, tgt, ptl.detach()
-                    loss = loss / grad_accum
                 else:
-                    loss = model(inp, targets=tgt) / grad_accum
+                    loss = model(inp, targets=tgt)
+                loss = loss / grad_accum
             # freeze_both freezes every parameter: the graph then has no
             # grad_fn, so backward is skipped entirely (optimizer no-ops).
             if loss.requires_grad:
@@ -2113,6 +2273,14 @@ def main():
             print(f"[nglab] probe step {step+1:4d} | ftrain {fixed_train_loss:.4f} "
                   f"| fval {fixed_val_loss:.4f} | fgap {fixed_val_loss-fixed_train_loss:+.4f} "
                   f"| epoch {train_ds._epoch+1}")
+        if context_gap_log is not None and fixed_train_probe and probe_due:
+            cg = evaluate_context_gap(model, fixed_train_probe, validation_batches,
+                                      dtype=args.dtype)
+            cg["step"] = step + 1
+            cg["epoch"] = train_ds._epoch + 1
+            cg["epoch_pos"] = train_ds._epoch + train_ds.epoch_progress()
+            context_gap_log.write(json.dumps(cg) + "\n")
+            context_gap_log.flush()
         fixed_freq_due = (
             ((cfg.val_steps and (step + 1) in cfg.val_steps)
              or (not cfg.val_steps
