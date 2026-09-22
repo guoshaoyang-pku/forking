@@ -1657,6 +1657,12 @@ def main():
                              "empty = default single-layer layout")
     parser.add_argument("--steps", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--deterministic", type=int, default=0,
+                        help="1 = strict run-to-run determinism: "
+                             "torch.use_deterministic_algorithms(True) + math-only SDPA "
+                             "(flash/mem-efficient backward are non-deterministic) + "
+                             "CUBLAS_WORKSPACE_CONFIG. Slower; bitwise only within the "
+                             "same GPU/driver/torch env.")
     parser.add_argument("--data_dir", default=os.environ.get("NGLAB_DATA_DIR", ""))
     parser.add_argument("--out_dir", default=os.environ.get("NGLAB_OUT_DIR", "data/runs_fixed"))
     parser.add_argument("--train_shards", default=os.environ.get("NGLAB_TRAIN_SHARDS", "1"),
@@ -1904,6 +1910,16 @@ def main():
         raise SystemExit("table_dim must be <= n_embd (rows are zero-padded up to n_embd)")
 
     set_seed(cfg.seed)
+    if args.deterministic:
+        # Must be set before the first cuBLAS handle is created (first GEMM).
+        os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+        torch.use_deterministic_algorithms(True)
+        # flash / mem-efficient SDPA backward are non-deterministic (atomic
+        # reductions); math backend is the deterministic path.
+        torch.backends.cuda.enable_flash_sdp(False)
+        torch.backends.cuda.enable_mem_efficient_sdp(False)
+        print("[nglab] deterministic mode: use_deterministic_algorithms=True, "
+              "SDPA=math-only, CUBLAS_WORKSPACE_CONFIG=:4096:8")
     os.makedirs(cfg.out_dir, exist_ok=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[nglab] device={device} injection={cfg.nanogpt_ngram_injection_position} steps={cfg.max_steps}")
