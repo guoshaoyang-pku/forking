@@ -304,10 +304,95 @@ def fig7_fixed(runs_root: Path, infix: str = "ctxmask"):
     print((OUT / f"fig07_context_mask_fixed{tag}.pdf").relative_to(ROOT))
 
 
-def fig7star(kl_json: Path, arms=None, tag=""):
-    """Fig 7*: drift of the masked contexts' next-token distributions.
+def fig7b_kl_traj(kl_json: Path):
+    """Fig 7b (2026-09-22 redesign): cumulative drift of masked vs unmasked
+    contexts relative to the epoch-1-end checkpoint, through epochs 2-4.
 
-    Three KL probes on set A (mean full-vocab KL over fixed-val positions):
+    Both arms mask set A from the epoch-2 boundary (runs *_ctxmask_e1_l4);
+    KL(p_epoch1_end || p_epoch_end) on fixed-val positions, full vocab.
+    Arms: both tables (default) vs no-gram; masked vs unmasked peers.
+
+    Three variants: line chart / grouped bars / nested bars (masked drawn
+    inside the unmasked bar).
+    """
+    d = json.loads(kl_json.read_text())["arms"]
+    epochs = [2, 3, 4]
+    arm_style = [("both", "both tables", S.ARM_COLORS["input"]),
+                 ("nogram", "no-gram", S.ARM_COLORS["nogram"])]
+
+    def vals(arm, key):
+        return [d[arm][f"e{e}"][key] for e in epochs]
+
+    # ---- variant 1: lines -------------------------------------------------
+    fig, ax = plt.subplots(figsize=(4.4, 2.5))
+    for arm, name, c in arm_style:
+        ax.plot(epochs, vals(arm, "B"), color=c, lw=1.5, marker="o", ms=4.5,
+                label=f"{name} · unmasked")
+        ax.plot(epochs, vals(arm, "A"), color=c, lw=1.5, ls="--", marker="o",
+                ms=4.5, mfc="none", label=f"{name} · masked")
+    ax.set_xticks(epochs)
+    ax.set_xticklabels([f"epoch {e} end" for e in epochs], fontsize=8)
+    ax.set_ylabel("KL$(p_{ep1} \\| p_{t})$ on fixed val (nats)")
+    ax.legend(fontsize=7.5, framealpha=0.9, edgecolor="none",
+              loc="upper left")
+    fig.tight_layout(pad=0.4)
+    fig.savefig(OUT / "fig07b_kl_traj_lines.pdf")
+    fig.savefig(OUT / "fig07b_kl_traj_lines.png", dpi=300)
+    print((OUT / "fig07b_kl_traj_lines.pdf").relative_to(ROOT))
+
+    # ---- variant 2: grouped bars ------------------------------------------
+    fig, ax = plt.subplots(figsize=(4.4, 2.5))
+    w = 0.19
+    for gi, e in enumerate(epochs):
+        for j, (arm, name, c) in enumerate(arm_style):
+            for k, (key, lab, hatch) in enumerate(
+                    (("A", "masked", "//"), ("B", "unmasked", ""))):
+                x = gi + (j - 0.5) * 0.44 + (k - 0.5) * (w + 0.02)
+                v = d[arm][f"e{e}"][key]
+                ax.bar(x, v, width=w, color=c, alpha=0.9 if k else 0.55,
+                       hatch=hatch, edgecolor="white", lw=0.3,
+                       label=f"{name} · {lab}" if gi == 0 else None)
+                ax.annotate(f"{v:.2f}", (x, v), textcoords="offset points",
+                            xytext=(0, 2), ha="center", fontsize=6,
+                            color=c)
+    ax.set_xticks(range(3))
+    ax.set_xticklabels([f"epoch {e} end" for e in epochs], fontsize=8)
+    ax.set_ylabel("KL$(p_{ep1} \\| p_{t})$ on fixed val (nats)")
+    ax.legend(fontsize=6.5, framealpha=0.9, edgecolor="none", ncol=2,
+              loc="upper left")
+    fig.tight_layout(pad=0.4)
+    fig.savefig(OUT / "fig07b_kl_traj_bars.pdf")
+    fig.savefig(OUT / "fig07b_kl_traj_bars.png", dpi=300)
+    print((OUT / "fig07b_kl_traj_bars.pdf").relative_to(ROOT))
+
+    # ---- variant 3: nested bars (masked inside unmasked) -------------------
+    fig, ax = plt.subplots(figsize=(4.4, 2.5))
+    w = 0.3
+    for gi, e in enumerate(epochs):
+        for j, (arm, name, c) in enumerate(arm_style):
+            x = gi + (j - 0.5) * (w + 0.08)
+            vb, va = d[arm][f"e{e}"]["B"], d[arm][f"e{e}"]["A"]
+            ax.bar(x, vb, width=w, color=c, alpha=0.35, edgecolor=c, lw=0.8,
+                   label=f"{name} · unmasked" if gi == 0 else None)
+            ax.bar(x, va, width=w, color=c, alpha=0.95,
+                   label=f"{name} · masked" if gi == 0 else None)
+            ax.annotate(f"{va:.2f}", (x, va / 2), ha="center", va="center",
+                        fontsize=6.5, color="white", fontweight="bold")
+            ax.annotate(f"{vb:.2f}", (x, vb), textcoords="offset points",
+                        xytext=(0, 2), ha="center", fontsize=6.5, color=c)
+    ax.set_xticks(range(3))
+    ax.set_xticklabels([f"epoch {e} end" for e in epochs], fontsize=8)
+    ax.set_ylabel("KL$(p_{ep1} \\| p_{t})$ on fixed val (nats)")
+    ax.legend(fontsize=6.5, framealpha=0.9, edgecolor="none", ncol=2,
+              loc="upper left")
+    fig.tight_layout(pad=0.4)
+    fig.savefig(OUT / "fig07b_kl_traj_nested.pdf")
+    fig.savefig(OUT / "fig07b_kl_traj_nested.png", dpi=300)
+    print((OUT / "fig07b_kl_traj_nested.pdf").relative_to(ROOT))
+
+
+def fig7star(kl_json: Path, arms=None, tag=""):
+    """Fig 7* (legacy 3-probe layout, superseded by fig7b_kl_traj).
       prev_normal  = epoch-1 boundary -> epoch-2 boundary (a normal epoch);
       masked       = epoch-2 boundary -> end of the epoch-3-masked run;
       normal_ctrl  = epoch-2 boundary -> epoch-3 end of the unmasked control.
@@ -363,6 +448,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs_root", type=Path)
     ap.add_argument("--kl_json", type=Path)
+    ap.add_argument("--kl_traj_json", type=Path,
+                    help="merged {arm: {e2/e3/e4: {A,B}}} KL trajectory JSON "
+                         "for fig7b (fig7b_kl_traj)")
     ap.add_argument("--infix", default="ctxmask",
                     help="run-id infix for fig7 (ctxmask | rowmask)")
     ap.add_argument("--arms", default="nogram,bigram,trigram,both",
@@ -381,6 +469,8 @@ def main():
         arms = [a for a in args.arms.split(",") if a]
         tag = "" if args.infix == "ctxmask" else f"_{args.infix}"
         fig7star(args.kl_json, arms, tag)
+    if args.kl_traj_json:
+        fig7b_kl_traj(args.kl_traj_json)
 
 
 if __name__ == "__main__":

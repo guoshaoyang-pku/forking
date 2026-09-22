@@ -17,6 +17,7 @@ train/val 两侧同步退化，不产生 gap。
 |---|---|---|---|
 | type-mode 12 runs | `s1v5_128_marm_{nogram,bigram,trigram,both}_ctxmask_{ctrl,e1,e2}_fixed` | 1011 / 674 / 1011 | A/B 按 trigram **类型** 2% |
 | type-mode 4-epoch 延展 | `s1v5_128_marm_both_ctxmask_{ctrl,e1,e2}_l4_fixed` | 1348 | **fig7 数据源** |
+| type-mode 4-epoch nogram | `s1v5_128_marm_nogram_ctxmask_e1_l4_fixed` | 1348 | **fig7b 数据源**（2026-09-22 晚补跑） |
 | row-mode 5 runs | `s1v5_128_marm_both_rowmask_{ctrl,e1,e2}_fixed`、`s1v5_128_marm_nogram_rowmask_{e1,e2}_fixed` | 同上 | A/B 按表**行** 2%（hash 碰撞判别） |
 
 `e1` = mask 从 epoch 2 起点（step 338）生效；`e2` = 从 epoch 3 起点（step 675）生效；
@@ -70,7 +71,22 @@ A/B 选取（两次运行确定性一致）：
    A 位置的 online loss。**有 shard 位置伪影**：epoch 初窗口落在早 shard 位置（无 backbone
    recency，tr 偏高 2.28→3.95），epoch 末反之 → 锯齿 + 边界骤降。只能「epoch 末对 epoch 末」读，
    或用 epoch 平均口径（剔除边界短窗 `tr_online_n_A < 20000`）。
-3. **KL（fig7\*）**：`KL(p_boundary ‖ p_end)` 逐 fixed-val 位置全 vocab 精确计算，按 A/B/other 分组。
+3b. **KL 轨迹（fig7b，2026-09-22 晚重设计）**：ref = 各 run 的 epoch-1 末 ckpt，累计
+   `KL(p_ep1 ‖ p_t)` 于 epoch 2/3/4 末，type-mode e1_l4 runs（mask 均从 epoch 2 起），
+   `context_kl/context_kl_traj_e1_l4.json`。A(masked)/B(unmasked)/other：
+
+| epoch 末 | both A | both B | nogram A | nogram B |
+|---|---|---|---|---|
+| 2 | 0.465 | 0.466 | 0.884 | 0.891 |
+| 3 | 1.109 | 1.129 | 1.604 | 1.657 |
+| 4 | 1.819 | 1.781 | 1.960 | 2.032 |
+
+   **读法**：① 首个 masked epoch 双表臂 masked-KL 约为 nogram 的一半（0.47 vs 0.88）——
+   表把 masked context 的分布漂移减半；② 优势随 epoch 数收窄（epoch 4 时 1.82 vs 1.96），
+   累计共享参数漂移最终主导；③ 臂内 masked vs unmasked 差异很小（nogram B 略高 +0.01~0.07；
+   both 基本持平，epoch 4 甚至反转）——无论有无表，masked context 的分布仍随 backbone
+   大幅漂移，但该漂移同步作用于 train/val 两侧，不进 gap（与 fig7a 自洽）。
+3. **KL 三探针（旧 fig7\* 布局，已被 fig7b 取代）**：`KL(p_boundary ‖ p_end)` 逐 fixed-val 位置全 vocab 精确计算，按 A/B/other 分组。
    三个探针：`prev_normal`（epoch1→2 边界，正常 epoch 的漂移量）、`masked`（epoch2 边界→mask run 终点）、
    `normal_ctrl`（epoch2 边界→ctrl 终点）。type-mode A-KL（mean，`context_kl.json`）：both 0.505/0.469/0.608、
    nogram 0.919/0.584/0.728、bigram 0.436/0.334/0.458、trigram 0.445/0.707/0.640（trigram-only 异常：
@@ -94,7 +110,8 @@ python3 docs/plot_scripts/plot_paper_fig7_ctxmask_real.py \
 ```
 
 产物（`docs/figs/paper/`）：
-- **`fig07_context_mask_fixed_perstep.{pdf,png}` ← 论文用（fixed 口径逐 step，4 epochs）**
+- **`fig07_context_mask_fixed_perstep.{pdf,png}` ← fig7a 论文用（fixed 口径逐 step，4 epochs）**
+- **`fig07b_kl_traj_{lines,bars,nested}.{pdf,png}` ← fig7b 三版候选（KL 轨迹，epoch 2–4）**
 - `fig07_context_mask_perstep.{pdf,png}`：fixed + online 双面板对照
 - `fig07_context_mask_epochmean.{pdf,png}`：online 口径 epoch 平均（无伪影版）
 - `fig07star_context_kl.{pdf,png}`：fig7\* type-mode 四臂（主版）

@@ -1,0 +1,49 @@
+{
+ "meta": {
+  "context_set_mode": "type",
+  "frac": 0.02,
+  "seed": 42,
+  "ref": "epoch-1-end checkpoint of each run",
+  "runs": {
+   "both": "s1v5_128_marm_both_ctxmask_e1_l4_fixed",
+   "nogram": "s1v5_128_marm_nogram_ctxmask_e1_l4_fixed"
+  },
+  "note": "Mask set A (2% of distinct trigram types) from the epoch-2 boundary; cumulative full-vocab KL from the epoch-1-end reference on fixed val; A=masked, B=unmasked peers, other=remaining 96%."
+ },
+ "arms": {
+  "both": {
+   "e2": {
+    "A": 0.46470826864242554,
+    "B": 0.4664273262023926,
+    "other": 0.5193910002708435
+   },
+   "e3": {
+    "A": 1.109263300895691,
+    "B": 1.1289829015731812,
+    "other": 1.2796225547790527
+   },
+   "e4": {
+    "A": 1.8193119764328003,
+    "B": 1.781211256980896,
+    "other": 2.0358779430389404
+   }
+  },
+  "nogram": {
+   "e2": {
+    "A": 0.8843125700950623,
+    "B": 0.8908151388168335,
+    "other": 0.8867589831352234
+   },
+   "e3": {
+    "A": 1.6043555736541748,
+    "B": 1.6573965549468994,
+    "other": 1.6195884943008423
+   },
+   "e4": {
+    "A": 1.9598814249038696,
+    "B": 2.0316522121429443,
+    "other": 1.9883229732513428
+   }
+  }
+ }
+}
