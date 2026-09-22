@@ -1,0 +1,6 @@
+\section{Future Work}
+\label{sec:discussion}
+
+Forking under over-encoding with data replay is a robust phenomenon, and its impact is largest in the short-budget, heavily repeated regimes of SFT and RL. This paper concentrates on the mechanism, which we consider reasonably complete; the next step is to characterize forking in production-scale models and to determine which production failures it accounts for. Such a study is currently limited by the scarcity of open over-encoding models---the most prominent, DeepSeek-V4.1-Flash \citep{deepseek2026v41flash}, is very recent and very large---but its importance will grow as over-encoding matures.
+
+Beyond loss regularities, future work should locate the downstream performance harm of forking and develop ways to avoid it. Masking low-frequency contexts is a promising candidate. An alternative is to restrict the over-encoding vocabulary at construction time by BPE-style aggregation, extrapolating the tokenizer-training algorithm so that low-frequency n-grams never enter the table; the over-encoding scheme of SCONE \citep{yu2025scone} already adopts this design.

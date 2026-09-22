@@ -13,7 +13,7 @@
 | 判断一句话能否写进文章 | [claims-ledger](docs/claims-ledger.md) |
 | 查代码、数据、图、文献和远端位置 | [resource-index](docs/resource-index.md) |
 | 分配 agent、回收结果 | [coordination README](docs/coordination/README.md) |
-| 写正文或准备附录 | [report](docs/report/index.html)、[appendix plan](docs/plans/plan-6-appendix-structure.md) |
+| 写正文或准备附录 | [paper/](paper/README.md)（Overleaf 镜像）、[report](docs/report/index.html)、[appendix plan](docs/plans/plan-6-appendix-structure.md) |
 
 仓库规则和极简 setting 以 agents.md 为准。本文只负责导航，不复制另一份 SSOT。
 
@@ -70,6 +70,7 @@ CPU smoke 只能验证代码路径，不能替代正式实验。主线 run 的�
 
     code/                  主线 nanoGPT、频率索引、诊断和 GPU launchers
     tasks/s1_scaling_three_axis/  自然语料三轴 scaling 任务
+    paper/                 论文正文的 Overleaf 镜像（main.tex + sections + figures）
     docs/experiment-*.md   实验全景、登记簿和 claim ledger
     docs/coordination/     多 agent 分工、登记、回收和证据包规范
     docs/notes/            方法、理论、数据、文献和研究判断

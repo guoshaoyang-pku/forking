@@ -69,6 +69,8 @@
 | 权威主汇报（发布地） | blog 仓库 `blogs/ngram-gap-mechanism-guide/index.html` | ✅ 唯一权威版，已剔除 current shell |
 | 权威主汇报（本地副本） | `docs/report/index.html` | ✅ 与发布地同步的只读副本 |
 | 权威背景页 | `docs/report/background.html` | ✅ 术语、伪代码、debug、current-shell 废弃说明 |
+| 权威论文正文（写作源） | Overleaf 项目 `git.overleaf.com/6a9b071075d832e243e895a2` | ✅ 唯一正文写作入口，协作者在网页端编辑 |
+| 权威论文正文（仓库镜像） | `paper/` | ✅ 只读镜像，由 `paper/scripts/sync_from_overleaf.sh` 拉取 |
 | 历史版本 | `docs/report/versions/`（20260805 / guide-0728 / guide-0730） | 🗄️ 溯源用 |
 | 历史版本 | `docs/report/versions/guide-full-chapter0-19.html` | ⛔ 建在 `baseline_current` 上，不再维护 |
 | 历史版本 | `docs/report/versions/regime-bridge-DEPRECATED.html` | ⛔ 同事的 current-shell 实验 |
@@ -78,6 +80,7 @@
 2. **主文档只在 blog 仓库手工编辑**，改完 copy 回 `docs/report/index.html`。`sync_to_blog.sh` 只同步图与独立报告，**绝不覆盖 index.html**，也不自动 push。
 3. 内部实验事实来源：`experiment-lines.md`（全景+权威数据）→ `experiment-log.md`（登记簿）→ `claims-ledger.md`（断言台账）。
 4. `versions/` 历史版本只在查「历史怎么做过」时打开，不作结论来源。
+5. **论文正文只在 Overleaf 编辑**，`paper/` 是只读镜像：改正文→Overleaf，然后跑 `paper/scripts/sync_from_overleaf.sh` 回填。镜像里不产生任何独立数值；正文数字仍须回到 `experiment-log.md` 的 run_id/step/seed。论文图先落 `docs/figs/` + `docs/plot_scripts/`，再上传 Overleaf，追溯见 `paper/FIGURE_PROVENANCE.md`。
 
 ---
 
@@ -91,6 +94,7 @@ ngram-gap-lab/
 ├── .agents/skills/ + README.md
 ├── code/                        # 主线 nanoGPT（train.py / ngram_freq.py / cluster/ / tools/）
 ├── tasks/                       # 自包含的自然语料 scaling 任务
+├── paper/                       # 论文正文的 Overleaf 只读镜像（main.tex + sections/ + figures/ + 同步脚本）
 ├── docs/
 │   ├── experiment-lines.md      # ★★ 实验线全景 + 权威数据源 + 待办（入口）
 │   ├── experiment-log.md        # ★ 实验登记簿

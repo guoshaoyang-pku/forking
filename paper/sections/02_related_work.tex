@@ -1,0 +1,22 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{NanoGPT, autoresearch, and recursive model improvement.}
+\begin{wrapfigure}{r}{0.52\textwidth}
+\vspace{-10pt}
+\centering
+\includegraphics[width=0.5\textwidth]{figures/fig_transformer_ngram_injection_routes.pdf}
+\caption{Three $n$-gram injection routes.}
+\label{fig:injection-routes}
+\vspace{-12pt}
+\end{wrapfigure}
+NanoGPT provides a compact implementation for training GPT-style language models \citep{karpathy2022nanogpt}. The autoresearch workflow places a language-model agent in a repeated cycle of modifying a trainer, running a budgeted experiment, and evaluating validation BPB \citep{karpathy2026autoresearch}. Related automated-research reports explore how agents can use earlier experiments to propose and combine improvements to language-model training \citep{recursive2026research}. Our work begins within this kind of search, but focuses on an unexpected training phenomenon and the conditions under which an automatically selected modification fails to generalize.
+
+\paragraph{N-gram augmentation, over-encoding, and conditional memory.}
+N-Grammer augments Transformers with latent n-gram representations, using discrete latent features to construct additional context-dependent representations \citep{roy2022ngrammer}. The Over-Tokenized Transformer separates the capacity of input encoding from the output vocabulary and augments input representations with projected multi-order n-gram embeddings \citep{huang2025over}. Its experiments show that increasing sparse input vocabulary can improve language-model loss over the tested range. Engram develops scalable lookup-based conditional memory as a complementary form of sparsity, combining n-gram retrieval with learned integration into the network \citep{cheng2026engram}. These methods differ in their keys, lookup mechanisms, and injection routes, but all expand the model's access to local context information. We examine a potential cost of this capacity when finite training data are replayed.
+
+\paragraph{Training with repeated data.}
+Data-constrained scaling studies show that repeated tokens can remain useful, while their marginal value decreases as repetition increases \citep{muennighoff2023scaling}. \citet{hernandez2022repeated} study how repeated subsets affect language-model learning, including increases in test loss during training and changes in copying-related behavior. These results establish that replay can alter both generalization and internal computation. Forking adds a component-specific case: rapid, replay-aligned divergence associated with local n-gram memory, together with interventions that test the role of context frequency and memory access.
+
+\paragraph{Good--Turing estimation and continuation coverage.}
+Good--Turing estimation uses frequency-of-frequencies statistics to estimate the probability mass of outcomes absent from a finite sample \citep{good1953population,gale1995good}. Its missing-mass estimate is the fraction of observations belonging to outcomes seen exactly once. Applied conditionally to an observed context, this estimates the probability assigned to continuations not represented in its training occurrences. This provides a statistical basis for studying incomplete continuation coverage. Relating that missing mass to a model's loss gap requires additional assumptions about how training changes predictions for seen and unseen continuations.

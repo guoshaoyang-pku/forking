@@ -1,0 +1,12 @@
+# LaTeX build artifacts (mirror of the Overleaf checkout's ignore list)
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.spl
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+main.pdf
+paper.pdf

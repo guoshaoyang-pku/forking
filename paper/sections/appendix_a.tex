@@ -1,0 +1,147 @@
+\section{Original Discovery and Observable Screening}
+\label{app:discovery}
+
+\subsection{The original task and discovery setting}
+\label{app:original-setting}
+
+NanoGPT RSI searches for changes that reduce validation bits per byte (BPB). An agent modifies \code{train.py} within a fixed compute budget, evaluates the result, and continues to revise the architecture and training strategy. The original automated search used a training budget of approximately five minutes per experiment. The small-data experiment in which forking was discovered instead used 2000 optimizer steps to inspect a longer trajectory. Forking was an unexpected outcome of this process.
+
+The text came from the Hugging Face dataset \href{https://huggingface.co/datasets/karpathy/climbmix-400b-shuffle}{\code{karpathy/climbmix-400b-shuffle}}, using shards 1--10 and 6542. In the discovery-stage split, shards 1--3 were used for training, and shards 4--10 and 6542 for validation. This was a stage-specific small-data configuration, not the default split for the entire automated search. The loader read and packed text in a fixed order, then restarted after traversing the training shards. Three shards did not provide enough unique data for 2000 steps, so the run necessarily entered later epochs. Training and validation losses initially decreased together. When text began to repeat, training loss continued to fall while validation loss flattened or increased, producing a rapid divergence near the epoch boundary.
+
+The agent-added n-gram module used independent learnable lookup tables at different layers. Each bigram or trigram context was mapped through two hashes. The two retrieved half-width vectors were concatenated, then injected into the attention value branch through an input-dependent sigmoid gate:
+\begin{equation}
+ v_t^{(\ell)}\leftarrow v_t^{(\ell)}
+ +g_{2,t}^{(\ell)}\odot e_{2,t}^{(\ell)}
+ +g_{3,t}^{(\ell)}\odot e_{3,t}^{(\ell)}.
+ \label{eq:original-injection}
+\end{equation}
+Here $e_{n,t}^{(\ell)}$ is the concatenated lookup result; the gate is computed from the corresponding channels of that layer's input. Hash constants and table parameters differ across layers. The retrieved vectors enter the value branch, rather than being added directly to the token embedding.
+
+Table~\ref{tab:discovery-config} records the frozen configuration used in the observable-localization experiments below. It differs from the later controlled setting in Section~\ref{sec:setting}.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Configuration for discovery-stage observable screening. Layer indices start at one.}
+\label{tab:discovery-config}
+\begin{tabular}{@{}p{0.21\linewidth}p{0.74\linewidth}@{}}
+\toprule
+Component & Configuration\\
+\midrule
+Backbone & 8 layers; hidden dimension 768; 6 attention heads; head dimension 128.\\
+Input and batch & Sequence length 2048; 72 sequences or 147456 tokens per update; gradient accumulation 1.\\
+Tokenizer & Shared \code{tokenizer_fixed_tr10}; vocabulary 8192; built from the first ten shards.\\
+N-gram tables & Two tables per order and injection layer; each has 524288 rows of dimension 384. Bigram at layers 2, 4, 6, 8; trigram at layers 2, 6, 8.\\
+Optimizers & Muon for matrix parameters, base learning rate 0.04; grouped AdamW for token/value embeddings, output and scalar parameters; RMSProp for bigram/trigram tables, learning rate 0.6, second-moment decay 0.999, no weight decay.\\
+Schedule & Archived baseline schedule: Muon and ordinary AdamW warmdown begins at 5\% and 35\% of the step budget, respectively; final multiplier 0.05. N-gram table learning rates remain constant.\\
+Logging & Four runs, each 1000 steps, seed 42. Validation uses four batches every five steps. Optimizer observables are normally logged every five steps and at every step in the 320--380 window, alongside parameter and layer statistics.\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Localizing the n-gram pathway across controlled replay schedules}
+\label{app:screening}
+
+\subsubsection{Four experiments used to screen observables}
+
+We varied when training data were first reused and how reuse was organized, while fixing the model, optimizer configuration, tokenizer, and step budget. The four experiments distinguish ordinary replay, delayed replay, random repetition without a full-pass transition, and an imposed replay cycle.
+
+\paragraph{TR1: sequential replay of one shard.}
+The loader repeatedly traversed shard 1 in a fixed order. The second epoch started at step 338, followed by pronounced forking; the third started at step 687, with a further increase in the gap. This run supplied the boundary event to be localized.
+
+\paragraph{TR2: sequential replay of two shards.}
+The loader used shards 1 and 2 before restarting. At approximately step 350, it was still in the first traversal, and the training and validation curves remained close. The second epoch started at step 683, and the divergence was delayed accordingly. This control distinguishes a response to reuse from a change tied only to the absolute training step.
+
+\paragraph{Random sampling with replacement.}
+Documents were sampled uniformly with replacement from shard 1, then tokenized and packed into batches. Repeated documents could occur from the beginning of training. A gap developed gradually, but there was no full-pass replay transition near step 350. This supplied a control for the local boundary event.
+
+\paragraph{50-new / 50-replay.}
+The loader read 50 consecutive new batches from the shard-1 stream, then replayed those cached batches in the same order. Training loss fell and validation loss rose during replay; the curves moved closer when new data resumed. The resulting cycle of approximately 100 steps provided a test of whether an observable followed the replay state. Near the end of a base-stream epoch, a short block was replayed only for its actual cached length, so the local period could be shorter than 100 steps.
+
+TR1, replacement sampling, and 50/50 used validation shards 2--10 and 6542. TR2 used shards 3--10 and 6542. These validation sets were therefore not identical. Screening compared the temporal responses of internal observables; loss curves identified the event within each run. In this appendix, a step counts completed optimizer updates. The centers 350 and 700 refer to screening windows, while actual epoch boundaries come from loader logs.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{appendix_a1_four_controls.png}
+\caption{Four data-reuse controls. Blue and red curves show training and validation cross-entropy. Gray shading marks $350\pm25$ and, for TR2, $700\pm25$; dashed lines mark logged epoch boundaries. The 50/50 panel shows steps 100--600, with replay intervals in orange; the other panels show steps 100--1000. Archived curves are unsmoothed. Between validation evaluations, the most recent value is carried forward for display.}
+\label{fig:four-controls}
+\end{figure}
+
+\subsubsection{Five observable-screening rules}
+
+OPHIS records statistics of parameters, gradients, optimizer states, and update vectors, including their directional relationships \citep{yu2026ophis}. Candidates were scalar time series shared by the four runs. We excluded bookkeeping quantities such as data progress, learning-rate multipliers, throughput, and parameter counts, as well as some auxiliary fields used to construct other statistics. Window calculations used finite recorded values without interpolation.
+
+Let $\mu(X)$ and $\sigma(X)$ denote the mean and population standard deviation of the recorded values in $X$, let $X\sqcup Y$ concatenate both collections, and set $\varepsilon=10^{-12}$. To compare windows or runs with different scales, we used
+\begin{equation}
+ D(X,Y)=\frac{|\mu(X)-\mu(Y)|}
+ {\max\{\sigma(X\sqcup Y),\,0.05|\mu(X\sqcup Y)|,\,\varepsilon\}}.
+\end{equation}
+For a local event compared with a neighboring baseline $B$, we used
+\begin{equation}
+ H(X,B)=\frac{|\mu(X)-\mu(B)|}
+ {\max\{\sigma(X\sqcup B),\,0.05|\mu(B)|,\,\varepsilon\}}.
+\end{equation}
+The windows were $W=[325,375]$, $L=[255,315]$, $R=[385,445]$, and the later TR2 window $W'=[675,725]$. Write $X_r(W)$ for the values recorded in window $W$ of run $r$.
+
+\paragraph{C1: a within-run change across replay states.}
+Compare TR2 near steps 350 and 700:
+\begin{equation}
+ C_1=D\bigl(X_{\mathrm{TR2}}(W),X_{\mathrm{TR2}}(W')\bigr)\geq0.5.
+\end{equation}
+The early window is within the first traversal; the later one covers the onset of replay. This rule retains curves that differ across these states.
+
+\paragraph{C2: a cross-run difference at the same training time.}
+Compare TR1 and TR2 near step 350:
+\begin{equation}
+ C_2=D\bigl(X_{\mathrm{TR1}}(W),X_{\mathrm{TR2}}(W)\bigr)\geq0.5.
+\end{equation}
+The runs have the same elapsed optimizer steps and learning-rate schedule, but only TR1 has entered replay.
+
+\paragraph{C3: a boundary event stronger than random repetition.}
+For each run, define
+\begin{equation}
+ E_r=H\bigl(X_r(W),X_r(L)\sqcup X_r(R)\bigr).
+\end{equation}
+Require
+\begin{equation}
+ C_3=\max(0,E_{\mathrm{TR1}}-E_{\mathrm{random}})\geq0.5.
+\end{equation}
+This retains candidates whose local TR1 event exceeds the change at the same time under random repetition.
+
+\paragraph{C4: agreement with the imposed replay period.}
+Within the first 700 steps of the 50/50 run, pair all recorded values separated by exactly 100 steps. Let $U,V$ be the paired columns and $\rho_{100}$ their Pearson correlation. Define
+\begin{equation}
+ a=\frac{\min\{\sigma(U),\sigma(V)\}}
+         {\max\{\sigma(U\sqcup V),\varepsilon\}},\qquad
+ C_4=\max(0,\rho_{100})\min(1,a)\geq0.15.
+\end{equation}
+Only pairs with $t\geq1$ and $t+100\leq700$ are used. The score is zero when fewer than ten pairs are available.
+
+\paragraph{C5: a center window distinct from both neighbors.}
+Require the TR1 center to differ from both the preceding and following windows:
+\begin{equation}
+ C_5=\min\left\{
+ \begin{aligned}
+ &H\bigl(X_{\mathrm{TR1}}(W),X_{\mathrm{TR1}}(L)\bigr),\\
+ &H\bigl(X_{\mathrm{TR1}}(W),X_{\mathrm{TR1}}(R)\bigr)
+ \end{aligned}\right\}\geq0.5.
+\end{equation}
+Taking the smaller deviation rejects curves that differ on only one side.
+
+A candidate had to pass all five thresholds. For manual-review ordering, the script saturated each score as $q_k=C_k/(1+C_k)$ and ranked candidates by
+\begin{equation}
+ S=100\left[0.7\min_k q_k+0.3\,\operatorname{mean}_k q_k\right].
+\end{equation}
+The windows and thresholds were exploratory heuristics. These scores narrowed the set for inspection; they were not significance tests or causal evidence.
+
+\subsubsection{Manual inspection and component removal}
+
+Curves that were identical across the four runs, or differed only by a fixed scale factor, were merged. Representative statistics were chosen for clear parameter-group attribution and interpretability. Manual inspection of the remaining small set highlighted the n-gram table's update magnitude and update--parameter direction relationship. The update magnitude rose after replay began, shifted later in TR2, and followed the alternation between new and replayed data in the 50/50 run (Figure~\ref{fig:ngram-observables}). Code inspection confirmed that \code{ngram_embeddings} referred to lookup parameters in \code{bigram_ves} and \code{trigram_ves}. The n-gram pathway therefore became the main candidate for component intervention.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{appendix_a2_ngram_observables.png}
+\caption{Two representative n-gram observables. The top row shows the RMS magnitude of the RMSProp update vector; the bottom row shows its cosine similarity with the parameter vector. Columns correspond to the four controls. Shading and boundaries follow Figure~\ref{fig:four-controls}. Each panel uses its own visible vertical range. Unsmoothed curves are used to compare event timing and shape.}
+\label{fig:ngram-observables}
+\end{figure}
+
+We then trained the full model and a model with the bigram/trigram value pathways disabled under the same single-shard sequential-replay setting, 1000-step budget, and seed. Unigram value embeddings were retained. The full model forked sharply after replay began. Disabling the two higher-order pathways removed this pattern, and validation BPB continued to improve in later epochs. Final validation BPB was 1.6769 for the full model and 1.0768 for the intervention. This supports a causal role for the n-gram pathway in this configuration. The disappearing feature was the rapid replay-aligned divergence, not every train--validation difference.
