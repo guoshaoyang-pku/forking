@@ -8,10 +8,16 @@ fetched to a local dir by --runs_root):
     the paper's gap contribution C_S(t) for context set S (2% of distinct
     trigram types, seed 42; A = loss-masked from the boundary, B = peers).
 
-Fig 7 (fig07_context_mask.pdf): single 3-epoch panel, spliced like the
-redesign -- ctrl supplies the continuous B (unmasked) and A-normal-training
+Fig 7 (fig07_context_mask.pdf): single panel over epochs 0..4, spliced like
+the redesign -- ctrl supplies the continuous B (unmasked) and A-normal-training
 (dashed) curves; the e1/e2 mask runs supply the post-boundary A-masked
-segments.
+segments.  2026-09-22 (15:39) user redesign: each masked trial runs to the
+SAME late horizon (4 epochs, run_ids *_l4, launcher
+code/cluster/run_ctxmask_ab_long.sh) so the epoch-1-masked trial's aftermath
+stays visible through epochs 2-4 instead of being cut at the epoch-2 boundary;
+the plot prefers *_l4 dirs and falls back to the short §62 dirs.  Style:
+epoch ticks are INTEGERS only, panel width 2.2 in (half of the old 4.4),
+PNG dpi 300.
 
 Fig 7* (fig07star_context_kl.pdf): per-arm KL drift of masked-context
 next-token distributions (eval_context_kl.py output JSON), both-table vs
@@ -34,6 +40,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "docs" / "plot_scripts"))
@@ -53,10 +60,21 @@ def load_ctx(runs_root: Path, run: str):
     return rows
 
 
+def load_ctx_pref(runs_root: Path, base: str):
+    """Prefer the 4-epoch *_l4 rerun, fall back to the short §62 run."""
+    for suffix in ("_l4", ""):
+        p = runs_root / f"{base}{suffix}_fixed" / "context_gap.jsonl"
+        if p.exists():
+            return load_ctx(runs_root, base + suffix)
+    raise SystemExit(f"no context_gap.jsonl for {base}[_l4] under {runs_root}")
+
+
 def fig7(runs_root: Path):
-    ctrl = load_ctx(runs_root, "s1v5_128_marm_both_ctxmask_ctrl")
-    e1 = load_ctx(runs_root, "s1v5_128_marm_both_ctxmask_e1")
-    e2 = load_ctx(runs_root, "s1v5_128_marm_both_ctxmask_e2")
+    ctrl = load_ctx_pref(runs_root, "s1v5_128_marm_both_ctxmask_ctrl")
+    e1 = load_ctx_pref(runs_root, "s1v5_128_marm_both_ctxmask_e1")
+    e2 = load_ctx_pref(runs_root, "s1v5_128_marm_both_ctxmask_e2")
+    max_epoch = max(int(np.ceil(r["step"] / EPOCH_STEPS))
+                    for rows in (ctrl, e1, e2) for r in rows)
 
     def xy(rows, key, step_min=0):
         pts = [(r["step"] / EPOCH_STEPS, r[key]) for r in rows
@@ -64,32 +82,32 @@ def fig7(runs_root: Path):
                and r[key] == r[key]]
         return zip(*pts) if pts else ([], [])
 
-    fig, ax = plt.subplots(figsize=(4.4, 2.5))
+    fig, ax = plt.subplots(figsize=(2.2, 1.95))
     # 2026-09-22 user: show epoch 1 as well (both masks start at epoch
     # boundaries 1 and 2; epoch 1 is the unmasked baseline segment)
     ax.axvline(1, color="#888888", lw=0.7, ls=":")
     ax.axvline(2, color="#888888", lw=0.7, ls=":")
     x, y = xy(ctrl, "Cpos_B")
-    ax.plot(x, y, color=ORANGE, lw=1.6, label="B: unmasked peers")
+    ax.plot(x, y, color=ORANGE, lw=1.4, label="B unmasked")
     x, y = xy(ctrl, "Cpos_A")
-    ax.plot(x, y, color=BLUE, lw=1.2, ls="--", label="A: normal training")
+    ax.plot(x, y, color=BLUE, lw=1.0, ls="--", label="A normal")
     for rows, boundary in ((e1, EPOCH_STEPS), (e2, 2 * EPOCH_STEPS)):
         x, y = xy(rows, "Cpos_A", step_min=boundary)
         xs = list(x)
         ys = list(y)
-        ax.plot(xs, ys, color=BLUE, lw=1.6,
-                label="A: loss masked from epoch boundary" if boundary == EPOCH_STEPS else None)
+        ax.plot(xs, ys, color=BLUE, lw=1.4,
+                label="A masked" if boundary == EPOCH_STEPS else None)
         if xs:
-            ax.plot(xs[0], ys[0], marker="o", ms=4, color=BLUE, mfc="white", zorder=5)
-    ax.set_xlim(0, 3)
-    ax.set_xticks([0, 0.5, 1, 1.5, 2, 2.5, 3])
+            ax.plot(xs[0], ys[0], marker="o", ms=3.5, color=BLUE, mfc="white", zorder=5)
+    ax.set_xlim(0, max_epoch)
+    ax.set_xticks(range(max_epoch + 1))
     ax.set_xlabel("epoch")
     ax.set_ylabel("gap contribution (nats)")
-    ax.legend(loc="upper left", framealpha=0.9, edgecolor="none", handlelength=2.2)
+    ax.legend(loc="upper left", framealpha=0.9, edgecolor="none", handlelength=1.8)
     fig.tight_layout(pad=0.4)
     OUT.mkdir(parents=True, exist_ok=True)
     fig.savefig(OUT / "fig07_context_mask.pdf")
-    fig.savefig(OUT / "fig07_context_mask.png", dpi=200)
+    fig.savefig(OUT / "fig07_context_mask.png", dpi=300)
     print((OUT / "fig07_context_mask.pdf").relative_to(ROOT))
 
 
