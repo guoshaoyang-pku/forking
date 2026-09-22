@@ -36,9 +36,9 @@ MASK="--intervention random_context_loss_mask --save_epoch_checkpoints --save_fi
 CTRL="--context_eval_ab 1"
 
 case "$GPU" in
-  1)
+  6)
     SPEC_IDS=(both_ctrl both_e1 both_e2) ;;
-  3)
+  4)
     SPEC_IDS=(nogram_e1 nogram_e2) ;;
   *)
     echo "unknown GPU assignment: $GPU (edit run_rowmask_ab.sh)" >&2
