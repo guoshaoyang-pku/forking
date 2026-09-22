@@ -415,6 +415,12 @@ def fig7b_restricted(rkl_json: Path):
         return [0.0] + [d[f"{arm}_e{e}"]["sets"][key]["rkl_ref_new_mean"]
                         for e in (2, 3, 4)]
 
+    def zs(arm, key):
+        """Mean output mass on S(ctx), companion view of the same JSON."""
+        g0 = d[f"{arm}_e2"]["sets"][key]
+        return [g0["z_ref_mean"]] + [d[f"{arm}_e{e}"]["sets"][key]["z_new_mean"]
+                                     for e in (2, 3, 4)]
+
     fig, ax = plt.subplots(figsize=(4.4, 2.5))
     for arm, name, c in arm_style:
         for key, lab, ls in set_style:
@@ -432,6 +438,24 @@ def fig7b_restricted(rkl_json: Path):
     fig.savefig(OUT / "fig07b_rkl.pdf")
     fig.savefig(OUT / "fig07b_rkl.png", dpi=300)
     print((OUT / "fig07b_rkl.pdf").relative_to(ROOT))
+
+    fig, ax = plt.subplots(figsize=(4.4, 2.5))
+    for arm, name, c in arm_style:
+        for key, lab, ls in set_style:
+            ax.plot(epochs, zs(arm, key), color=c, ls=ls, lw=1.5,
+                    marker="o", ms=4, mfc=("white" if ls == "--" else c),
+                    label=f"{name} · {lab}")
+    ax.set_xticks(epochs)
+    ax.set_xticklabels([f"{e}" for e in epochs])
+    ax.set_xlabel("epoch end")
+    ax.set_ylabel("mass on seen+val continuations $Z(S)$")
+    ax.set_ylim(0.18, 0.78)
+    ax.legend(fontsize=7.5, framealpha=0.9, edgecolor="none",
+              loc="upper left", handlelength=2.2)
+    fig.tight_layout(pad=0.4)
+    fig.savefig(OUT / "fig07b_zs_only.pdf")
+    fig.savefig(OUT / "fig07b_zs_only.png", dpi=300)
+    print((OUT / "fig07b_zs_only.pdf").relative_to(ROOT))
 
 
 def fig7star(kl_json: Path, arms=None, tag=""):
