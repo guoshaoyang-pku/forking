@@ -2,19 +2,28 @@
 """Paper Sec.3 scaling-law row: (a) frequency, (b) capacity, (c) corpus dose.
 
 Three panels designed to sit side by side as subfigures (a)/(b)/(c) of one
-LaTeX figure in overleaf-paper (2026-09-21 user decisions):
-  (a) Fig3 merged into a SINGLE panel: bigram+trigram, log-log, 12 geometric
-      mass-weighted bins +- within-bin std, dashed lines = the canonical
-      Sec.4.1 unbinned direct fits (val-token weighted; must match text).
+LaTeX figure in overleaf-paper (2026-09-21 user decisions; 2026-09-22 panel (a)
+switched to the ONLINE caliber per user request "都用online重画"):
+  (a) bigram+trigram, log-log, native log-spaced freq bins of
+      freq_bin_loss.jsonl (step-1000 record).  ONLINE gap per bucket:
+      gap = fixed-val mean loss - current-batch online train mean loss
+      (train side = the training batch in flight at step 1000, update not yet
+      applied; val side = fixed val batches at the step-1000 model).  The
+      "novel" bucket and empty buckets are excluded (no train loss / no data).
+      Dashed lines = val-token-weighted log-log fits to these online buckets
+      (coefficients printed to stdout; they replace the old fixed-probe
+      CANON_FIT numbers, which no longer match this caliber).
   (b) capacity drawn LOG-LOG (user: "fig4还是得画双对数"), no fit line
       (user: "不用强行拟合"); non-positive gaps omitted from log display.
   (c) corpus dose with LINEAR y (user: "fig5需要y轴非对数") and x = training
       corpus tokens in millions (user: "横轴展示token的数量，单位是M").
 
 Data (seed 42; input injection; table LR 128x backbone where a table exists):
-  (a) docs/appendices/s1_scaling_three_axis/s1_frequency_exact_points.csv
-      both tables enabled (2^20 rows each), fixed-probe gap at step 1000
-      (runs data/runs_scaling/s1v5_128_marm_both_fixed).
+  (a) docs/appendices/s1_scaling_three_axis/s1_frequency_online_freqbin.jsonl
+      both tables enabled (2^20 rows each), step-1000 online freq-bin record
+      (rerun of s1v5_128_frequency_main on ophis-gpu 2026-09-22, run dir
+      data/runs_scaling/s1v5_128_frequency_main_fixed, code commit a4ed6ae;
+      the original run dir was lost to cluster cleanup, user authorized rerun).
   (b) docs/appendices/s1_scaling_three_axis/s1_table_size_points.csv
       bigram-only / trigram-only online gap at step 1000, R = 1 .. 2.347e6
       (runs data/runs_scaling/s1v5_128_tbl_*_fixed).
@@ -22,10 +31,9 @@ Data (seed 42; input injection; table LR 128x backbone where a table exists):
       trigram-only (2^20 rows), 20 corpus doses 0.125x..20x D1, gaps at the
       ends of epochs 2 and 3; x = epoch_batches * 72 * 2048 tokens / 1e6.
 
-Fit-coefficient provenance for (a): CANON_FIT below mirrors the paper text
-Section 4.1 (handoff canonical table, 2026-09-21); the underlying unbinned
-val-token-weighted fits come from data/runs_scaling/s1v5_128_marm_both_fixed
-(ophis-gpu) and are displayed in overleaf figures/fig_v5_good_turing_kernel.pdf.
+Reference (fixed-probe caliber, for stdout comparison only): the old panel (a)
+fits from data/runs_scaling/s1v5_128_marm_both_fixed exact-F probe points
+(see CANON_FIT below; also displayed in overleaf figures/fig_v5_good_turing_kernel.pdf).
 
 Outputs (docs/figs/paper/):
   fig03a_frequency.pdf/.png
@@ -37,6 +45,7 @@ Copy the three PDFs to overleaf-paper/figures/ with the same names.
 from __future__ import annotations
 
 import csv
+import json
 import sys
 from pathlib import Path
 
@@ -54,14 +63,15 @@ import v5_style as S
 
 AX = ROOT / "docs" / "appendices" / "s1_scaling_three_axis"
 OUT = ROOT / "docs" / "figs" / "paper"
+ONLINE_JSONL = AX / "s1_frequency_online_freqbin.jsonl"
+ONLINE_STEP = 1000
 
 PANEL_W, PANEL_H = 2.2, 1.95
-MIN_CONTEXTS = 32
-N_BINS = 12
 TOKENS_PER_BATCH = 72 * 2048  # device batch 72 x seq 2048 prediction tokens
 
-# Canonical Sec.4.1 unbinned direct-fit coefficients (val-token weighted);
-# dashed lines must match the main text exactly.
+# Old fixed-probe canonical fits (paper text Sec. 4.1) -- kept ONLY for the
+# stdout comparison printout; the drawn dashed lines are refit to the online
+# buckets of the rerun (different caliber, so coefficients differ).
 CANON_FIT = {"bigram": (7.206, -0.233), "trigram": (3.759, -0.318)}
 
 
@@ -93,58 +103,88 @@ def _save_panel(fig, name):
     print((OUT / f"{name}.pdf").relative_to(ROOT))
 
 
-def freq_rows(branch):
-    return [(float(r["f"]), float(r["gap"]), float(r["shared_token_mass"]))
-            for r in csv.DictReader((AX / "s1_frequency_exact_points.csv").open())
-            if r["branch"] == branch and int(r["step"]) == 1000
-            and float(r["gap"]) > 0 and int(r["shared_contexts"]) >= MIN_CONTEXTS]
+def parse_bucket_f(name):
+    """Geometric-centre F for a log-spaced bucket label like '6-8', '2k-5k', '10k+'."""
+    def val(tok):
+        tok = tok.strip().lower().rstrip("+")
+        if tok.endswith("k"):
+            return float(tok[:-1]) * 1000
+        return float(tok)
+    parts = name.split("-")
+    if len(parts) == 1:
+        return val(parts[0])
+    lo, hi = val(parts[0]), val(parts[1])
+    return float(np.sqrt(lo * hi))
 
 
-def geometric_bins(rows, n_bins=N_BINS):
-    fs = np.array([r[0] for r in rows])
-    edges = np.geomspace(fs.min(), fs.max() * 1.0001, n_bins + 1)
-    out = []
-    for i in range(n_bins):
-        sel = [r for r in rows if edges[i] <= r[0] < edges[i + 1]]
-        if not sel:
+def online_rows(branch):
+    """(F, online gap, val tokens) per native freq bucket at ONLINE_STEP."""
+    rec = None
+    for line in ONLINE_JSONL.open():
+        r = json.loads(line)
+        if r["step"] == ONLINE_STEP:
+            rec = r
+    if rec is None:
+        raise SystemExit(f"step {ONLINE_STEP} not found in {ONLINE_JSONL}")
+    rows = []
+    names = [n for n in rec["train"][branch] if n != "novel"]
+    for name in sorted(names, key=parse_bucket_f):
+        if name == "novel":
             continue
-        f = np.array([s[0] for s in sel])
-        g = np.array([s[1] for s in sel])
-        w = np.array([s[2] for s in sel])
-        fbar = np.exp(np.average(np.log(f), weights=w))
-        gbar = np.average(g, weights=w)
-        std = np.sqrt(np.average((g - gbar) ** 2, weights=w))
-        out.append((fbar, gbar, std))
-    return out
+        tr = rec["train"][branch][name]
+        va = rec["val"][branch][name]
+        if tr["token_count"] <= 0 or va["token_count"] <= 0:
+            continue
+        gap = va["mean_loss"] - tr["mean_loss"]
+        if gap <= 0:  # non-positive gaps omitted from log display (as before)
+            continue
+        rows.append((parse_bucket_f(name), gap, float(va["token_count"])))
+    return rows
+
+
+def weighted_fit(rows):
+    """Val-token-weighted log-log fit  gap = amp * F**slope  -> (amp, slope)."""
+    lf = np.log([r[0] for r in rows])
+    lg = np.log([r[1] for r in rows])
+    w = np.sqrt([r[2] for r in rows])
+    slope, intercept = np.polyfit(lf, lg, 1, w=w)
+    return float(np.exp(intercept)), float(slope)
 
 
 def draw_frequency(ax):
     fit_handles = []
+    coefs = {}
     for branch, marker in (("bigram", "o"), ("trigram", "^")):
-        bins = geometric_bins(freq_rows(branch))
+        rows = online_rows(branch)
         color = S.BRANCH_COLORS[branch]
-        bx = np.array([b[0] for b in bins])
-        bg = np.array([b[1] for b in bins])
-        bs = np.array([b[2] for b in bins])
-        ax.errorbar(bx, bg, yerr=bs, fmt=marker, color=color, ms=3.8, lw=0,
-                    elinewidth=0.8, ecolor="#666666", capsize=1.8,
-                    capthick=0.8, zorder=3, label=branch)
-        amp, slope = CANON_FIT[branch]
-        fx = np.geomspace(bx.min(), bx.max(), 80)
-        ax.plot(fx, amp * fx ** slope, ls="--", lw=1.1, color=color, zorder=4)
+        fx = np.array([r[0] for r in rows])
+        gy = np.array([r[1] for r in rows])
+        ax.plot(fx, gy, marker=marker, ls="none", ms=3.8, lw=0,
+                color=color, zorder=3, label=branch)
+        amp, slope = weighted_fit(rows)
+        coefs[branch] = (amp, slope, len(rows))
+        xs = np.geomspace(fx.min(), fx.max(), 80)
+        ax.plot(xs, amp * xs ** slope, ls="--", lw=1.1, color=color, zorder=4)
     fit_handles.append(Line2D([], [], ls="--", lw=1.1, color="#444444",
-                              label="direct fit (Sec. 4)"))
+                              label="online fit"))
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles=handles + fit_handles, loc="upper right",
               framealpha=0.9, edgecolor="none")
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlim(0.8, None)
-    ax.set_ylim(10 ** -0.3, 10 ** 1.0)
+    ax.set_ylim(10 ** -1.8, 10 ** 1.0)
     ax.xaxis.set_major_formatter(FuncFormatter(plain_fmt))
     ax.yaxis.set_major_formatter(FuncFormatter(plain_fmt))
     ax.set_xlabel("context frequency $F$")
-    ax.set_ylabel("probe gap (nats)")
+    ax.set_ylabel("online gap (nats)")
+    for branch in ("bigram", "trigram"):
+        amp, slope, n = coefs[branch]
+        camp, cslope = CANON_FIT[branch]
+        print(f"[fig03a] {branch}: online fit amp={amp:.3f} slope={slope:.3f} "
+              f"(n={n} buckets) | old fixed-probe canon amp={camp:.3f} "
+              f"slope={cslope:.3f}")
+    return coefs
 
 
 def draw_capacity(ax):
