@@ -65,6 +65,9 @@ def fig7(runs_root: Path):
         return zip(*pts) if pts else ([], [])
 
     fig, ax = plt.subplots(figsize=(4.4, 2.5))
+    # 2026-09-22 user: show epoch 1 as well (both masks start at epoch
+    # boundaries 1 and 2; epoch 1 is the unmasked baseline segment)
+    ax.axvline(1, color="#888888", lw=0.7, ls=":")
     ax.axvline(2, color="#888888", lw=0.7, ls=":")
     x, y = xy(ctrl, "Cpos_B")
     ax.plot(x, y, color=ORANGE, lw=1.6, label="B: unmasked peers")
@@ -72,17 +75,14 @@ def fig7(runs_root: Path):
     ax.plot(x, y, color=BLUE, lw=1.2, ls="--", label="A: normal training")
     for rows, boundary in ((e1, EPOCH_STEPS), (e2, 2 * EPOCH_STEPS)):
         x, y = xy(rows, "Cpos_A", step_min=boundary)
-        # prepend the boundary value from ctrl for continuity
-        xb, yb = xy(ctrl, "Cpos_A")
-        bx = [v for v, s in zip(yb, xb) if abs(s - (boundary / EPOCH_STEPS + 1)) < 0.06]
         xs = list(x)
         ys = list(y)
         ax.plot(xs, ys, color=BLUE, lw=1.6,
                 label="A: loss masked from epoch boundary" if boundary == EPOCH_STEPS else None)
         if xs:
             ax.plot(xs[0], ys[0], marker="o", ms=4, color=BLUE, mfc="white", zorder=5)
-    ax.set_xlim(1, 3)
-    ax.set_xticks([1, 1.5, 2, 2.5, 3])
+    ax.set_xlim(0, 3)
+    ax.set_xticks([0, 0.5, 1, 1.5, 2, 2.5, 3])
     ax.set_xlabel("epoch")
     ax.set_ylabel("gap contribution (nats)")
     ax.legend(loc="upper left", framealpha=0.9, edgecolor="none", handlelength=2.2)
