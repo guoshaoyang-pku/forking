@@ -10,7 +10,7 @@ same-named source in `docs/figs/` or `docs/appendices/` -- either it was
 renamed, or it predates the current evidence layout and should be traced
 by hand before the paper is cited.
 
-Traced: 24/47 figures have a same-named source.
+Traced: 27/50 figures have a same-named source.
 
 | Paper figure | Size | Source in repo | Plot script |
 |---|---|---|---|
@@ -20,9 +20,12 @@ Traced: 24/47 figures have a same-named source.
 | `fig03_frequency.pdf` | 17 KB | **not found** | - |
 | `fig03_frequency_bigram.pdf` | 43 KB | **not found** | - |
 | `fig03_frequency_trigram.pdf` | 39 KB | **not found** | - |
-| `fig03a_frequency.pdf` | 21 KB | `docs/figs/paper/fig03a_frequency.pdf` | `docs/plot_scripts/plot_paper_fig345_row.py` |
-| `fig03b_capacity.pdf` | 16 KB | `docs/figs/paper/fig03b_capacity.pdf` | `docs/plot_scripts/plot_paper_fig345_row.py` |
+| `fig03a_frequency.pdf` | 17 KB | `docs/figs/paper/fig03a_frequency.pdf` | `docs/plot_scripts/plot_paper_fig345_row.py` |
+| `fig03a_frequency.svg` | 23 KB | `docs/figs/paper/fig03a_frequency.svg` | `docs/plot_scripts/plot_paper_fig345_row.py` |
+| `fig03b_capacity.pdf` | 15 KB | `docs/figs/paper/fig03b_capacity.pdf` | `docs/plot_scripts/plot_paper_fig345_row.py` |
+| `fig03b_capacity.svg` | 19 KB | `docs/figs/paper/fig03b_capacity.svg` | `docs/plot_scripts/plot_paper_fig345_row.py` |
 | `fig03c_corpus.pdf` | 15 KB | `docs/figs/paper/fig03c_corpus.pdf` | `docs/plot_scripts/plot_paper_fig345_row.py` |
+| `fig03c_corpus.svg` | 20 KB | `docs/figs/paper/fig03c_corpus.svg` | `docs/plot_scripts/plot_paper_fig345_row.py` |
 | `fig04_capacity.pdf` | 29 KB | **not found** | - |
 | `fig04_fig05_capacity_corpus.pdf` | 64 KB | **not found** | - |
 | `fig05_epoch_length.pdf` | 24 KB | **not found** | - |

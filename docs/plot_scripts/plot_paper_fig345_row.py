@@ -37,8 +37,11 @@ fits from data/runs_scaling/s1v5_128_marm_both_fixed exact-F probe points
 
 Outputs (docs/figs/paper/):
   fig03a_frequency.pdf/.png
+  fig03a_frequency.svg
   fig03b_capacity.pdf/.png
+  fig03b_capacity.svg
   fig03c_corpus.pdf/.png
+  fig03c_corpus.svg
   fig345_row_preview.png        (side-by-side montage, review only)
 Copy the three PDFs to overleaf-paper/figures/ with the same names.
 """
@@ -54,7 +57,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.lines import Line2D
 from matplotlib.ticker import FuncFormatter
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -68,6 +70,14 @@ ONLINE_STEP = 1000
 
 PANEL_W, PANEL_H = 2.2, 1.95
 TOKENS_PER_BATCH = 72 * 2048  # device batch 72 x seq 2048 prediction tokens
+
+# Saturated, shared branch colors for panels (a)/(b).  These stay close to the
+# project palette while remaining distinct after PDF/SVG embedding and
+# grayscale-ish projector rendering.
+BIGRAM_COLOR = "#087F7B"
+TRIGRAM_COLOR = "#7A3EAA"
+EPOCH2_COLOR = "#2A9D8F"
+EPOCH3_COLOR = "#D1493F"
 
 # Old fixed-probe canonical fits (paper text Sec. 4.1) -- kept ONLY for the
 # stdout comparison printout; the drawn dashed lines are refit to the online
@@ -98,7 +108,8 @@ def _save_panel(fig, name):
     OUT.mkdir(parents=True, exist_ok=True)
     # fixed canvas (no bbox_inches) so the three panels share exact dimensions
     fig.savefig(OUT / f"{name}.pdf")
-    fig.savefig(OUT / f"{name}.png", dpi=200)
+    fig.savefig(OUT / f"{name}.svg")
+    fig.savefig(OUT / f"{name}.png", dpi=300)
     plt.close(fig)
     print((OUT / f"{name}.pdf").relative_to(ROOT))
 
@@ -126,11 +137,19 @@ def online_rows(branch):
             rec = r
     if rec is None:
         raise SystemExit(f"step {ONLINE_STEP} not found in {ONLINE_JSONL}")
+    train_bins = set(rec["train"]["bigram"])
+    trigram_bins = set(rec["train"]["trigram"])
+    val_bins = set(rec["val"][branch])
+    if train_bins != trigram_bins or train_bins != val_bins:
+        raise SystemExit(
+            "bigram/trigram frequency bins differ: "
+            f"bigram-only={sorted(train_bins - trigram_bins)}, "
+            f"trigram-only={sorted(trigram_bins - train_bins)}, "
+            f"train-vs-val={sorted(train_bins - val_bins)}"
+        )
     rows = []
-    names = [n for n in rec["train"][branch] if n != "novel"]
-    for name in sorted(names, key=parse_bucket_f):
-        if name == "novel":
-            continue
+    names = sorted(train_bins - {"novel"}, key=parse_bucket_f)
+    for name in names:
         tr = rec["train"][branch][name]
         va = rec["val"][branch][name]
         if tr["token_count"] <= 0 or va["token_count"] <= 0:
@@ -151,12 +170,14 @@ def weighted_fit(rows):
     return float(np.exp(intercept)), float(slope)
 
 
-def draw_frequency(ax):
-    fit_handles = []
+def draw_frequency(ax, show_legend=True):
     coefs = {}
     for branch, marker in (("bigram", "o"), ("trigram", "^")):
+        # Both branches use exactly the same native bucket intervals.  The
+        # one negative trigram gap is omitted because it cannot be shown on a
+        # log y-axis; the shared-bin check in online_rows makes this explicit.
         rows = online_rows(branch)
-        color = S.BRANCH_COLORS[branch]
+        color = BIGRAM_COLOR if branch == "bigram" else TRIGRAM_COLOR
         fx = np.array([r[0] for r in rows])
         gy = np.array([r[1] for r in rows])
         ax.plot(fx, gy, marker=marker, ls="none", ms=3.8, lw=0,
@@ -165,11 +186,8 @@ def draw_frequency(ax):
         coefs[branch] = (amp, slope, len(rows))
         xs = np.geomspace(fx.min(), fx.max(), 80)
         ax.plot(xs, amp * xs ** slope, ls="--", lw=1.1, color=color, zorder=4)
-    fit_handles.append(Line2D([], [], ls="--", lw=1.1, color="#444444",
-                              label="online fit"))
-    handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles=handles + fit_handles, loc="upper right",
-              framealpha=0.9, edgecolor="none")
+    if show_legend:
+        ax.legend(loc="upper right", framealpha=0.9, edgecolor="none")
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlim(0.8, None)
@@ -187,21 +205,23 @@ def draw_frequency(ax):
     return coefs
 
 
-def draw_capacity(ax):
+def draw_capacity(ax, show_legend=False):
     rows = list(csv.DictReader((AX / "s1_table_size_points.csv").open()))
     for branch, marker in (("bigram", "o"), ("trigram", "^")):
         pts = sorted((int(r["R"]), float(r["gap_1000"]))
                      for r in rows if r["branch"] == branch)
         pos = [(R, g) for R, g in pts if g > 0]
+        color = BIGRAM_COLOR if branch == "bigram" else TRIGRAM_COLOR
         ax.plot([p[0] for p in pos], [p[1] for p in pos], marker=marker,
-                ls="none", ms=3.8, color=S.BRANCH_COLORS[branch],
-                label=f"{branch}-only")
+                ls="none", ms=3.8, color=color,
+                label=branch)
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlim(0.7, 5e6)
     ax.set_ylim(0.011, 6)
     ax.yaxis.set_major_formatter(FuncFormatter(plain_fmt))
-    ax.legend(loc="upper left", framealpha=0.9, edgecolor="none")
+    if show_legend:
+        ax.legend(loc="upper left", framealpha=0.9, edgecolor="none")
     ax.set_xlabel("table rows $R$")
     ax.set_ylabel("online gap (nats)")
 
@@ -213,8 +233,8 @@ def draw_corpus(ax):
                  for r in rows)
     x = [p[0] for p in pts]
     for idx, (color, marker, label) in enumerate((
-            ("#4f8f62", "s", "end of epoch 2"),
-            ("#c0392b", "^", "end of epoch 3"))):
+            (EPOCH2_COLOR, "s", "end of epoch 2 (trigram only)"),
+            (EPOCH3_COLOR, "^", "end of epoch 3 (trigram only)"))):
         ax.plot(x, [p[idx + 1] for p in pts], marker=marker, ms=3.6,
                 lw=0.9, color=color, label=label)
     ax.set_xscale("log")
@@ -242,7 +262,8 @@ def make_preview():
         ax.set_title(f"({tag})", fontsize=9, pad=2)
     fig.tight_layout(pad=0.5)
     OUT.mkdir(parents=True, exist_ok=True)
-    fig.savefig(OUT / "fig345_row_preview.png", dpi=200)
+    fig.savefig(OUT / "fig345_row_preview.png", dpi=300)
+    fig.savefig(OUT / "fig345_row_preview.svg")
     plt.close(fig)
     print((OUT / "fig345_row_preview.png").relative_to(ROOT))
 
