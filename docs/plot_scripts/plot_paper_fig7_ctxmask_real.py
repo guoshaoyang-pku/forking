@@ -8,10 +8,10 @@ fetched to a local dir by --runs_root):
     the paper's gap contribution C_S(t) for context set S (2% of distinct
     trigram types, seed 42; A = loss-masked from the boundary, B = peers).
 
-Fig 7 (fig07_context_mask.pdf): single panel over epochs 0..4, spliced like
-the redesign -- ctrl supplies the continuous B (unmasked) and A-normal-training
-(dashed) curves; the e1/e2 mask runs supply the post-boundary A-masked
-segments.  2026-09-22 (15:39) user redesign: each masked trial runs to the
+Fig 7 (fig07_context_mask.pdf): single panel over epochs 0..4.  ctrl supplies
+the continuous B (unmasked) and A-normal-training (dashed) curves; e1 and e2
+are plotted as separate full masked trials, including their later-epoch
+aftermaths.  2026-09-22 (15:39) user redesign: each masked trial runs to the
 SAME late horizon (4 epochs, run_ids *_l4, launcher
 code/cluster/run_ctxmask_ab_long.sh) so the epoch-1-masked trial's aftermath
 stays visible through epochs 2-4 instead of being cut at the epoch-2 boundary;
