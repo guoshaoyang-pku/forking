@@ -109,10 +109,10 @@ def fig7_perstep(runs_root: Path, infix: str = "ctxmask"):
     max_epoch = max(int(np.ceil(r["step"] / EPOCH_STEPS)) for r in ctrl)
 
     specs = [  # (rows, fixed_key, online_key, style, label)
-        (ctrl, "C_B", "Cpos_B", dict(color=ORANGE, lw=1.4), "B unmasked"),
-        (ctrl, "C_A", "Cpos_A", dict(color=BLUE, lw=1.0, ls="--"), "A normal"),
-        (e1, "C_A", "Cpos_A", dict(color=BLUE, lw=1.4), "A masked from epoch 2"),
-        (e2, "C_A", "Cpos_A", dict(color="#7b4aa2", lw=1.4), "A masked from epoch 3"),
+        (ctrl, "C_B", "Cpos_B", dict(color=ORANGE, lw=1.4), "unmasked peers"),
+        (ctrl, "C_A", "Cpos_A", dict(color=BLUE, lw=1.0, ls="--"), "normal training"),
+        (e1, "C_A", "Cpos_A", dict(color=BLUE, lw=1.4), "masked from epoch 2"),
+        (e2, "C_A", "Cpos_A", dict(color="#7b4aa2", lw=1.4), "masked from epoch 3"),
     ]
 
     fig, axes = plt.subplots(2, 1, figsize=(4.4, 4.8), sharex=True,
@@ -204,12 +204,12 @@ def fig7_epochmean(runs_root: Path, infix: str = "ctxmask"):
         xs = sorted(d)
         ax.plot(xs, [d[e] for e in xs], marker="o", ms=4, **kw)
 
-    line(ctrl_B, color=ORANGE, lw=1.4, label="B unmasked")
-    line(ctrl_A, color=BLUE, lw=1.0, ls="--", label="A normal")
+    line(ctrl_B, color=ORANGE, lw=1.4, label="unmasked peers")
+    line(ctrl_A, color=BLUE, lw=1.0, ls="--", label="normal training")
     line({e: v for e, v in e1_A.items() if e >= 2},
-         color=BLUE, lw=1.4, label="A masked from epoch 2")
+         color=BLUE, lw=1.4, label="masked from epoch 2")
     line({e: v for e, v in e2_A.items() if e >= 3},
-         color="#7b4aa2", lw=1.4, label="A masked from epoch 3")
+         color="#7b4aa2", lw=1.4, label="masked from epoch 3")
     ax.set_xlim(0.7, max_epoch + 0.3)
     ax.set_xticks(range(1, max_epoch + 1))
     ax.set_xlabel("epoch")
@@ -246,13 +246,13 @@ def fig7(runs_root: Path, infix: str = "ctxmask"):
     ax.axvline(1, color="#888888", lw=0.7, ls=":")
     ax.axvline(2, color="#888888", lw=0.7, ls=":")
     x, y = xy(ctrl, "Cpos_B")
-    ax.plot(x, y, color=ORANGE, lw=1.4, label="B unmasked")
+    ax.plot(x, y, color=ORANGE, lw=1.4, label="unmasked peers")
     x, y = xy(ctrl, "Cpos_A")
-    ax.plot(x, y, color=BLUE, lw=1.0, ls="--", label="A normal")
+    ax.plot(x, y, color=BLUE, lw=1.0, ls="--", label="normal training")
     x, y = xy(e1, "Cpos_A")
-    ax.plot(x, y, color=BLUE, lw=1.4, label="A masked from epoch 1")
+    ax.plot(x, y, color=BLUE, lw=1.4, label="masked from epoch 2")
     x, y = xy(e2, "Cpos_A")
-    ax.plot(x, y, color="#7b4aa2", lw=1.4, label="A masked from epoch 2")
+    ax.plot(x, y, color="#7b4aa2", lw=1.4, label="masked from epoch 2")
     ax.set_xlim(0, max_epoch)
     ax.set_xticks(range(max_epoch + 1))
     ax.set_xlabel("epoch")
@@ -284,13 +284,13 @@ def fig7_fixed(runs_root: Path, infix: str = "ctxmask"):
     ax.axvline(1, color="#888888", lw=0.7, ls=":")
     ax.axvline(2, color="#888888", lw=0.7, ls=":")
     x, y = xy(ctrl, "C_B")
-    ax.plot(x, y, color=ORANGE, lw=1.4, label="B unmasked")
+    ax.plot(x, y, color=ORANGE, lw=1.4, label="unmasked peers")
     x, y = xy(ctrl, "C_A")
-    ax.plot(x, y, color=BLUE, lw=1.0, ls="--", label="A normal")
+    ax.plot(x, y, color=BLUE, lw=1.0, ls="--", label="normal training")
     x, y = xy(e1, "C_A")
-    ax.plot(x, y, color=BLUE, lw=1.4, label="A masked from epoch 1")
+    ax.plot(x, y, color=BLUE, lw=1.4, label="masked from epoch 2")
     x, y = xy(e2, "C_A")
-    ax.plot(x, y, color="#7b4aa2", lw=1.4, label="A masked from epoch 2")
+    ax.plot(x, y, color="#7b4aa2", lw=1.4, label="masked from epoch 2")
     ax.set_xlim(0, max_epoch)
     ax.set_xticks(range(max_epoch + 1))
     ax.set_xlabel("epoch")
@@ -326,8 +326,9 @@ def fig7star(kl_json: Path, arms=None, tag=""):
               "trigram": S.BRANCH_COLORS["trigram"], "both": S.ARM_COLORS["input"]}
     names = {"nogram": "no-gram", "bigram": "bigram only",
              "trigram": "trigram only", "both": "both tables"}
-    fig, ax = plt.subplots(figsize=(3.9, 2.7))
+    fig, ax = plt.subplots(figsize=(4.4, 2.5))
     n = len(arms)
+    series = []
     for i, arm in enumerate(arms):
         if f"{arm}_masked" not in d:
             continue
@@ -335,13 +336,20 @@ def fig7star(kl_json: Path, arms=None, tag=""):
         ys = [d[f"{arm}_{k}"]["sets"]["A"]["kl_ref_new_mean"] for k in labels]
         ax.plot(xs, ys, marker="o", ms=4.5, lw=1.4, color=colors[arm],
                 label=names[arm])
-        for x, y in zip(xs, ys):
-            ax.annotate(f"{y:.2f}", (x, y), textcoords="offset points",
-                        xytext=(0, 5), ha="center", fontsize=6.5,
-                        color=colors[arm])
+        series.append((arm, xs, ys))
+    for k in range(3):
+        ranked = sorted(series, key=lambda t: -t[2][k])
+        for rank, (arm, xs, ys) in enumerate(ranked):
+            dx = (list(colors).index(arm) - (n - 1) / 2) * 3
+            dy = 6 if rank == 0 else -13
+            ax.annotate(f"{ys[k]:.2f}", (xs[k], ys[k]),
+                        textcoords="offset points", xytext=(dx, dy),
+                        ha="center", fontsize=6.5, color=colors[arm])
     ax.set_xticks(range(3))
     ax.set_xticklabels(list(labels.values()), fontsize=8)
     ax.set_xlim(-0.5, 2.5)
+    y_hi = max(y for _, _, ys in series for y in ys)
+    ax.set_ylim(top=y_hi * 1.14)
     ax.set_ylabel("KL$(p_{ref} \\| p_{end})$ on A (nats)")
     ax.legend(framealpha=0.9, edgecolor="none", fontsize=7.5,
               loc="upper right")
