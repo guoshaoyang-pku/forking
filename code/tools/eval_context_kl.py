@@ -114,8 +114,9 @@ def build_restricted_support(val_batches, train_shard: str, V: int, device):
     S(ctx) = train-shard 4-gram continuations of ctx UNION the true tokens
     at val positions with ctx (from these fixed val batches). Context keys
     are computed exactly like train.py's context_set_membership (padded
-    prev2/prev). Returns, per batch, the flat valid rows and gather groups
-    [(position rows (m,), supports (m, s))] bucketed by support size.
+    prev2/prev). The two components (train-seen continuations, val-only
+    novel continuations) are kept separately as well. Returns a dict with
+    per-batch gather groups for "S", "seen" and "valn".
     """
     tok = np.fromfile(train_shard, dtype=np.uint16).astype(np.int64)
     print(f"[rkl] train shard {train_shard}: {len(tok):,} tokens; counting 4-grams ...")
@@ -143,23 +144,47 @@ def build_restricted_support(val_batches, train_shard: str, V: int, device):
     print(f"[rkl] distinct val contexts: {uk.size:,}; building supports ...")
 
     sup_off = np.zeros(uk.size + 1, dtype=np.int64)
-    parts = []
+    seen_off = np.zeros(uk.size + 1, dtype=np.int64)
+    valn_off = np.zeros(uk.size + 1, dtype=np.int64)
+    parts, seen_parts, valn_parts = [], [], []
+    empty = np.empty(0, dtype=np.int64)
     for i, k in enumerate(uk):
         a = _ctx_slice(int(k), dctx_t, off_t, ys_t)
         b = _ctx_slice(int(k), dctx_v, off_v, ys_v)
-        s = b if a is None else (a if b is None else np.union1d(a, b))
-        parts.append(s)
-        sup_off[i + 1] = sup_off[i] + s.size
-    sup_arr = np.concatenate(parts).astype(np.int64)
+        seen = empty if a is None else a.astype(np.int64)
+        valn = empty if b is None else (
+            b.astype(np.int64) if a is None else np.setdiff1d(b, a))
+        parts.append(np.union1d(seen, valn))
+        seen_parts.append(seen)
+        valn_parts.append(valn)
+        sup_off[i + 1] = sup_off[i] + parts[-1].size
+        seen_off[i + 1] = seen_off[i] + seen.size
+        valn_off[i + 1] = valn_off[i] + valn.size
+    sup_arr = np.concatenate(parts)
+    seen_arr = np.concatenate(seen_parts) if seen_off[-1] else empty
+    valn_arr = np.concatenate(valn_parts) if valn_off[-1] else empty
     sup_size = np.diff(sup_off)
     print(f"[rkl] support |S|: mean={sup_size.mean():.2f} "
           f"median={np.median(sup_size):.0f} "
-          f"p99={np.quantile(sup_size, 0.99):.0f} max={sup_size.max()}")
+          f"p99={np.quantile(sup_size, 0.99):.0f} max={sup_size.max()}; "
+          f"|seen| mean={np.diff(seen_off).mean():.2f}, "
+          f"|val-novel| mean={np.diff(valn_off).mean():.2f}")
 
+    return {
+        comp: _bucket_groups(per_batch, uk, off, arr, device)
+        for comp, off, arr in (("S", sup_off, sup_arr),
+                               ("seen", seen_off, seen_arr),
+                               ("valn", valn_off, valn_arr))
+    }
+
+
+def _bucket_groups(per_batch, uk, off, arr, device):
+    """Per batch: valid rows + gather groups [(rows (m,), ids (m, s))]
+    bucketed by the support size s of each position's context."""
     out = []
     for vf, kv in per_batch:
         inv = np.searchsorted(uk, kv)
-        sizes = sup_size[inv]
+        sizes = np.diff(off)[inv]
         order = np.argsort(sizes, kind="stable")
         ss = sizes[order]
         bounds = np.flatnonzero(np.concatenate(([1], ss[1:] != ss[:-1])))
@@ -168,12 +193,31 @@ def build_restricted_support(val_batches, train_shard: str, V: int, device):
         for lo, hi in zip(bounds[:-1], bounds[1:]):
             s = int(ss[lo])
             pos = order[lo:hi].astype(np.int64)
-            idx2 = sup_off[inv[pos]][:, None] + np.arange(s, dtype=np.int64)[None, :]
+            idx2 = off[inv[pos]][:, None] + np.arange(s, dtype=np.int64)[None, :]
             groups.append((torch.from_numpy(pos).to(device),
-                           torch.from_numpy(sup_arr[idx2]).to(device)))
+                           torch.from_numpy(arr[idx2]).to(device)))
         out.append({"vf": torch.from_numpy(vf).to(device), "groups": groups,
                     "n_valid": int(vf.size)})
     return out
+
+
+def support_mass_batch(p_ref, p_new, comp):
+    """Per valid position: total probability mass of p_ref and p_new on the
+    component support (seen or val-novel continuations)."""
+    V = p_ref.shape[-1]
+    pr = p_ref.reshape(-1, V)
+    pn = p_new.reshape(-1, V)
+    n = comp[0]["n_valid"]
+    mr = np.zeros(n, dtype=np.float64)
+    mn = np.zeros(n, dtype=np.float64)
+    for bi, c in enumerate(comp):
+        vf = c["vf"]
+        for pos, sexp in c["groups"]:
+            rows = vf[pos]
+            p = pos.cpu().numpy()
+            mr[p] = pr[rows[:, None], sexp].sum(dim=1).double().cpu().numpy()
+            mn[p] = pn[rows[:, None], sexp].sum(dim=1).double().cpu().numpy()
+    return mr, mn
 
 
 def restricted_kl_batch(logp_ref, logp_new, support):
@@ -260,6 +304,7 @@ def main():
 
         kl_rn, kl_nr, memb_all = [], [], []
         rkl_all, lzr_all, lzn_all = [], [], []
+        msr_all, msn_all, mvr_all, mvn_all = [], [], [], []
         with torch.no_grad():
             for bi, (inp, tgt) in enumerate(val_batches):
                 with ctx:
@@ -277,10 +322,18 @@ def main():
                 memb_all.append(model_new.context_set_membership(inp)[valid].cpu().numpy())
                 if restricted is not None:
                     r, zr, zn = restricted_kl_batch(logp_ref, logp_new,
-                                                    restricted[bi])
+                                                    restricted["S"][bi])
                     rkl_all.append(r)
                     lzr_all.append(zr)
                     lzn_all.append(zn)
+                    sr, sn = support_mass_batch(p_ref, p_new,
+                                                restricted["seen"][bi])
+                    vr, vn = support_mass_batch(p_ref, p_new,
+                                                restricted["valn"][bi])
+                    msr_all.append(sr)
+                    msn_all.append(sn)
+                    mvr_all.append(vr)
+                    mvn_all.append(vn)
         kl_rn = np.concatenate(kl_rn)
         kl_nr = np.concatenate(kl_nr)
         memb = np.concatenate(memb_all)
@@ -290,6 +343,10 @@ def main():
             lz_n = np.concatenate(lzn_all)
             z_r = np.exp(lz_r)
             z_n = np.exp(lz_n)
+            seen_r = np.concatenate(msr_all)
+            seen_n = np.concatenate(msn_all)
+            valn_r = np.concatenate(mvr_all)
+            valn_n = np.concatenate(mvn_all)
             dec_weighted = z_r * rkl                 # Z_ref * KL_S
             dec_mass = z_r * (lz_r - lz_n)           # S mass-exchange term
             dec_tail = kl_rn - dec_weighted - dec_mass  # outside-S part
@@ -314,6 +371,10 @@ def main():
                     "rkl_ref_new_p90": float(np.quantile(rkl[m], 0.9)),
                     "z_ref_mean": float(z_r[m].mean()),
                     "z_new_mean": float(z_n[m].mean()),
+                    "z_seen_ref_mean": float(seen_r[m].mean()),
+                    "z_seen_new_mean": float(seen_n[m].mean()),
+                    "z_valn_ref_mean": float(valn_r[m].mean()),
+                    "z_valn_new_mean": float(valn_n[m].mean()),
                     "kl_full_in_S_weighted_mean": float(dec_weighted[m].mean()),
                     "kl_full_S_mass_term_mean": float(dec_mass[m].mean()),
                     "kl_full_outside_S_mean": float(dec_tail[m].mean()),
@@ -324,14 +385,11 @@ def main():
               f"median={a['kl_ref_new_median']:.4f}")
         if restricted is not None:
             b = out["sets"]["B"]
-            print(f"[rkl] {label}: A rKL={a['rkl_ref_new_mean']:.4f} "
-                  f"(in-S {a['kl_full_in_S_weighted_mean']:.4f} + mass "
-                  f"{a['kl_full_S_mass_term_mean']:.4f} + out "
-                  f"{a['kl_full_outside_S_mean']:.4f}) | "
-                  f"B rKL={b['rkl_ref_new_mean']:.4f} "
-                  f"(in-S {b['kl_full_in_S_weighted_mean']:.4f} + mass "
-                  f"{b['kl_full_S_mass_term_mean']:.4f} + out "
-                  f"{b['kl_full_outside_S_mean']:.4f})")
+            print(f"[rkl] {label}: A rKL={a['rkl_ref_new_mean']:.4f} | "
+                  f"seen {a['z_seen_ref_mean']:.3f}->{a['z_seen_new_mean']:.3f} "
+                  f"valn {a['z_valn_ref_mean']:.3f}->{a['z_valn_new_mean']:.3f} || "
+                  f"B seen {b['z_seen_ref_mean']:.3f}->{b['z_seen_new_mean']:.3f} "
+                  f"valn {b['z_valn_ref_mean']:.3f}->{b['z_valn_new_mean']:.3f}")
         del model_ref, model_new
         torch.cuda.empty_cache()
 
