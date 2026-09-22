@@ -81,6 +81,9 @@ def main():
     ap.add_argument("--sequence_len", type=int, default=2048)
     ap.add_argument("--frac", type=float, default=0.02)
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--context_set_mode", choices=["type", "row"], default="type",
+                    help="A/B selection space: distinct trigram types (needs "
+                         "--freq_index) or trigram table rows (clean-table hash)")
     ap.add_argument("--dtype", default="bf16")
     ap.add_argument("--out_json", required=True)
     args = ap.parse_args()
@@ -104,6 +107,7 @@ def main():
         print(f"[kl] {label}: ref={ref_path} new={new_path}")
         model_ref, s_ref = load_model_from_file(ref_path, None, device)
         model_new, s_new = load_model_from_file(new_path, None, device)
+        model_new.config.context_set_mode = args.context_set_mode
         info = model_new.setup_context_eval_sets(freq_index, args.frac, args.seed)
 
         kl_rn, kl_nr, memb_all = [], [], []
@@ -154,10 +158,12 @@ def main():
             "n_val_batches": args.n_val_batches,
             "frac": args.frac,
             "seed": args.seed,
+            "context_set_mode": args.context_set_mode,
             "dtype": args.dtype,
             "note": "Full-vocab exact KL per validation position over the fixed "
                     "val batches; A/B from train.py setup_context_eval_sets "
-                    "(2% of distinct trigram types, seed 42).",
+                    "(2% of distinct trigram types or of trigram table rows, "
+                    "seed 42).",
         },
         "pairs": results,
     }
