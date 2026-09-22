@@ -305,29 +305,49 @@ def fig7_fixed(runs_root: Path, infix: str = "ctxmask"):
 
 
 def fig7star(kl_json: Path, arms=None, tag=""):
+    """Fig 7*: drift of the masked contexts' next-token distributions.
+
+    Three KL probes on set A (mean full-vocab KL over fixed-val positions):
+      prev_normal  = epoch-1 boundary -> epoch-2 boundary (a normal epoch);
+      masked       = epoch-2 boundary -> end of the epoch-3-masked run;
+      normal_ctrl  = epoch-2 boundary -> epoch-3 end of the unmasked control.
+    Honest reading (2026-09-22): masking lowers A-drift for every arm
+    (2% of gradient updates removed), and the both-table arm drifts least in
+    absolute terms -- but the masked-epoch KL is NOT "almost zero" in any arm
+    (residual cross-context backbone drift; it shifts train and val together
+    and therefore does not enter the gap, cf. fig7).
+    """
     d = json.loads(kl_json.read_text())["pairs"]
     arms = arms or ["nogram", "bigram", "trigram", "both"]
-    labels = {"prev_normal": "preceding normal epoch",
-              "masked": "masked epoch",
-              "normal_ctrl": "normal control epoch"}
+    labels = {"prev_normal": "epoch 2\n(normal)",
+              "masked": "epoch 3\n(masked)",
+              "normal_ctrl": "epoch 3\n(control)"}
     colors = {"nogram": S.ARM_COLORS["nogram"], "bigram": S.BRANCH_COLORS["bigram"],
               "trigram": S.BRANCH_COLORS["trigram"], "both": S.ARM_COLORS["input"]}
-    fig, ax = plt.subplots(figsize=(3.6, 2.5))
-    for arm in arms:
-        key_masked = f"{arm}_masked"
-        if key_masked not in d:
+    names = {"nogram": "no-gram", "bigram": "bigram only",
+             "trigram": "trigram only", "both": "both tables"}
+    fig, ax = plt.subplots(figsize=(3.9, 2.7))
+    n = len(arms)
+    for i, arm in enumerate(arms):
+        if f"{arm}_masked" not in d:
             continue
+        xs = np.arange(3) + (i - (n - 1) / 2) * 0.08
         ys = [d[f"{arm}_{k}"]["sets"]["A"]["kl_ref_new_mean"] for k in labels]
-        ax.plot(range(3), ys, marker="o", ms=4, lw=1.4, color=colors[arm],
-                label={"nogram": "no-gram", "bigram": "bigram only",
-                       "trigram": "trigram only", "both": "both tables"}[arm])
+        ax.plot(xs, ys, marker="o", ms=4.5, lw=1.4, color=colors[arm],
+                label=names[arm])
+        for x, y in zip(xs, ys):
+            ax.annotate(f"{y:.2f}", (x, y), textcoords="offset points",
+                        xytext=(0, 5), ha="center", fontsize=6.5,
+                        color=colors[arm])
     ax.set_xticks(range(3))
-    ax.set_xticklabels(["prev normal", "masked", "ctrl normal"], fontsize=8)
+    ax.set_xticklabels(list(labels.values()), fontsize=8)
+    ax.set_xlim(-0.5, 2.5)
     ax.set_ylabel("KL$(p_{ref} \\| p_{end})$ on A (nats)")
-    ax.legend(framealpha=0.9, edgecolor="none", fontsize=8)
+    ax.legend(framealpha=0.9, edgecolor="none", fontsize=7.5,
+              loc="upper right")
     fig.tight_layout(pad=0.4)
     fig.savefig(OUT / f"fig07star_context_kl{tag}.pdf")
-    fig.savefig(OUT / f"fig07star_context_kl{tag}.png", dpi=200)
+    fig.savefig(OUT / f"fig07star_context_kl{tag}.png", dpi=300)
     print((OUT / f"fig07star_context_kl{tag}.pdf").relative_to(ROOT))
 
 

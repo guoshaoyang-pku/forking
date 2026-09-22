@@ -71,9 +71,13 @@ A/B 选取（两次运行确定性一致）：
    recency，tr 偏高 2.28→3.95），epoch 末反之 → 锯齿 + 边界骤降。只能「epoch 末对 epoch 末」读，
    或用 epoch 平均口径（剔除边界短窗 `tr_online_n_A < 20000`）。
 3. **KL（fig7\*）**：`KL(p_boundary ‖ p_end)` 逐 fixed-val 位置全 vocab 精确计算，按 A/B/other 分组。
-   masked epoch 的 A-KL：both 0.502（e2）/0.575（e1）vs 正常 epoch 0.540/0.692；nogram 0.657/0.907
-   vs 0.744/0.904。masked 子空间分布仍漂移（非"几乎没有"），但双表 < nogram；该漂移同步损害
-   train/val 两侧，不进 gap。
+   三个探针：`prev_normal`（epoch1→2 边界，正常 epoch 的漂移量）、`masked`（epoch2 边界→mask run 终点）、
+   `normal_ctrl`（epoch2 边界→ctrl 终点）。type-mode A-KL（mean，`context_kl.json`）：both 0.505/0.469/0.608、
+   nogram 0.919/0.584/0.728、bigram 0.436/0.334/0.458、trigram 0.445/0.707/0.640（trigram-only 异常：
+   masked 高于 prev 与 ctrl，原因未查）；row-mode（`context_kl_row.json`）：both 0.540/0.502/0.692、
+   nogram 0.904/0.657/0.744。**结论：mask 降低所有臂的 A 漂移（少 2% 更新），双表臂绝对漂移最小
+   （0.47–0.50 vs nogram 0.58–0.66），但任何臂的 masked KL 都远非"几乎没有"（残余跨 context
+   backbone 漂移）；该漂移同步作用于 train/val 两侧，故不进 gap（与 fig7 读法一致）。**
 
 关键数字（fixed 口径，l4 runs）：ctrl C_A 峰值 0.002→0.006→0.0085 逐 epoch 抬升；
 e1 mask 后 C_A ≈ 0.0003 持平三个 epoch；e2 mask 后 C_A ≈ 0.0015 持平两个 epoch。
@@ -93,7 +97,8 @@ python3 docs/plot_scripts/plot_paper_fig7_ctxmask_real.py \
 - **`fig07_context_mask_fixed_perstep.{pdf,png}` ← 论文用（fixed 口径逐 step，4 epochs）**
 - `fig07_context_mask_perstep.{pdf,png}`：fixed + online 双面板对照
 - `fig07_context_mask_epochmean.{pdf,png}`：online 口径 epoch 平均（无伪影版）
-- `fig07star_context_kl_rowmask.{pdf,png}`：fig7\*
+- `fig07star_context_kl.{pdf,png}`：fig7\* type-mode 四臂（主版）
+- `fig07star_context_kl_rowmask.{pdf,png}`：fig7\* row-mode 两臂对照
 - `fig07_context_mask.{pdf,png}`：online 逐 step 原始锯齿版（备查）
 
 ## 7. 已知坑（血泪）
