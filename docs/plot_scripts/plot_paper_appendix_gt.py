@@ -96,7 +96,7 @@ def fig_missing_mass(summary):
         ax.set_xlim(0.8, f.max() * 1.5)
         ax.set_ylim(3e-4, 1.5)
         ax.set_xlabel(f"{branch} context count $F$")
-        ax.set_title(f"{branch}: $\\widehat M(F)\\approx{C_ctx:.2f}\\,F^{{-{-b_ctx:.3f}}}$",
+        ax.set_title(f"{branch}: $\\hat f(F)\\approx{C_ctx:.2f}\\,F^{{-{-b_ctx:.3f}}}$",
                      fontsize=9, pad=3)
         ctx_tail = 100 * (1 - summary[branch]["ctx_frac_win"])
         ctx_txt = f"{ctx_tail:.1f}%" if ctx_tail >= 0.05 else "<0.1%"
@@ -104,7 +104,7 @@ def fig_missing_mass(summary):
                 f"{100 * (1 - summary[branch]['tok_frac_win']):.0f}% of tokens",
                 fontsize=7, color="#555555", va="top")
         ax.legend(loc="lower left", framealpha=0.9, edgecolor="none", handlelength=1.8)
-    axes[0].set_ylabel("Good\u2013Turing missing mass $\\widehat M(F)$")
+    axes[0].set_ylabel("Good\u2013Turing novel-continuation rate $\\hat f(F)$")
     fig.tight_layout(pad=0.4, w_pad=0.8)
     for ext in ("pdf", "png"):
         fig.savefig(OUT / f"fig_app_gt_missing_mass.{ext}", dpi=200)
@@ -133,7 +133,7 @@ def fig_kernel(summary):
         ax.plot(fx, amp * fx ** slope, ls="--", lw=1.0, color=color, alpha=0.7,
                 label=f"direct fit ${amp:.2f}\\,F^{{{slope:.3f}}}$")
         ax.plot(f, g * M, marker="s", ms=4, mfc="white", color="#222222", lw=1.2,
-                label=f"$g\\,\\widehat M(F)$, $g={g:.2f}$")
+                label=f"$D\\,\\hat f(F)$, $D={g:.2f}$")
         ax.plot(f, gap, marker="o", ms=4.5, color=color, lw=0, label="measured gap")
         ax.set_xscale("log")
         ax.set_ylim(0, 8 if branch == "bigram" else 4.5)
@@ -148,7 +148,7 @@ def fig_kernel(summary):
         axr.text(0.02, 0.85, f"CV {100 * cv:.0f}%", transform=axr.transAxes, fontsize=7,
                  va="top", color="#333333")
     axes[0, 0].set_ylabel("step-1000 gap (nats)")
-    axes[1, 0].set_ylabel("gap / $\\widehat M$")
+    axes[1, 0].set_ylabel("gap / $\\hat f$")
     fig.subplots_adjust(left=0.09, right=0.99, top=0.92, bottom=0.14)
     for ext in ("pdf", "png"):
         fig.savefig(OUT / f"fig_app_gt_kernel.{ext}", dpi=200)
