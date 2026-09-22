@@ -4385,7 +4385,7 @@ Launch：remote queue script /data4/guoshaoyang/ngram-gap-lab/code/cluster/run_s
 
 **读法**：两种数据都产生正 gap，说明冻结 table 不能普遍保证 post-training 安全。纯数学线 trainable/frozen 终点均约 0.5–0.6；mixed 线 frozen 约 +1.04，而 trainable 约 +0.16。mixed validation 同时跨 MATH、GSM8K、IFEval 与多种格式约束，冻结旧 n-gram memory 可能与新域/格式产生适配错配；因此“语料越丰富 gap 越小”不是无条件规律。更稳妥的预测是：在匹配域、固定总 token budget 下，有效多样性和 continuation coverage 越高通常降低 replay-driven fork；跨域/格式异质性会引入额外 domain-shift 与 frozen-memory mismatch，可能反而放大 fixed-val gap。结果为单 seed、一个 5-epoch static proxy，不能升级为真实 RL 或跨域普遍结论。
 
-## §62 · 随机 context loss-masking 复现 + A/B gap 分解 + per-context KL（2026-09-22，planned）
+## §62 · 随机 context loss-masking 复现 + A/B gap 分解 + per-context KL（2026-09-22，running；fig7 用 both 三件套已完成，余臂队列推进中）
 
 **目的**：为论文 fig7（mask 后 gap 不再增长）与 fig7*（mask 后 both-table 子空间 KL 远小于 no-gram）补自有数据，替换当前从协作者矢量 PDF 提取的曲线。复现协作者 protocol：训练 trigram context 类型的均匀随机 2%（按类型、seed 42、numpy default_rng permutation；A=mask 集，B=不相交 peer 集，各 380,557/19,027,841 类型）从 epoch 边界起从 loss 中剔除（loss 分母只统计保留位置；输入、可训练参数不变）。
 
@@ -4402,3 +4402,15 @@ Launch：remote queue script /data4/guoshaoyang/ngram-gap-lab/code/cluster/run_s
 **验收**：30 步 smoke 已通过（ctxmask_smoke_fixed：A/B 选取 380,557 类型、干预于 step 1 触发、context_gap.jsonl 三条、summary 含 context_eval_ab=true；已删除）。正式 run 验收：① summary.intervention.events 含 random_context_loss_mask 与 n_masked_types=380,557；② ctrl run 与既有 marm run 同 step train/val 在 bf16 容差内；③ mask run context_gap.jsonl 的 C_A 在边界后转平、C_B 继续爬升；④ epoch2_model.pt 与 final_model.pt 存在。
 
 **修订（2026-09-22 稍后，重启过一次）**：首轮 3 个 run 跑到 ~600 步发现 C_A/C_B（fixed-probe join 版）幅度受 probe 大小限制、与协作者曲线（~0.02@epoch2）不可比。正确定义应为 C_S(t) = val_share_S × [val_mean_S(t) − tr_online_mean_S(t)]，其中 tr_online_mean 是训练流上 S 位置的 online forward loss（mask 后 A 位置仍前向、不计梯度）。已在 commit 6dede12 加入 GPU 无同步累积器：每个 micro-batch 累加 ptl 与计数，probe 节奏（10 步）写入 `tr_online_{A,B}`、`tr_online_n_{A,B}`、`Cpos_{A,B}` 后清零。joined C_A/C_B 保留作参考。train.py md5 现为 be7e8c8eac82cd8beb837cb934348b17。首轮 partial（both_ctrl@~700、bigram_e2@~700、nogram_e1 完成、nogram_e2@启动）已全部删除重跑；30 步二次 smoke 验证 tr_online_n_A≈3200/窗。三队列 13:52 重启。ctrl 与既有 marm both 同 step 对照（首轮）：train ±0.04、val ±0.01，bf16 容差内。
+
+**回填（2026-09-22 15:40）**：both_ctrl / both_e1 / both_e2 完成（both_e2 final gap +2.7466 @step 1011，seed 42；both_e1 674 步、both_ctrl 1011 步）；fig7 已用 online `Cpos_{A,B}` 重画并按用户要求展示 epoch 1（xlim 0–3、两条边界虚线；mask 段 A 仍实测，tr_online_n_A≈29.6k/窗）。证据：`docs/appendices/context_subspace_mask_20260921/runs_scaling/`（三臂 context_gap.jsonl）、脚本 `docs/plot_scripts/plot_paper_fig7_ctxmask_real.py`、commit 9f33a53。余臂：bigram_e1、nogram_ctrl、trigram_e1 在跑，trigram_e2 排队（fig7* 需全部 e2 臂完成后才能重算 KL）。
+
+## §63 · 论文图 online 口径统一：fig3a 重画（rerun）+ fixed-set loss 审计（2026-09-22，done）
+
+**决策**：与俞善斌讨论后用户拍板论文图统一 online 口径（"都用online，所见即所得"；"杜绝 fixed set loss 这种 metric"）。fixed 与 online 的本质差异在 train 侧语料的采样时点（online=当前 batch、更新前；fixed=固定语料用当前 ckpt 重评）；val 侧一律 fixed val batches。
+
+**fig3a（frequency → gap）**：原 `s1v5_128_frequency_main` 目录在集群清理中丢失（/data3、/data4 的 runs_scaling 均无），用户授权重跑。重跑于 ophis-gpu GPU 1（工作区 /data2/guoshaoyang/ngram-gap-lab_freq_rerun，代码=HEAD 修复版 commit a4ed6ae，data 软链 /data3），参数与原 run 完全一致（seed 42、1000 步、128×、val_steps 337/674/1000、input 双表 2^20）。**final gap 2.7113**（原登记 2.736，−0.9%，run 间波动量级）。图源改为该 rerun 的 `freq_bin_loss.jsonl` step-1000 记录：22 个原生 log-spaced 桶，gap(F)=fixed-val mean − current-batch online train mean（novel/空桶/非正 gap 剔除）。**新拟合（val-token 加权 log-log）：bigram 6.141·F^−0.190（22 桶）、trigram 4.632·F^−0.403（21 桶）**；旧 fixed-probe 拟合（7.206/−0.233、3.759/−0.318）降级为脚本 stdout 参考——overleaf 正文 Sec 4.1 系数需同步替换（正文在 overleaf，仓库外，用户自更）。fig03b/03c 本就是 online gap，同批重输出未改数据。证据：`docs/appendices/s1_scaling_three_axis/s1_frequency_online_freqbin.jsonl` + `s1v5_128_frequency_main_rerun_{summary,train_log}.*`；脚本 `plot_paper_fig345_row.py`；commit f1739e4。
+
+**口径审计（figs/paper 全集）**：fig1 forking=online train + fixed val ✓；fig03b/c=online gap ✓；fig07=Cpos online ✓（本次回填）；fig07* KL 与 fig09 crowding 系 checkpoint 评测诊断（测的是分布/质量，非 train/val gap，无 fixed-set train loss）；appendix GT 为频次统计（非模型 loss）。**overleaf 论文图集合已无 fixed-set train loss**。遗留（report/blog 侧，非本次范围）：report fig04（exact-F）、fig14/15（GT kernel、dilution）与 `plot_paper_fig345_variants.py` 的 train 侧仍为 fixed probe（`exact_freq_train_batches` 4 个固定 batch 逐步重评）；如需统一，须扩展 diag_worker 将 online batch per-token loss 按精确 F 聚合（新测量字段）并重跑对应 run——待用户确认后再动。
+
+**事故记录（/data3、/data4 代码损坏，待恢复）**：向两树同步代码时 scp 管道在用户 quota 硬限下失败，train.py 被截断（后经 cat 覆盖尝试进一步截为 0 字节，md5 d41d8cd9）、ngram_freq.py 被覆盖为 ac510eb6（原 3baba85c）。原始 blob 已定位（train.py 91b2d1bb=745e5f9 版、ngram_freq.py 3baba85c=51247f0 版），但两文件系统用户 quota 满、所有写入被拒，恢复受阻。**/data1（§62 队列）与 /data2（rerun 工作区）全程未受影响**；ctxmask 队列的"双进程"实为 DataLoader fork（cmdline 与父进程相同），无双写。附带修复本地 train.py 的 §62 遗留 bug：diag setup（freq_train_iter/exact_freq_train_batches/diag_pool）被误包进 ctxmask/AB 条件块，普通 freq run（无 intervention、无 A/B）在 step 10 diag 块 NameError 崩溃——已移回 `if args.freq_index` 块，commit a4ed6ae（本次 rerun 即用此版）。
