@@ -26,6 +26,21 @@ Example:
     --freq_index data/freq_index.npz \
     --pair prev_normal=both_e1ckpt@final_model.pt,both_e2ckpt@final_model.pt \
     --out_json docs/appendices/context_subspace_mask_20260921/context_kl.json
+
+Restricted-KL mode (--restrict_seen_novel): per val position with trigram
+context ctx, restrict both distributions to
+
+    S(ctx) = {y': (ctx, y') is a train-shard 4-gram}     (seen continuations)
+             U {true tokens at val positions with ctx}   (val continuations)
+
+renormalize p_ref and p_new on S, and report KL_S(p_ref || p_new) =
+sum_{i in S} p~_i log(p~_i / q~_i). Also reports the exact decomposition
+
+    KL_full = Z_ref * KL_S + Z_ref * log(Z_ref / Z_new) + [outside-S part]
+
+which separates the within-subspace rearrangement from the mass exchange
+with the "other" background. Supports/gather indices are built once and
+shared across pairs (val batches are fixed).
 """
 from __future__ import annotations
 
@@ -33,6 +48,7 @@ import argparse
 import json
 import os
 import sys
+import time
 from datetime import datetime, timezone
 
 import numpy as np
@@ -68,6 +84,125 @@ def load_model_from_file(path: str, ref_run_dir: str, device):
     return model, summary
 
 
+def _ngram_keys(tokens: np.ndarray, n: int, V: int) -> np.ndarray:
+    out = np.zeros(len(tokens) - n + 1, dtype=np.int64)
+    for i in range(n):
+        out = out * V + tokens[i:len(tokens) - n + 1 + i]
+    return out
+
+
+def _csr_from_sorted_unique(keys: np.ndarray, V: int):
+    """Sorted unique (ctx*V + y) keys -> CSR: context dctx[i] has
+    continuations ys[off[i]:off[i+1]] (sorted, unique)."""
+    ctx = keys // V
+    ys = (keys - ctx * V).astype(np.int32)
+    first = np.flatnonzero(np.concatenate(([1], ctx[1:] != ctx[:-1])))
+    off = np.concatenate([first, [keys.size]]).astype(np.int64)
+    return ctx[first], off, ys
+
+
+def _ctx_slice(k: int, dctx, off, ys):
+    i = int(np.searchsorted(dctx, k))
+    if i < dctx.size and dctx[i] == k:
+        return ys[off[i]:off[i + 1]]
+    return None
+
+
+def build_restricted_support(val_batches, train_shard: str, V: int, device):
+    """Per-position restricted supports S(ctx), built once for all pairs.
+
+    S(ctx) = train-shard 4-gram continuations of ctx UNION the true tokens
+    at val positions with ctx (from these fixed val batches). Context keys
+    are computed exactly like train.py's context_set_membership (padded
+    prev2/prev). Returns, per batch, the flat valid rows and gather groups
+    [(position rows (m,), supports (m, s))] bucketed by support size.
+    """
+    tok = np.fromfile(train_shard, dtype=np.uint16).astype(np.int64)
+    print(f"[rkl] train shard {train_shard}: {len(tok):,} tokens; counting 4-grams ...")
+    k4 = np.unique(_ngram_keys(tok, 4, V))
+    dctx_t, off_t, ys_t = _csr_from_sorted_unique(k4, V)
+    del k4, tok
+    print(f"[rkl] train contexts with >=1 continuation: {dctx_t.size:,}")
+
+    per_batch, vkeys_all, keys_all = [], [], []
+    for inp, tgt in val_batches:
+        idx = inp.cpu().numpy().astype(np.int64)
+        y = tgt.cpu().numpy().astype(np.int64)
+        prev = np.concatenate([idx[:, :1], idx[:, :-1]], axis=1)
+        prev2 = np.concatenate([idx[:, :2], idx[:, :-2]], axis=1)
+        key = prev2 * (V * V) + prev * V + idx
+        valid = tgt.cpu().numpy().reshape(-1) != -1
+        vf = np.flatnonzero(valid)
+        kv = key.reshape(-1)[vf]
+        per_batch.append((vf, kv))
+        vkeys_all.append(kv * V + y.reshape(-1)[vf])
+        keys_all.append(kv)
+    dctx_v, off_v, ys_v = _csr_from_sorted_unique(
+        np.unique(np.concatenate(vkeys_all)), V)
+    uk = np.unique(np.concatenate(keys_all))
+    print(f"[rkl] distinct val contexts: {uk.size:,}; building supports ...")
+
+    sup_off = np.zeros(uk.size + 1, dtype=np.int64)
+    parts = []
+    for i, k in enumerate(uk):
+        a = _ctx_slice(int(k), dctx_t, off_t, ys_t)
+        b = _ctx_slice(int(k), dctx_v, off_v, ys_v)
+        s = b if a is None else (a if b is None else np.union1d(a, b))
+        parts.append(s)
+        sup_off[i + 1] = sup_off[i] + s.size
+    sup_arr = np.concatenate(parts).astype(np.int64)
+    sup_size = np.diff(sup_off)
+    print(f"[rkl] support |S|: mean={sup_size.mean():.2f} "
+          f"median={np.median(sup_size):.0f} "
+          f"p99={np.quantile(sup_size, 0.99):.0f} max={sup_size.max()}")
+
+    out = []
+    for vf, kv in per_batch:
+        inv = np.searchsorted(uk, kv)
+        sizes = sup_size[inv]
+        order = np.argsort(sizes, kind="stable")
+        ss = sizes[order]
+        bounds = np.flatnonzero(np.concatenate(([1], ss[1:] != ss[:-1])))
+        bounds = np.concatenate([bounds, [order.size]])
+        groups = []
+        for lo, hi in zip(bounds[:-1], bounds[1:]):
+            s = int(ss[lo])
+            pos = order[lo:hi].astype(np.int64)
+            idx2 = sup_off[inv[pos]][:, None] + np.arange(s, dtype=np.int64)[None, :]
+            groups.append((torch.from_numpy(pos).to(device),
+                           torch.from_numpy(sup_arr[idx2]).to(device)))
+        out.append({"vf": torch.from_numpy(vf).to(device), "groups": groups,
+                    "n_valid": int(vf.size)})
+    return out
+
+
+def restricted_kl_batch(logp_ref, logp_new, support):
+    """Per valid position: KL on S(ctx) with both distributions renormalized
+    on S, plus the log normalizers. Returns (rkl, logZ_ref, logZ_new)."""
+    V = logp_ref.shape[-1]
+    lp_r = logp_ref.reshape(-1, V)
+    lp_n = logp_new.reshape(-1, V)
+    n = support["n_valid"]
+    rkl = np.zeros(n, dtype=np.float64)
+    lzr = np.zeros(n, dtype=np.float64)
+    lzn = np.zeros(n, dtype=np.float64)
+    vf = support["vf"]
+    for pos, sexp in support["groups"]:
+        rows = vf[pos]
+        lr = lp_r[rows[:, None], sexp]
+        ln = lp_n[rows[:, None], sexp]
+        zr = torch.logsumexp(lr, dim=1)
+        zn = torch.logsumexp(ln, dim=1)
+        nlr = lr - zr[:, None]
+        nln = ln - zn[:, None]
+        kl = (nlr.exp() * (nlr - nln)).sum(dim=1)
+        pos_np = pos.cpu().numpy()
+        rkl[pos_np] = kl.double().cpu().numpy()
+        lzr[pos_np] = zr.double().cpu().numpy()
+        lzn[pos_np] = zn.double().cpu().numpy()
+    return rkl, lzr, lzn
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data_dir", required=True)
@@ -84,6 +219,12 @@ def main():
     ap.add_argument("--context_set_mode", choices=["type", "row"], default="type",
                     help="A/B selection space: distinct trigram types (needs "
                          "--freq_index) or trigram table rows (clean-table hash)")
+    ap.add_argument("--restrict_seen_novel", action="store_true",
+                    help="also compute KL restricted to S(ctx) = seen (train "
+                         "4-gram) UNION val continuations, renormalized on S")
+    ap.add_argument("--train_shard", default="data/tokenized/shard_00001.bin",
+                    help="train shard for seen-continuation 4-gram counts")
+    ap.add_argument("--vocab_size", type=int, default=8192)
     ap.add_argument("--dtype", default="bf16")
     ap.add_argument("--out_json", required=True)
     args = ap.parse_args()
@@ -95,6 +236,13 @@ def main():
     it = val_ds.iter_batches(device)
     val_batches = [next(it) for _ in range(args.n_val_batches)]
     print(f"[kl] val batches={len(val_batches)} shape={tuple(val_batches[0][0].shape)} device={device}")
+
+    restricted = None
+    if args.restrict_seen_novel:
+        t0 = time.time()
+        restricted = build_restricted_support(val_batches, args.train_shard,
+                                              args.vocab_size, device)
+        print(f"[rkl] support build took {time.time() - t0:.1f}s")
 
     freq_index = GlobalFrequencyIndex.load(args.freq_index)
     ctx = _autocast_ctx(args.dtype)
@@ -111,8 +259,9 @@ def main():
         info = model_new.setup_context_eval_sets(freq_index, args.frac, args.seed)
 
         kl_rn, kl_nr, memb_all = [], [], []
+        rkl_all, lzr_all, lzn_all = [], [], []
         with torch.no_grad():
-            for inp, tgt in val_batches:
+            for bi, (inp, tgt) in enumerate(val_batches):
                 with ctx:
                     logits_ref = model_ref(inp)
                     logits_new = model_new(inp)
@@ -126,9 +275,24 @@ def main():
                 kl_rn.append(kl1[valid].cpu().numpy())
                 kl_nr.append(kl2[valid].cpu().numpy())
                 memb_all.append(model_new.context_set_membership(inp)[valid].cpu().numpy())
+                if restricted is not None:
+                    r, zr, zn = restricted_kl_batch(logp_ref, logp_new,
+                                                    restricted[bi])
+                    rkl_all.append(r)
+                    lzr_all.append(zr)
+                    lzn_all.append(zn)
         kl_rn = np.concatenate(kl_rn)
         kl_nr = np.concatenate(kl_nr)
         memb = np.concatenate(memb_all)
+        if restricted is not None:
+            rkl = np.concatenate(rkl_all)
+            lz_r = np.concatenate(lzr_all)
+            lz_n = np.concatenate(lzn_all)
+            z_r = np.exp(lz_r)
+            z_n = np.exp(lz_n)
+            dec_weighted = z_r * rkl                 # Z_ref * KL_S
+            dec_mass = z_r * (lz_r - lz_n)           # S mass-exchange term
+            dec_tail = kl_rn - dec_weighted - dec_mass  # outside-S part
 
         sets = {"A": 1, "B": 2, "other": 0}
         out = {"ref": os.path.basename(os.path.dirname(ref_path)) + "/" + os.path.basename(ref_path),
@@ -143,10 +307,31 @@ def main():
                 "kl_ref_new_p90": float(np.quantile(kl_rn[m], 0.9)),
                 "kl_new_ref_mean": float(kl_nr[m].mean()),
             }
+            if restricted is not None:
+                out["sets"][name].update({
+                    "rkl_ref_new_mean": float(rkl[m].mean()),
+                    "rkl_ref_new_median": float(np.median(rkl[m])),
+                    "rkl_ref_new_p90": float(np.quantile(rkl[m], 0.9)),
+                    "z_ref_mean": float(z_r[m].mean()),
+                    "z_new_mean": float(z_n[m].mean()),
+                    "kl_full_in_S_weighted_mean": float(dec_weighted[m].mean()),
+                    "kl_full_S_mass_term_mean": float(dec_mass[m].mean()),
+                    "kl_full_outside_S_mean": float(dec_tail[m].mean()),
+                })
         results[label] = out
         a = out["sets"]["A"]
         print(f"[kl] {label}: A n={a['n']} KL(ref||new) mean={a['kl_ref_new_mean']:.4f} "
               f"median={a['kl_ref_new_median']:.4f}")
+        if restricted is not None:
+            b = out["sets"]["B"]
+            print(f"[rkl] {label}: A rKL={a['rkl_ref_new_mean']:.4f} "
+                  f"(in-S {a['kl_full_in_S_weighted_mean']:.4f} + mass "
+                  f"{a['kl_full_S_mass_term_mean']:.4f} + out "
+                  f"{a['kl_full_outside_S_mean']:.4f}) | "
+                  f"B rKL={b['rkl_ref_new_mean']:.4f} "
+                  f"(in-S {b['kl_full_in_S_weighted_mean']:.4f} + mass "
+                  f"{b['kl_full_S_mass_term_mean']:.4f} + out "
+                  f"{b['kl_full_outside_S_mean']:.4f})")
         del model_ref, model_new
         torch.cuda.empty_cache()
 
@@ -167,6 +352,15 @@ def main():
         },
         "pairs": results,
     }
+    if restricted is not None:
+        payload["meta"]["restricted"] = {
+            "train_shard": args.train_shard,
+            "definition": "S(ctx) = train-shard 4-gram continuations of ctx "
+                          "UNION true tokens at val positions with ctx; rkl = "
+                          "KL(p_ref||p_new) with both renormalized on S; "
+                          "decomposition: kl_full = Z_ref*rkl (in_S_weighted) "
+                          "+ Z_ref*log(Z_ref/Z_new) (S_mass_term) + outside_S",
+        }
     os.makedirs(os.path.dirname(os.path.abspath(args.out_json)), exist_ok=True)
     with open(args.out_json, "w") as f:
         json.dump(payload, f, indent=1)
