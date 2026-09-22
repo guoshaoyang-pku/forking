@@ -16,8 +16,11 @@ SAME late horizon (4 epochs, run_ids *_l4, launcher
 code/cluster/run_ctxmask_ab_long.sh) so the epoch-1-masked trial's aftermath
 stays visible through epochs 2-4 instead of being cut at the epoch-2 boundary;
 the plot prefers *_l4 dirs and falls back to the short §62 dirs.  Style:
-epoch ticks are INTEGERS only, panel width 2.2 in (half of the old 4.4),
-PNG dpi 300.
+epoch ticks are INTEGERS only, the whole figure is exported at 0.5
+linewidth-equivalent (4.4 in for the project's 8.8 in text width), PNG dpi
+300.  The two masked trials are drawn separately: the epoch-1-masked trial
+continues through later epochs, rather than being replaced by the epoch-2
+trial at epoch 2.
 
 Fig 7* (fig07star_context_kl.pdf): per-arm KL drift of masked-context
 next-token distributions (eval_context_kl.py output JSON), both-table vs
@@ -82,7 +85,7 @@ def fig7(runs_root: Path):
                and r[key] == r[key]]
         return zip(*pts) if pts else ([], [])
 
-    fig, ax = plt.subplots(figsize=(2.2, 1.95))
+    fig, ax = plt.subplots(figsize=(4.4, 2.5))
     # 2026-09-22 user: show epoch 1 as well (both masks start at epoch
     # boundaries 1 and 2; epoch 1 is the unmasked baseline segment)
     ax.axvline(1, color="#888888", lw=0.7, ls=":")
@@ -91,14 +94,10 @@ def fig7(runs_root: Path):
     ax.plot(x, y, color=ORANGE, lw=1.4, label="B unmasked")
     x, y = xy(ctrl, "Cpos_A")
     ax.plot(x, y, color=BLUE, lw=1.0, ls="--", label="A normal")
-    for rows, boundary in ((e1, EPOCH_STEPS), (e2, 2 * EPOCH_STEPS)):
-        x, y = xy(rows, "Cpos_A", step_min=boundary)
-        xs = list(x)
-        ys = list(y)
-        ax.plot(xs, ys, color=BLUE, lw=1.4,
-                label="A masked" if boundary == EPOCH_STEPS else None)
-        if xs:
-            ax.plot(xs[0], ys[0], marker="o", ms=3.5, color=BLUE, mfc="white", zorder=5)
+    x, y = xy(e1, "Cpos_A")
+    ax.plot(x, y, color=BLUE, lw=1.4, label="A masked from epoch 1")
+    x, y = xy(e2, "Cpos_A")
+    ax.plot(x, y, color="#7b4aa2", lw=1.4, label="A masked from epoch 2")
     ax.set_xlim(0, max_epoch)
     ax.set_xticks(range(max_epoch + 1))
     ax.set_xlabel("epoch")
