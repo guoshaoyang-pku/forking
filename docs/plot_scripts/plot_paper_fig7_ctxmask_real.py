@@ -72,10 +72,10 @@ def load_ctx_pref(runs_root: Path, base: str):
     raise SystemExit(f"no context_gap.jsonl for {base}[_l4] under {runs_root}")
 
 
-def fig7(runs_root: Path):
-    ctrl = load_ctx_pref(runs_root, "s1v5_128_marm_both_ctxmask_ctrl")
-    e1 = load_ctx_pref(runs_root, "s1v5_128_marm_both_ctxmask_e1")
-    e2 = load_ctx_pref(runs_root, "s1v5_128_marm_both_ctxmask_e2")
+def fig7(runs_root: Path, infix: str = "ctxmask"):
+    ctrl = load_ctx_pref(runs_root, f"s1v5_128_marm_both_{infix}_ctrl")
+    e1 = load_ctx_pref(runs_root, f"s1v5_128_marm_both_{infix}_e1")
+    e2 = load_ctx_pref(runs_root, f"s1v5_128_marm_both_{infix}_e2")
     max_epoch = max(int(np.ceil(r["step"] / EPOCH_STEPS))
                     for rows in (ctrl, e1, e2) for r in rows)
 
@@ -105,14 +105,15 @@ def fig7(runs_root: Path):
     ax.legend(loc="upper left", framealpha=0.9, edgecolor="none", handlelength=1.8)
     fig.tight_layout(pad=0.4)
     OUT.mkdir(parents=True, exist_ok=True)
-    fig.savefig(OUT / "fig07_context_mask.pdf")
-    fig.savefig(OUT / "fig07_context_mask.png", dpi=300)
-    print((OUT / "fig07_context_mask.pdf").relative_to(ROOT))
+    tag = "" if infix == "ctxmask" else f"_{infix}"
+    fig.savefig(OUT / f"fig07_context_mask{tag}.pdf")
+    fig.savefig(OUT / f"fig07_context_mask{tag}.png", dpi=300)
+    print((OUT / f"fig07_context_mask{tag}.pdf").relative_to(ROOT))
 
 
-def fig7star(kl_json: Path):
+def fig7star(kl_json: Path, arms=None, tag=""):
     d = json.loads(kl_json.read_text())["pairs"]
-    arms = ["nogram", "bigram", "trigram", "both"]
+    arms = arms or ["nogram", "bigram", "trigram", "both"]
     labels = {"prev_normal": "preceding normal epoch",
               "masked": "masked epoch",
               "normal_ctrl": "normal control epoch"}
@@ -120,6 +121,9 @@ def fig7star(kl_json: Path):
               "trigram": S.BRANCH_COLORS["trigram"], "both": S.ARM_COLORS["input"]}
     fig, ax = plt.subplots(figsize=(3.6, 2.5))
     for arm in arms:
+        key_masked = f"{arm}_masked"
+        if key_masked not in d:
+            continue
         ys = [d[f"{arm}_{k}"]["sets"]["A"]["kl_ref_new_mean"] for k in labels]
         ax.plot(range(3), ys, marker="o", ms=4, lw=1.4, color=colors[arm],
                 label={"nogram": "no-gram", "bigram": "bigram only",
@@ -129,24 +133,30 @@ def fig7star(kl_json: Path):
     ax.set_ylabel("KL$(p_{ref} \\| p_{end})$ on A (nats)")
     ax.legend(framealpha=0.9, edgecolor="none", fontsize=8)
     fig.tight_layout(pad=0.4)
-    fig.savefig(OUT / "fig07star_context_kl.pdf")
-    fig.savefig(OUT / "fig07star_context_kl.png", dpi=200)
-    print((OUT / "fig07star_context_kl.pdf").relative_to(ROOT))
+    fig.savefig(OUT / f"fig07star_context_kl{tag}.pdf")
+    fig.savefig(OUT / f"fig07star_context_kl{tag}.png", dpi=200)
+    print((OUT / f"fig07star_context_kl{tag}.pdf").relative_to(ROOT))
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs_root", type=Path)
     ap.add_argument("--kl_json", type=Path)
+    ap.add_argument("--infix", default="ctxmask",
+                    help="run-id infix for fig7 (ctxmask | rowmask)")
+    ap.add_argument("--arms", default="nogram,bigram,trigram,both",
+                    help="comma list of arms for fig7* (subset OK)")
     args = ap.parse_args()
     S.apply_style()
     plt.rcParams.update({"font.size": 9, "axes.labelsize": 9.5,
                          "xtick.labelsize": 8.5, "ytick.labelsize": 8.5,
                          "legend.fontsize": 8})
     if args.runs_root:
-        fig7(args.runs_root)
+        fig7(args.runs_root, args.infix)
     if args.kl_json:
-        fig7star(args.kl_json)
+        arms = [a for a in args.arms.split(",") if a]
+        tag = "" if args.infix == "ctxmask" else f"_{args.infix}"
+        fig7star(args.kl_json, arms, tag)
 
 
 if __name__ == "__main__":
