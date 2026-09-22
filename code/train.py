@@ -2153,6 +2153,10 @@ def main():
     intervention_events = []
     amp_ctx = _autocast_ctx(args.dtype)
     cur_inp = cur_tgt = cur_ptl = None
+    ctx_tr_accum = None
+    if context_gap_log is not None:
+        ctx_tr_accum = {k: torch.zeros((), device=device) for k in
+                        ("A_sum", "A_cnt", "B_sum", "B_cnt")}
     for step in range(cfg.max_steps):
         # gradient accumulation
         optimizer.zero_grad()
@@ -2172,10 +2176,17 @@ def main():
                 print(f"[nglab] intervention={cfg.intervention} at step={step + 1} "
                       f"epoch={train_ds._epoch + 1}")
             with amp_ctx:
-                if model._context_loss_mask_active:
+                if model._context_set_keys is not None or model._context_loss_mask_active:
                     loss, ptl = model(inp, targets=tgt, return_token_losses=True)
-                    keep = model._context_loss_keep_mask(inp) & tgt.ne(-1)
-                    loss = ptl[keep].mean()
+                    if model._context_loss_mask_active:
+                        keep = model._context_loss_keep_mask(inp) & tgt.ne(-1)
+                        loss = ptl[keep].mean()
+                    memb = model.context_set_membership(inp)
+                    valid = tgt.ne(-1)
+                    for _code, _k in ((1, "A"), (2, "B")):
+                        _m = (memb == _code) & valid
+                        ctx_tr_accum[_k + "_sum"] += ptl[_m].sum()
+                        ctx_tr_accum[_k + "_cnt"] += _m.sum()
                     if freq_bin_log is not None and micro == grad_accum - 1:
                         cur_inp, cur_tgt, cur_ptl = inp, tgt, ptl.detach()
                 elif freq_bin_log is not None and micro == grad_accum - 1:
@@ -2279,6 +2290,19 @@ def main():
             cg["step"] = step + 1
             cg["epoch"] = train_ds._epoch + 1
             cg["epoch_pos"] = train_ds._epoch + train_ds.epoch_progress()
+            # online train loss on A/B positions (window mean since last eval),
+            # and the paper-style gap contribution share * (val - train)
+            acc = {k: float(v.item()) for k, v in ctx_tr_accum.items()}
+            for k in ctx_tr_accum:
+                ctx_tr_accum[k].zero_()
+            for tag in ("A", "B"):
+                cnt = acc[tag + "_cnt"]
+                tr_online = acc[tag + "_sum"] / cnt if cnt > 0 else float("nan")
+                cg[f"tr_online_{tag}"] = tr_online
+                if cnt > 0 and cg.get(f"val_mean_{tag}") == cg.get(f"val_mean_{tag}"):
+                    cg[f"Cpos_{tag}"] = cg[f"val_share_{tag}"] * (
+                        cg[f"val_mean_{tag}"] - tr_online)
+                cg[f"tr_online_n_{tag}"] = int(cnt)
             context_gap_log.write(json.dumps(cg) + "\n")
             context_gap_log.flush()
         fixed_freq_due = (

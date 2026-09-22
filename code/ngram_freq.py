@@ -349,7 +349,7 @@ class FreqBinLossAccumulator:
         """Accumulate one batch. inp: (B,T), per_token_loss: (B,T) float."""
         keys = self._compute_keys(inp)  # (B,T) long
         hits = self.freq_index.hit_count_tensor(self.branch, keys)  # (B,T) int32
-        self.update_numpy(hits.cpu().numpy(), per_token_loss)
+        self.update_numpy(hits.cpu().numpy(), per_token_loss.detach().cpu().numpy())
 
     def update_numpy(self, hits_np: np.ndarray, loss_np: np.ndarray):
         """Accumulate from precomputed hit counts (torch-free, worker path)."""
