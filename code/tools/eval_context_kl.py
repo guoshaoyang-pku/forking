@@ -203,20 +203,19 @@ def _bucket_groups(per_batch, uk, off, arr, device):
 
 def support_mass_batch(p_ref, p_new, comp):
     """Per valid position: total probability mass of p_ref and p_new on the
-    component support (seen or val-novel continuations)."""
+    component support (seen or val-novel continuations) of one batch."""
     V = p_ref.shape[-1]
     pr = p_ref.reshape(-1, V)
     pn = p_new.reshape(-1, V)
-    n = comp[0]["n_valid"]
+    n = comp["n_valid"]
     mr = np.zeros(n, dtype=np.float64)
     mn = np.zeros(n, dtype=np.float64)
-    for bi, c in enumerate(comp):
-        vf = c["vf"]
-        for pos, sexp in c["groups"]:
-            rows = vf[pos]
-            p = pos.cpu().numpy()
-            mr[p] = pr[rows[:, None], sexp].sum(dim=1).double().cpu().numpy()
-            mn[p] = pn[rows[:, None], sexp].sum(dim=1).double().cpu().numpy()
+    vf = comp["vf"]
+    for pos, sexp in comp["groups"]:
+        rows = vf[pos]
+        p = pos.cpu().numpy()
+        mr[p] = pr[rows[:, None], sexp].sum(dim=1).double().cpu().numpy()
+        mn[p] = pn[rows[:, None], sexp].sum(dim=1).double().cpu().numpy()
     return mr, mn
 
 
