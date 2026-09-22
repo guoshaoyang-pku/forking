@@ -317,7 +317,7 @@ def fig7b_kl_traj(kl_json: Path):
     """
     d = json.loads(kl_json.read_text())["arms"]
     epochs = [2, 3, 4]
-    arm_style = [("both", "both tables", S.ARM_COLORS["input"]),
+    arm_style = [("both", "ngram", S.ARM_COLORS["input"]),
                  ("nogram", "no-gram", S.ARM_COLORS["nogram"])]
 
     def vals(arm, key):
@@ -406,7 +406,7 @@ def fig7b_restricted(rkl_json: Path):
     """
     d = json.loads(rkl_json.read_text())["pairs"]
     epochs = [1, 2, 3, 4]
-    arm_style = [("both", "both tables", S.ARM_COLORS["input"]),
+    arm_style = [("both", "ngram", S.ARM_COLORS["input"]),
                  ("nogram", "no-gram", S.ARM_COLORS["nogram"])]
     # set key -> (label, linestyle); no A/B naming, say masked/unmasked
     set_style = [("B", "unmasked", "-"), ("A", "masked", "--")]
@@ -458,6 +458,47 @@ def fig7b_restricted(rkl_json: Path):
     print((OUT / "fig07b_zs_only.pdf").relative_to(ROOT))
 
 
+def fig7b_seen_mass(rkl_json: Path):
+    """Fig 7b (paper): mean output mass on the TRAIN-SEEN continuations of
+    each context -- the over-memorization coordinate of Sec. 4.2 tracked
+    over passes; epoch-1 end (unmasked, base prior) is the first point.
+
+    The split evaluation (kl_restricted_split_e1_l4.json) shows the total
+    S-mass signal is entirely this component (the val-novel component is
+    ~1-2% and flat in the ngram arm), so the seen mass is the clean
+    sharpening coordinate. Masking starts at the epoch-2 boundary.
+    """
+    d = json.loads(rkl_json.read_text())["pairs"]
+    epochs = [1, 2, 3, 4]
+    arm_style = [("both", "ngram", S.ARM_COLORS["input"]),
+                 ("nogram", "no-gram", S.ARM_COLORS["nogram"])]
+    # set key -> (label, linestyle); no A/B naming, say masked/unmasked
+    set_style = [("B", "unmasked", "-"), ("A", "masked", "--")]
+
+    def seen(arm, key):
+        g0 = d[f"{arm}_e2"]["sets"][key]
+        return [g0["z_seen_ref_mean"]] + [
+            d[f"{arm}_e{e}"]["sets"][key]["z_seen_new_mean"] for e in (2, 3, 4)]
+
+    fig, ax = plt.subplots(figsize=(4.4, 2.5))
+    for arm, name, c in arm_style:
+        for key, lab, ls in set_style:
+            ax.plot(epochs, seen(arm, key), color=c, ls=ls, lw=1.5,
+                    marker="o", ms=4, mfc=("white" if ls == "--" else c),
+                    label=f"{name} · {lab}")
+    ax.set_xticks(epochs)
+    ax.set_xticklabels([f"{e}" for e in epochs])
+    ax.set_xlabel("epoch end")
+    ax.set_ylabel("mass on train-seen continuations")
+    ax.set_ylim(0.15, 0.75)
+    ax.legend(fontsize=7.5, framealpha=0.9, edgecolor="none",
+              loc="upper left", handlelength=2.2)
+    fig.tight_layout(pad=0.4)
+    fig.savefig(OUT / "fig07b_seen_mass.pdf")
+    fig.savefig(OUT / "fig07b_seen_mass.png", dpi=300)
+    print((OUT / "fig07b_seen_mass.pdf").relative_to(ROOT))
+
+
 def fig7star(kl_json: Path, arms=None, tag=""):
     """Fig 7* (legacy 3-probe layout, superseded by fig7b_kl_traj).
       prev_normal  = epoch-1 boundary -> epoch-2 boundary (a normal epoch);
@@ -477,7 +518,7 @@ def fig7star(kl_json: Path, arms=None, tag=""):
     colors = {"nogram": S.ARM_COLORS["nogram"], "bigram": S.BRANCH_COLORS["bigram"],
               "trigram": S.BRANCH_COLORS["trigram"], "both": S.ARM_COLORS["input"]}
     names = {"nogram": "no-gram", "bigram": "bigram only",
-             "trigram": "trigram only", "both": "both tables"}
+             "trigram": "trigram only", "both": "ngram"}
     fig, ax = plt.subplots(figsize=(4.4, 2.5))
     n = len(arms)
     series = []
@@ -543,6 +584,7 @@ def main():
         fig7b_kl_traj(args.kl_traj_json)
     if args.rkl_json:
         fig7b_restricted(args.rkl_json)
+        fig7b_seen_mass(args.rkl_json)
 
 
 if __name__ == "__main__":

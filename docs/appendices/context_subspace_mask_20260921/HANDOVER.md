@@ -132,6 +132,7 @@ A/B 选取（两次运行确定性一致）：
    几乎无差）——没有表，"子空间"住在共享 backbone 里，mask 掉 context 的 loss 并不能阻止其
    分布被其他 context 的更新锐化；④ S 质量项的符号本身即机制：unmasked B 恒负（质量流入 S），
    both masked A 恒正（质量流出，遗忘），nogram 两臂皆负（都被锐化）。
+3d. **seen/val-novel 拆分（2026-09-23 01:40，done，回答"总 mass 是否被 val 混淆"）**：`eval_context_kl.py` 再拆 S 为 train-seen 续接与 val-only novel 续接两组 mass（`z_seen_*`/`z_valn_*`，md5 9206dfbd，GPU4），数据 `context_kl/kl_restricted_split_e1_l4.json`。ep1→ep4：ngram·unmasked seen 0.432→0.687 / valn 0.013→0.013（平）；ngram·masked seen 0.435→0.404（冻）/ valn 0.012→0.019；nogram·unmasked seen 0.217→0.409 / valn 0.013→0.059；nogram·masked seen 0.218→0.386 / valn 0.014→0.061。**结论**：① ngram 臂总 Z(S) 轨迹=seen 轨迹（valn 仅 1–2% 且平），总 mass 未被 val 污染，但 fig7b 口径精确改为 train-seen mass（over-memorization 坐标）；② "val 被压低"在质量层不成立（ngram·unmasked valn 平），crowding-out 受害侧体现在 loss 层（fig6 CE / fig7a gap），val 面板无信号不进主图；③ 额外机制对比：nogram 的 seen 与 valn 一起涨（无表时 replay 整体改善条件分布=泛化），ngram·unmasked 只涨 seen（过编码只灌记忆续接），ngram·masked 两者都不涨（子空间切断）。**论文落地（2026-09-23 01:55）**：4.3 重写为两段 + fig7 改双 subfigure（a=fixed 口径 gap 贡献 `fig07a_context_mask.pdf`，b=train-seen mass `fig07b_seen_mass.pdf`，各 0.495\linewidth，caption 只留图名），熵/CE 症状句移入 4.2 保留 carlsson 引用；Overleaf commit 776bf5a 已 push。
 3. **KL 三探针（旧 fig7\* 布局，已被 fig7b 取代）**：`KL(p_boundary ‖ p_end)` 逐 fixed-val 位置全 vocab 精确计算，按 A/B/other 分组。
    三个探针：`prev_normal`（epoch1→2 边界，正常 epoch 的漂移量）、`masked`（epoch2 边界→mask run 终点）、
    `normal_ctrl`（epoch2 边界→ctrl 终点）。type-mode A-KL（mean，`context_kl.json`）：both 0.505/0.469/0.608、
@@ -158,7 +159,8 @@ python3 docs/plot_scripts/plot_paper_fig7_ctxmask_real.py \
 产物（`docs/figs/paper/`）：
 - **`fig07_context_mask_fixed_perstep.{pdf,png}` ← fig7a 论文用（fixed 口径逐 step，4 epochs）**
 - **`fig07b_kl_traj_{lines,bars,nested}.{pdf,png}` ← fig7b 三版候选（KL 轨迹，epoch 2–4）**
-- **`fig07b_rkl.{pdf,png}` ← fig7b（restricted-KL 单面板：KL_S 轨迹，ref=epoch-1 末=0）**（脚本 `--rkl_json`，数据 `kl_restricted_e1_l4.json`，口径 §5.3c；用户拍板只画 KL，Z(S) 仅作分解分量不进图）
+- **`fig07b_seen_mass.{pdf,png}` ← fig7b 论文版（train-seen continuation mass 轨迹，ep1–4，ngram/no-gram × masked/unmasked）**（脚本 `--rkl_json` 指向 split json，口径 §5.3d）
+- `fig07b_rkl.{pdf,png}` / `fig07b_zs_only.{pdf,png}`：附录候选（KL_S 轨迹 / 总 Z(S)，ref=epoch-1 末=0）
 - `fig07_context_mask_perstep.{pdf,png}`：fixed + online 双面板对照
 - `fig07_context_mask_epochmean.{pdf,png}`：online 口径 epoch 平均（无伪影版）
 - `fig07star_context_kl.{pdf,png}`：fig7\* type-mode 四臂（主版）
