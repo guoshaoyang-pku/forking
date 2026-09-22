@@ -4367,3 +4367,36 @@ Launch：remote queue script /data4/guoshaoyang/ngram-gap-lab/code/cluster/run_s
 因 §59 的 `/data4` 用户 quota 触发写盘失败，重跑保持相同科学 setting，迁移到 360-2：代码 train.py SHA256 9957438861fdc28a428ba622b386b9ef80b8cb6edb10c232490c9fc22dc1e196，数据目录 data/tokenized_epoch20_ophis 的 24 个 shard 与 ophis /data4/.../tokenized_epoch20 逐文件 SHA256 一致，seed 42，bf16/no compile，8L/6H/768D，blocks 1,4 (0-based)，双层 bigram+trigram clean 1M tables，lr/warmup/table optimizer 与 §59 相同，20220 steps，epoch boundaries 6740/13480/20220，validation 在三个 epoch boundary 记录，table norm 每 10 步记录。
 
 科学变量不变；唯一工程变化是 host 和 checkpoint policy：关闭 save_epoch_checkpoints，只保存 final_model.pt，避免保存不可恢复的权重-only epoch snapshots。新 run IDs 为 s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_3602_nockpt_fixed，GPU 5/7/2，launcher code/cluster/run_20x_multilayer_memory_nockpt.sh。2-step v smoke 已通过（360-2 GPU 5，参数量 3285.8M，forward/backward 与 log 写入正常）；正式 run 验收为 summary、train_log、table_norm、final_model，且 step 20220 与无 NaN。三条正式 run 已于 14:49 CST 启动；首个状态检查显示三条均已完成模型初始化并进入训练，GPU 利用率约 97–99%。当前 launcher 传入 val_steps 6740,13480,20220，因此主 train/val/gap 日志是三个边界点，而不是每 10 步 dense loss 曲线。完整边界结果（train/val/gap）为：step 6740，v `2.749984/2.738409/−0.011576`、y `2.746817/2.738881/−0.007936`、Engram-like `2.772620/2.766567/−0.006052`；step 13480，v `2.483237/2.767889/+0.284653`、y `2.510806/2.728173/+0.217367`、Engram-like `2.591957/2.692277/+0.100320`；step 20220，v `2.266903/2.926786/+0.659884`、y `2.314134/2.865290/+0.551156`、Engram-like `2.418342/2.797168/+0.378826`。三条均有 2022 条 table-norm 记录、summary、train_log 和约 13 GB final_model.pt；远端 final manifest 已记录代码与 artifact SHA256，轻量证据包见 `docs/appendices/multilayer_memory_20260920_3602/`。
+
+## §61 · RLVR-like static verifier-selected continued-pretraining proxy (2026-09-21, done)
+
+**问题与协议**：检验 verifier-selected/chosen continuations 是否能在低-gap 20× checkpoint 后重新打开 fork，并比较 table trainable 与 frozen。该实验是静态 verifier-selected continued-pretraining proxy，不是真实 on-policy RL 或 response-only instruction SFT。共同初始化为 sftbase_ep20_tri_ckpt_fixed/final_model.pt；继续训练时重建 AdamW/RMSProp state 与 100-step warmup。代码 train.py SHA256 为 9957438861fdc28a428ba622b386b9ef80b8cb6edb10c232490c9fc22dc1e196。
+
+**数据构造**：RLVR-MATH (allenai/RLVR-MATH, revision bd2a93551b503a395fadd1a740d957559cfe6f3c, parquet SHA256 2fb8483bf7a4ae9821bee1e715490fb8de5b59f0d2b58bd4de78cc75094d9422) 与 RLVR-GSM-MATH-IF-Mixed-Constraints (revision 7dbd180f5440c0b90f2944e6efea934b85437a95, parquet SHA256 d4ff1f9c054129bfad71876be125c58c5eb18b4d57e8729c86fcfc126f2df300)。messages 已含上下文/解答，文本化时保留 messages 内容并只追加一次 Answer + ground_truth；不重复追加已有 assistant 内容。按源样本顺序前 95%/后 5% 划分 source train/held-out validation，再分别循环填满 333×72 与 4×72 packed rows（2048-token sequence）。tokenized manifests 与 run evidence 在 docs/appendices/rlvr_static_proxy_20260921/。
+
+**Setting**：vanilla nanoGPT 8L/6H/768D、vocab 8192、learned absolute position、LayerNorm、tied embeddings、input trigram-only clean table R=2^20、AdamW backbone lr=6e-4、RMSProp table (0.0,0.99) scale 128、warmup_constant(100)、bf16/no compile、seed 42、1665 updates (=5×333)、fixed validation 4 batches、logs every 10 steps、online gap = fixed val − online train。唯一 arm 差异是 freeze_table。
+
+| run | final train | final val | final gap | table |
+|---|---:|---:|---:|---|
+| sft_rlvr_math_e5_trainable_s42 | 0.009418 | 0.621298 | +0.611880 | trainable |
+| sft_rlvr_math_e5_frozen_s42 | 0.020218 | 0.521906 | +0.501688 | frozen |
+| sft_rlvr_mixed_e5_trainable_s42 | 0.017702 | 0.175134 | +0.157432 | trainable |
+| sft_rlvr_mixed_e5_frozen_s42 | 0.109077 | 1.153092 | +1.044014 | frozen |
+
+**读法**：两种数据都产生正 gap，说明冻结 table 不能普遍保证 post-training 安全。纯数学线 trainable/frozen 终点均约 0.5–0.6；mixed 线 frozen 约 +1.04，而 trainable 约 +0.16。mixed validation 同时跨 MATH、GSM8K、IFEval 与多种格式约束，冻结旧 n-gram memory 可能与新域/格式产生适配错配；因此“语料越丰富 gap 越小”不是无条件规律。更稳妥的预测是：在匹配域、固定总 token budget 下，有效多样性和 continuation coverage 越高通常降低 replay-driven fork；跨域/格式异质性会引入额外 domain-shift 与 frozen-memory mismatch，可能反而放大 fixed-val gap。结果为单 seed、一个 5-epoch static proxy，不能升级为真实 RL 或跨域普遍结论。
+
+## §62 · 随机 context loss-masking 复现 + A/B gap 分解 + per-context KL（2026-09-22，planned）
+
+**目的**：为论文 fig7（mask 后 gap 不再增长）与 fig7*（mask 后 both-table 子空间 KL 远小于 no-gram）补自有数据，替换当前从协作者矢量 PDF 提取的曲线。复现协作者 protocol：训练 trigram context 类型的均匀随机 2%（按类型、seed 42、numpy default_rng permutation；A=mask 集，B=不相交 peer 集，各 380,557/19,027,841 类型）从 epoch 边界起从 loss 中剔除（loss 分母只统计保留位置；输入、可训练参数不变）。
+
+**Setting**：与 marm 四臂完全一致（shard 1 fixed replay、seed 42、bf16/no compile、8L/6H/768D、bigram+trigram clean 1M tables、AdamW 6e-4、table RMSProp (0.0,0.99)×128、warmup_constant(100)、epoch_batches=337、val shards 2..10+6542、val_interval=10）。从头跑使数据流与 marm 轨迹逐步对齐（干预在 run 内 epoch 边界触发，同 freeze/hash_reseed causal 模式）。唯一新增：① `--intervention random_context_loss_mask --intervention_epoch {1,2}`（train.py 新增分支，code commit b87bb20，md5 cca8c12576489f5acbc117bafbeff923）；② `--fixed_train_probe 4` + `--context_eval_ab 1`（每 10 步在 4 个 fixed train + 4 个 fixed val batch 上按论文 C_S(t)=Σ q_i[l̄_val,i−l̄_tr,i] 口径记 A/B gap contribution 到 context_gap.jsonl；q_i=val 位置份额，join 于 train-probe 出现过的 context，n_join 随曲线记录）。ngram_freq.py 附带修复一处 latent device bug（FreqBinLossAccumulator.update 未 .cpu()，只在 fixed_train_probe>0 且给 freq_index 的路径触发，md5 变更为 8c1d179a0b13b9b1da4a4a57bf9bd7714b3e6d8b 前的值见 git）。
+
+**Runs（12，ophis-gpu GPU 3/5/6，launcher code/cluster/run_ctxmask_ab.sh，out /data1/guoshaoyang/ngram-gap-lab/data/runs_scaling/——ophis home /data3 用户 quota 超 soft 且 grace 过期被禁写，故工作区在 /data1）**：
+- `s1v5_128_marm_{arm}_ctxmask_ctrl_fixed`（1011 步，intervention=none，A/B eval only）
+- `s1v5_128_marm_{arm}_ctxmask_e1_fixed`（674 步，epoch 2 边界起 mask；--save_epoch_checkpoints --save_final_model）
+- `s1v5_128_marm_{arm}_ctxmask_e2_fixed`（1011 步，epoch 3 边界起 mask；同上）
+- arm ∈ {nogram, bigram, trigram, both}（nogram/bigram/trigram 用既有 --enable_* 0/1 组合）。fig7 用 both 三件套；fig7* 用各臂 e2 三对 + 既有 marm ckpt。
+
+**KL（fig7\*）**：code/tools/eval_context_kl.py（md5 f1b5b698b85bf0a14d0fbf65b1297895），fixed val 4 batches 上全 vocab 精确 KL(p_ref‖p_new) 与反向，按 A/B/other 聚合。对每臂三对：prev-normal（既有 e1ckpt→e2ckpt）、masked（ctxmask_e2 的 epoch2_model.pt→final_model.pt）、normal-control（既有 e2ckpt→1000 步 _ckpt final）。
+
+**验收**：30 步 smoke 已通过（ctxmask_smoke_fixed：A/B 选取 380,557 类型、干预于 step 1 触发、context_gap.jsonl 三条、summary 含 context_eval_ab=true；已删除）。正式 run 验收：① summary.intervention.events 含 random_context_loss_mask 与 n_masked_types=380,557；② ctrl run 与既有 marm run 同 step train/val 在 bf16 容差内；③ mask run context_gap.jsonl 的 C_A 在边界后转平、C_B 继续爬升；④ epoch2_model.pt 与 final_model.pt 存在。
