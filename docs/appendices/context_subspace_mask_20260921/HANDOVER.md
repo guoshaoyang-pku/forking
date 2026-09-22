@@ -86,6 +86,52 @@ A/B 选取（两次运行确定性一致）：
    累计共享参数漂移最终主导；③ 臂内 masked vs unmasked 差异很小（nogram B 略高 +0.01~0.07；
    both 基本持平，epoch 4 甚至反转）——无论有无表，masked context 的分布仍随 backbone
    大幅漂移，但该漂移同步作用于 train/val 两侧，不进 gap（与 fig7a 自洽）。
+3c. **restricted-KL（子空间内口径，回答"other 本底"质疑，2026-09-22 23:55）**：用户指出
+   full KL 可能被 "other"（非 seen/val continuation 的 ~8k 背景 token）主导。新口径：
+   对每个 val 位置的 trigram context 取 **S(ctx) = train shard 中该 context 的已见
+   continuation（4-gram）∪ 该 context 在 val 中出现的真值 token**，p/q 各自在 S 上重归一化后算
+   `KL_S = Σ_{i∈S} p̃ log(p̃/q̃)`；同时给出**精确分解**
+   `KL_full = Z_ref·KL_S + Z_ref·log(Z_ref/Z_new) + 外部项`。
+   实现：`eval_context_kl.py --restrict_seen_novel`（support 用 train shard 4-gram CSR +
+   fixed val batches 的 (ctx,y) CSR，预建一次 6 对共享）；数据
+   `context_kl/kl_restricted_e1_l4.json`（同 fig7b 的 6 对，ref=epoch-1 末）。
+   |S|：mean 10.7 / median 2 / p99 125。
+
+| epoch 末 | both A rKL | both B rKL | nogram A rKL | nogram B rKL |
+|---|---|---|---|---|
+| 2 | 0.209 | 0.268 | 0.378 | 0.370 |
+| 3 | 0.476 | 0.634 | 0.723 | 0.782 |
+| 4 | 0.767 | 0.939 | 0.861 | 0.940 |
+
+   Z(S)（输出质量落在 S 上的占比，mean）轨迹：
+
+| epoch 末 | both A | both B | nogram A | nogram B |
+|---|---|---|---|---|
+| ref(ep1) | 0.447 | 0.445 | 0.232 | 0.231 |
+| 2 | 0.430 | 0.564 | 0.348 | 0.354 |
+| 3 | 0.425 | 0.655 | 0.415 | 0.433 |
+| 4 | 0.423 | 0.700 | 0.447 | 0.468 |
+
+   full KL 三项分解（in-S 加权 + S 质量项 + 外部项，both_e4 A 为例 0.329+0.171+1.319=1.819 ✓ 闭合）：
+
+| pair | set | in-S 加权 | S 质量项 | 外部项 | 外部占比 |
+|---|---|---|---|---|---|
+| both_e2 | A | 0.090 | +0.051 | 0.324 | 70% |
+| both_e2 | B | 0.083 | −0.073 | 0.457 | 98% |
+| both_e4 | A | 0.329 | +0.171 | 1.319 | 73% |
+| both_e4 | B | 0.287 | −0.122 | 1.617 | 91% |
+| nogram_e2 | A | 0.099 | −0.058 | 0.843 | 95% |
+| nogram_e4 | A | 0.206 | −0.083 | 1.837 | 94% |
+
+   **结论（四层）**：① **用户猜测成立——full KL 的 70–95% 来自 S 外的背景本底**（共享 backbone
+   的宏观漂移），这不是子空间内的 sharpening；② **子空间内（rKL）臂内对比首次干净显现**：
+   both 臂 masked A 恒 < unmasked B（比值 ~0.78–0.82 跨三个 epoch 稳定），nogram 臂 masked≈unmasked
+   （比值 0.92–1.02）——有表时 mask 停住子空间内重排，无表时停不住；③ **Z(S) 是最锋利的证据**：
+   both 臂 unmasked B 质量从 0.445 灌到 0.700（+57%，sharpening 的直接定量签名），masked A
+   冻结在 0.447→0.423（−5%）；nogram 臂 masked A 照样 0.232→0.447（+93%，与 unmasked +103%
+   几乎无差）——没有表，"子空间"住在共享 backbone 里，mask 掉 context 的 loss 并不能阻止其
+   分布被其他 context 的更新锐化；④ S 质量项的符号本身即机制：unmasked B 恒负（质量流入 S），
+   both masked A 恒正（质量流出，遗忘），nogram 两臂皆负（都被锐化）。
 3. **KL 三探针（旧 fig7\* 布局，已被 fig7b 取代）**：`KL(p_boundary ‖ p_end)` 逐 fixed-val 位置全 vocab 精确计算，按 A/B/other 分组。
    三个探针：`prev_normal`（epoch1→2 边界，正常 epoch 的漂移量）、`masked`（epoch2 边界→mask run 终点）、
    `normal_ctrl`（epoch2 边界→ctrl 终点）。type-mode A-KL（mean，`context_kl.json`）：both 0.505/0.469/0.608、
