@@ -4430,3 +4430,37 @@ Launch：remote queue script /data4/guoshaoyang/ngram-gap-lab/code/cluster/run_s
 **seen/val-novel 拆分 + 论文 4.3 落地回填（2026-09-23 01:55，done）**：拆 S 为 train-seen / val-only novel 两组 mass 重跑 6 对（`kl_restricted_split_e1_l4.json`，md5 9206dfbd）：ngram·unmasked seen 0.432→0.687、valn 平 0.013；ngram·masked seen 0.435→0.404 冻；nogram 两臂 seen 与 valn 一起涨（0.22→0.39/0.41、0.013→0.06）。总 Z(S) 信号=seen 分量；val 压低只在 loss 层（fig6/7a）不在质量层。fig7b 定为 train-seen mass 单面板（图例 ngram/no-gram × masked/unmasked）；4.3 重写两段、fig7 双 subfigure、caption 只留图名、熵症状句移 4.2；Overleaf 776bf5a 已 push（rebase 过协作者 9851f02 的 fig09/walk_their_dog 更新，无冲突）。
 
 **事故记录（/data3、/data4 代码损坏，待恢复）**：向两树同步代码时 scp 管道在用户 quota 硬限下失败，train.py 被截断（后经 cat 覆盖尝试进一步截为 0 字节，md5 d41d8cd9）、ngram_freq.py 被覆盖为 ac510eb6（原 3baba85c）。原始 blob 已定位（train.py 91b2d1bb=745e5f9 版、ngram_freq.py 3baba85c=51247f0 版），但两文件系统用户 quota 满、所有写入被拒，恢复受阻。**/data1（§62 队列）与 /data2（rerun 工作区）全程未受影响**；ctxmask 队列的"双进程"实为 DataLoader fork（cmdline 与父进程相同），无双写。附带修复本地 train.py 的 §62 遗留 bug：diag setup（freq_train_iter/exact_freq_train_batches/diag_pool）被误包进 ctxmask/AB 条件块，普通 freq run（无 intervention、无 A/B）在 step 10 diag 块 NameError 崩溃——已移回 `if args.freq_index` 块，commit a4ed6ae（本次 rerun 即用此版）。
+
+## §64 · ICLR 2027 投稿备用实验批（plan-7 E1/E2/E3，2026-09-23 晚，用户拍板「先把可能要跑的实验跑掉备用，存储对应的数据和最终 ckpt」）
+
+**背景**：刘老师批注版审阅（`docs/plans/plan-7-iclr27-submission-review.md`）列出三组提交前可能需要、但正文还没用的证据：E1 = Figure 1「单遍 vs 重复」严格对照；E2 = Section 5 post-training 的 no-gram 对照（现摘要 "verify even when frozen" 无对照支撑）；E3 = 关键结论补 seed 43/44 + 360-2 未回流的 mask_low_le8 在 ophis 的重跑。全部存 `--save_final_model`。Setting = agents.md §1 极简契约（input / 双表或无表 / RMSProp(0,0.99) / 128× / 6e-4 warmup_constant(100) / bf16 no-compile），唯一变量见各行。代码 md5 与本地 HEAD 一致（train.py 2d4bcb49b75c2d002449ef1f98715f17）。
+
+**数据坐标**：
+- rp 臂（replay）：train shard 1，val 2,3,4,5,6,7,8,9,10,6542（= S1 主线），freq 诊断开（freq_index.npz 匹配）。
+- sp 臂（single-pass）：train shard 1,60,61,62,63,64,65,66（8 shard ≈ 2696 batch ≥ 2000 步不回卷；60–66 与 val 不重叠），val 同 rp 臂；**freq 诊断关**（`--freq_eval_interval 0 --exact_freq_eval_interval 0`，池子无匹配 freq index，按 P4 不同步就不测）。前 337 batch 与 rp 臂逐位相同（同一 loader 顺序）。
+- RLVR 数据：原在 `/dev/shm/guoshaoyang_rlvr/tokenized_math`（tmpfs，重启即失），已落盘 `data/rlvr_tokenized/math/`（shard_00000/00001.bin md5 前 12 位 74086533983e / c8db5f9e17c6，95M）。
+- ep20 预训练：data/tokenized_epoch20，train 0–20，val 21,22,23，epoch_batches 6740，20220 步（=3 pass，与 `s1v5_128_ep20_tri_20p0xL4_3ep_v2` 同坐标，唯一变量 = 无表）。
+
+**Run 矩阵（登记 planned → running）**：
+
+| run_id | 变量/语义 | steps | GPU | 队列 |
+|---|---|---:|---:|---|
+| `fig1v5_rp_both_s{42,43,44}` | 双表，replay（E1/E3） | 2000 | 3 | A |
+| `fig1v5_sp_both_s{42,43,44}` | 双表，single-pass（E1/E3） | 2000 | 3 | A |
+| `fig1v5_rp_nogram_s{42,43,44}` | 无表，replay（E1/E3） | 2000 | 7 | A |
+| `fig1v5_sp_nogram_s{42,43,44}` | 无表，single-pass（E1/E3） | 2000 | 7 | A |
+| `causalv5m_mask_low_le8_e1_r1` | mask f≤8（360-2 原臂未回流，ophis 重跑，seed 42） | 1000 | 0 | B |
+| `causalv5m_mask_low_le8_e1_s{43,44}` | 同上补 seed（E3） | 1000 | 0 | B |
+| `causalv5c_freeze_table_e1_128x_s{43,44}` | e1 边界冻表补 seed（E3） | 1000 | 0 | B |
+| `s1v5_128_ep20_nogram_20p0xL4_3ep_ckpt` | 20× 语料 3 pass 无表预训练，存 ckpt（E2 基座） | 20220 | 2 | C |
+| `sft_id_e5_nogram_s42` | 无表基座续训 ID（shard 21 / val 22,23） | 1665 | 2 | C |
+| `sft_rlvr_math_e5_nogram_s42` | 无表基座续训 RLVR-MATH | 1665 | 2 | C |
+| `sft_ood_magicoder_e5_nogram_s42` | 无表基座续训 Magicoder | 1665 | 0 | C |
+| `sft_ood_openr1_10shards_e5_nogram_s42` | 无表基座续训 OpenR1-10shard | 1665 | 0 | C |
+
+**启动命令**（队列脚本在集群 `data/queue_logs/plan7_q_gpu{0,2,3,7}.sh`，nohup 后台；A/B 走 `code/cluster/run_v5_clean.sh GPU RUN_ID TRAIN VAL STEPS [extra]`，seed 用 extra `--seed N` 覆盖；C 的预训练与续训为 train.py 直调，续训 `--init_model` 指向无表 20× ckpt 并等其落盘）：
+- A both：`run_v5_clean.sh 3 fig1v5_rp_both_s42 "1" "2,3,4,5,6,7,8,9,10,6542" 2000 --save_final_model`；sp 臂 TRAIN=`1,60,61,62,63,64,65,66` + `--freq_eval_interval 0 --exact_freq_eval_interval 0`；nogram 臂加 `--enable_bigram 0 --enable_trigram 0 --bigram_clean_table 0 --trigram_clean_table 0`。
+- B：freeze 臂加 `--intervention freeze_table --intervention_epoch 1`；mask 臂加 `--intervention mask_low_freq --intervention_epoch 1 --intervention_freq_threshold 8 --intervention_low_inclusive 1`。
+- C 预训练：train.py `--data_dir .../tokenized_epoch20 --train_shards 0,...,20 --val_shards 21,22,23 --epoch_batches 6740 --steps 20220 --val_interval 10 --val_batches 4 --table_norm_interval 10 --save_final_model` + 无表开关；续训：`--steps 1665 --epoch_batches 333 --val_interval 10 --val_batches 4 --init_model <ckpt> --save_final_model`，数据分别为 tokenized_epoch20(21/22,23)、rlvr_tokenized/math(0/1)、ood_tokenized_magicoder(0/1)、ood_tokenized_openr1_10shards(0/1)。
+
+**验收**：每 run 有 summary.json + train_log.jsonl；sp 臂 2000 步内不回卷（train_log epoch 恒 1）；rp/sp 两臂 step≤337 的 train/val 逐位一致（loader 同序）；续训 4 臂 init sha256 记录于各 run 目录。回填期限 24h（P3）。

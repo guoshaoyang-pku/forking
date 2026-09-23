@@ -1,0 +1,182 @@
+% Corrected versions of EXISTING entries in Overleaf references.bib (audit 2026-09-23, Overleaf HEAD a8dbc5c).
+% Keys are unchanged: replace the old entry with the block below. Source URL above each block.
+% All 39 existing entries exist and all URLs return 200; these fix missing key / truncated authors / wrong venue / wrong title.
+% Also: delete the comment line "%Good原始论文，agent提供" above good1953population.
+
+% --- MISSING KEY (cited in 02_related_work.tex, renders as "?") ---
+% https://proceedings.mlr.press/v235/huang24y.html
+@inproceedings{huang2024mlagentbench,
+  title={{MLA}gent{B}ench: Evaluating Language Agents on Machine Learning Experimentation},
+  author={Huang, Qian and Vora, Jian and Liang, Percy and Leskovec, Jure},
+  booktitle={Proceedings of the 41st International Conference on Machine Learning},
+  pages={20271--20309}, year={2024}, volume={235},
+  series={Proceedings of Machine Learning Research}, publisher={PMLR},
+  url={https://proceedings.mlr.press/v235/huang24y.html}}
+
+% --- ENGRAM: author list was truncated with "and others". DECISION NEEDED ---
+% Option A (ACL 2026 version; NOTE: the ACL version renames the module "Deep Sparse Embedding (DSE)" and never says "Engram"):
+% https://aclanthology.org/2026.acl-long.226.bib
+@inproceedings{cheng2026engram,
+  title={Conditional Memory via Scalable Lookup: A New Axis of Sparsity for Large Language Models},
+  author={Cheng, Xin and Zeng, Wangding and Dai, Damai and Chen, Qinyu and Wang, Bingxuan and Xie, Zhenda and Huang, Kezhao and Yu, Xingkai and Hao, Zhewen and Zhang, Han and Li, Yu-Kun and Zhang, Huishuai and Zhao, Dongyan and Liang, Wenfeng},
+  booktitle={Proceedings of the 64th Annual Meeting of the {A}ssociation for {C}omputational {L}inguistics (Volume 1: Long Papers)},
+  month=jul, year={2026}, address={San Diego, California, United States},
+  publisher={Association for Computational Linguistics}, pages={4968--4990},
+  doi={10.18653/v1/2026.acl-long.226}, url={https://aclanthology.org/2026.acl-long.226/}}
+% Option B (keep the name "Engram"): cite arXiv 2601.07372 v2, 21 authors (https://export.arxiv.org/api/query?id_list=2601.07372):
+% Xin Cheng and Rui Tian and Wangding Zeng and Damai Dai and Qinyu Chen and Bingxuan Wang and Zhenda Xie and
+% Kezhao Huang and Xingkai Yu and Chengqi Deng and Shangyan Zhou and Chenggang Zhao and Zhewen Hao and Yukun Li and
+% Han Zhang and Zhengyan Zhang and Yixu Wei and M. Y Xu and Huishuai Zhang and Dongyan Zhao and Wenfeng Liang
+
+% --- TULU 3: old entry used eprint only; iclr2027 .bst prints NO venue/ID/URL for it ---
+% Authors: arXiv API 2411.15124. Venue: OpenReview i1uGbfHHpH (COLM 2025)
+@inproceedings{lambert2024tulu3,
+  title={Tulu 3: Pushing Frontiers in Open Language Model Post-Training},
+  author={Nathan Lambert and Jacob Morrison and Valentina Pyatkin and Shengyi Huang and Hamish Ivison and Faeze Brahman and Lester James V. Miranda and Alisa Liu and Nouha Dziri and Shane Lyu and Yuling Gu and Saumya Malik and Victoria Graf and Jena D. Hwang and Jiangjiang Yang and {Le Bras}, Ronan and Oyvind Tafjord and Chris Wilhelm and Luca Soldaini and Noah A. Smith and Yizhong Wang and Pradeep Dasigi and Hannaneh Hajishirzi},
+  booktitle={Second Conference on Language Modeling (COLM)}, year={2025},
+  url={https://openreview.net/forum?id=i1uGbfHHpH}}
+
+% --- VENUE UPGRADES (cited as arXiv/misc, but peer-reviewed versions exist) ---
+% ICLR entries below: arXiv metadata + OpenReview venue record (DBLP export was blocked; UNVERIFIED against DBLP's own .bib)
+@inproceedings{khandelwal2019knnlm,
+  title={Generalization through Memorization: Nearest Neighbor Language Models},
+  author={Urvashi Khandelwal and Omer Levy and Dan Jurafsky and Luke Zettlemoyer and Mike Lewis},
+  booktitle={International Conference on Learning Representations}, year={2020},
+  url={https://openreview.net/forum?id=HklBjCEKvH}}
+@inproceedings{wu2022memorizing,
+  title={Memorizing Transformers},
+  author={Yuhuai Wu and Markus N. Rabe and DeLesley Hutchins and Christian Szegedy},
+  booktitle={International Conference on Learning Representations}, year={2022},
+  url={https://openreview.net/forum?id=TrjbxzRcnf-}}
+@inproceedings{grave2016cache,
+  title={Improving Neural Language Models with a Continuous Cache},
+  author={Edouard Grave and Armand Joulin and Nicolas Usunier},
+  booktitle={International Conference on Learning Representations}, year={2017},
+  url={https://openreview.net/forum?id=B184E5qee}}
+
+% https://proceedings.mlr.press/v162/borgeaud22a.html
+@inproceedings{borgeaud2021retro,
+  title={Improving Language Models by Retrieving from Trillions of Tokens},
+  author={Sebastian Borgeaud and Arthur Mensch and Jordan Hoffmann and Trevor Cai and Eliza Rutherford and Katie Millican and George van den Driessche and Jean-Baptiste Lespiau and Bogdan Damoc and Aidan Clark and Diego de Las Casas and Aurelia Guy and Jacob Menick and Roman Ring and Tom Hennigan and Saffron Huang and Loren Maggiore and Chris Jones and Albin Cassirer and Andy Brock and Michela Paganini and Geoffrey Irving and Oriol Vinyals and Simon Osindero and Karen Simonyan and Jack W. Rae and Erich Elsen and Laurent Sifre},
+  booktitle={Proceedings of the 39th International Conference on Machine Learning},
+  pages={2206--2240}, year={2022}, volume={162},
+  series={Proceedings of Machine Learning Research}, publisher={PMLR},
+  url={https://proceedings.mlr.press/v162/borgeaud22a.html}}
+
+% https://papers.nips.cc/paper_files/paper/2017/hash/f0f6ba4b5e0000340312d33c212c3ae8-Abstract.html
+% (proceedings print "Tito Svenstrup, Dan"; arXiv's "Dan Svenstrup" kept so the in-text cite reads "Svenstrup et al.")
+@inproceedings{svenstrup2017hash,
+  title={Hash Embeddings for Efficient Word Representations},
+  author={Svenstrup, Dan and Hansen, Jonas and Winther, Ole},
+  booktitle={Advances in Neural Information Processing Systems}, volume={30}, year={2017},
+  publisher={Curran Associates, Inc.},
+  url={https://proceedings.neurips.cc/paper_files/paper/2017/file/f0f6ba4b5e0000340312d33c212c3ae8-Paper.pdf}}
+
+% https://papers.nips.cc/paper_files/paper/2019/hash/9d8df73a3cfbf3c5b47bc9b50f214aff-Abstract.html
+@inproceedings{lample2019product,
+  title={Large Memory Layers with Product Keys},
+  author={Guillaume Lample and Alexandre Sablayrolles and Marc'Aurelio Ranzato and Ludovic Denoyer and Herv{\'e} J{\'e}gou},
+  booktitle={Advances in Neural Information Processing Systems}, volume={32}, year={2019},
+  publisher={Curran Associates, Inc.},
+  url={https://proceedings.neurips.cc/paper_files/paper/2019/file/9d8df73a3cfbf3c5b47bc9b50f214aff-Paper.pdf}}
+
+% https://papers.nips.cc/paper_files/paper/2019/hash/f8d2e80c1458ea2501f98a2cafadb397-Abstract.html
+% (plan-7 recommends DROPPING this reference: continual-learning "experience replay" is a different notion of replay)
+@inproceedings{dautume2019episodic,
+  title={Episodic Memory in Lifelong Language Learning},
+  author={Cyprien de Masson d'Autume and Sebastian Ruder and Lingpeng Kong and Dani Yogatama},
+  booktitle={Advances in Neural Information Processing Systems}, volume={32}, year={2019},
+  publisher={Curran Associates, Inc.},
+  url={https://proceedings.neurips.cc/paper_files/paper/2019/file/f8d2e80c1458ea2501f98a2cafadb397-Paper.pdf}}
+
+% https://papers.nips.cc/paper_files/paper/2022/hash/fa0509f4dab6807e2cb465715bf2d249-Abstract-Conference.html
+@inproceedings{tirumala2022memorization,
+  title={Memorization Without Overfitting: Analyzing the Training Dynamics of Large Language Models},
+  author={Kushal Tirumala and Aram H. Markosyan and Luke Zettlemoyer and Armen Aghajanyan},
+  booktitle={Advances in Neural Information Processing Systems}, volume={35}, pages={38274--38290}, year={2022},
+  publisher={Curran Associates, Inc.},
+  url={https://proceedings.neurips.cc/paper_files/paper/2022/file/fa0509f4dab6807e2cb465715bf2d249-Paper-Conference.pdf}}
+
+% https://proceedings.mlr.press/v202/xu23a.html
+@inproceedings{xu2023whyknn,
+  title={Why do Nearest Neighbor Language Models Work?},
+  author={Xu, Frank F. and Alon, Uri and Neubig, Graham},
+  booktitle={Proceedings of the 40th International Conference on Machine Learning},
+  pages={38325--38341}, year={2023}, volume={202},
+  series={Proceedings of Machine Learning Research}, publisher={PMLR},
+  url={https://proceedings.mlr.press/v202/xu23a.html}}
+
+% https://proceedings.mlr.press/v235/jin24d.html
+% (plan-7 recommends DROPPING this reference, same reason as dautume2019episodic)
+@inproceedings{jin2024forget,
+  title={What Will My Model Forget? {F}orecasting Forgotten Examples in Language Model Refinement},
+  author={Jin, Xisen and Ren, Xiang},
+  booktitle={Proceedings of the 41st International Conference on Machine Learning},
+  pages={22145--22159}, year={2024}, volume={235},
+  series={Proceedings of Machine Learning Research}, publisher={PMLR},
+  url={https://proceedings.mlr.press/v235/jin24d.html}}
+
+% https://proceedings.mlr.press/v267/huang25bb.html  (last author "Xun Zhou" as on arXiv/OpenReview)
+@inproceedings{huang2025over,
+  title={Over-Tokenized Transformer: Vocabulary is Generally Worth Scaling},
+  author={Hongzhi Huang and Defa Zhu and Banggu Wu and Yutao Zeng and Ya Wang and Qiyang Min and Xun Zhou},
+  booktitle={Proceedings of the 42nd International Conference on Machine Learning},
+  pages={26261--26282}, year={2025}, volume={267},
+  series={Proceedings of Machine Learning Research}, publisher={PMLR},
+  url={https://proceedings.mlr.press/v267/huang25bb.html}}
+
+% https://proceedings.neurips.cc/paper_files/paper/2025/hash/2e067924aeeb02ae9919803fd08d8b4b-Abstract-Conference.html
+@inproceedings{yu2025scone,
+  title={Scaling Embedding Layers in Language Models},
+  author={Yu, Da and Cohen, Edith and Ghazi, Badih and Huang, Yangsibo and Kamath, Pritish and Kumar, Ravi and Liu, Daogao and Zhang, Chiyuan},
+  booktitle={Advances in Neural Information Processing Systems}, volume={38}, pages={31969--31995}, year={2025},
+  publisher={Curran Associates, Inc.},
+  url={https://proceedings.neurips.cc/paper_files/paper/2025/file/2e067924aeeb02ae9919803fd08d8b4b-Paper-Conference.pdf}}
+
+% https://papers.nips.cc/paper_files/paper/2023/hash/9d89448b63ce1e2e8dc7af72c984c196-Abstract-Conference.html
+% (old entry was an article-type entry with journal=NeurIPS and parsed "Teven Le Scao" as last name "Scao")
+@inproceedings{muennighoff2023scaling,
+  title={Scaling Data-Constrained Language Models},
+  author={Niklas Muennighoff and Alexander M. Rush and Boaz Barak and {Le Scao}, Teven and Aleksandra Piktus and Nouamane Tazi and Sampo Pyysalo and Thomas Wolf and Colin Raffel},
+  booktitle={Advances in Neural Information Processing Systems}, volume={36}, pages={50358--50376}, year={2023},
+  publisher={Curran Associates, Inc.},
+  url={https://proceedings.neurips.cc/paper_files/paper/2023/file/9d89448b63ce1e2e8dc7af72c984c196-Paper-Conference.pdf}}
+
+% --- WRONG / INCOMPLETE TITLES ---
+% https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash  (title from the model card's own citation block)
+% Model card states: "552B backbone parameters" and "Engram conditional memory (196B parameters, sparsely accessed via token-based lookup)".
+@misc{deepseek2026v41flash,
+  author={{DeepSeek-AI}},
+  title={{DeepSeek-V4.1-Flash}: Pushing the Limits of {KV} Cache Compression},
+  year={2026}, howpublished={Model card and technical report, Hugging Face},
+  url={https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash}, note={Released 2026-09-10}}
+
+% https://raw.githubusercontent.com/openai/parameter-golf/main/records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json
+@misc{shah2026bigramgolf,
+  author={Raahil Shah},
+  title={{Int6 MLP3x + SmearGate + BigramHash + OrthoInit + Muon WD + SWA}},
+  year={2026}, howpublished={OpenAI Parameter Golf record submission},
+  url={https://github.com/openai/parameter-golf/tree/main/records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA},
+  note={Record dated 2026-03-20; accessed 2026-09-22}}
+
+% https://www.recursive.com/articles/first-steps-toward-automated-ai-research  (page dated June 11, 2026; it is a blog article, not a technical report)
+% NOTE: its best NanoChat solution injects hashed bigram/trigram embeddings into the attention-value path -> also cite it in the over-encoding paragraph.
+@misc{recursive2026research,
+  author={{Recursive}}, title={First Steps Toward Automated {AI} Research},
+  year={2026}, month=jun, howpublished={Blog post},
+  url={https://www.recursive.com/articles/first-steps-toward-automated-ai-research}}
+
+% --- OPTIONAL NEW KEYS ---
+% modded-nanogpt bigram hash record (#62, 2026-01-19; adds hashed bigram embedding to the residual stream at nearly every block, ~290M params)
+% https://github.com/KellerJordan/modded-nanogpt/tree/master/records/track_1_short/2026-01-19_BigramHashEmbedding
+@misc{modded_nanogpt_bigram2026,
+  author={{@classiclarryd}}, title={New Record: Bigram Hash Embedding (-5.6s, -165 steps)},
+  year={2026}, howpublished={modded-nanogpt speedrun record \#62 (PR \#201)},
+  url={https://github.com/KellerJordan/modded-nanogpt/tree/master/records/track_1_short/2026-01-19_BigramHashEmbedding}}
+
+% Peer-reviewed successor of The AI Scientist. https://api.crossref.org/works/10.1038/s41586-026-10265-5
+@article{lu2026nature,
+  title={Towards end-to-end automation of {AI} research},
+  author={Chris Lu and Cong Lu and Robert Tjarko Lange and Yutaro Yamada and Shengran Hu and Jakob Foerster and David Ha and Jeff Clune},
+  journal={Nature}, volume={651}, number={8107}, pages={914--919}, year={2026},
+  doi={10.1038/s41586-026-10265-5}}
