@@ -4486,3 +4486,16 @@ train 侧数值与 val 侧几乎相同（||oe||=76.7，cos²(oe,tf)=0.58），�
 2. wte 与 oe/tf 近似正交（cos²≈0.005–0.009，随机基线 1/768≈0.0013）；oe 与最终 hidden 强对齐（cos≈0.77，cos²≈0.59）。
 3. **正交分解（pre-ln_f，val）**：tf = 73.1·ôe + 60.4·⊥，即最终 stream 的模长 ~77%（方差份额 0.59）由 OE 方向承载——table lookup 直接供给了输出表示约 3/4 的模长，此意义上确为「offload 模长」（用户结论）；nogram 臂整条 stream 仅 38.3。
 4. 两点精确化保留：① 残差构造的 passthrough null（增量与 oe 正交时）cos² = ||oe||²/||tf||² ≈ 0.68，实测 0.598 略低于 null，即 backbone 净增量把 oe 方向轻微衰减 ~6%（77.9→73.1）并叠加 60.4 的正交「精细」内容——该正交增量比 nogram 臂整条 stream（38.3）还大，与「backbone 被解放做更精细建模」相容；② 完整因果链尚缺一环：oe 与 wte 行近正交（cos²=0.005），logits = h·W_eᵀ，被承载的 oe 方向如何转成 logits（对下一 token 词表行的选择性对齐 vs backbone 增量读出）未由本批数字说明，列为可测的下一步探针。
+
+**Addendum · 精确三角分解（2026-09-24，主图草稿左下角向量图核验）**：逐位置精确分解 s = (wte+wpe) + oe + Δ，s = ln_f 输入，Δ = s − (wte+wpe+oe) = Transformer blocks 净贡献；share_x = (x·ŝ)/‖s‖（三项之和恒为 1，bigram/trigram 分支 share 之和 = share_oe）。工具 commit e2375c7（md5 76b6f2230b1c6896f97b641a160f93d9），ophis-gpu GPU 2，seed 42，同 fixed 批。证据：`docs/appendices/residual_geometry_20260924/residual_geometry_decomp_marm.json`。
+
+| arm（`s1v5_128_marm_*`） | step | share emb/oe/Δ | share tri/bi | ‖oe‖/‖s‖ | ‖Δ‖/‖s‖ | ∠(oe,s) | ∠(oe,Δ) | ‖Δ‖ | val loss |
+|---|---|---|---|---|---|---|---|---|---|
+| trigram_ckpt | 1000 | 0.001/0.610/0.389 | 0.610/— | 0.84 | 0.70 | 44° | 99° | 48.8 | 6.684 |
+| trigram_e1ckpt | 337 | 0.001/0.261/0.738 | 0.261/— | 0.47 | 0.84 | 57° | 85° | 48.2 | 6.161 |
+| both_ckpt | 1000 | 0.001/0.649/0.350 | 0.346/0.303 | 0.84 | 0.64 | 40° | 96° | 61.0 | 5.256 |
+| both_e1ckpt | 337 | 0.001/0.388/0.611 | 0.147/0.241 | 0.58 | 0.75 | 48° | 83° | 48.4 | 4.749 |
+| nogram_ckpt | 1000 | 0.001/0/0.999 | — | 0 | 1.00 | — | — | 38.2 | 3.578 |
+| nogram_e1ckpt | 337 | 0.001/0/0.999 | — | 0 | 1.00 | — | — | 42.7 | 5.013 |
+
+（val 侧；train 侧各量差 ≤0.03，结构一致。）要点：① share 是对 ln_f 尺度不变的「offload」度量：trigram-only 模型 step 1000 时 trigram embedding 供给最终 residual 方向上 61%，Transformer 39%；nogram 中 Transformer 供给 99.9%。② 绝对 ‖Δ‖ 并未变小（48.8 vs nogram 38.2），offload 只在按 ‖s‖ 归一化（= final LayerNorm 去尺度）后成立。③ share 随训练增长：trigram 0.26（epoch-1 末，未 replay）→ 0.61（step 1000，3 遍）；both 0.39 → 0.65，增量主要来自 trigram 分支（0.15 → 0.35）；高 share 态与 forking 同时出现（both val 4.749 → 5.256）。**replay 与训练步数混杂**：无 single-pass step-1000 checkpoint（`fig1v5_sp_*` 未存 final_model.pt），「offload 随 replay 增长」为假设。
