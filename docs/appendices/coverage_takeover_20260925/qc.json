@@ -1,0 +1,11 @@
+{
+  "verified_source_files": 21,
+  "max_scalar_loss_disagreement": 1.931833808477279e-07,
+  "online_bins": 18,
+  "fit_weight": "equal bin OLS; val-token sensitivity also exported",
+  "window": "F=1..1000 inclusive",
+  "seed_error_bars": "sample SD across seeds 42,43,44; not corpus uncertainty",
+  "gt_bin_rule": "sum N1(F+1) / sum (F+1)n(F+1); train-only weights, no calibration",
+  "perpos_probability_floor": 5.96e-08,
+  "perpos_max_zeros": 1094
+}

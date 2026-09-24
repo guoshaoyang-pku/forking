@@ -1,0 +1,31 @@
+subsection{Coverage and the frequency dependence of the gap}
+label{sec:coverage}
+Rare contexts leave more plausible continuations unobserved in a finite training corpus. To separate this coverage effect from the model's response, restrict attention to contexts with training count $Fge1$, and let $f(F)$ be the fraction of their validation positions whose target never followed that context in training. For a frequency bin, the gap has the exact decomposition
+egin{equation}
+gap_t(F)=f(F)D_t(F)+(1-f(F))S_t(F),quad
+egin{cases}
+D_t=ell^{mathrm{val}}_{mathrm{novel},t}-ell^{mathrm{tr}}_t,\
+S_t=ell^{mathrm{val}}_{mathrm{seen},t}-ell^{mathrm{tr}}_t.
+end{cases}
+label{eq:gap-decomp}
+end{equation}
+Here the two validation means use the same fixed validation pool, and the training reference is the current-batch loss from the same logged step, as in Section~ef{sec:setting}. This is an identity for bin means; it neither matches individual contexts between train and validation nor implies that $S_t$ is small. In particular, the excess validation loss relative to a no-gram control (Appendix~ef{app:novel-share}) is a different quantity from the training--validation gap.
+
+paragraph{Coverage summarizes much of the frequency dependence.}
+If the two conditional loss differences vary slowly across frequency bins, Equation~eqref{eq:gap-decomp} suggests the descriptive approximation
+egin{equation}
+gap_t(F)approx a_t f(F)+b_t.
+label{eq:gap_j}
+end{equation}
+We test this approximation against directly counted validation novelty, without assuming a power law for either quantity. For the both-table model with $2^{20}$ rows per table, three seeds and 18 native frequency bins spanning $1le Fle1000$, equal-bin fits to the seed-mean online gaps have relative root-mean-square residuals of $3.0$--$8.2%$ at bigram granularity and $3.2$--$10.7%$ at trigram granularity at steps 670, 1000, 1340 and 2000 (Appendix~ef{app:coverage-tests}). The residuals are structured and exceed the variation across training seeds. This is a useful approximation within the measured protocol, not an exact law. The intercept also matters: at step 2000 the bigram fit has $b_t=1.89$ nats, whereas a proportional fit through zero increases the residual from $0.20$ to $0.76$ nats. Fitted coefficients are not direct measurements of $D_t$ and $S_t$ unless their frequency dependence is negligible.
+
+paragraph{Training counts provide an imperfect coverage predictor.}
+For a fixed context with independent continuations, the expected singleton fraction after $F+1$ draws equals its expected missing mass after $F$ draws. To pool heterogeneous contexts with the validation-token weighting used above requires an additional sampling model. Under Poisson context counts and a matched train/validation context distribution, the resulting Good--Turing identity motivates the train-only estimator
+egin{equation}
+widehat f_{mathrm{GT}}(F)=rac{N_1(F+1)}{(F+1)n(F+1)},
+label{eq:gt}
+end{equation}
+where $n(k)$ counts contexts observed $k$ times and $N_1(k)$ their singleton context--continuation types (Appendix~ef{app:gt-identity}). The empirical ratio is not itself an exact or unbiased finite-sample identity. On the held-out shard, the uncalibrated, train-only pooled estimate is $0.870$--$0.885$ times the measured novel fraction for bigram contexts and $0.857$--$0.937$ for trigram contexts over the same bins. Thus training counts capture the trend but systematically underpredict novelty. We do not use a fitted validation correction to call this an exact train-only prediction.
+
+paragraph{Frequency alone does not describe all the variation.}
+A separate fixed-probe diagnostic holds the exact count $F=2,ldots,8$ fixed and stratifies contexts by their training singleton fraction. At $F=4$, for example, the lowest and highest strata of the both-table model have bigram novel fractions $0.25$ and $0.80$ and diagnostic gaps $3.23$ and $6.01$ nats (seed 42, step 1000). These comparisons support a contribution from continuation coverage beyond count alone, while variation in conditional entropy, prefix composition and optimization remains possible. They are observational, and trigram strata are not strictly monotone (Appendix Figure~ef{fig:within-F}). Coverage helps explain where the gap is concentrated; the response to missing coverage depends on the learned model and replay dynamics. It does not fix a universal gap exponent.

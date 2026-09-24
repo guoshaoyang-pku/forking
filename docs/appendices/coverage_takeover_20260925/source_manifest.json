@@ -1,0 +1,153 @@
+{
+  "paper_revision": "d04f9ee8ae1b70641508c94b7d4a6b0307fd5ba7",
+  "lab_revision": "09ee8bb27119fac9fa5bcda4becb6c2e2c59c756",
+  "sources": [
+    {
+      "path": "data/runs_fixed/fig1v5_rp_both_s42_fixed/freq_bin_loss.jsonl",
+      "sha256": "cd8755ae40d138176d7af1c7573c74a622d578cb53aeb054fabb6c68a7752297",
+      "bytes": 2425731,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_both_s42_fixed/freq_bin_loss.jsonl",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_both_s42_fixed/summary.json",
+      "sha256": "1c61a38f837de274e43f0180df7568cdd0d11f620f34cc1f1f154e1d1585b91a",
+      "bytes": 3240,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_both_s42_fixed/summary.json",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_both_s42_fixed/train_log.jsonl",
+      "sha256": "ec4c50391bf64b5a8c6889693a2a781d679e77919327a25bdf19a717b0d063e3",
+      "bytes": 33374,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_both_s42_fixed/train_log.jsonl",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_both_s43_fixed/freq_bin_loss.jsonl",
+      "sha256": "08a5aad4cac3a310d7e1503cbbd16a533cb964fad01413b904abe4b8e48f9483",
+      "bytes": 2425626,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_both_s43_fixed/freq_bin_loss.jsonl",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_both_s43_fixed/summary.json",
+      "sha256": "ccfaddc38ec00ada3d9b35eac84460433839984417b493c3044666bd4671ce5c",
+      "bytes": 3241,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_both_s43_fixed/summary.json",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_both_s43_fixed/train_log.jsonl",
+      "sha256": "85b62cdf3ab8fb375c414f2fada632f1b9ce4d947209ea7428f3588c6bc6b335",
+      "bytes": 33384,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_both_s43_fixed/train_log.jsonl",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_both_s44_fixed/freq_bin_loss.jsonl",
+      "sha256": "a83c547ad024bf5fb1198d3e292d69c6fa6e463dc304e1ce95ea9db57fee9d67",
+      "bytes": 2425599,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_both_s44_fixed/freq_bin_loss.jsonl",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_both_s44_fixed/summary.json",
+      "sha256": "2a2443c00dc59fd5380c03d7552d68a88d4383b40ff9030b1e2892a5aa8d498e",
+      "bytes": 3240,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_both_s44_fixed/summary.json",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_both_s44_fixed/train_log.jsonl",
+      "sha256": "0d0aa34504ed10048b760c08bb4eef506109493c29ecd2ea7baa19b26ac0dabe",
+      "bytes": 33356,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_both_s44_fixed/train_log.jsonl",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_nogram_s42_fixed/freq_bin_loss.jsonl",
+      "sha256": "41c8d0e788ba0e737be6af291b165423942e2f367702c3d9d27dfc8b0157e944",
+      "bytes": 2426111,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_nogram_s42_fixed/freq_bin_loss.jsonl",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_nogram_s42_fixed/summary.json",
+      "sha256": "b46cf2763f6445829372d3e22b23c2c689a8494f85f4a5e84fe845631bc0840d",
+      "bytes": 3235,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_nogram_s42_fixed/summary.json",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_nogram_s42_fixed/train_log.jsonl",
+      "sha256": "8e4cbcb06c2382424e0e8405ecf1afcb7a4fe9e98a9263b4ccfa5990db46b9b6",
+      "bytes": 33780,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_nogram_s42_fixed/train_log.jsonl",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_nogram_s43_fixed/freq_bin_loss.jsonl",
+      "sha256": "bbb3353b34f8439c91ee62e6a060834b4d4a6cdec5eae32c422c7feaf3bc4e7f",
+      "bytes": 2426269,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_nogram_s43_fixed/freq_bin_loss.jsonl",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_nogram_s43_fixed/summary.json",
+      "sha256": "1c9618335ffa442b3afc7e69f456ea283f9d5ad44d22781722ecccbde8e413bd",
+      "bytes": 3233,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_nogram_s43_fixed/summary.json",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_nogram_s43_fixed/train_log.jsonl",
+      "sha256": "64924c3f53aac543e5c5c6f6c1070147ffad74f546e1a9cf8221aa3fb07338ab",
+      "bytes": 33782,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_nogram_s43_fixed/train_log.jsonl",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_nogram_s44_fixed/freq_bin_loss.jsonl",
+      "sha256": "18caa2bbde8024aab85716a279abcd3954891bff528402bae47f449ff326d4f4",
+      "bytes": 2426101,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_nogram_s44_fixed/freq_bin_loss.jsonl",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_nogram_s44_fixed/summary.json",
+      "sha256": "0dd511d81a99fc2abb2d93c4d63a96fc2b9f4c62005859fa5e8513c2514c0d7d",
+      "bytes": 3235,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_nogram_s44_fixed/summary.json",
+      "verified_remote": true
+    },
+    {
+      "path": "data/runs_fixed/fig1v5_rp_nogram_s44_fixed/train_log.jsonl",
+      "sha256": "fbd78025bc7b25d4545f5e121c8c3c040aea759f8fead2eccb7da4de3485926a",
+      "bytes": 33811,
+      "remote": "ophis-gpu:/data3/guoshaoyang/ngram-gap-lab/data/runs_fixed/fig1v5_rp_nogram_s44_fixed/train_log.jsonl",
+      "verified_remote": true
+    },
+    {
+      "path": "docs/appendices/coverage_takeover_20260925/inputs/corpus_fval.npz",
+      "sha256": "3c1065cd4cb18247483d3548da4e0db5f710c3e3717a796379a8dedb64bbb87f",
+      "bytes": 144811,
+      "remote": "ophis-gpu:/data1/guoshaoyang/gt_audit_20260925/corpus_fval.npz",
+      "verified_remote": true
+    },
+    {
+      "path": "docs/appendices/gt_audit_20260925/perpos_decomp.json",
+      "sha256": "9bfa381e49c2d493d2c342867d3568b0e6d10a33ed9ca101eed06fe65228cd11",
+      "bytes": 180877,
+      "remote": "ophis-gpu:/data1/guoshaoyang/gt_audit_20260925/perpos_decomp.json",
+      "verified_remote": true
+    },
+    {
+      "path": "docs/appendices/gt_audit_20260925/split_check.json",
+      "sha256": "e2f9bf306b4f7d74af5f0acbeb6bffda89b46ac5d92f620ff2c587e8a64aa234",
+      "bytes": 1743,
+      "remote": "ophis-gpu:/data1/guoshaoyang/gt_audit_20260925/split_check.json",
+      "verified_remote": true
+    }
+  ]
+}
