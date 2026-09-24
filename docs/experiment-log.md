@@ -4464,3 +4464,23 @@ Launch：remote queue script /data4/guoshaoyang/ngram-gap-lab/code/cluster/run_s
 - C 预训练：train.py `--data_dir .../tokenized_epoch20 --train_shards 0,...,20 --val_shards 21,22,23 --epoch_batches 6740 --steps 20220 --val_interval 10 --val_batches 4 --table_norm_interval 10 --save_final_model` + 无表开关；续训：`--steps 1665 --epoch_batches 333 --val_interval 10 --val_batches 4 --init_model <ckpt> --save_final_model`，数据分别为 tokenized_epoch20(21/22,23)、rlvr_tokenized/math(0/1)、ood_tokenized_magicoder(0/1)、ood_tokenized_openr1_10shards(0/1)。
 
 **验收**：每 run 有 summary.json + train_log.jsonl；sp 臂 2000 步内不回卷（train_log epoch 恒 1）；rp/sp 两臂 step≤337 的 train/val 逐位一致（loader 同序）；续训 4 臂 init sha256 记录于各 run 目录。回填期限 24h（P3）。
+
+## §65 · Residual geometry：wte / OE / TF 模长与两两 cos²（2026-09-24，done）
+
+**问题**（用户提出）：OE（over-encoding，input 注入的 bigram+trigram 残差）是否「offload 了 transformer 输出的一部分模长」？测量 ||wte||、||oe||、||tf|| 及三者两两夹角 cos² 的均值。
+
+**口径**：只读诊断，不改训练。`code/tools/eval_residual_geometry.py`（commit 0e64d04，md5 47ddc477bcb1b8f5a08e926b15110bdb），复用 `eval_logits_rank.load_model` 从 `final_model.pt` 重建模型；checkpoint = §56 `_ckpt` 波 `s1v5_128_marm_{both,nogram}_ckpt_fixed`（step 1000，seed 42，gap@1000 = +2.6971 / +0.0189）；数据 = 训练同款 fixed 批（train 流头部 4 batch ≈ 已见 3 遍；val shards 2–10,6542 的 fixed 4 batch），bf16 autocast，位置 t≥2。ophis-gpu GPU 3。证据 JSON：`docs/appendices/residual_geometry_20260924/residual_geometry_marm_ckpt.json`。
+
+**结果**（val 侧，tf = ln_f 输出；tf_resid = ln_f 输入即 raw residual stream）：
+
+| arm | ||wte|| | ||oe|| | ||tf|| | ||tf_resid|| | cos²(wte,oe) | cos²(wte,tf) | cos²(oe,tf) |
+|---|---|---|---|---|---|---|---|---|
+| both | 1.12 | 77.9 | 38.4 | 94.8 | 0.005 | 0.006 | **0.59** |
+| nogram | 0.92 | — | 36.4 | 38.3 | — | 0.009 | — |
+
+train 侧数值与 val 侧几乎相同（||oe||=76.7，cos²(oe,tf)=0.58），几何结构在见过 3 遍的 train 数据上无可见分化。
+
+**解读（假设级，非定论）**：
+1. 「同量级」记忆属实：||oe||≈78 与 ||tf||≈38（post-ln_f）/ ||tf_resid||≈95（pre-ln_f）同数量级，OE 实际是 post-ln_f 输出的 ~2 倍、raw residual 的 ~0.82 倍。
+2. wte 与 oe/tf 近似正交（cos²≈0.005–0.009）；oe 与最终 hidden 强对齐（cos≈0.77，cos²≈0.59）。
+3. 但 cos²(oe,tf) 高**部分是残差直通（passthrough）的机械后果**：residual stream 按构造包含输入分量，而 OE 占输入模长的 ~99.99%（||wte||=1.1、||wpe||=0.08 vs ||oe||=78）。且 both 臂 raw residual 模长 94.8 远大于 nogram 臂 38.3——OE 并没有把 backbone 的输出「挤小」，backbone 增量贡献的粗略估计（||tf_resid − x_in||≈61，由均值标量近似推算）反而大于 nogram 臂整条 stream。「offload 模长」更准确的表述是：**最终 hidden 的方向主要由被残差连接原样带上来的 OE 向量承载，transformer 在其上叠加自己的增量**，而不是 transformer 输出模长被 OE 替代缩小。
