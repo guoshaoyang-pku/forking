@@ -1,0 +1,30 @@
+\section{Standard Setting and Measurement Conventions}
+\label{app:setting}
+
+The choice of backbone learning rate, table learning-rate multiplier, optimizer, and warmup schedule is documented with selection and sensitivity experiments in Appendix~\ref{app:parameter-selection}.
+
+\subsection{Loss and frequency measurements}
+
+The discovery-stage configuration in Appendix~\ref{app:original-setting} and the controlled setting in Section~\ref{sec:setting} should be distinguished. They use different optimizers and injection implementations. Frequencies $F(i)$ refer to counts in a single unrepeated training corpus, even when that corpus is consumed many times.
+
+For online curves, the training loss is obtained from the training forward pass before the corresponding update, while validation can be evaluated after that update. A fixed-probe gap instead compares fixed training and validation batches evaluated at the same checkpoint:
+\begin{equation}
+ G_{\mathrm{probe}}(t)
+ =L_{\mathrm{val,probe}}(t)-L_{\mathrm{train,probe}}(t).
+\end{equation}
+Where a matched no-gram control is subtracted, we explicitly use
+\begin{equation}
+ G_{\mathrm{net}}(t)
+ =G_{\mathrm{ngram}}(t)-G_{\mathrm{nogram}}(t).
+\end{equation}
+Cross-entropy values are in nats unless stated otherwise. BPB is the original search metric and should not be numerically equated with token cross-entropy.
+
+\pending{Before submission, complete the main-run manifest with exact data and tokenizer fingerprints, table sizes for each capacity condition, batch and probe definitions, checkpoint alignment, and the fitting interval and weighting for each quantitative claim. The source manuscript does not yet provide all of these fields.}
+
+\subsection{Numerical precision and implementation}
+
+The main setting uses BF16 autocast for forward computation. Model weights, n-gram table parameters, and optimizer states remain in FP32; cross-entropy and statistical aggregation are also computed in FP32. Diagnostic forwards use the same BF16 convention as the main evaluation, with per-token losses returned to FP32. Asynchronous aggregation changes execution, not the metric definitions.
+
+FP8 was not used as the baseline. In a setting-validation test, simply selecting \code{float8_e4m3fn} in CUDA autocast did not work on the current eager \code{nn.Linear}/\code{addmm} path. FP8 training requires a dedicated implementation, such as scaled matrix multiplication or Transformer Engine, together with explicit scaling policies for activations, weights, and gradients. Precision boundaries would also have to be specified separately for lookup tables, attention, MLPs, logit projection, table optimization, and diagnostics.
+
+A historical matched-hyperparameter comparison on an H200 found BF16 approximately 5.3 times faster per step than FP32. At 1000 steps, the reported raw gaps were 0.825 for BF16 and 0.858 for FP32, with similar trajectories. This check supported the conclusion that the numerical format did not remove forking in that setting; it is not a substitute for the evidence from the current main runs. The default convention remains BF16 forward computation, FP32 weights and optimizer states, and no \code{torch.compile}. Any future FP8 comparison should report stability, loss, gap, margins, throughput, and memory use separately.

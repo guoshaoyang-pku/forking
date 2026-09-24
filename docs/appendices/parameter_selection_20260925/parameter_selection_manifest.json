@@ -1,0 +1,4980 @@
+{
+  "description": "Appendix B.3 parameter-selection evidence. Losses are raw same-step online-train/fixed-validation records in nats/token; SD is sample SD. The blrabs diagnostic family evaluates every 50 steps; other included families every 10. Source paths are omitted for anonymous review.",
+  "claims": {
+    "initial": [
+      {
+        "run_id": "lrscan_input_lr0p0004_wc_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 3.121070146560669,
+        "val_loss": 4.308527827262878,
+        "gap": 1.1874576807022095
+      },
+      {
+        "run_id": "lrscan_input_lr0p0006_wc_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.898651599884033,
+        "val_loss": 4.4328917264938354,
+        "gap": 1.5342401266098022
+      },
+      {
+        "run_id": "lrscan_input_lr0p004_wc_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 6.173913478851318,
+        "val_loss": 6.23371684551239,
+        "gap": 0.05980336666107178
+      }
+    ],
+    "scale": [
+      {
+        "scale": 0.5,
+        "run_id": "optv5c_rms_b099_s0p5_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 3.5214035511016846,
+        "val_loss": 3.9860332012176514,
+        "gap": 0.4646296501159668
+      },
+      {
+        "scale": 1,
+        "run_id": "optv5c_rms_b099_s1p0_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 3.264625072479248,
+        "val_loss": 4.122927188873291,
+        "gap": 0.858302116394043
+      },
+      {
+        "scale": 2,
+        "run_id": "optv5c_rms_b099_s2p0_r1_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.882657289505005,
+        "val_loss": 4.433355093002319,
+        "gap": 1.5506978034973145
+      },
+      {
+        "scale": 3,
+        "run_id": "optv5c_rms_b099_s3p0_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.7592947483062744,
+        "val_loss": 4.645381927490234,
+        "gap": 1.88608717918396
+      },
+      {
+        "scale": 4,
+        "run_id": "optv5c_rms_b099_s4p0_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.7571353912353516,
+        "val_loss": 4.829568982124329,
+        "gap": 2.072433590888977
+      },
+      {
+        "scale": 8,
+        "run_id": "optv5f_rms_b099_s8p0_2k_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.6522252559661865,
+        "val_loss": 5.080222249031067,
+        "gap": 2.4279969930648804
+      },
+      {
+        "scale": 16,
+        "run_id": "optv5f_rms_b099_s16p0_2k_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.68880033493042,
+        "val_loss": 5.327740669250488,
+        "gap": 2.6389403343200684
+      },
+      {
+        "scale": 32,
+        "run_id": "optv5f_rms_b099_s32p0_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.6370937824249268,
+        "val_loss": 5.283997654914856,
+        "gap": 2.646903872489929
+      },
+      {
+        "scale": 64,
+        "run_id": "optv5f_rms_b099_s64p0_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.572253465652466,
+        "val_loss": 5.27782130241394,
+        "gap": 2.7055678367614746
+      },
+      {
+        "scale": 128,
+        "run_id": "optv5f_rms_b099_s128p0_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.546813488006592,
+        "val_loss": 5.278868794441223,
+        "gap": 2.7320553064346313
+      },
+      {
+        "scale": 256,
+        "run_id": "optv5f_rms_b099_s256p0_2k_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.6214091777801514,
+        "val_loss": 5.298890113830566,
+        "gap": 2.677480936050415
+      },
+      {
+        "scale": 512,
+        "run_id": "optv5f_rms_b099_s512p0_2k_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.669097423553467,
+        "val_loss": 5.240443706512451,
+        "gap": 2.5713462829589844
+      },
+      {
+        "scale": 1024,
+        "run_id": "optv5f_rms_b099_s1024p0_2k_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.8048312664031982,
+        "val_loss": 5.2549591064453125,
+        "gap": 2.4501278400421143
+      }
+    ],
+    "extended": [
+      {
+        "scale": 8,
+        "run_id": "optv5f_rms_b099_s8p0_2k_fixed",
+        "seed": 42,
+        "step": 2000,
+        "train_loss": 1.055382251739502,
+        "val_loss": 7.075818181037903,
+        "gap": 6.020435929298401
+      },
+      {
+        "scale": 16,
+        "run_id": "optv5f_rms_b099_s16p0_2k_fixed",
+        "seed": 42,
+        "step": 2000,
+        "train_loss": 1.2741568088531494,
+        "val_loss": 7.035334587097168,
+        "gap": 5.7611777782440186
+      },
+      {
+        "scale": 32,
+        "run_id": "optv5f_rms_b099_s32p0_2k_fixed",
+        "seed": 42,
+        "step": 2000,
+        "train_loss": 1.2628114223480225,
+        "val_loss": 6.921356558799744,
+        "gap": 5.658545136451721
+      },
+      {
+        "scale": 64,
+        "run_id": "optv5f_rms_b099_s64p0_2k_fixed",
+        "seed": 42,
+        "step": 2000,
+        "train_loss": 1.2247869968414307,
+        "val_loss": 6.964647173881531,
+        "gap": 5.7398601770401
+      },
+      {
+        "scale": 128,
+        "run_id": "optv5f_rms_b099_s128p0_2k_fixed",
+        "seed": 42,
+        "step": 2000,
+        "train_loss": 1.2291594743728638,
+        "val_loss": 6.953189373016357,
+        "gap": 5.724029898643494
+      },
+      {
+        "scale": 256,
+        "run_id": "optv5f_rms_b099_s256p0_2k_fixed",
+        "seed": 42,
+        "step": 2000,
+        "train_loss": 1.3011592626571655,
+        "val_loss": 6.843891978263855,
+        "gap": 5.5427327156066895
+      },
+      {
+        "scale": 512,
+        "run_id": "optv5f_rms_b099_s512p0_2k_fixed",
+        "seed": 42,
+        "step": 2000,
+        "train_loss": 1.4151602983474731,
+        "val_loss": 6.88949191570282,
+        "gap": 5.474331617355347
+      },
+      {
+        "scale": 1024,
+        "run_id": "optv5f_rms_b099_s1024p0_2k_fixed",
+        "seed": 42,
+        "step": 2000,
+        "train_loss": 1.461958885192871,
+        "val_loss": 6.796513915061951,
+        "gap": 5.33455502986908
+      }
+    ],
+    "warmup": [
+      {
+        "run_id": "optv5h_rms_b099_s2p0_warmstart0p1_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.9046053886413574,
+        "val_loss": 4.409103631973267,
+        "gap": 1.5044982433319092
+      },
+      {
+        "run_id": "optv5c_rms_b099_s2p0_r1_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.882657289505005,
+        "val_loss": 4.433355093002319,
+        "gap": 1.5506978034973145
+      },
+      {
+        "run_id": "optv5h_rms_b099_s2p0_warmstart0p5_r2_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 3.00362491607666,
+        "val_loss": 4.445387125015259,
+        "gap": 1.4417622089385986
+      },
+      {
+        "run_id": "optv5g_rms_b099_s2p0_constant_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 4.032242774963379,
+        "val_loss": 4.566231608390808,
+        "gap": 0.5339888334274292
+      }
+    ],
+    "support": [
+      {
+        "run_id": "lrscan_nogram_lr0p0006_wc_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 3.5965662002563477,
+        "val_loss": 3.621252477169037,
+        "gap": 0.02468627691268921
+      },
+      {
+        "run_id": "optv5c_rms_b095_s2p0_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 3.0190820693969727,
+        "val_loss": 4.258185625076294,
+        "gap": 1.2391035556793213
+      },
+      {
+        "run_id": "optv5c_rms_b098_s2p0_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.936457872390747,
+        "val_loss": 4.396394968032837,
+        "gap": 1.4599370956420898
+      },
+      {
+        "run_id": "optv5c_rms_b0995_s2p0_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.872103214263916,
+        "val_loss": 4.466314435005188,
+        "gap": 1.594211220741272
+      },
+      {
+        "run_id": "optv5c_rms_b0999_s2p0_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.845937728881836,
+        "val_loss": 4.5149513483047485,
+        "gap": 1.6690136194229126
+      },
+      {
+        "run_id": "optv5c_rms_b099_s2p0_r1_s43_fixed",
+        "seed": 43,
+        "step": 1000,
+        "train_loss": 2.8985800743103027,
+        "val_loss": 4.43710458278656,
+        "gap": 1.5385245084762573
+      },
+      {
+        "run_id": "optv5c_rms_b099_s2p0_r1_s44_fixed",
+        "seed": 44,
+        "step": 1000,
+        "train_loss": 2.8939223289489746,
+        "val_loss": 4.3960782289505005,
+        "gap": 1.5021559000015259
+      },
+      {
+        "run_id": "optv5f_rms_b0999_s8p0_2k_fixed",
+        "seed": 42,
+        "step": 2000,
+        "train_loss": 1.1564024686813354,
+        "val_loss": 7.055782198905945,
+        "gap": 5.899379730224609
+      },
+      {
+        "run_id": "optv5f_rms_b0999_s128p0_2k_fixed",
+        "seed": 42,
+        "step": 2000,
+        "train_loss": 1.3594303131103516,
+        "val_loss": 6.758165717124939,
+        "gap": 5.398735404014587
+      },
+      {
+        "run_id": "optv5c_adamw_b099_s2p0_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.9033517837524414,
+        "val_loss": 4.4055702686309814,
+        "gap": 1.50221848487854
+      },
+      {
+        "run_id": "optv5c_adamw_b099_s2p0_s43_fixed",
+        "seed": 43,
+        "step": 1000,
+        "train_loss": 2.8823306560516357,
+        "val_loss": 4.410513997077942,
+        "gap": 1.5281833410263062
+      },
+      {
+        "run_id": "optv5c_adamw_b099_s2p0_s44_fixed",
+        "seed": 44,
+        "step": 1000,
+        "train_loss": 2.873598098754883,
+        "val_loss": 4.406171441078186,
+        "gap": 1.5325733423233032
+      },
+      {
+        "run_id": "optv5c_sgd_m0_s2p0_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 3.8803927898406982,
+        "val_loss": 3.9583664536476135,
+        "gap": 0.07797366380691528
+      },
+      {
+        "run_id": "optv5c_sgd_m0_s2p0_s43_fixed",
+        "seed": 43,
+        "step": 1000,
+        "train_loss": 3.8019306659698486,
+        "val_loss": 3.830315887928009,
+        "gap": 0.0283852219581604
+      },
+      {
+        "run_id": "optv5c_sgd_m0_s2p0_s44_fixed",
+        "seed": 44,
+        "step": 1000,
+        "train_loss": 3.846278429031372,
+        "val_loss": 3.9011289477348328,
+        "gap": 0.05485051870346069
+      },
+      {
+        "run_id": "optv5c_rms_s128x_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.5333545207977295,
+        "val_loss": 5.260753035545349,
+        "gap": 2.7273985147476196
+      },
+      {
+        "run_id": "optv5c_adamw_s128x_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.5532374382019043,
+        "val_loss": 5.283823370933533,
+        "gap": 2.7305859327316284
+      },
+      {
+        "run_id": "optv5c_sgd_m0_s128x_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 3.8353755474090576,
+        "val_loss": 3.882604241371155,
+        "gap": 0.04722869396209717
+      }
+    ],
+    "scale_order_check": [
+      {
+        "run_id": "optv5f_rms_b099_s64p0_2k_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.538175344467163,
+        "val_loss": 5.28018319606781,
+        "gap": 2.742007851600647
+      },
+      {
+        "run_id": "optv5f_rms_b099_s128p0_2k_fixed",
+        "seed": 42,
+        "step": 1000,
+        "train_loss": 2.551926374435425,
+        "val_loss": 5.2833898067474365,
+        "gap": 2.7314634323120117
+      }
+    ],
+    "locked": [
+      {
+        "input": {
+          "run_id": "blrabs_input_lr0p00006_tlr0p0768_3k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 2.4748148918151855,
+          "val_loss": 5.5221803188323975,
+          "gap": 3.047365427017212
+        },
+        "nogram": {
+          "run_id": "blrabs_nogram_lr0p00006_tlr0p0768_3k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 4.206729412078857,
+          "val_loss": 4.263437390327454,
+          "gap": 0.05670797824859619
+        }
+      },
+      {
+        "input": {
+          "run_id": "blrabs_input_lr0p0001_tlr0p0768_3k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 2.1513893604278564,
+          "val_loss": 5.733032703399658,
+          "gap": 3.5816433429718018
+        },
+        "nogram": {
+          "run_id": "blrabs_nogram_lr0p0001_tlr0p0768_3k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 3.683563709259033,
+          "val_loss": 3.756927013397217,
+          "gap": 0.0733633041381836
+        }
+      },
+      {
+        "input": {
+          "run_id": "blrabs_input_lr0p0003_tlr0p0768_20k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 1.5450176000595093,
+          "val_loss": 6.410612940788269,
+          "gap": 4.86559534072876
+        },
+        "nogram": {
+          "run_id": "blrabs_nogram_lr0p0003_tlr0p0768_20k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 3.263472318649292,
+          "val_loss": 3.4266141057014465,
+          "gap": 0.16314178705215454
+        }
+      },
+      {
+        "input": {
+          "run_id": "blrabs_input_lr0p0006_tlr0p0768_10k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 1.2505449056625366,
+          "val_loss": 6.939556837081909,
+          "gap": 5.689011931419373
+        },
+        "nogram": {
+          "run_id": "blrabs_nogram_lr0p0006_tlr0p0768_10k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 3.063354969024658,
+          "val_loss": 3.3186054825782776,
+          "gap": 0.2552505135536194
+        }
+      },
+      {
+        "input": {
+          "run_id": "blrabs_input_lr0p0010_tlr0p0768_6k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 1.2428900003433228,
+          "val_loss": 7.268543124198914,
+          "gap": 6.025653123855591
+        },
+        "nogram": {
+          "run_id": "blrabs_nogram_lr0p0010_tlr0p0768_6k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 3.1488051414489746,
+          "val_loss": 3.343399405479431,
+          "gap": 0.19459426403045654
+        }
+      },
+      {
+        "input": {
+          "run_id": "blrabs_input_lr0p0020_tlr0p0768_3k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 1.4873943328857422,
+          "val_loss": 7.331634879112244,
+          "gap": 5.8442405462265015
+        },
+        "nogram": {
+          "run_id": "blrabs_nogram_lr0p0020_tlr0p0768_3k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 3.76299786567688,
+          "val_loss": 3.8375366926193237,
+          "gap": 0.07453882694244385
+        }
+      },
+      {
+        "input": {
+          "run_id": "blrabs_input_lr0p0040_tlr0p0768_3k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 6.694223880767822,
+          "val_loss": 6.740528702735901,
+          "gap": 0.04630482196807861
+        },
+        "nogram": {
+          "run_id": "blrabs_nogram_lr0p0040_tlr0p0768_3k_fixed",
+          "seed": 42,
+          "step": 2000,
+          "train_loss": 6.378958702087402,
+          "val_loss": 6.3929585218429565,
+          "gap": 0.0139998197555542
+        }
+      }
+    ],
+    "three_seed": {
+      "rmsprop": {
+        "records": [
+          {
+            "run_id": "optv5c_rms_b099_s2p0_r1_fixed",
+            "seed": 42,
+            "step": 1000,
+            "train_loss": 2.882657289505005,
+            "val_loss": 4.433355093002319,
+            "gap": 1.5506978034973145
+          },
+          {
+            "run_id": "optv5c_rms_b099_s2p0_r1_s43_fixed",
+            "seed": 43,
+            "step": 1000,
+            "train_loss": 2.8985800743103027,
+            "val_loss": 4.43710458278656,
+            "gap": 1.5385245084762573
+          },
+          {
+            "run_id": "optv5c_rms_b099_s2p0_r1_s44_fixed",
+            "seed": 44,
+            "step": 1000,
+            "train_loss": 2.8939223289489746,
+            "val_loss": 4.3960782289505005,
+            "gap": 1.5021559000015259
+          }
+        ],
+        "mean_gap": 1.5304594039916992,
+        "sample_sd_gap": 0.025255960316502363
+      },
+      "adamw": {
+        "records": [
+          {
+            "run_id": "optv5c_adamw_b099_s2p0_fixed",
+            "seed": 42,
+            "step": 1000,
+            "train_loss": 2.9033517837524414,
+            "val_loss": 4.4055702686309814,
+            "gap": 1.50221848487854
+          },
+          {
+            "run_id": "optv5c_adamw_b099_s2p0_s43_fixed",
+            "seed": 43,
+            "step": 1000,
+            "train_loss": 2.8823306560516357,
+            "val_loss": 4.410513997077942,
+            "gap": 1.5281833410263062
+          },
+          {
+            "run_id": "optv5c_adamw_b099_s2p0_s44_fixed",
+            "seed": 44,
+            "step": 1000,
+            "train_loss": 2.873598098754883,
+            "val_loss": 4.406171441078186,
+            "gap": 1.5325733423233032
+          }
+        ],
+        "mean_gap": 1.5209917227427165,
+        "sample_sd_gap": 0.016405604919527344
+      },
+      "sgd": {
+        "records": [
+          {
+            "run_id": "optv5c_sgd_m0_s2p0_fixed",
+            "seed": 42,
+            "step": 1000,
+            "train_loss": 3.8803927898406982,
+            "val_loss": 3.9583664536476135,
+            "gap": 0.07797366380691528
+          },
+          {
+            "run_id": "optv5c_sgd_m0_s2p0_s43_fixed",
+            "seed": 43,
+            "step": 1000,
+            "train_loss": 3.8019306659698486,
+            "val_loss": 3.830315887928009,
+            "gap": 0.0283852219581604
+          },
+          {
+            "run_id": "optv5c_sgd_m0_s2p0_s44_fixed",
+            "seed": 44,
+            "step": 1000,
+            "train_loss": 3.846278429031372,
+            "val_loss": 3.9011289477348328,
+            "gap": 0.05485051870346069
+          }
+        ],
+        "mean_gap": 0.053736468156178795,
+        "sample_sd_gap": 0.02481298496177476
+      }
+    }
+  },
+  "runs": {
+    "blrabs_input_lr0p00006_tlr0p0768_3k": {
+      "run_id": "blrabs_input_lr0p00006_tlr0p0768_3k_fixed",
+      "seed": 42,
+      "steps": 3000,
+      "source_sha256": {
+        "summary.json": "97a7f3da94a9c0b7bffd1427011db18035a0042899e5d4f37638d7b660229b90",
+        "train_log.jsonl": "758234fc53d7dfb3dd511155ac15fa1f0864244a03fce8cc509a9dfe99694f35"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 6e-05,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 1280.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 3000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_input_lr0p0001_tlr0p0768_3k": {
+      "run_id": "blrabs_input_lr0p0001_tlr0p0768_3k_fixed",
+      "seed": 42,
+      "steps": 3000,
+      "source_sha256": {
+        "summary.json": "d27edd68bc58c1848d510ae232a620ba18b33e819cae35e4f50948b26e2ada82",
+        "train_log.jsonl": "e6919ab3d75d63c97f678942b583922c12a75d857df7bfad02b8cd733dde2ee5"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0001,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 768.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 3000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_input_lr0p0003_tlr0p0768_20k": {
+      "run_id": "blrabs_input_lr0p0003_tlr0p0768_20k_fixed",
+      "seed": 42,
+      "steps": 20000,
+      "source_sha256": {
+        "summary.json": "9d9a4adad848692e782138a3e485c113dad2879c50cf0782a23ae19ca9b1b751",
+        "train_log.jsonl": "802a7abbd27182761b556d30ed4b9e3025646ad03c0b7a4f0a42a89e883c2526"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0003,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 256.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 20000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_input_lr0p0006_tlr0p0768_10k": {
+      "run_id": "blrabs_input_lr0p0006_tlr0p0768_10k_fixed",
+      "seed": 42,
+      "steps": 10000,
+      "source_sha256": {
+        "summary.json": "6eb8f1665b74394cc24493d2113d1317cd1a095300e78394838cb7a5d4869f71",
+        "train_log.jsonl": "8e96583feba7606f40ff33fdb874793ae3b4ab22ab8ce7b8857faef4e36eab95"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 128.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 10000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_input_lr0p0010_tlr0p0768_6k": {
+      "run_id": "blrabs_input_lr0p0010_tlr0p0768_6k_fixed",
+      "seed": 42,
+      "steps": 6000,
+      "source_sha256": {
+        "summary.json": "d7761bd293fd21e0bec3d6da549aa6b2bf68c7a4f2716e45eacc22414239657c",
+        "train_log.jsonl": "550bb7731aee5593767117906fa8cde4cfbe8bb677a0bfaeb0397a1471d56673"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.001,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 76.8,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 6000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_input_lr0p0020_tlr0p0768_3k": {
+      "run_id": "blrabs_input_lr0p0020_tlr0p0768_3k_fixed",
+      "seed": 42,
+      "steps": 3000,
+      "source_sha256": {
+        "summary.json": "74af02fd54f0d717540c02d09f593ea6da042c3758719ecffd63267d1def3da3",
+        "train_log.jsonl": "1dd9c1fc2ae0b86aee5bd2dae1100fc43db511f4b5876f0dfa0f7b31d78a260e"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.002,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 38.4,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 3000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_input_lr0p0040_tlr0p0768_3k": {
+      "run_id": "blrabs_input_lr0p0040_tlr0p0768_3k_fixed",
+      "seed": 42,
+      "steps": 3000,
+      "source_sha256": {
+        "summary.json": "833bd3b7a1c14e79cdb2737b095ae348125328d0d8543cc8accddea3d13f40d5",
+        "train_log.jsonl": "bede085f2a77e2cc5965c41c978c810b6b67dfbb39c2fe6aad2917d1646d65d3"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.004,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 19.2,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 3000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_nogram_lr0p00006_tlr0p0768_3k": {
+      "run_id": "blrabs_nogram_lr0p00006_tlr0p0768_3k_fixed",
+      "seed": 42,
+      "steps": 3000,
+      "source_sha256": {
+        "summary.json": "9ca70aa4d76b0ea562feede8c7cc31fac0424f7fa825c610de40222196190f3a",
+        "train_log.jsonl": "b9046d773e58948e6ad97f068c4fe910f875c82f8ff238e4abb141a6e4f2873f"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": false,
+        "enable_trigram_ve": false,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 6e-05,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 1280.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 0,
+        "trigram_clean_table": 0,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 3000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_nogram_lr0p0001_tlr0p0768_3k": {
+      "run_id": "blrabs_nogram_lr0p0001_tlr0p0768_3k_fixed",
+      "seed": 42,
+      "steps": 3000,
+      "source_sha256": {
+        "summary.json": "14b2897cd539ab577acce035bb2227e7c3651e1a39b90d3848ca6c86415e414d",
+        "train_log.jsonl": "d5ede4fbed70a951e0d52673a2d2e6b5121d2daaf3388d83f67224540cb21115"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": false,
+        "enable_trigram_ve": false,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0001,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 768.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 0,
+        "trigram_clean_table": 0,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 3000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_nogram_lr0p0003_tlr0p0768_20k": {
+      "run_id": "blrabs_nogram_lr0p0003_tlr0p0768_20k_fixed",
+      "seed": 42,
+      "steps": 20000,
+      "source_sha256": {
+        "summary.json": "d0815b50356db9bf1b9cb42ffca5b6a7ddee0f52b6eeb94b4a4205674b3a3e05",
+        "train_log.jsonl": "2de06fbc72319bee19dad57bf068b1d5f10107f01aa346ea3e84f1f38f8d785c"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": false,
+        "enable_trigram_ve": false,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0003,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 256.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 0,
+        "trigram_clean_table": 0,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 20000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_nogram_lr0p0006_tlr0p0768_10k": {
+      "run_id": "blrabs_nogram_lr0p0006_tlr0p0768_10k_fixed",
+      "seed": 42,
+      "steps": 10000,
+      "source_sha256": {
+        "summary.json": "65e20181ad21f03ae45bb8806fa45dca8b255ffb5cec7ff0072da78e82c5fd5f",
+        "train_log.jsonl": "77e86927695af0a0a381179f1239f890779a1dbb36d521f40ab75ca538b8f94b"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": false,
+        "enable_trigram_ve": false,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 128.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 0,
+        "trigram_clean_table": 0,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 10000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_nogram_lr0p0010_tlr0p0768_6k": {
+      "run_id": "blrabs_nogram_lr0p0010_tlr0p0768_6k_fixed",
+      "seed": 42,
+      "steps": 6000,
+      "source_sha256": {
+        "summary.json": "a8ff3f7e281cb7729adbf60930932d3d52c28c373f169f7ff6740132e7c679f8",
+        "train_log.jsonl": "b37898f9ba02293350271720f91916e369c65e57f8e1789791f8112919610182"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": false,
+        "enable_trigram_ve": false,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.001,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 76.8,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 0,
+        "trigram_clean_table": 0,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 6000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_nogram_lr0p0020_tlr0p0768_3k": {
+      "run_id": "blrabs_nogram_lr0p0020_tlr0p0768_3k_fixed",
+      "seed": 42,
+      "steps": 3000,
+      "source_sha256": {
+        "summary.json": "1306f4cdfd9e883c8171879a663f457b2e08291dc30ec904389d292179b6a2d3",
+        "train_log.jsonl": "5961fa15a952a4c9f510e238dc8a3a653971df2196675c450aa054f8be5bd7af"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": false,
+        "enable_trigram_ve": false,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.002,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 38.4,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 0,
+        "trigram_clean_table": 0,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 3000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "blrabs_nogram_lr0p0040_tlr0p0768_3k": {
+      "run_id": "blrabs_nogram_lr0p0040_tlr0p0768_3k_fixed",
+      "seed": 42,
+      "steps": 3000,
+      "source_sha256": {
+        "summary.json": "4d9abb3cba3457b667729dbad60de0a33baf4bc2c47f475d0233098ad9b9b4f2",
+        "train_log.jsonl": "8722e633ab8b92dd6148f02d7430148910889797b77783ed67463faa3332608c"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": false,
+        "enable_trigram_ve": false,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.004,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 19.2,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 0,
+        "trigram_clean_table": 0,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_epochs": [],
+        "intervention_freq_threshold": 200,
+        "intervention_low_inclusive": false,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 3000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 50,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 50,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 337
+      }
+    },
+    "lrscan_input_lr0p0004_wc": {
+      "run_id": "lrscan_input_lr0p0004_wc_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "2658da5b3dad027e009b6cec4645dd8af762287e0e8f57d02803a6bfbcc5a417",
+        "train_log.jsonl": "b1b7a21e5774ee0eff43e074f30b8767130e9644aeef969fb7b70a49313c1abf"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0004,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "lrscan_input_lr0p0006_wc": {
+      "run_id": "lrscan_input_lr0p0006_wc_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "ed13b2f3395091cfbb7444c92cf2388417ff51d3c1094b4644479adb3b73ba9b",
+        "train_log.jsonl": "872c25c8f6a376966a6cf1b96922d5f40c96767865eba9c01d26d27d331c0cad"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "lrscan_input_lr0p004_wc": {
+      "run_id": "lrscan_input_lr0p004_wc_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "acdf678d91ac076291bad65f4bd361f7eccebffddef3307dbe1b94673e8a68f1",
+        "train_log.jsonl": "110235de8e59b379fc3f8de8bfd05d04c0b6315c60cc96c7f472680ed3e4c253"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.004,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "lrscan_nogram_lr0p0006_wc": {
+      "run_id": "lrscan_nogram_lr0p0006_wc_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "c4b66f4f9962de8d63c72102dfcffc816ae1e08ae5101742823d5e489d9f8831",
+        "train_log.jsonl": "9d961648fa7fa753a51a4c290a9fd2bed5f988c3fd8c4f8816dd7abfab85f6d5"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": false,
+        "enable_trigram_ve": false,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_adamw_b099_s2p0": {
+      "run_id": "optv5c_adamw_b099_s2p0_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "d4dcfe977319c04dbf9d520c23f670ae0d4bdc933fbf243cce37abc8644b2baf",
+        "train_log.jsonl": "357ba3f70a6a05f3ef2dc868d77f534444520d0c440f7a92865c3b914f1e3b02"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "adamw",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_adamw_b099_s2p0_s43": {
+      "run_id": "optv5c_adamw_b099_s2p0_s43_fixed",
+      "seed": 43,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "5bdee1d827d0efd95da1e8eadb32a2ca2f95161d485571533218ce1e5d65a46d",
+        "train_log.jsonl": "436a8763238c3056c7363f996a4712413a2a8400877baf086fd747dfa964e863"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "adamw",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 43,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_adamw_b099_s2p0_s44": {
+      "run_id": "optv5c_adamw_b099_s2p0_s44_fixed",
+      "seed": 44,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "caaf6354a5e635be99212b91f06c45b35dfa4719675f21268b56c8af5cddb615",
+        "train_log.jsonl": "8cbc0a296a2655a646e76b6d6d877cba38230b9ab14a02e15ccb4af87db3b63d"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "adamw",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 44,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_adamw_s128x": {
+      "run_id": "optv5c_adamw_s128x_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "62e4859c57cca71858556567c760f0807ca070ab9dafd89e351935107a6efbf6",
+        "train_log.jsonl": "ea27f3fdacddfa53aa55f3c5e1851075b29311a32aaf92122bdfb045acf0676c"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "adamw",
+        "table_lr_scale": 128.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_rms_b095_s2p0": {
+      "run_id": "optv5c_rms_b095_s2p0_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "1fea587384b159ba1521c3d98724266cb02a6f1c734d5e379a9eac9768f2d54a",
+        "train_log.jsonl": "2d2fa1e3e8587868fdb1c0eafbce23572f63dc7692d8e02b9f877beca7a6fd29"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.95
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_rms_b098_s2p0": {
+      "run_id": "optv5c_rms_b098_s2p0_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "b2c9c362cdd99c6691bf9bda3bc6e0ba136f3583a99886dde77f395a0ddf4777",
+        "train_log.jsonl": "04df18b343c1ea67c3f0c15e849c238a842c04003f01415bd13d8cc810041197"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.98
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_rms_b0995_s2p0": {
+      "run_id": "optv5c_rms_b0995_s2p0_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "3d7447ebc6f8a5f031e05557085e9439d71f532f9f9c25989513d3164237cd32",
+        "train_log.jsonl": "630d15158b59b5120b9158843c6c3cd4692fa0806406da347551d803631f46e7"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.995
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_rms_b0999_s2p0": {
+      "run_id": "optv5c_rms_b0999_s2p0_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "e14fb47777132eda5c383bea809ce4f842c703b130fb6e72a4824b74ec97c519",
+        "train_log.jsonl": "79fbda23411f6a0da12825bfafd79fa595163f9c4814b554c2fbce597339fb9b"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.999
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_rms_b099_s0p5": {
+      "run_id": "optv5c_rms_b099_s0p5_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "89ef505069290dc887b16adf2e21dbd8d53a277c616db8ef636bb4ef1eb8b88c",
+        "train_log.jsonl": "50339f5e2e759d54182755d136101be0d836742ade409c039948f165263dca1d"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 0.5,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_rms_b099_s1p0": {
+      "run_id": "optv5c_rms_b099_s1p0_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "022a516eb6b6dc1edab23aea95881726a8051787b26a49a1362f25ddbac7c1d5",
+        "train_log.jsonl": "a794e34a04353124e2de132dbee79db4e16cb0d44ccc5d97407e4d03eef59f3d"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 1.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_rms_b099_s2p0_r1": {
+      "run_id": "optv5c_rms_b099_s2p0_r1_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "a55ace785a14c0cc31be43d8c801030a13f684cb335a8deea8d19dc2672bf122",
+        "train_log.jsonl": "fc0df86ce6ebbc48c79014a50e223da5c0153cca41046c919389329eb93cd3d9"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_rms_b099_s2p0_r1_s43": {
+      "run_id": "optv5c_rms_b099_s2p0_r1_s43_fixed",
+      "seed": 43,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "aebe1c374a55df34099c823934bdbc71f1f581ac7da8462b2aa61df672522265",
+        "train_log.jsonl": "2b963a1f5dfdbc28f9a6ed8bdc311b8c90edaa6290f58495c3f04a4612f34b9a"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 43,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_rms_b099_s2p0_r1_s44": {
+      "run_id": "optv5c_rms_b099_s2p0_r1_s44_fixed",
+      "seed": 44,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "428932d0ae02a8edff9aa76850b01824eca4ca91644e87368913bccb5686acea",
+        "train_log.jsonl": "e7df821f20c44d230b1452cb8e6d5cc2698a5431e86e51a2a03dc36937cb5f13"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 44,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_rms_b099_s3p0": {
+      "run_id": "optv5c_rms_b099_s3p0_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "57cc18394dbe7307caf4dbcb22ddaa3f5675f634ac27d7dd2d16c90aa8282615",
+        "train_log.jsonl": "04b46764a162f160a200719aa51cfaa558fea6bf49c7a343092f5fa5d804928a"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 3.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_rms_b099_s4p0": {
+      "run_id": "optv5c_rms_b099_s4p0_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "333a6b76c8e1a80f19a9f9c3a69d6cf7cd72dbb211a29d34d9b412d5958b9694",
+        "train_log.jsonl": "57d22a89abf01a0869461ba199bb4549abeab5a1ede4549b4dae9377b0a8340a"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 4.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_rms_s128x": {
+      "run_id": "optv5c_rms_s128x_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "3778ed502aaa437a0ccf5270bd922d244495345594e3319198a03c6aeebf2cb3",
+        "train_log.jsonl": "abdbb28fdec8eb83b255ea9dd1841150d933c88ee58cf344a1b299d4956d0855"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 128.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_sgd_m0_s128x": {
+      "run_id": "optv5c_sgd_m0_s128x_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "5580931ca86a6efd9191fecce181a343c42e7660645b22b3d226761723077f60",
+        "train_log.jsonl": "9ece6c91e19e7d034d49704ddfe01207f3f70d4092ad6704a50df973ac867be0"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "sgd",
+        "table_lr_scale": 128.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_sgd_m0_s2p0": {
+      "run_id": "optv5c_sgd_m0_s2p0_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "ac0c6d124d30b70d4f272a86366246412457dda143fcc0acf3d71154ef6be111",
+        "train_log.jsonl": "de24d52e4651caab370751d9b35c55c9bdfd26fc5e5634d21a4619b60ca53dad"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "sgd",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_sgd_m0_s2p0_s43": {
+      "run_id": "optv5c_sgd_m0_s2p0_s43_fixed",
+      "seed": 43,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "01d5ca1837d5d8bd97c33c9f3c5e5a9b9b708e47a0ff686663cc7133e45ca3ec",
+        "train_log.jsonl": "62068d848747d7d8702e955b214fe1656cbb19c505a8e284e4c447b2ae162785"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "sgd",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 43,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5c_sgd_m0_s2p0_s44": {
+      "run_id": "optv5c_sgd_m0_s2p0_s44_fixed",
+      "seed": 44,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "2e347cca8a4b991f851370b4da53af5afcad564d3a0a2fcc57abfbc1fb58a342",
+        "train_log.jsonl": "d3c1f2fa0148a975488cb62e2c5de171e9fb142d61ae5677a89ae5f25740416b"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "sgd",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_table_dim": 0,
+        "trigram_table_dim": 0,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 44,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b0999_s128p0_2k": {
+      "run_id": "optv5f_rms_b0999_s128p0_2k_fixed",
+      "seed": 42,
+      "steps": 2000,
+      "source_sha256": {
+        "summary.json": "0ad90d14dd7be46e033992ffd72f9c6d3520df24687af0ba3ca44d4e73456487",
+        "train_log.jsonl": "c9af5ab65c2d9b824f22a4851800bb4cbae70f43da7b83fcdf2992e8281fa675"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 128.0,
+        "table_betas": [
+          0.0,
+          0.999
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 2000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b0999_s8p0_2k": {
+      "run_id": "optv5f_rms_b0999_s8p0_2k_fixed",
+      "seed": 42,
+      "steps": 2000,
+      "source_sha256": {
+        "summary.json": "bae28716b2a5d80e87dedbe7dd0603be32970eea470a76ed5ce486016bd98a6b",
+        "train_log.jsonl": "29ffe7dab6bd57e9f1e883bdaa6092898cb0add6fed07c8c5be8d2190f5f30c0"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 8.0,
+        "table_betas": [
+          0.0,
+          0.999
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 2000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b099_s1024p0_2k": {
+      "run_id": "optv5f_rms_b099_s1024p0_2k_fixed",
+      "seed": 42,
+      "steps": 2000,
+      "source_sha256": {
+        "summary.json": "b79b0e45434612e439d93a479c51345090d435bb4e51b46c070caeaada3785f7",
+        "train_log.jsonl": "ca446be2237d9d4e14100da36eb86a30f808c48e9b19cb9285912065d2ab705e"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 1024.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 2000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b099_s128p0": {
+      "run_id": "optv5f_rms_b099_s128p0_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "e9cd6338de8b237b374035d405af1c934b75f627ac2b16490864eb44db756569",
+        "train_log.jsonl": "c2e0733ba34e99fb56535836cd18724e292e276c7a8f91774bb29863865eb1a0"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 128.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b099_s128p0_2k": {
+      "run_id": "optv5f_rms_b099_s128p0_2k_fixed",
+      "seed": 42,
+      "steps": 2000,
+      "source_sha256": {
+        "summary.json": "9c148529ac2d0a27ec72d58ce76344f563d78209080c6601157f3de7f63c7e45",
+        "train_log.jsonl": "b3503e20475ffba7c8d9b402286c08757f186f6408920c92de8fb5820c6bcbf8"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 128.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 2000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b099_s16p0_2k": {
+      "run_id": "optv5f_rms_b099_s16p0_2k_fixed",
+      "seed": 42,
+      "steps": 2000,
+      "source_sha256": {
+        "summary.json": "a00c567835b755613768ee4351f28ba5f073d87da96c4bd0f87e21b54ce8b7fd",
+        "train_log.jsonl": "c252832732810300bb3fb352b21240f83661a739ad3748f02d243e406a911c52"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 16.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 2000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b099_s256p0_2k": {
+      "run_id": "optv5f_rms_b099_s256p0_2k_fixed",
+      "seed": 42,
+      "steps": 2000,
+      "source_sha256": {
+        "summary.json": "1cf4b3a9989b0161a0fc303fbdd7ae81deaa03a0a96bf981dcfd1207b2503450",
+        "train_log.jsonl": "324423d1442b72eb1889eccdec41f4e3fadb9b48c954b02db70dd5ec2b9e8f1f"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 256.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 2000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b099_s32p0": {
+      "run_id": "optv5f_rms_b099_s32p0_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "4cfd2b766f4934a4475dadef15a1334178841769a829cccb6966cece7789c95b",
+        "train_log.jsonl": "b718e6ecdeefca696f3b7af1e1ccdfb87b49c0699bb4821815a81bce13e28039"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 32.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b099_s32p0_2k": {
+      "run_id": "optv5f_rms_b099_s32p0_2k_fixed",
+      "seed": 42,
+      "steps": 2000,
+      "source_sha256": {
+        "summary.json": "cc04916c9893e78a97879be0c65fd62cf33885809fc1691db6731008ac520506",
+        "train_log.jsonl": "07c2b57c2e0af90e47b32ab25a77dc67236851acff771e38f4245fa4d734b7bd"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 32.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 2000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b099_s512p0_2k": {
+      "run_id": "optv5f_rms_b099_s512p0_2k_fixed",
+      "seed": 42,
+      "steps": 2000,
+      "source_sha256": {
+        "summary.json": "893d550f1f8b7522a3d65c93517efc6f6d19b207c00c740de8f9df62c2c00325",
+        "train_log.jsonl": "1bcbb50b2fe3151d58ab286ce67590fbcbb6fb904992d4fead898184ba6e9bac"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 512.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 2000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b099_s64p0": {
+      "run_id": "optv5f_rms_b099_s64p0_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "c2437fa97ebeb0d20b1cca794c14f6fa8e90862ea039e91dc6ed5195be581734",
+        "train_log.jsonl": "8686ec628e663b788d7f69dc7824f58ce2aaf01e31a0ee64f43ccdc6af9404fb"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 64.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b099_s64p0_2k": {
+      "run_id": "optv5f_rms_b099_s64p0_2k_fixed",
+      "seed": 42,
+      "steps": 2000,
+      "source_sha256": {
+        "summary.json": "1ce946c25dc4e8d8be356938731f3b20bd37979b07caca368556953f6a4854ec",
+        "train_log.jsonl": "09ce92ef51ffed8d202e89668351728e168ad4f0567e749d36ee684a77c05f04"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 64.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 2000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5f_rms_b099_s8p0_2k": {
+      "run_id": "optv5f_rms_b099_s8p0_2k_fixed",
+      "seed": 42,
+      "steps": 2000,
+      "source_sha256": {
+        "summary.json": "6c77d1115ea7e38f80bfaec7e8d3eff19367672fb4f3b6f756da64d320883da0",
+        "train_log.jsonl": "a185cd902cb14f22ce2ac344dc8666ef76d1598cb99c4d545a9266b48f1ea362"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 8.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 2000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5g_rms_b099_s2p0_constant": {
+      "run_id": "optv5g_rms_b099_s2p0_constant_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "1d2dc5c088de6f5d411a0bacf5caff46fd5c77db17f992cead130da917e8cab8",
+        "train_log.jsonl": "92e9d1a7f4918524dfee671d9679fc2d22eeb34b252f583c52255bdb4a39da5f"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.25,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5h_rms_b099_s2p0_warmstart0p1": {
+      "run_id": "optv5h_rms_b099_s2p0_warmstart0p1_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "3fe9508c6914d606eda14083c8aae7162b3331778119195eccb9fe9badf79a39",
+        "train_log.jsonl": "bc34b5daec3e80816331208b00982b5690224745f5cc7f820b810ff1d83a6a32"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.1,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    },
+    "optv5h_rms_b099_s2p0_warmstart0p5_r2": {
+      "run_id": "optv5h_rms_b099_s2p0_warmstart0p5_r2_fixed",
+      "seed": 42,
+      "steps": 1000,
+      "source_sha256": {
+        "summary.json": "89a8c06680057ddb7c8f9f2f02890989b9b691b350db629c20436cb5aea8d8b1",
+        "train_log.jsonl": "abcc63013e3785a0c8a3cb98d2e9f2e5661c8e2b9203e4110cd8039a317ee8f0"
+      },
+      "config": {
+        "vocab_size": 8192,
+        "n_layer": 8,
+        "n_head": 6,
+        "n_embd": 768,
+        "sequence_len": 2048,
+        "dropout": 0.0,
+        "bias": true,
+        "enable_nanogpt_ngram_ve": true,
+        "enable_unigram_ve": false,
+        "enable_bigram_ve": true,
+        "enable_trigram_ve": true,
+        "enable_fourgram_ve": false,
+        "nanogpt_ngram_injection_position": "input",
+        "nanogpt_adam_lr": 0.0006,
+        "ngram_table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_optimizer": "rmsprop",
+        "table_lr_scale": 2.0,
+        "table_betas": [
+          0.0,
+          0.99
+        ],
+        "table_mult": 64,
+        "bigram_clean_table": 1048576,
+        "trigram_clean_table": 1048576,
+        "bigram_single_layer": false,
+        "intervention": "none",
+        "intervention_epoch": 1,
+        "intervention_freq_threshold": 200,
+        "adam_betas": [
+          0.8,
+          0.95
+        ],
+        "weight_decay": 0.1,
+        "seed": 42,
+        "max_steps": 1000,
+        "device_batch_size": 72,
+        "total_batch_size": 147456,
+        "val_interval_steps": 10,
+        "val_steps": [],
+        "val_batches": 4,
+        "table_norm_interval_steps": 10,
+        "warmup_steps": 100,
+        "warmup_start_lr_mult": 0.5,
+        "cosine_min_lr_mult": 0.05,
+        "warmdown_ratio": 0.65,
+        "lr_schedule_epochs": 0,
+        "lr_schedule": "warmup_constant",
+        "train_shards": [
+          1
+        ],
+        "val_shards": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          6542
+        ],
+        "data_mode": "fixed",
+        "data_seed": 42,
+        "epoch_batches": 0
+      }
+    }
+  }
+}

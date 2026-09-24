@@ -1,0 +1,25 @@
+{
+  "overleaf_base": "1f01f9bf979ff759c81edef4f52ecb5744668f8b",
+  "overleaf_commit": "7921bcb04802b7d7f711d01b3929d62d75577dc7",
+  "compiled_root": "main.tex",
+  "compiled_pages": 32,
+  "excerpt_pages": [
+    21,
+    22,
+    23
+  ],
+  "build_exit": 0,
+  "undefined_refs_or_citations": 0,
+  "overfull_boxes": 0,
+  "visual_review": "All three new appendix pages reviewed at 1500px; tables and equations are legible and unclipped.",
+  "evidence_runs": 54,
+  "loss_records": 6920,
+  "evidence_sha256": "c784432e6f3dcabe303e972f33a33a73bd658fefd46762c1bdd59294a448cb35",
+  "full_pdf_sha256": "cc34a7b56a046e8594cda4c52b602c044d0e5b802241bfb40470c6cea0cfcaa7",
+  "excerpt_pdf_sha256": "2134e11130f20f0ee9c8cf5bb9b30635ef716788390e6113e4bfbdee9dc16a84",
+  "excerpt_path": "output/pdf/appendix_b_parameter_selection.pdf",
+  "remote_verified_commit": "7921bcb04802b7d7f711d01b3929d62d75577dc7",
+  "publication_status": "pushed and verified by fetch",
+  "shared_paper_head": "d04f9ee8ae1b70641508c94b7d4a6b0307fd5ba7",
+  "shared_paper_sync": "Not fast-forwarded because other tasks have concurrent tracked edits, including a file changed upstream. Our seven working-tree files match the published commit."
+}

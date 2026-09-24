@@ -1,0 +1,60 @@
+\subsection{Selecting the controlled optimization setting}
+\label{app:parameter-selection}
+
+After localizing the n-gram pathway, we rebuilt the phenomenon in the vanilla architecture of Section~\ref{sec:setting}. The optimization settings were selected to fit the training data and expose a readily measurable replay gap within a short experimental budget. The gap was inspected during selection; validation loss was not the selection objective. We distinguish the original selection screens from subsequent sensitivity checks below.
+
+\paragraph{Shared protocol.}
+The screens use an 8-layer, 6-head, 768-dimensional Transformer with learned absolute positions, LayerNorm, tied token embeddings, vocabulary size 8192, and sequence length 2048. A single clean $2^{20}\times768$ table for each of bigrams and trigrams is added at the input, without gating or multi-hash concatenation. The training corpus is shard 1, replayed in a fixed order with data seed 42; validation uses four fixed batches from the disjoint shards 2--10 and 6542. Each update contains 72 sequences (147,456 prediction tokens). Computation uses BF16 autocast without compilation. Unless stated otherwise, experiments use seed 42 and record online training loss before the update and fixed-validation loss after it every 10 steps. All losses and gaps below are in nats/token.
+
+The backbone uses AdamW with $(\beta_1,\beta_2)=(0.8,0.95)$ and matrix weight decay $0.1$, excluding the token and position embeddings and the tied output embedding. The tables use momentum-free, bias-corrected RMSProp with $\beta_2=0.99$, $\epsilon=10^{-10}$, and no weight decay. Writing $s_T$ for the table multiplier, the learning rates are
+\begin{equation}
+ \eta_B(t)=\eta_B^{\max}w(t),\qquad
+ \eta_T(t)=s_T\eta_B(t),\qquad
+ w(t)=0.25+0.75\min\!\left\{\frac{t-1}{99},1\right\},\quad t\geq1.
+ \label{eq:selection-lr}
+\end{equation}
+Both rates reach their maxima at step 100 and remain constant thereafter, so later replay boundaries do not coincide with learning-rate changes. The selected maxima are $\eta_B^{\max}=0.0006$ and $\eta_T^{\max}=128\eta_B^{\max}=0.0768$. The multiplier specifies nominal learning rates; adaptive normalization means it is not a statement that table parameters move 128 times as far as backbone parameters.
+
+\subsubsection{Why a backbone learning rate of $6\times10^{-4}$?}
+
+The initial clean-table screen compared $4\times10^{-4}$, $6\times10^{-4}$, and $4\times10^{-3}$ with $s_T=2$ (Table~\ref{tab:lr-selection}). The largest rate gave poor training loss and little separation. At $6\times10^{-4}$, the model fitted the replayed training data more strongly than at $4\times10^{-4}$ and produced a larger gap within 1000 steps. We therefore retained $6\times10^{-4}$ for the subsequent table-rate screen. The lower validation loss at $4\times10^{-4}$ makes clear that this was a choice of an informative diagnostic regime, not a validation-optimal rate. Because $s_T$ was fixed, the absolute table rate also changed in this initial screen; it does not isolate a backbone-only causal effect.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Initial rate selection with table multiplier $s_T=2$, seed 42, step 1000. Both absolute rates change across rows.}
+\label{tab:lr-selection}
+\input{tables/parameter_selection_initial}
+\end{table}
+
+A later check varied only the backbone rate while holding the entire table-rate trajectory fixed: $\eta_T^{\max}=0.0768$ and $s_T=0.0768/\eta_B^{\max}$. Each rate has a matched no-gram control. Table~\ref{tab:lr-abslock} compares the same step, 2000, in every run, despite their different final budgets. Excess gaps remain large from $6\times10^{-5}$ through $2\times10^{-3}$. At $4\times10^{-3}$, the small gap accompanies poor fitting: input-model train/validation losses are $6.694/6.741$, and the no-gram losses are $6.379/6.393$. Thus the disappearance of the gap at this rate does not demonstrate successful generalization with a well-trained memory. The reference rate lies inside a broad regime exhibiting forking; the evidence does not single it out as a universal optimum.
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Backbone-rate sensitivity with $\eta_T^{\max}=0.0768$ fixed. Seed 42, raw step-2000 records; this diagnostic family evaluates every 50 steps. Train and validation columns describe the input model. Net gap subtracts the matched no-gram gap.}
+\label{tab:lr-abslock}
+\input{tables/parameter_selection_locked}
+\end{table}
+
+\subsubsection{Why a table learning-rate multiplier of 128?}
+
+We then fixed $\eta_B^{\max}=6\times10^{-4}$ and scanned $s_T$ from $0.5$ to $1024$ with RMSProp $(0,0.99)$ (Table~\ref{tab:table-lr-selection}). At step 1000 the gap increases from $0.465$ at $0.5\times$ to approximately $2.6$--$2.7$ over $16\times$--$256\times$. The archived selection curve reaches $2.732$ at $128\times$. We adopted this rate to expose the failure clearly within 1000 steps and held it fixed in the main experiments. This rationale explicitly includes selection on the observed gap.
+
+The high-gap region is broad. At step 2000, all tested scales from $8\times$ through $1024\times$ yield gaps between $5.335$ and $6.020$; $128\times$ is not the largest. Separately trained 2000-step runs at $64\times$ and $128\times$ have step-1000 gaps $2.742$ and $2.731$, respectively, reversing their small ordering in the selection curve. These results support a range of settings that express forking, rather than a uniquely optimal multiplier. Large nominal table rates affect the magnitude and timing of the gap, but the phenomenon is also present at much smaller rates: the $2\times$ RMSProp runs at seeds 42--44 have step-1000 gap $1.530\pm0.025$ (mean $\pm$ sample standard deviation).
+
+\begin{table}[!htbp]
+\centering\small
+\caption{Table-rate selection and extended-budget sensitivity. Backbone rate $0.0006$, RMSProp $(0,0.99)$, seed 42. Train, validation, and $G_{1000}$ use the archived selection curve. For $32\times$, $64\times$, and $128\times$, $G_{2000}$ comes from a separate longer run; for the other extended scales, both readouts come from the same run. Dashes denote no 2000-step result in this scan.}
+\label{tab:table-lr-selection}
+\input{tables/parameter_selection_scale}
+\end{table}
+
+\subsubsection{Optimizer and schedule checks}
+
+The table optimizer was kept simple: adaptive normalization without a first moment or weight decay. At $s_T=2$, the corrected $\beta_2$ sweep over $0.95,0.98,0.99,0.995,0.999$ gives step-1000 gaps $1.239,1.460,1.551,1.594,1.669$, respectively (seed 42). The selected $0.99$ is not the gap-maximizing value. Changing it to $0.999$ also preserves large 2000-step gaps at $8\times$ and $128\times$ ($5.899$ and $5.399$). These are local sensitivity checks, not evidence that the second-moment decay has no effect.
+
+At $2\times$, an AdamW table-update implementation with $(\beta_1,\beta_2)=(0,0.99)$ gives gap $1.521\pm0.016$ across seeds 42--44, close to RMSProp's $1.530\pm0.025$. With zero first moment and no table weight decay, these two implementations use essentially the same normalized-gradient update, differing in the denominator epsilon; their agreement is an implementation check, not a comparison with conventional momentum-based AdamW. At $128\times$, their seed-42 gaps are likewise $2.731$ and $2.727$. Momentum-free SGD at the same nominal rates produces much smaller gaps ($0.054\pm0.025$ at $2\times$ and $0.047$ at $128\times$), so the nominal multiplier cannot be interpreted independently of the optimizer.
+
+Finally, the warmup-start check retained the 100-step duration and varied only its initial multiplier. Starts at $0.1$, $0.25$, and $0.5$ give step-1000 gaps $1.504$, $1.551$, and $1.442$, with training losses $2.905$, $2.883$, and $3.004$ (seed 42, $s_T=2$). Starting at the full rate without warmup gives training loss $4.032$ and gap $0.534$. The intermediate start $0.25$ is therefore not an isolated point, while removing warmup changes the optimization trajectory substantially. We use the same warmup-constant schedule throughout the main controlled comparisons.
+
+\paragraph{Scope and run provenance.}
+The rate screens are single-seed unless a three-seed statistic is explicitly reported; they do not constitute a factorial search across all optimizer choices. The initial screen uses \path{lrscan_input_lr*_wc_fixed}. Table-rate records use \path{optv5c_rms_b099_s*_fixed} (including the completed $2\times$ retry) and \path{optv5f_rms_b099_s*_fixed}; extended budgets add \path{_2k} before \path{_fixed}. The fixed-absolute-rate controls use \path{blrabs_{input,nogram}_lr*_tlr0p0768_*_fixed}. Optimizer, decay, and warmup checks use the \path{optv5c}, \path{optv5f}, \path{optv5g}, and \path{optv5h} families. The source supplement \path{supplement/parameter_selection_manifest.json} maps each reported entry to its exact run ID, seed, step, configuration, and source-file hashes. Historical multi-hash discovery configurations and failed or incomplete runs do not supply the numerical evidence in this subsection.

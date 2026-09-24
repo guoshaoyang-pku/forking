@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+"""Validate and reproduce Appendix B tables from explicitly archived loss logs."""
+import argparse
+import hashlib
+import json
+import math
+import shutil
+import statistics
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[2]
+RUNS = ROOT / 'data/runs_fixed'
+REMOTE = Path('/tmp/parameter-selection-audit/runs')
+INITIAL = ['lrscan_input_lr0p0004_wc', 'lrscan_input_lr0p0006_wc', 'lrscan_input_lr0p004_wc']
+SCALE = {0.5:'optv5c_rms_b099_s0p5', 1:'optv5c_rms_b099_s1p0',
+         2:'optv5c_rms_b099_s2p0_r1', 3:'optv5c_rms_b099_s3p0',
+         4:'optv5c_rms_b099_s4p0', 8:'optv5f_rms_b099_s8p0_2k',
+         16:'optv5f_rms_b099_s16p0_2k', 32:'optv5f_rms_b099_s32p0',
+         64:'optv5f_rms_b099_s64p0', 128:'optv5f_rms_b099_s128p0',
+         256:'optv5f_rms_b099_s256p0_2k', 512:'optv5f_rms_b099_s512p0_2k',
+         1024:'optv5f_rms_b099_s1024p0_2k'}
+EXTENDED = {s:f'optv5f_rms_b099_s{s}p0_2k' for s in [8,16,32,64,128,256,512,1024]}
+LOCKED = [('0p00006','3k'),('0p0001','3k'),('0p0003','20k'),
+          ('0p0006','10k'),('0p0010','6k'),('0p0020','3k'),('0p0040','3k')]
+WARM = ['optv5h_rms_b099_s2p0_warmstart0p1', 'optv5c_rms_b099_s2p0_r1',
+        'optv5h_rms_b099_s2p0_warmstart0p5_r2','optv5g_rms_b099_s2p0_constant']
+SUPPORT = ['lrscan_nogram_lr0p0006_wc'] + [f'optv5c_rms_b{b}_s2p0' for b in ['095','098','0995','0999']]
+SUPPORT += [f'optv5c_rms_b099_s2p0_r1_s{s}' for s in [43,44]]
+SUPPORT += ['optv5f_rms_b0999_s8p0_2k','optv5f_rms_b0999_s128p0_2k']
+SUPPORT += [f'optv5c_{p}_s2p0{s}' for p in ['adamw_b099','sgd_m0'] for s in ['', '_s43', '_s44']]
+SUPPORT += ['optv5c_rms_s128x','optv5c_adamw_s128x','optv5c_sgd_m0_s128x']
+
+def digest(p):
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+def main():
+    ap=argparse.ArgumentParser();ap.add_argument('--archive',action='store_true');args=ap.parse_args()
+    selected={rid:'local' for rid in INITIAL+list(SCALE.values())+list(EXTENDED.values())+WARM+SUPPORT}
+    selected['lrscan_nogram_lr0p0006_wc']='remote'
+    for lr,budget in LOCKED:
+        for arm in ['input','nogram']:
+            selected[f'blrabs_{arm}_lr{lr}_tlr0p0768_{budget}']='remote'
+    records={}
+    for rid,kind in sorted(selected.items()):
+        name=rid+'_fixed'; source=(RUNS if kind=='local' else REMOTE)/name
+        dest=HERE/'sources'/name
+        if args.archive:
+            dest.mkdir(parents=True,exist_ok=True)
+            for fn in ['summary.json','train_log.jsonl']:
+                if (dest/fn).exists() and digest(dest/fn)!=digest(source/fn):
+                    raise ValueError(f'Refusing changed source: {name}/{fn}')
+                shutil.copyfile(source/fn,dest/fn)
+        summary=json.loads((dest/'summary.json').read_text())
+        rows=[json.loads(x) for x in (dest/'train_log.jsonl').read_text().splitlines() if x.strip()]
+        c=summary['config']; assert summary['run_id']==name
+        assert rows[-1]['step']==summary['steps']==c['max_steps']
+        assert summary['seed']==c['seed'] and c['data_seed']==42
+        assert c['train_shards']==[1] and c['val_shards']==[2,3,4,5,6,7,8,9,10,6542]
+        assert c['data_mode']=='fixed' and summary['compute_dtype']=='bf16' and not summary['torch_compile']
+        assert [c[k] for k in ['n_layer','n_head','n_embd','vocab_size','sequence_len']]==[8,6,768,8192,2048]
+        assert c['device_batch_size']==72 and c['total_batch_size']==147456 and c['val_batches']==4
+        assert c['adam_betas']==[0.8,0.95] and c['weight_decay']==0.1 and c['dropout']==0
+        assert c['warmup_steps']==100 and c['intervention']=='none'
+        assert c['lr_schedule']==('constant' if rid.endswith('_constant') else 'warmup_constant')
+        assert c['val_interval_steps']==(50 if rid.startswith('blrabs_') else 10)
+        assert not c['enable_unigram_ve'] and not c['enable_fourgram_ve']
+        assert c['table_optimizer'] in ['rmsprop','adamw','sgd'] and c['table_betas'][0]==0
+        if 'nogram' not in rid:
+            assert c['bigram_clean_table']==c['trigram_clean_table']==1048576
+            assert c['enable_bigram_ve'] and c['enable_trigram_ve']
+            assert c['nanogpt_ngram_injection_position']=='input'
+        else:
+            assert not c['enable_bigram_ve'] and not c['enable_trigram_ve']
+        assert len({r['step'] for r in rows})==len(rows)
+        for r in rows:
+            assert all(math.isfinite(r[k]) for k in ['train_loss','val_loss','gap'])
+            assert abs(r['gap']-(r['val_loss']-r['train_loss']))<1e-7
+        for k in ['train_loss','val_loss','gap']:
+            assert abs(rows[-1][k]-summary['final_'+k])<1e-7
+        records[rid]={'run_id':name,'seed':summary['seed'],'steps':summary['steps'],
+                      'config':c,'rows':rows,'source_sha256':{fn:digest(dest/fn) for fn in ['summary.json','train_log.jsonl']}}
+    def at(rid,step):
+        return next(r for r in records[rid]['rows'] if r['step']==step)
+    def write(name,lines):
+        (HERE/name).write_text('% Generated by build_evidence.py; raw logged records.'+chr(10)+chr(10).join(lines)+chr(10))
+    end=' '+chr(92)*2
+    def tabular(name,header,lines):
+        bs=chr(92)
+        write(name,[bs+'begin{tabular}{'+'r'*(len(header.split('&')))+'}',
+                    bs+'toprule',header+end,bs+'midrule']+lines+[bs+'bottomrule',bs+'end{tabular}'])
+    def decimal(x):
+        return f'{x:.8f}'.rstrip('0').rstrip('.')
+    initial=[]
+    for rid in INITIAL:
+        c=records[rid]['config'];r=at(rid,1000)
+        initial.append(f"{c['nanogpt_adam_lr']:g} & {c['nanogpt_adam_lr']*c['table_lr_scale']:g} & {r['train_loss']:.3f} & {r['val_loss']:.3f} & {r['gap']:.3f}"+end)
+    write('initial_rows.tex',initial)
+    tabular('parameter_selection_initial.tex',r'$\eta_B^{\max}$ & $\eta_T^{\max}$ & Train & Validation & Gap',initial)
+    scale=[]
+    for s,rid in SCALE.items():
+        r=at(rid,1000);e=f"{at(EXTENDED[s],2000)['gap']:.3f}" if s in EXTENDED else '--'
+        scale.append(f"{s:g} & {s*.0006:g} & {r['train_loss']:.3f} & {r['val_loss']:.3f} & {r['gap']:.3f} & {e}"+end)
+    write('scale_rows.tex',scale)
+    tabular('parameter_selection_scale.tex',r'$s_T$ & $\eta_T^{\max}$ & Train$_{1000}$ & Validation$_{1000}$ & $G_{1000}$ & $G_{2000}$',scale)
+    locked=[]
+    for lr,budget in LOCKED:
+        rid=f'blrabs_input_lr{lr}_tlr0p0768_{budget}';c=records[rid]['config']
+        assert abs(c['nanogpt_adam_lr']*c['table_lr_scale']-.0768)<1e-12
+        assert c['val_interval_steps']==50
+        r=at(rid,2000);n=at(rid.replace('blrabs_input','blrabs_nogram'),2000)
+        locked.append(f"{decimal(c['nanogpt_adam_lr'])} & {r['train_loss']:.3f} & {r['val_loss']:.3f} & {r['gap']:.3f} & {n['gap']:.3f} & {r['gap']-n['gap']:.3f}"+end)
+    write('locked_rows.tex',locked)
+    tabular('parameter_selection_locked.tex',r'$\eta_B^{\max}$ & Train & Validation & Input gap & No-gram gap & Net gap',locked)
+    warm=[]
+    for rid in WARM:
+        c=records[rid]['config'];r=at(rid,1000)
+        start='1 (no warmup)' if c['lr_schedule']=='constant' else f"{c['warmup_start_lr_mult']:g}"
+        warm.append(f"{start} & {r['train_loss']:.3f} & {r['val_loss']:.3f} & {r['gap']:.3f}"+end)
+    write('warmup_rows.tex',warm)
+    def readout(rid,step):
+        return {'run_id':rid+'_fixed','seed':records[rid]['seed'],'step':step,
+                **{k:at(rid,step)[k] for k in ['train_loss','val_loss','gap']}}
+    claims={'initial':[readout(r,1000) for r in INITIAL],
+            'scale':[dict(scale=s,**readout(r,1000)) for s,r in SCALE.items()],
+            'extended':[dict(scale=s,**readout(r,2000)) for s,r in EXTENDED.items()],
+            'warmup':[readout(r,1000) for r in WARM],
+            'support':[readout(r,2000 if r.endswith('_2k') else 1000) for r in SUPPORT],
+            'scale_order_check':[readout(EXTENDED[s],1000) for s in [64,128]],
+            'locked':[{'input':readout(f'blrabs_input_lr{lr}_tlr0p0768_{budget}',2000),
+                       'nogram':readout(f'blrabs_nogram_lr{lr}_tlr0p0768_{budget}',2000)} for lr,budget in LOCKED]}
+    groups={'rmsprop':['optv5c_rms_b099_s2p0_r1'+s for s in ['', '_s43', '_s44']],
+            'adamw':['optv5c_adamw_b099_s2p0'+s for s in ['', '_s43', '_s44']],
+            'sgd':['optv5c_sgd_m0_s2p0'+s for s in ['', '_s43', '_s44']]}
+    claims['three_seed']={k:{'records':[readout(r,1000) for r in rs],
+                              'mean_gap':statistics.mean(at(r,1000)['gap'] for r in rs),
+                              'sample_sd_gap':statistics.stdev(at(r,1000)['gap'] for r in rs)} for k,rs in groups.items()}
+    (HERE/'claims.json').write_text(json.dumps(claims,indent=2,allow_nan=False)+chr(10))
+    manifest={'description':'Appendix B.3 parameter-selection evidence. Losses are raw same-step online-train/fixed-validation records in nats/token; SD is sample SD. The blrabs diagnostic family evaluates every 50 steps; other included families every 10. Source paths are omitted for anonymous review.',
+              'claims':claims,
+              'runs':{k:{a:v[a] for a in ['run_id','seed','steps','source_sha256']} |
+                      {'config':{a:b for a,b in v['config'].items() if a not in ['data_dir','out_dir','bigram_perfect_map']}}
+                      for k,v in records.items()}}
+    (HERE/'parameter_selection_manifest.json').write_text(json.dumps(manifest,indent=2,allow_nan=False)+chr(10))
+    (HERE/'evidence.json').write_text(json.dumps(records,indent=2,allow_nan=False)+chr(10))
+    print(f'Validated {len(records)} runs and {sum(len(x["rows"]) for x in records.values())} loss records; wrote tables and claim manifest.')
+
+if __name__=='__main__':
+    main()
