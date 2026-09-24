@@ -1,139 +1,144 @@
-section{Coverage: Identities, Approximations, and Model Tests}
-label{app:math}
+\section{Mathematical Derivations and Model Tests}
+\label{app:math}
 
-subsection{What the Good--Turing identity predicts}
-label{app:gt-identity}
-For context $i$, let $p_{iy}$ denote its continuation distribution and
-$m_i(F)=sum_y p_{iy}(1-p_{iy})^F$ its expected missing mass after $F$ independent draws. If $K_{i,1}(k)$ is the number of continuation types appearing exactly once in $k$ draws, then
-egin{equation}
-rac{mathbb E K_{i,1}(F+1)}{F+1}
-=sum_y p_{iy}(1-p_{iy})^F=m_i(F).
-label{eq:gt-single-context}
-end{equation}
-This is an expectation identity for a fixed context. In contrast, $K_{i,1}(F)/F$ has expectation $m_i(F-1)$ and equals one at $F=1$ by construction. Neither statement alone identifies the held-out token-weighted missing mass among different contexts observed $F$ times.
+\subsection{Good--Turing estimation and continuation coverage}
+\label{app:gt-identity}
+For context $i$, let $p_{iy}$ be its continuation distribution and $m_i(F)=\sum_y p_{iy}(1-p_{iy})^F$ its expected missing mass after $F$ independent draws. If $K_{i,1}(k)$ counts continuation types occurring exactly once in $k$ draws, then
+\begin{equation}
+\frac{\mathbb E K_{i,1}(F+1)}{F+1}
+=\sum_y p_{iy}(1-p_{iy})^F=m_i(F).
+\label{eq:gt-single-context}
+\end{equation}
+This is an expectation identity for a fixed context. By contrast, $K_{i,1}(F)/F$ has expectation $m_i(F-1)$ and equals one at $F=1$ by construction. Neither statement by itself identifies the validation-token-weighted missing mass across different contexts observed $F$ times.
 
-paragraph{Heterogeneous contexts and token weighting.}
-Assume training context counts $N_i$ are Poisson with means $lambda_i=Tq_i$, continuations are conditionally independent with probabilities $p_{iy}$, and an independent validation token has context distribution $q_i$. Write $pi_F(lambda)=e^{-lambda}lambda^F/F!$. The probability that the continuation of that token is absent from training, conditional on its context having training count $F$, is
-egin{equation}
-f_star(F)=rac{sum_i q_ipi_F(lambda_i)m_i(F)}{sum_i q_ipi_F(lambda_i)}.
-end{equation}
-With $n(F)=sum_imathbf1[N_i=F]$ and $N_1(F)=sum_imathbf1[N_i=F]K_{i,1}(F)$, Equation~eqref{eq:gt-single-context} and $(F+1)pi_{F+1}(lambda)=lambdapi_F(lambda)$ give
-egin{equation}
-egin{split}
-mathbb E N_1(F+1)&=Tsum_i q_ipi_F(lambda_i)m_i(F),\
-(F+1)mathbb E n(F+1)&=Tsum_i q_ipi_F(lambda_i),\
-f_star(F)&=rac{mathbb E N_1(F+1)}{(F+1)mathbb E n(F+1)}.
-end{split}
-label{eq:gt-poisson}
-end{equation}
-This is a ratio of expectations under the stated sampling model, not an equality for a realized corpus or the expectation of an empirical ratio. It also need not equal the expected validation fraction conditional on an entire realized training sample. For a bin $B$ of exact counts, a train-only plug-in estimate uses
-egin{equation}
-widehat f_{mathrm{GT}}(B)=
-rac{sum_{Fin B}N_1(F+1)}{sum_{Fin B}(F+1)n(F+1)}.
-label{eq:gt-bin}
-end{equation}
-The weights in this expression are computed from training counts. Weighting exact-layer ratios by held-out token counts instead is a different estimator which uses validation information.
+\paragraph{Heterogeneous contexts and token weighting.}
+Assume training context counts $N_i$ are Poisson with means $\lambda_i=Tq_i$, continuations are conditionally independent, and an independent validation token has context distribution $q_i$ and the same conditional probabilities $p_{iy}$. Write $\pi_F(\lambda)=e^{-\lambda}\lambda^F/F!$. Conditional on the validation context having training count $F$, its population novelty probability is
+\begin{equation}
+f_\star(F)=\frac{\sum_i q_i\pi_F(\lambda_i)m_i(F)}{\sum_i q_i\pi_F(\lambda_i)}.
+\end{equation}
+Define $n(F)=\sum_i\mathbf1[N_i=F]$ and $N_1(F)=\sum_i\mathbf1[N_i=F]K_{i,1}(F)$. Using $(F+1)\pi_{F+1}(\lambda)=\lambda\pi_F(\lambda)$ gives
+\begin{equation}
+\begin{aligned}
+\mathbb E N_1(F+1)&=T\sum_i q_i\pi_F(\lambda_i)m_i(F),\\
+(F+1)\mathbb E n(F+1)&=T\sum_i q_i\pi_F(\lambda_i),\\
+f_\star(F)&=\frac{\mathbb E N_1(F+1)}{(F+1)\mathbb E n(F+1)}.
+\end{aligned}
+\label{eq:gt-poisson}
+\end{equation}
+This is a ratio of expectations under the sampling model, not an equality for every realized corpus or an unbiasedness guarantee for the empirical ratio. For a bin $B$ of exact counts, the corresponding train-only estimator is
+\begin{equation}
+\widehat f_{\mathrm{GT}}(B)=\frac{\sum_{F\in B}N_1(F+1)}{\sum_{F\in B}(F+1)n(F+1)}.
+\label{eq:gt-bin}
+\end{equation}
+Its pooling weights use training counts. Weighting exact-layer estimates by held-out token counts would use validation information.
 
-paragraph{Corpus check without calibration.}
-Counts use training shard 1 (49,716,936 tokens); the full held-out check uses 49,102,848 prediction positions from shard 2. Context counts follow the recorded raw-concatenation frequency index, whereas validation keys follow the model's 2049-token chunk layout. These conventions include small boundary differences and do not make natural language satisfy the Poisson/i.i.d. assumptions. Figure~ef{fig:b_t_MF} compares Equation~eqref{eq:gt-bin} with direct validation counts, in the 18 native bins from $F=1$ to $1000$. The GT/measured ratios range from 0.870 to 0.885 for bigram and 0.857 to 0.937 for trigram contexts; no validation-fitted scaling factor is applied. At $F=1$ the directly measured fractions are 0.790 and 0.780, respectively, compared with shifted estimates 0.699 and 0.669. The older, unshifted estimator is identically one there.
+\paragraph{Uncalibrated corpus check.}
+Counts use training shard 1 (49,716,936 tokens); the full held-out check uses 49,102,848 prediction positions from shard 2. Context counts follow the recorded raw-concatenation frequency index, while validation keys follow the model's 2049-token chunk layout. Natural text need not satisfy the Poisson or conditional-independence assumptions. In the 18 native bins over $F=1$--$1000$, Equation~\eqref{eq:gt-bin} gives 0.870--0.885 times the directly measured novel fraction for bigram contexts and 0.857--0.937 for trigram contexts (Figure~\ref{fig:coverage}a). At $F=1$, measured novelty is 0.790 and 0.780, compared with shifted estimates 0.699 and 0.669. No validation-fitted scaling factor is applied. A similar underestimate appears in within-training-shard splits, suggesting that train--validation domain shift alone is insufficient to explain it; these observational checks do not identify document repetition as its cause.
 
-A within-training-shard split also shows an underestimate: the earlier bigram half/parity-split diagnostic reports ratios 0.861--0.877. That check uses held-out weights within bins, unlike Equation~eqref{eq:gt-bin}. It suggests that train--validation domain shift alone is insufficient to explain the discrepancy. It does not identify within-document repetition as the cause: dependence, nonstationarity, sampling and context heterogeneity have not been separately controlled.
+\paragraph{Conditional tails.}
+For a context $c_i$ with $F_i=F$, let $y_{i,(r)}$ denote the $r$-th most likely continuation and $p_{i,(r)}$ its true conditional probability. Model the observed continuations $Y_{i,1},\ldots,Y_{i,F}$ as independent draws, with counts $n_{i,(r)}(F)=\#\{k\in\{1,\ldots,F\}:Y_{i,k}=y_{i,(r)}\}$. The novel-continuation rate $f_i(F)$ and its expectation under this sampling model are
+\begin{equation}
+f_i(F)=\sum_r p_{i,(r)}
+\mathbf{1}\left[n_{i,(r)}(F)=0\right],
+\quad
+\mathbb{E}[f_i(F)]=\sum_r p_{i,(r)}(1-p_{i,(r)})^F.
+\end{equation}
 
-egin{figure}[!htbp]
-centering
-includegraphics[width=linewidth]{fig_coverage_gt.pdf}
-caption{Uncalibrated coverage prediction from training counts. Coloured circles show direct novel-continuation fractions on held-out shard 2; dashed square-marker curves show the train-only shifted Good--Turing estimator of Equation~eqref{eq:gt-bin}. Lower panels show their ratio. The horizontal axis uses geometric bin centres, not exact-frequency fits; no power law or validation-fitted multiplicative correction is used.}
-label{fig:b_t_MF}
-end{figure}
+Assume a conditional tail $p_{i,(r)}\sim A_i r^{-s}$ with $s>1$. For large $F$ within the tail's scaling range, before finite-vocabulary effects become significant, the dominant probabilities are of order $1/F$. Approximating $(1-p_{i,(r)})^F$ by $e^{-Fp_{i,(r)}}$ and the rank sum by an integral then gives
+\citep{gnedin2007occupancy}
+\begin{equation}
+\begin{aligned}
+\mathbb{E}[f_i(F)]
+&\sim
+\int_1^\infty A_i r^{-s}e^{-F A_i r^{-s}}\,\mathrm{d}r\\
+&\sim
+\frac{A_i^{1/s}}{s}
+\Gamma\left(1-\frac{1}{s}\right)
+F^{-(1-1/s)}\\
+&\propto F^{-\alpha},
+\quad
+\alpha=1-\frac{1}{s}.
+\end{aligned}
+\label{eq:occupancy}
+\end{equation}
 
-A regularly varying conditional tail can produce slow missing-mass decay: under additional large-$F$, effectively infinite-vocabulary assumptions, $p_{i,(r)}sim A_i r^{-s}$ implies $m_i(F)propto F^{-(1-1/s)}$ citep{gnedin2007occupancy}. This asymptotic statement for one context does not establish a common exponent for a heterogeneous frequency cross-section dominated by small counts. We do not infer the gap exponent from it.
+This gives an asymptotic account of slow missing-mass decay for a fixed context; it does not determine the cross-context gap exponent in Section~\ref{sec:coverage}. Finite vocabulary limits the power-law regime to an intermediate range. Heterogeneity across contexts may alter the observed effective exponent.
 
-subsection{An idealized crowding-out calculation}
-label{app:crowding-derivation}
-For a single context with logits $a_v$ and $p_v=softmax(a)_v$, a gradient step directly in logit coordinates on observed target $C$ gives
-egin{equation}
-a_v^{(t+1)}-a_v^{(t)}=-etaleft(p_v^{(t)}-mathbf1[v=C]ight),quadeta>0.
-label{eq:av}
-end{equation}
-Hence the odds of $C$ relative to any alternative $u
-e C$ increase:
-egin{equation}
-rac{p_C^{(t+1)}}{p_u^{(t+1)}}=
-rac{p_C^{(t)}}{p_u^{(t)}}exp!left[eta(1-p_C^{(t)}+p_u^{(t)})ight].
-label{eq:zt}
-end{equation}
-The exact loss identity is $ell_u-ell_C=log(p_C/p_u)$ for this one distribution. It does not say that the absolute loss of every alternative rises at each step, or that its rise equals the decrease of the target loss; normalization and all other logits also change. Nor is this context-only log-odds difference the bin-level $D_t$ in Equation~eqref{eq:gap-decomp}, which subtracts a separate training average.
+\subsection{Crowding-out within a context subspace}
+\label{app:crowding-derivation}
 
-For a parameterized network, a small parameter-gradient step instead produces $Delta asimeq-eta JJ^	op(p-e_C)$, with logit Jacobian $J$; an optimizer preconditioner changes this coupling further. Multiple observed targets and shared parameters can therefore alter the direction and depth of individual logit changes. Equations~eqref{eq:av}--eqref{eq:zt} illustrate a sharpening mechanism. They are not a derivation of the measured affine coefficients, context independence, or the complete training dynamics.
+Fix a context $c_i$ and call the next-token logits computed from it, $a_v$ for $v$ in the vocabulary, its \emph{context subspace}; the $n$-gram table gives $c_i$ a learned coordinate, which can make its logits respond differently from those of other contexts (Section~\ref{sec:context-locality}). Partition the vocabulary into the continuations of $c_i$ seen in training ($\mathcal{S}$), those that occur only in validation ($\mathcal{V}$), and the rest. With $p_v=\softmax{a_v}$, one idealized gradient step directly in logit coordinates on a training target $C\in\mathcal{S}$ moves every logit by
+\begin{equation}
+a_v^{(t+1)}-a_v^{(t)}=-\eta\frac{\partial\ell_C}{\partial a_v}=-\eta\left(p_v^{(t)}-\mathbf{1}[v=C]\right),\qquad \eta>0,
+\label{eq:av}
+\end{equation}
+raising $a_C$ by $\eta(1-p_C)$ and lowering every other logit by $\eta p_v$. For any $u\notin\mathcal{S}$ the odds $z(t)=p_C^{(t)}/p_u^{(t)}$ therefore satisfy
+\begin{equation}
+z(t+1)=z(t)\exp\!\left[\eta\left(1-p_C^{(t)}+p_u^{(t)}\right)\right]>z(t),
+\label{eq:zt}
+\end{equation}
+For this one distribution, $\ell_u-\ell_C=\ln z$, so the loss difference between an unseen alternative and the observed target grows. This does not imply equal and opposite changes in their absolute losses, or identify $\ln z$ with the bin-averaged $D_t$ in Equation~\eqref{eq:gap-decomp}. In a parameterized network a small gradient step instead gives $\Delta a\simeq-\eta JJ^\top(p-e_C)$, where $J$ is the logit Jacobian; optimizer preconditioning changes this coupling further. Equations~\eqref{eq:av}--\eqref{eq:zt} therefore describe an idealized sharpening mechanism, rather than a derivation of the measured coefficients.
 
-subsection{Loss accounting and the role of seen continuations}
-label{app:novel-share}
-The decomposition in Equation~eqref{eq:gap-decomp} is exact for any bin and any consistently specified scalar training reference. Online and fixed-probe references yield different gaps and different values of $D$ and $S$. A bin's training and validation positions can also contain different contexts and full prefixes; sharing a frequency bin does not match their conditional distributions. Consequently $S$ can be negative, and its magnitude cannot be bounded from an excess-validation-loss decomposition.
+\subsection{Position-class decomposition of the excess validation loss}
+\label{app:novel-share}
 
-Table~ef{tab:novel-share} retains the separate step-1000 accounting of the both-table model relative to the no-gram control (code{s1v5_128_marm_both_ckpt_fixed} and code{s1v5_128_marm_nogram_ckpt_fixed}, seed 42). Here novel includes positions with $F=0$, whereas the frequency-gap tests below exclude them because no training counterpart exists.
-egin{table}[!htbp]
-centeringsmall
-caption{Previously registered excess validation loss relative to no-gram: total 1.68 nats per token over 589,248 positions. These percentages are not shares of the train--validation gap and do not establish $Sapprox0$.}
-label{tab:novel-share}
-egin{tabular}{llrr}
-	oprule
-Context & Class & Position share & Excess-loss share\
-midrule
-Bigram & Novel continuation & 31% & 73%\
-Bigram & Novel, or seen with $Fle31$ & 39% & 77%\
-Trigram & Novel continuation & 66% & 100%\
-ottomrule
-end{tabular}
-end{table}
+Table~\ref{tab:novel-share} decomposes the both-table model's excess validation loss over the no-gram control (runs \code{s1v5_128_marm_both_ckpt_fixed} and \code{s1v5_128_marm_nogram_ckpt_fixed}, seed 42, step 1000) by whether the true continuation followed its context in the training shard. Contexts are counted at bigram or trigram granularity; \emph{novel} includes positions whose context itself is absent from training.
 
-The stored per-position diagnostics permit a separate direct decomposition into $fD$ and $(1-f)S$ using fixed train and validation probes. They support non-negligible seen terms and heterogeneous novel penalties, but they reconstruct cross-entropy from stored probabilities with a floor of $5.96	imes10^{-8}$. Up to 1,094 probabilities in a stored array are zero. Thus these are censored-loss diagnostics, not exact online losses; their algebra closes for the reconstructed losses but they cannot certify precise uncensored tail penalties. Counts and novelty indicators do not depend on this loss floor.
+\begin{table}[!htbp]
+\centering\small
+\caption{Share of the step-1000 excess validation loss ($1.68$ nats per token, 589{,}248 positions) carried by each position class.}
+\label{tab:novel-share}
+\begin{tabular}{llrr}
+\toprule
+context & class & share of positions & share of excess loss \\
+\midrule
+bigram & novel continuation & 31\% & 73\% \\
+bigram & novel or seen with $F\le 31$ & 39\% & 77\% \\
+trigram & novel continuation & 66\% & 100\% \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-subsection{Tests of the coverage approximation}
-label{app:coverage-tests}
-label{app:gt-fits}
-paragraph{Protocol and estimand.}
-The primary tests use code{fig1v5_rp_both_s42_fixed}, code{fig1v5_rp_both_s43_fixed} and code{fig1v5_rp_both_s44_fixed}, with matched code{fig1v5_rp_nogram_s42_fixed}, code{fig1v5_rp_nogram_s43_fixed} and code{fig1v5_rp_nogram_s44_fixed} controls. They use input injection, RMSProp tables without momentum, table LR $128	imes$, $2^{20}$ rows per table, backbone LR $0.0006$, 100-step warmup followed by constant LR, one replayed training shard and disjoint validation shards. The fixed validation pool is the first four batches, 589,824 positions. The corpus-count arrays match the token counts of every plotted validation bin exactly. Online train losses are recorded before the update and validation losses after it, as in the main metric.
+These are shares of the excess \emph{validation} loss relative to no-gram, not shares of a model's train--validation gap. They do not imply $S_t(F)\approx0$. In particular, the table includes $F=0$ positions; the frequency-gap tests below exclude them because no training counterpart exists.
 
-We use every native frequency bin contained in $1le Fle1000$ with at least 300 train and validation tokens. All 18 bins qualify at the reported steps. Bins are $1,2,3,4,5,6$--$8,9$--$12,13$--$20,21$--$30,31$--$50,51$--$75,76$--$100,101$--$150,151$--$200,201$--$300,301$--$500,501$--$750,751$--$1000$. There is no positive-gap filtering. Steps 670, 1000, 1340 and 2000 lie near the ends of passes 2, 3, 4 and 6; they are not exact pass boundaries. The primary OLS fit weights bins equally and is applied to the three-seed mean; the same held-out corpus supplies $f$ for all seeds.
+\subsection{Tests of the coverage approximation}
+\label{app:coverage-tests}
+\label{app:gt-fits}
+\paragraph{Protocol.}
+The online-gap tests use \code{fig1v5_rp_both_s42_fixed}, \code{fig1v5_rp_both_s43_fixed} and \code{fig1v5_rp_both_s44_fixed}, with matched \code{fig1v5_rp_nogram_s42_fixed}, \code{fig1v5_rp_nogram_s43_fixed} and \code{fig1v5_rp_nogram_s44_fixed} controls. They use the standard input-injection setting: RMSProp tables without momentum, table LR $128\times$, $2^{20}$ rows per table, backbone LR $0.0006$, and a 100-step warmup followed by constant LR. Training replays shard 1; the fixed validation pool contains 589,824 positions from the first four batches of shard 2. Direct novelty counts match every plotted validation bin's token count exactly. Training losses are recorded before the update and validation losses after it, at the same logged step.
 
-egin{table}[!htbp]
-centeringsmall
-caption{Online gap fit $af+b$ on 18 bins; RMSE and coefficients in nats. Relative RMSE is RMSE divided by the mean absolute bin gap. Holdout RMSE fits alternating frequency bins and evaluates the others; it tests interpolation on this corpus, not corpus transfer.}
-label{tab:affine}
-egin{tabular}{llrrrrr}
-	oprule
-Context & Step & $a$ & $b$ & RMSE & Relative & Holdout\
-midrule
-Bigram & 670 & 4.87 & $-0.48$ & 0.137 & 8.2% & 0.169\
- & 1000 & 9.58 & $-0.53$ & 0.233 & 6.3% & 0.269\
- & 1340 & 10.86 & 0.16 & 0.205 & 4.1% & 0.228\
- & 2000 & 10.90 & 1.89 & 0.202 & 3.0% & 0.233\
-Trigram & 670 & 2.35 & $-0.50$ & 0.063 & 10.7% & 0.060\
- & 1000 & 5.81 & $-1.11$ & 0.155 & 9.9% & 0.132\
- & 1340 & 8.00 & $-1.31$ & 0.172 & 7.2% & 0.180\
- & 2000 & 10.42 & $-0.79$ & 0.129 & 3.2% & 0.132\
-ottomrule
-end{tabular}
-end{table}
+All 18 native bins contained in $1\le F\le1000$ have at least 300 train and validation tokens at the reported steps; no positive-gap filtering is applied. The bins are $1,2,3,4,5,6$--$8,9$--$12,13$--$20,21$--$30,31$--$50,51$--$75,76$--$100,101$--$150,151$--$200,201$--$300,301$--$500,501$--$750,751$--$1000$. Steps 670, 1000, 1340 and 2000 lie near the ends of passes 2, 3, 4 and 6, but are not exact pass boundaries. We fit the seed-mean gap by equal-bin least squares. The same held-out corpus supplies $f$ for all seeds.
 
-Validation-token weighting changes relative RMSE to 3.3--10.5% (bigram) and 3.2--9.1% (trigram). Three training seeds test initialization variability, not uncertainty in the corpus statistic or generalization to new corpora. The residual patterns in Figure~ef{fig:gt-kernel} remain larger than seed variation; fitting two free coefficients does not determine the conditional-loss functions or establish causality. The registered table-size sweep also exhibits changes in fitted gap exponents with table capacity. Neither the sweep nor the present fits justify a corpus-fixed exponent or a universal affine law across optimizers and injection paths.
+\begin{table}[!htbp]
+\centering\small
+\caption{Online gap fit $af+b$ on 18 bins. Coefficients and rms errors are in nats; relative rms is divided by mean absolute bin gap. The holdout fit uses alternating frequency bins and evaluates the others, testing interpolation on this corpus rather than corpus transfer.}
+\label{tab:affine}
+\begin{tabular}{llrrrrr}
+\toprule
+Context & Step & $a$ & $b$ & rms & Relative & Holdout\\
+\midrule
+Bigram & 670 & 4.87 & $-0.48$ & 0.137 & 8.2\% & 0.169\\
+ & 1000 & 9.58 & $-0.53$ & 0.233 & 6.3\% & 0.269\\
+ & 1340 & 10.86 & 0.16 & 0.205 & 4.1\% & 0.228\\
+ & 2000 & 10.90 & 1.89 & 0.202 & 3.0\% & 0.233\\
+Trigram & 670 & 2.35 & $-0.50$ & 0.063 & 10.7\% & 0.060\\
+ & 1000 & 5.81 & $-1.11$ & 0.155 & 9.9\% & 0.132\\
+ & 1340 & 8.00 & $-1.31$ & 0.172 & 7.2\% & 0.180\\
+ & 2000 & 10.42 & $-0.79$ & 0.129 & 3.2\% & 0.132\\
+\bottomrule
+\end{tabular}
+\end{table}
 
-egin{figure}[!htbp]
-centering
-includegraphics[width=linewidth]{fig_coverage_online.pdf}
-caption{Online gap versus directly measured continuation novelty, with no-gram step-1000 controls. Each point is a native frequency bin; vertical bars are sample standard deviations over seeds 42, 43 and 44. Lines fit $af+b$ only over the observed range. Lower panels expose the structured residuals. The same frequencies, bins and validation pool are used for all displayed steps.}
-label{fig:gt-kernel}
-end{figure}
+Validation-token weighting changes relative rms to 3.3--10.5\% (bigram) and 3.2--9.1\% (trigram). Residuals are structured and exceed seed variation; three training seeds do not quantify uncertainty across corpora. The fit is a compact description, not a prediction of its own coefficients. Moreover, a close affine relation need not imply constant $D_t$ or $S_t$: in the separate seed-42 step-1000 fixed-probe diagnostic, the bigram fit has a negative intercept while all measured seen terms are positive. Frequency-dependent terms can compensate.
 
-paragraph{Exact-count stratification.}
-A supplementary diagnostic uses the stored code{s1v5_128_marm_both_ckpt_fixed} step-1000 probes, seed 42. For each exact $F=2,ldots,8$, contexts are grouped by the train-only singleton fraction into $[0,.25)$, $[.25,.5)$, $[.5,.75)$ and $[.75,1]$; cells require at least 200 train and validation positions. Figure~ef{fig:within-F} shows all qualifying strata. At bigram $F=4$, the extreme strata have $f=0.247$ versus $0.795$ and reconstructed diagnostic gaps 3.234 versus 6.013 nats. At trigram $F=4$, the gaps rise from 1.448 to 2.619 nats and then decrease to 2.505 in the highest stratum. Thus even exact-count comparisons support coverage as an additional correlate, not a universal monotone response. Singleton fraction also reflects conditional entropy and concentration, and is not randomized.
+\paragraph{Exact-count comparisons.}
+The stored \code{s1v5_128_marm_both_ckpt_fixed} step-1000 probes (seed 42) allow a supplementary comparison at each exact $F=2,\ldots,8$. Contexts are stratified by their training singleton fraction into $[0,.25)$, $[.25,.5)$, $[.5,.75)$ and $[.75,1]$, retaining cells with at least 200 train and validation positions. At bigram $F=4$, the extreme strata have $f=0.247$ versus $0.795$ and diagnostic gaps 3.234 versus 6.013 nats. At trigram $F=4$, gaps rise from 1.448 to 2.619 nats and then decline to 2.505 in the highest stratum. Thus the association goes beyond count alone but is not universally monotone. Singleton fraction also reflects conditional entropy and concentration; it is not randomized. These losses use fixed probes and probabilities floored at $5.96\times10^{-8}$ (up to 1,094 zero probabilities in an array), so they are censored diagnostics distinct from the primary online gap. Novelty counts are unaffected by the loss floor.
 
-egin{figure}[!htbp]
-centering
-includegraphics[width=linewidth]{fig_coverage_exactF_strata.pdf}
-caption{Exact $F$ held fixed, contexts stratified by their training singleton fraction. Each line is one exact count and each point one qualifying stratum, ordered by singleton fraction. This is a fixed-probe, seed-42 diagnostic based on probability-clipped stored arrays, separate from the online-gap analysis. The trigram panel visibly violates strict monotonicity in the highest strata.}
-label{fig:within-F}
-end{figure}
-
-paragraph{Scope of the explanation.}
-Coverage is a measurable contributor to the frequency dependence, while model- and time-dependent conditional losses set the response. The evidence supports this account on the measured corpus and protocol. It does not prove that coverage is the sole causal mediator, that a shifted GT statistic exactly equals realized novelty, that fitted intercepts measure seen loss, or that a gap exponent is determined by the corpus. Tests across corpora and controlled continuation interventions at fixed count remain useful discriminating experiments.
+\paragraph{What an exponent can mean.}
+Even if $f(F)=cF^{-\alpha}$ exactly and $\gap=af+b$, the local gap exponent would be
+\begin{equation}
+\beta_{\mathrm{eff}}(F)=-\frac{\mathrm d\log\gap}{\mathrm d\log F}
+=\alpha\,\frac{af(F)}{af(F)+b}.
+\label{eq:coverage-effective-exponent}
+\end{equation}
+Here $a$ and $b$ are held fixed as $F$ varies, and the logarithm requires a positive gap. The exponent equals $\alpha$ only when the intercept is negligible. Changes in coefficients with training or table capacity can change an observed exponent without changing the corpus. The registered table-size sweep and the time-dependent fits therefore preclude a corpus-fixed gap exponent. The evidence supports coverage as a contributor to the frequency dependence under the measured protocol; it does not establish a universal affine law across corpora, optimizers or injection paths, or coverage as the sole causal mediator.

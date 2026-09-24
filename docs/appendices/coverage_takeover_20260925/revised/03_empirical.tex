@@ -1,0 +1,68 @@
+\section{Empirical Laws and Interventions}
+\label{sec:empirical}
+
+\subsection{Empirical scaling laws}
+\label{sec:forking-factors}
+
+All experiments below use input injection and, where tables are enabled, a table learning rate $128$ times the backbone learning rate. The frequency analysis uses seeds 42, 43 and 44; the remaining experiments use seed 42. All use the online gap of Section~\ref{sec:setting}.
+
+\paragraph{Context frequency.}
+A finite corpus does not fully represent the continuation distribution of each context: a context whose population distribution assigns equal probability to $C$ and $D$ may appear three times with $C$ and once with $D$ in training, so fitting the sample underpredicts $D$ on fresh data. Enabling both tables ($2^{20}$ rows each) and measuring online gaps at step 1000, grouped by the context count $F$ in the unrepeated corpus, shows that low-frequency contexts have systematically larger gaps (Figure~\ref{fig:frequency}; markers are native-bin means, dashed lines the coverage-based fits of Section~\ref{sec:coverage}).
+
+\paragraph{Table capacity.}
+Bigger tables make forking worse. Across three decades of table rows $R$ in bigram-only and trigram-only models, the step-1000 gap generally increases, sublinearly on log-log axes, with the bigram curve flattening toward the upper end of the measured range (Figure~\ref{fig:capacity}).
+
+\paragraph{Training corpus size.}
+Bigger corpora make forking milder. In a trigram-only model with $2^{20}$ rows trained for three epochs, varying the corpus over 20 sizes from 6M to 994M prediction tokens per epoch ($0.125D_1$--$20D_1$, where $D_1$ is the single-shard budget of 337 batches), the epoch-2 and epoch-3 end gaps fall by more than an order of magnitude as the corpus grows, reaching 0.13 and 0.22 nats at $20D_1$ (Figure~\ref{fig:corpus-size}). Two factors can contribute to the decay: a context's unseen-continuation mass decreases with its training count (Section~\ref{sec:coverage}), and, at fixed table size, a larger corpus spreads each table row over more distinct contexts, diluting per-context memorization. Both factors point the same way for production pretraining---a single pass over a corpus far larger than the memory---where the coverage account predicts weaker forking; the adverse corner, small corpora replayed for many passes, is exactly post-training, which we test in Section~\ref{sec:transfer}.
+
+\paragraph{Epoch count.}
+With the corpus fixed, replay alone drives the growth: over 20 epochs, epoch-end gaps increase monotonically for the trigram-only and both-table models while the no-gram control stays near zero (Figure~\ref{fig:staircase}b). Dense 2000-step traces (Figure~\ref{fig:staircase}a) show the growth concentrating at replay boundaries, matching Figure~\ref{fig:injection-curves}b.
+
+\begin{figure}[!htbp]
+\centering
+\begin{subfigure}{0.32\linewidth}
+\centering
+\includegraphics[width=\linewidth]{fig03a_frequency_coverage.pdf}
+\subcaption{}
+\label{fig:frequency}
+\end{subfigure}\hfill
+\begin{subfigure}{0.32\linewidth}
+\centering
+\includegraphics[width=\linewidth]{fig03b_capacity.pdf}
+\subcaption{}
+\label{fig:capacity}
+\end{subfigure}\hfill
+\begin{subfigure}{0.32\linewidth}
+\centering
+\includegraphics[width=\linewidth]{fig03c_corpus.pdf}
+\subcaption{}
+\label{fig:corpus-size}
+\end{subfigure}
+\caption{Empirical scaling laws of the gap: (a) context frequency (both-table model, online gap at step 1000; native frequency-bin means over seeds 42, 43 and 44, with standard deviations; dashed curves use Equation~\eqref{eq:gap_j} and directly measured novelty), (b) table capacity, (c) training corpus size.}
+\label{fig:scaling}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.8\linewidth]{fig06_replay.pdf}
+\caption{Gap growth under replay: (a) within epochs, (b) across 20 epochs.}
+\label{fig:staircase}
+\end{figure}
+
+\subsection{Causal interventions}
+\label{sec:interventions}
+
+Two interventions in the both-table model test the frequency account directly. Both use the fixed single-shard training corpus, run for 1000 updates, and start the intervention at step 338, after the first epoch; the two panels of Figure~\ref{fig:interventions} use independent runs, each with its own unmodified control.
+
+\paragraph{Low-frequency retrieval masking.}
+We count context frequencies in the unrepeated training corpus and mask the $n$-gram contribution whenever $F\leq\tau$, applying the rule separately to the bigram and trigram branches with thresholds $\tau\in\{1,2,4,8,200\}$. The retrieved embedding is set to zero during both training and evaluation, while the corresponding token remains in the training loss. Suppressing low-frequency memory access reduces the gap (Figure~\ref{fig:interventions}a): the excess gap is concentrated in rare contexts.
+
+\paragraph{Freezing the tables.}
+We train both $n$-gram tables normally during the first epoch, then freeze their parameters while continuing to update the backbone. A pronounced training--validation gap still develops after the tables are frozen (Figure~\ref{fig:interventions}b): once the tables hold learned context representations, the backbone alone can fit them during replay, so freezing the tables does not prevent forking.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.8\linewidth]{fig07_interventions.pdf}
+\caption{Causal interventions after epoch 1: (a) low-frequency retrieval masking, (b) table freezing.}
+\label{fig:interventions}
+\end{figure}

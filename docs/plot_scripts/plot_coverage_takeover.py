@@ -37,6 +37,9 @@ def main():
     z=np.load(BASE/'inputs/corpus_fval.npz')
     data=json.loads((BASE/'inputs/online_selected.json').read_text())
     manifest=json.loads((BASE/'source_manifest.json').read_text())
+    for src in manifest.get('compact_inputs',[]):
+        p=ROOT/src['path']
+        assert hashlib.sha256(p.read_bytes()).hexdigest()==src['sha256'],str(p)
     # Verify inputs when full local logs exist; packed rows remain standalone.
     checked=0
     for src in manifest['sources']:
@@ -123,7 +126,7 @@ def main():
         a.set_xscale('log');a.set_ylim(0,.86);a.set_ylabel('Novel-continuation fraction');r.set_ylabel('GT / measured');r.set_xlabel('Training context count $F$')
     save(fig,'fig_coverage_gt')
     # Honest exact-F strata from the existing quantized-probability diagnostic.
-    raw=json.loads((ROOT/'docs/appendices/gt_audit_20260925/perpos_decomp.json').read_text());strata=[];decomp=[]
+    raw=json.loads((BASE/'inputs/perpos_decomp.json').read_text());strata=[];decomp=[]
     def ds(branch,arm,ep,b,s):
         def ar(side,key):return np.asarray(raw[f'{arm}|{ep}|{side}'][branch][key]).reshape(-1,2,4)[b][:,s]
         nt=ar('train','n').sum();lt=ar('train','nll').sum();nv=ar('val','n');lv=ar('val','nll');nn=nv[0].sum();ns=nv[1].sum()
@@ -159,6 +162,32 @@ def main():
         a.plot(F,s['a']*x+s['b'],'--',color=c,lw=1)
     a.set_xscale('log');a.set_xlabel('Context frequency $F$');a.set_ylabel('Online gap (nats)');a.legend()
     save(fig,'fig03a_frequency_coverage')
+    # Reader-facing triptych: three linear comparisons, without audit panels.
+    fig,axes=plt.subplots(1,3,figsize=(7.3,2.5),gridspec_kw={'wspace':.35})
+    a=axes[0]
+    a.plot([0,.85],[0,.85],'--',color='#777777',lw=.8,label='Equality')
+    for br,mk in [('bigram','o'),('trigram','^')]:
+        rows=[r for r in corpus if r['branch']==br]
+        a.plot([r['heldout'] for r in rows],[r['gt_shift_train_only'] for r in rows],
+               mk,ms=3.3,color=style.BRANCH_COLORS[br],label=br)
+    a.set(xlim=(0,.85),ylim=(0,.85),xlabel='Measured novel fraction',ylabel='GT estimate (training counts)')
+    a.text(0,1.04,'(a) Coverage from counts',transform=a.transAxes,fontweight='bold',fontsize=8.5)
+    a.legend(loc='upper left',fontsize=6.5,handlelength=1.2)
+    for j,br in enumerate(['bigram','trigram'],1):
+        a=axes[j]
+        for step,c in zip(STEPS,COLORS):
+            x,y,sd,w,F=array(br,step);s=fit(x,y)
+            xx=np.linspace(x.min(),x.max(),100)
+            a.plot(xx,s['a']*xx+s['b'],color=c,lw=.85)
+            a.errorbar(x,y,yerr=sd,fmt='o',ms=2.4,color=c,lw=.6,capsize=1,label=str(step))
+        x,y,sd,_,_=array(br,1000,'nogram')
+        a.plot(x,y,'x',ms=2.6,color='#777777',label='No-gram, 1000')
+        a.axhline(0,lw=.6,color='#999999')
+        a.set(xlim=(.12,.84),ylim=(-.4,11.3 if j==1 else 7.8),
+              xlabel='Measured novel fraction',ylabel='Online gap (nats)')
+        a.text(0,1.04,f'({chr(97+j)}) {br.capitalize()} contexts',transform=a.transAxes,fontweight='bold',fontsize=8.5)
+        a.legend(loc='upper left',fontsize=6.1,handlelength=.9,labelspacing=.25,title='Step',title_fontsize=6.5)
+    save(fig,'fig_coverage_linear')
     qc=dict(verified_source_files=checked,max_scalar_loss_disagreement=max(checks),online_bins=18,fit_weight='equal bin OLS; val-token sensitivity also exported',window='F=1..1000 inclusive',seed_error_bars='sample SD across seeds 42,43,44; not corpus uncertainty',gt_bin_rule='sum N1(F+1) / sum (F+1)n(F+1); train-only weights, no calibration',perpos_probability_floor=raw['meta']['tiny'],perpos_max_zeros=max(v['n_zero_prob'] for k,v in raw.items() if k!='meta'))
     (BASE/'qc.json').write_text(json.dumps(qc,indent=2));print(json.dumps(qc,indent=2))
     for s in stats:

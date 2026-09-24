@@ -149,5 +149,27 @@
       "remote": "ophis-gpu:/data1/guoshaoyang/gt_audit_20260925/split_check.json",
       "verified_remote": true
     }
+  ],
+  "compact_inputs": [
+    {
+      "path": "docs/appendices/coverage_takeover_20260925/inputs/corpus_fval.npz",
+      "sha256": "3c1065cd4cb18247483d3548da4e0db5f710c3e3717a796379a8dedb64bbb87f",
+      "bytes": 144811
+    },
+    {
+      "path": "docs/appendices/coverage_takeover_20260925/inputs/online_selected.json",
+      "sha256": "20e3cc2c5b8f3513d708d3424f490a28e4c6dcdbf81a255013e5e7e905346113",
+      "bytes": 695325
+    },
+    {
+      "path": "docs/appendices/coverage_takeover_20260925/inputs/perpos_decomp.json",
+      "sha256": "9bfa381e49c2d493d2c342867d3568b0e6d10a33ed9ca101eed06fe65228cd11",
+      "bytes": 180877
+    },
+    {
+      "path": "docs/appendices/coverage_takeover_20260925/inputs/split_check.json",
+      "sha256": "e2f9bf306b4f7d74af5f0acbeb6bffda89b46ac5d92f620ff2c587e8a64aa234",
+      "bytes": 1743
+    }
   ]
 }

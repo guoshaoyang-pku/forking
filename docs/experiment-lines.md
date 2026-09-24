@@ -41,6 +41,8 @@ T1 目前仅完成远端 summary 回收与冲突审计；33 个重复 ID 均存�
 
 ## 主线（nanoGPT）
 
+覆盖率/理论当前入口：§67，docs/appendices/coverage_takeover_20260925/README.md；三 seed online gap 的仿射近似（bigram 3–8%、trigram 3–11% 相对 rms），不再以语料固定 gap 指数为结论。
+
 | # | 线名 | 科学问题 | run_id 前缀 | launcher | 作图脚本 | 图目录 | log § | 状态 |
 |---|---|---|---|---|---|---|---|---|
 | **M1** | 注入点消融 v50 | v/y/input 哪个产生 gap | `nglab_{v,y,input,nogram}` | `run_injpos.sh` | `gen_injpos_plot.py` | `figs/main/injpos_ablation.html` | §1–3 | 🗄️ 过时（val 每 50 步），被 M2 取代 |

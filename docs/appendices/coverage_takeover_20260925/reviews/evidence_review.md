@@ -1,0 +1,1 @@
+The second independent read-only Codex review timed out after 900 seconds and produced no final findings. It is not counted as completed verification. The primary agent independently verified online raw logs and compact corpus summaries; the completed theory review is in theory_review.md.

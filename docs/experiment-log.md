@@ -15,6 +15,7 @@
 
 | run_id | 日期 | 实验 | 状态 | gap 关键值 | 详情 |
 |---|---|---|---|---|---|
+| (offline) coverage_takeover_20260925 | 2026-09-25 | **附录 E / 4.1 覆盖率审计：online 三 seed、GT shift、线性三联图** | ✅ done（本地修订） | 仿射相对 rms：bi 3–8%，tri 3–11%；撤回指数锁定 | §67 |
 | `s1v5_128_marm_{nogram,bigram,trigram,both}{,_ckpt,_e1ckpt,_e2ckpt}` | 2026-09-16 | **模块四臂消融（原生/+bigram/+trigram/双表）@ 128× 标准 · checkpoint 保留 + epoch 1/2/3 边界 + logits rank 分布评估** | ✅ done（§56 已回填） | ckpt wave gap@1000 = +0.0189/+1.0134/+2.5100/+2.6971 | §56 |
 | `blrabs_{input,nogram}_lr*_tlr0p0768_*` | 2026-08-31 | **纯 backbone LR 扫描：绝对 table LR 锁定 0.0768（14 run）** | ✅ done（§42 已回填） | 结果与时间常数见 §42 | §42 |
 | `blrv5_{input,nogram}_lr{0p0001..0p0040}` | 2026-08-30 | **耦合 LR 扫描（原误标 backbone-only；12 run）** | ⚠️ done but confounded | scale=128 导致绝对 table LR 0.0128→0.512；不得作纯 backbone 因果结论 | §39、§42 |
@@ -4559,3 +4560,27 @@ trigram 行不同（911073 vs 789118）→ 表对 T 的贡献≈0；bigram ` is 
 结论：可训练表的 gap 是 nogram 的 1.6–7.8 倍；**冻表后 gap 回到 nogram 水平**（ID 0.34 vs 0.32、OpenR1 0.16 vs 0.16），「冻表后仍有残余 forking」的旧表述不成立。另：trigram 基座本身在各域都比 nogram 基座差（20× 预训练终点 val 3.35 vs 2.72；OOD 起点 Magicoder 4.40 vs 1.80）。
 
 **4. 已启动（running，ophis `data/queue_logs/plan7_e7e8_watcher.py`）**：E7 = `fig1v5_{spc,rp}_both_tls{8,32,2}_s42`（table LR 8×/32×/2× 的单遍 vs 重放，检验「无重放时 OE 全程更好、重放时仍 fork」）；E8 = 上表 9 臂 × seed 43/44。
+
+
+## §67 · Coverage / Good–Turing 论证接管与 online 复算（2026-09-25，done）
+
+**任务性质**：已有 run 的离线分析，不是训练实验；未新增 setting/run，未占 GPU。用户授权原理论存档、git commit，并直接修改 paper 对应正文，保留有效手写文字和公式风格。旧论文源 revision d04f9ee8；改前存档 commit 47f27d8。
+
+**来源**：fig1v5_rp_{both,nogram}_s{42,43,44}_fixed（§64），steps 670/1000/1340/2000；极简 input、双表 R=2^20、RMSProp(0,.99)、128×、6e-4 warmup_constant(100)、bf16/no compile，train shard 1，val disjoint。6 条 run 的 summary/train_log/freq_bin_loss 从 ophis 回收至 data/runs_fixed/，加 corpus/per-position 紧凑产物共 21 个远端 SHA256 核对。Corpus novelty 沿用已算的 shard1→shard2 摘要，本轮不声称重做原始语料计数。
+
+**主口径**：fixed-val（更新后）−当前 batch online train（更新前），18 个 native bins，1≤F≤1000、两侧≥300 token、不剔负 gap；三 seed 均值、equal-bin OLS。逐桶 val token 数与 novelty 计数完全一致；scalar endpoint 复算误差 <2e-7 nats。
+
+| 粒度 | step | a | b | rms (nats) | 相对 rms |
+|---|---:|---:|---:|---:|---:|
+| bigram | 670 | 4.869 | −0.483 | 0.137 | 8.16% |
+| bigram | 1000 | 9.578 | −0.534 | 0.233 | 6.26% |
+| bigram | 1340 | 10.857 | 0.156 | 0.205 | 4.12% |
+| bigram | 2000 | 10.903 | 1.889 | 0.202 | 3.00% |
+| trigram | 670 | 2.353 | −0.498 | 0.063 | 10.67% |
+| trigram | 1000 | 5.807 | −1.108 | 0.155 | 9.87% |
+| trigram | 1340 | 7.996 | −1.308 | 0.172 | 7.25% |
+| trigram | 2000 | 10.418 | −0.787 | 0.129 | 3.22% |
+
+**解释范围**：gap≈a f+b 是有系统残差的经验近似；相对 rms=RMSE/mean(abs gap)。b 不可直接等同于实测 S。验证 token 加权和交替 bin holdout 见 online_fits.csv。GT 的 F+1 identity 是 Poisson/matched/i.i.d. 模型下期望的比，不是经验比的无偏保证；完全 train-only pooled estimate / direct f 为 bi 0.870–0.885、tri 0.857–0.937，不用验证拟合修正。精确 F=2..8 的分层仅为 seed42 fixed-probe 补充，概率截断且 trigram 非严格单调，不能排除优化器机制。撤回“指数由语料确定、吻合到0.01”“seen 项小由73%推出”“所有配置1–5%”等旧表述。
+
+**落地**：docs/appendices/coverage_takeover_20260925/README.md + CSV/manifest；脚本 docs/plot_scripts/plot_coverage_takeover.py；正式线性三联图及 Figure3a 在 docs/figs/coverage_20260925/。paper 的 03/04/E 已直接修改；保留原有效 Zipf 积分、crowding-out 公式、E3 表。复杂残差/分层图仅存档。独立论文构建通过，当前共享 paper 也编译通过；未 push。
