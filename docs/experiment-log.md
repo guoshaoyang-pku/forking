@@ -10,6 +10,7 @@
 | `sft_*_e5_freq10_{trainable,frozen}_s42` | 2026-09-19 | **Dense cadence refresh · same checkpoint/data/setting as §57, validation and frequency cadence every 10 steps, one-GPU serial queue** | ✅ done | all 6 complete; final gaps in §58 | §58 |
 | `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_ckpt[_r1]` | 2026-09-20 | **20x corpus, three-pass matched multi-layer memory checkpoints; blocks 1,4 (0-based), 1M-row bigram + 1M-row trigram per block** | ⚠️ stalled (quota) | no valid final result; partial artifacts retained | §59 |
 | `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_3602_nockpt` | 2026-09-20 | **Quota-safe rerun on 360-2; same multi-layer routes, final weight only** | ✅ done | final gaps v/y/engram `+0.6599/+0.5512/+0.3788`; §60 | §60 |
+| (analysis on `s1v5_128_marm_{both,nogram}_ckpt`) | 2026-09-24 | **Residual geometry 只读诊断：wte/OE/TF 模长 + 两两 cos²** | ✅ done | ||oe||=77.9 vs ||tf||=38.4；cos²(oe,tf)=0.59；wte 近正交；§65 | §65 |
 
 | run_id | 日期 | 实验 | 状态 | gap 关键值 | 详情 |
 |---|---|---|---|---|---|
