@@ -4481,7 +4481,8 @@ Launch：remote queue script /data4/guoshaoyang/ngram-gap-lab/code/cluster/run_s
 
 train 侧数值与 val 侧几乎相同（||oe||=76.7，cos²(oe,tf)=0.58），几何结构在见过 3 遍的 train 数据上无可见分化。
 
-**解读（假设级，非定论）**：
+**解读（用户 2026-09-24 拍板「offload 模长」框架 + 定量分解）**：
 1. 「同量级」记忆属实：||oe||≈78 与 ||tf||≈38（post-ln_f）/ ||tf_resid||≈95（pre-ln_f）同数量级，OE 实际是 post-ln_f 输出的 ~2 倍、raw residual 的 ~0.82 倍。
-2. wte 与 oe/tf 近似正交（cos²≈0.005–0.009）；oe 与最终 hidden 强对齐（cos≈0.77，cos²≈0.59）。
-3. 但 cos²(oe,tf) 高**部分是残差直通（passthrough）的机械后果**：residual stream 按构造包含输入分量，而 OE 占输入模长的 ~99.99%（||wte||=1.1、||wpe||=0.08 vs ||oe||=78）。且 both 臂 raw residual 模长 94.8 远大于 nogram 臂 38.3——OE 并没有把 backbone 的输出「挤小」，backbone 增量贡献的粗略估计（||tf_resid − x_in||≈61，由均值标量近似推算）反而大于 nogram 臂整条 stream。「offload 模长」更准确的表述是：**最终 hidden 的方向主要由被残差连接原样带上来的 OE 向量承载，transformer 在其上叠加自己的增量**，而不是 transformer 输出模长被 OE 替代缩小。
+2. wte 与 oe/tf 近似正交（cos²≈0.005–0.009，随机基线 1/768≈0.0013）；oe 与最终 hidden 强对齐（cos≈0.77，cos²≈0.59）。
+3. **正交分解（pre-ln_f，val）**：tf = 73.1·ôe + 60.4·⊥，即最终 stream 的模长 ~77%（方差份额 0.59）由 OE 方向承载——table lookup 直接供给了输出表示约 3/4 的模长，此意义上确为「offload 模长」（用户结论）；nogram 臂整条 stream 仅 38.3。
+4. 两点精确化保留：① 残差构造的 passthrough null（增量与 oe 正交时）cos² = ||oe||²/||tf||² ≈ 0.68，实测 0.598 略低于 null，即 backbone 净增量把 oe 方向轻微衰减 ~6%（77.9→73.1）并叠加 60.4 的正交「精细」内容——该正交增量比 nogram 臂整条 stream（38.3）还大，与「backbone 被解放做更精细建模」相容；② 完整因果链尚缺一环：oe 与 wte 行近正交（cos²=0.005），logits = h·W_eᵀ，被承载的 oe 方向如何转成 logits（对下一 token 词表行的选择性对齐 vs backbone 增量读出）未由本批数字说明，列为可测的下一步探针。
