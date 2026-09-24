@@ -11,6 +11,7 @@
 | `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_ckpt[_r1]` | 2026-09-20 | **20x corpus, three-pass matched multi-layer memory checkpoints; blocks 1,4 (0-based), 1M-row bigram + 1M-row trigram per block** | ⚠️ stalled (quota) | no valid final result; partial artifacts retained | §59 |
 | `s1v5_128_ep20_{v,y,engram}_L14_20p0xL4_3ep_3602_nockpt` | 2026-09-20 | **Quota-safe rerun on 360-2; same multi-layer routes, final weight only** | ✅ done | final gaps v/y/engram `+0.6599/+0.5512/+0.3788`; §60 | §60 |
 | (analysis on `s1v5_128_marm_{both,nogram}_ckpt`) | 2026-09-24 | **Residual geometry 只读诊断：wte/OE/TF 模长 + 两两 cos²** | ✅ done | ||oe||=77.9 vs ||tf||=38.4；cos²(oe,tf)=0.59；wte 近正交；§65 | §65 |
+| `fig1v5_spc_*` / `ep5ckpt_v5_*` / `sft_*_fixtok_*` | 2026-09-24/25 | **Plan-7 批 2：clean single-pass 对照 ×3 seed；5-epoch 逐 epoch ckpt + 子空间探针；SFT/RLVR tokenizer 错配审计与重跑** | ✅ done（E7/E8 running） | 单遍 both 2000 步 val 3.60 > nogram 3.21（交叉 @~600）；SFT 冻表 gap ≈ nogram；§66 | §66 |
 
 | run_id | 日期 | 实验 | 状态 | gap 关键值 | 详情 |
 |---|---|---|---|---|---|
@@ -4499,3 +4500,62 @@ train 侧数值与 val 侧几乎相同（||oe||=76.7，cos²(oe,tf)=0.58），�
 | nogram_e1ckpt | 337 | 0.001/0/0.999 | — | 0 | 1.00 | — | — | 42.7 | 5.013 |
 
 （val 侧；train 侧各量差 ≤0.03，结构一致。）要点：① share 是对 ln_f 尺度不变的「offload」度量：trigram-only 模型 step 1000 时 trigram embedding 供给最终 residual 方向上 61%，Transformer 39%；nogram 中 Transformer 供给 99.9%。② 绝对 ‖Δ‖ 并未变小（48.8 vs nogram 38.2），offload 只在按 ‖s‖ 归一化（= final LayerNorm 去尺度）后成立。③ share 随训练增长：trigram 0.26（epoch-1 末，未 replay）→ 0.61（step 1000，3 遍）；both 0.39 → 0.65，增量主要来自 trigram 分支（0.15 → 0.35）；高 share 态与 forking 同时出现（both val 4.749 → 5.256）。**replay 与训练步数混杂**：无 single-pass step-1000 checkpoint（`fig1v5_sp_*` 未存 final_model.pt），「offload 随 replay 增长」为假设。
+
+## §66 · Plan-7 批 2：clean single-pass、5-epoch 子空间探针、SFT/RLVR tokenizer 错配审计（2026-09-24/25）
+
+**0. 两个数据缺陷（必须先读）**
+
+*(a) §64 single-pass 臂数据不独立 → 隔离。* `data/tokenized/shard_00060–66` 不是新数据：逐行（2049-token row）md5 比对，shard 60/62/63 的全部行都与 **train shard 1** 相同（12132/6066/18198 行），shard 61/65/66 与 **val shard 2** 相同，shard 64 与 **val shard 3** 相同。因此 `fig1v5_sp_*`（ophis，train 1,60–66）与 `fig1v5_sp6_*`（360-2，train 1,60–64）实际在重放 train shard 1 或直接训练 val 数据，**作废**，已移入 `data/runs_quarantine_plan7/`（两机各一处，未删除）。另 360-2 `tokenized_sp_PARTIAL_DO_NOT_USE/`（中转拷贝中断的残文件）同样作废。
+干净替代：`data/tokenized_epoch20/` shard 11–16（行级审计：与 shard 1–10、6542 零重叠；epoch20 目录内 shard 1–10、6542 与旧目录 md5 逐字节相同）。
+
+*(b) SFT/RLVR 数据用错 tokenizer（影响论文 §5 / Fig 8 / Fig 9 的 Magicoder、OpenR1、RLVR 数字）。* 主语料（`tokenized/`、`tokenized_epoch20/`）由 `/data2/ncpl-pathA/work/vbird_autoresearch/cache/tokenizer/tokenizer.pkl`（sha256 前缀 f6e7dad994ed5f8b，与 `docs/notes/data/full-corpus-full163.md` 一致）编码；而 `ood_tokenized_magicoder/`、`ood_tokenized_openr1_10shards/`、`rlvr_tokenized/math/` 由 `/data4/shared/ph/.cache/autoresearch/tokenizer/tokenizer.pkl` 编码（两者 8192 个 id 中 7635 个解码不同；manifest 里的 "pretraining autoresearch tokenizer.pkl" 字样是 `prepare_ood_sft.py` 硬编码，不可信）。证据：用正确 tokenizer 解码 SFT 数据是乱码（常用词比例 0.13–0.19 vs 主语料 0.35），用错误 tokenizer 解码主语料同样乱码；`walk their dog` 的 id `[3565,472,904]` 只在正确 tokenizer 下与 Fig 6a 的 down/daily/for 吻合。**ID 源（epoch20 shard 21）不受影响。** 旧 tokenizer 能逐字节复现旧 magicoder bin（校验通过），故只换 tokenizer 重编码：`ood_tokenized_magicoder_fixtok/`、`ood_tokenized_openr1_10shards_fixtok/`、`rlvr_tokenized/math_fixtok/`（各含 `TOKENIZER.json`）。RLVR 原始 parquet 与 tokenized 已从 /dev/shm 落盘到 `data/rlvr_raw/`、`data/rlvr_tokenized/math/`。
+作废（数据错配）：§57/§58 与 RLVR 静态代理的 Magicoder/OpenR1/RLVR 各臂，以及 §64 的 `sft_{ood_magicoder,ood_openr1_10shards,rlvr_math}_e5_nogram_s42`。
+
+**1. Figure 1 clean 对照（ophis，`fig1v5_spc_{both,nogram}_s{42,43,44}` vs §64 `fig1v5_rp_*`）**：唯一变量 = 训练池（spc：epoch20 shard 1,11–16 ≈ 2000 步不回卷；rp：shard 1 重放），val 同为 2–10,6542，前 337 步两臂逐位同批。三 seed 均值（val loss）：
+
+| step | spc both | spc nogram | rp both | rp nogram | rp both gap |
+|---:|---:|---:|---:|---:|---:|
+| 100 | 5.491 | 6.202 | 5.492 | 6.179 | 0.02 |
+| 300 | 4.816 | 5.119 | 4.822 | 5.128 | −0.04 |
+| 500 | 4.486 | 4.606 | 4.850 | 4.604 | 1.16 |
+| 600 | 4.385 | 4.368 | 4.809 | 4.354 | 1.18 |
+| 1000 | 4.036 | 3.608 | 5.273 | 3.590 | 2.72 |
+| 2000 | 3.599 | 3.213 | 6.909 | 3.324 | 5.65 |
+
+结论：① 重放下 forking 三 seed 高度一致（2000 步 gap 5.644/5.633/5.679，sd 0.024）；② 单遍 both 在前 ~550 步领先 nogram（300 步 −0.30），**之后被反超**（2000 步 +0.39，sd <0.02），即 128× table LR 下「无重放时 OE 更好」只在短预算成立 → 触发 E7（低 table LR 单遍对照）。单遍两臂 gap 始终 ≈ −0.02（无 forking）。
+
+**2. 5-epoch 逐 epoch ckpt（360-2，`ep5ckpt_v5_{both,trigram,nogram}_s42`，train shard 1，1685 步，`--save_epoch_checkpoints`）+ 子空间探针**（`code/tools/probe_context_subspace.py`，md5 9125d53be156a716daa64f342c9fc5a4；证据 `docs/appendices/subspace_probe_20260925/`）。sanity：探针重算的 fixed-val(4 batch) 与训练日志一致（both e2–e5 4.77/5.26/5.81/6.32；nogram 4.14/3.57/3.42/3.35）。
+
+*(i) dog/cat 挤出（80 个低频 trigram context：train 里只跟 ` dog`、从不跟 ` cat`，held-out 里 ` cat` 出现；context-only 探针，epoch1→5 平均 log p）：*
+
+| arm | log p(dog) | log p(cat) | log-odds dog:cat |
+|---|---|---|---|
+| nogram | −5.40 → −3.24 | −7.04 → **−4.67** | 1.63 → 1.43 |
+| both | −3.93 → −4.29 | −5.90 → **−9.53** | 1.98 → **5.24** |
+
+例：` petting your`（train F=3，仅 1 次 dog；held-out 50 次中 dog 15、cat 17）both：p(dog) 0.07→0.59，p(cat) 0.0073→0.0008；nogram：p(cat) 0.020→0.066（p(pet)≈0.5 主导）。held-out 原位（带完整前缀）同向：这些 context 上 both 的 log p(cat) −5.85→−10.37，nogram −5.97→−7.20；下一 token=cat 的 CE both 2.45 vs nogram 1.02（epoch 5）。
+
+*(ii) 子空间干扰（最小对：18 个前缀 P，源 `P + " that is a" → dog`，探针 `P + " there is a" → dog`；按训练 LR 比例构造一步更新，T = 探针一阶增益 / 源一阶增益；sign = Adam/RMSProp 式、grad = 梯度式；epoch1→5）：*
+
+| arm | T (sign) | T (grad) | 同步抬升 there-is-a→cat（有限步，自增益 0.5 nats） |
+|---|---|---|---|
+| nogram | 0.98 → 0.65 | 1.00 → 0.73 | +0.22 → +0.12 |
+| trigram | 0.75 → 0.46 | 0.73 → 0.56 | +0.18 → +0.06 |
+| both | 0.85 → 0.47 | 0.83 → 0.63 | +0.21 → +0.06 |
+
+trigram 行不同（911073 vs 789118）→ 表对 T 的贡献≈0；bigram ` is a` 同行 → 小额共享。表参数只占自增益 2–6%，T 的下降主要来自 backbone 自身变得 context-specific（both 终点 backbone-only T 0.48 vs nogram 0.65）。**注意**：单一最小对、单 seed、一阶近似；可作示意与方向性证据，正文定量结论需多对统计。
+
+*(iii) ` there is a`（train F=5211，高频）：held-out 原位 mass on train-seen 续接 both 0.76→0.86、nogram 0.62→0.77；novel CE both 8.70→9.30（上升）、nogram 8.25→7.85（下降）。*
+
+**3. Post-training 重跑（正确 tokenizer，ophis，`sft_{rlvr_math,magicoder,openr1_10shards}_fixtok_e5_{trainable,frozen,nogram}_s42`；基座 trigram = `sftbase_ep20_tri_ckpt`，nogram = §64 `s1v5_128_ep20_nogram_20p0xL4_3ep_ckpt`；1665 步 = 5 pass × 333 batch）**，终点：
+
+| 源 | trainable gap (val) | frozen gap (val) | nogram gap (val) |
+|---|---|---|---|
+| ID（tokenizer 本就正确，§58/§64） | 2.463 (4.376) | 0.341 (3.372) | 0.316 (2.864) |
+| Magicoder | 0.928 (1.546) | 0.192 (1.302) | 0.154 (0.876) |
+| OpenR1 | 0.686 (1.373) | 0.159 (1.201) | 0.157 (0.982) |
+| RLVR-MATH | 0.499 (0.511) | 0.422 (0.436) | 0.311 (0.329) |
+
+结论：可训练表的 gap 是 nogram 的 1.6–7.8 倍；**冻表后 gap 回到 nogram 水平**（ID 0.34 vs 0.32、OpenR1 0.16 vs 0.16），「冻表后仍有残余 forking」的旧表述不成立。另：trigram 基座本身在各域都比 nogram 基座差（20× 预训练终点 val 3.35 vs 2.72；OOD 起点 Magicoder 4.40 vs 1.80）。
+
+**4. 已启动（running，ophis `data/queue_logs/plan7_e7e8_watcher.py`）**：E7 = `fig1v5_{spc,rp}_both_tls{8,32,2}_s42`（table LR 8×/32×/2× 的单遍 vs 重放，检验「无重放时 OE 全程更好、重放时仍 fork」）；E8 = 上表 9 臂 × seed 43/44。
