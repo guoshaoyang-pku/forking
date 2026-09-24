@@ -92,10 +92,84 @@ def _acc_finalize(acc: dict, do_oe: bool) -> dict:
     return out
 
 
+def _branch_residuals(model, idx) -> dict:
+    """Per-branch split of _compute_input_ngram_residual (mirrors the
+    return_injection_stats path in NanoGPT.forward; no frequency masks)."""
+    prev_idx = torch.cat([idx[:, :1], idx[:, :-1]], dim=1)
+    prev2_idx = torch.cat([idx[:, :2], idx[:, :-2]], dim=1)
+    out = {}
+    if model.config.enable_bigram_ve:
+        parts = []
+        for li in sorted(model.bigram_ve_layers):
+            lvs = model.bigram_ves[str(li)]
+            bi = model._bigram_row_indices(li, prev_idx, idx)
+            parts.append(model._pad_to_embd(
+                torch.cat([lvs[k](bi[k]) for k in range(model.bigram_K)], dim=-1),
+                model.bigram_table_dim))
+        out["bigram"] = torch.stack(parts).sum(dim=0).float()
+    if model.config.enable_trigram_ve:
+        parts = []
+        for li in sorted(model.trigram_ve_layers):
+            lvs = model.trigram_ves[str(li)]
+            ti = model._trigram_row_indices(li, prev2_idx, prev_idx, idx)
+            parts.append(model._pad_to_embd(
+                torch.cat([lvs[k](ti[k]) for k in range(model.trigram_K)], dim=-1),
+                model.trigram_table_dim))
+        out["trigram"] = torch.stack(parts).sum(dim=0).float()
+    return out
+
+
+def _decomp_update(acc: dict, emb, oe, delta, s, branches: dict) -> None:
+    """Exact per-position triangle s = emb + oe + delta (s = ln_f input).
+
+    emb = wte + wpe; delta = s - (emb + oe) is the net Transformer-block
+    contribution. share_x = (x . s_hat) / ||s||, so emb/oe/delta shares sum
+    to 1 and per-branch (bigram/trigram) shares sum to share_oe.
+    """
+    emb, oe, delta, s = (t.double() for t in (emb, oe, delta, s))
+    sn = s.norm(dim=-1).clamp_min(1e-12)
+    on = oe.norm(dim=-1).clamp_min(1e-12)
+    dn = delta.norm(dim=-1).clamp_min(1e-12)
+    shat = s / sn.unsqueeze(-1)
+    p_emb, p_oe, p_d = ((t * shat).sum(-1) for t in (emb, oe, delta))
+    c_ds = p_d / dn
+    vals = {
+        "delta_norm": dn, "share_emb": p_emb / sn, "share_oe": p_oe / sn,
+        "share_delta": p_d / sn, "ratio_oe": on / sn, "ratio_delta": dn / sn,
+        "cos_oe_delta": (oe * delta).sum(-1) / (on * dn), "cos_oe_s": p_oe / on,
+        "cos_delta_s": c_ds, "cos2_delta_s": c_ds * c_ds,
+    }
+    for name, v in branches.items():
+        v = v.double()
+        vn = v.norm(dim=-1).clamp_min(1e-12)
+        pv = (v * shat).sum(-1)
+        vals[f"{name}_norm"] = vn
+        vals[f"share_{name}"] = pv / sn
+        vals[f"ratio_{name}"] = vn / sn
+        vals[f"cos_{name}_s"] = pv / vn
+    for k, v in vals.items():
+        acc[k] = acc.get(k, 0.0) + v.sum().item()
+    acc["count"] = acc.get("count", 0) + s.size(0)
+
+
+def _decomp_finalize(acc: dict, do_oe: bool) -> dict:
+    n = max(acc.get("count", 0), 1)
+    out = {f"{k}_mean": v / n for k, v in acc.items() if k != "count"}
+    if not do_oe:
+        out.pop("cos_oe_delta_mean")
+        out.pop("cos_oe_s_mean")
+    return out
+
+
 def eval_side(model, batches, device, dtype: str, do_oe: bool,
               tf_variant: str, row_chunk: int = 12) -> dict:
-    """tf_variant: 'post' -> tf = ln_f output; 'pre' -> tf = ln_f input."""
+    """tf_variant: 'post' -> tf = ln_f output; 'pre' -> tf = ln_f input.
+
+    The 'pre' pass additionally returns the exact triangle decomposition
+    under key 'decomp'.
+    """
     acc = _new_acc()
+    dacc = {} if tf_variant == "pre" else None
     ctx = _autocast_ctx(dtype)
     captured = {}
     hook = model.transformer.ln_f.register_forward_hook(
@@ -110,7 +184,7 @@ def eval_side(model, batches, device, dtype: str, do_oe: bool,
                     x = inp[r0:r0 + row_chunk]
                     p = pos[:, :x.size(1)]
                     wte = model.transformer.wte(x).float()
-                    wpe = model.transformer.wpe(p).float()
+                    wpe = model.transformer.wpe(p).float().expand_as(wte)
                     if do_oe:
                         oe = model._compute_input_ngram_residual(x).float()
                     else:
@@ -128,9 +202,24 @@ def eval_side(model, batches, device, dtype: str, do_oe: bool,
                         "wpe": wpe[:, 2:, :].reshape(-1, wpe.size(-1)),
                     }
                     _acc_update(acc, vecs, do_oe)
+                    if dacc is not None:
+                        emb = wte + wpe
+                        delta = tf_pre - (emb + oe)
+                        branches = _branch_residuals(model, x) if do_oe else {}
+                        if branches:
+                            bsum = torch.stack(list(branches.values())).sum(0)
+                            assert torch.allclose(bsum, oe, rtol=1e-3, atol=1e-3), \
+                                "branch split does not reproduce oe"
+                        flat = lambda t: t[:, 2:, :].reshape(-1, t.size(-1))  # noqa: E731
+                        _decomp_update(
+                            dacc, flat(emb), flat(oe), flat(delta), flat(tf_pre),
+                            {k: flat(v) for k, v in branches.items()})
     finally:
         hook.remove()
-    return _acc_finalize(acc, do_oe)
+    out = _acc_finalize(acc, do_oe)
+    if dacc is not None:
+        out["decomp"] = _decomp_finalize(dacc, do_oe)
+    return out
 
 
 def main():
@@ -191,6 +280,15 @@ def main():
               f"cos2(wte,oe)={r.get('cos2_wte_oe_mean', float('nan')):.4f} "
               f"cos2(wte,tf)={r.get('cos2_wte_tf_mean', float('nan')):.4f} "
               f"cos2(oe,tf)={r.get('cos2_oe_tf_mean', float('nan')):.4f}")
+        dc = res["val_tf_pre"]["decomp"]
+        print(f"[geom] {label} val decomp: share emb/oe/delta="
+              f"{dc['share_emb_mean']:.3f}/{dc['share_oe_mean']:.3f}/"
+              f"{dc['share_delta_mean']:.3f} ratio oe/delta="
+              f"{dc['ratio_oe_mean']:.3f}/{dc['ratio_delta_mean']:.3f} "
+              f"||delta||={dc['delta_norm_mean']:.2f} "
+              f"cos(oe,delta)={dc.get('cos_oe_delta_mean', float('nan')):.4f} "
+              f"share tri/bi={dc.get('share_trigram_mean', float('nan')):.3f}/"
+              f"{dc.get('share_bigram_mean', float('nan')):.3f}")
         arms[label] = res
         del model
         torch.cuda.empty_cache()
@@ -211,6 +309,10 @@ def main():
                     "_compute_input_ngram_residual (bigram+trigram clean-table "
                     "input injection); tf = final hidden state, reported both "
                     "post-ln_f (tf) and pre-ln_f residual (tf_resid). "
+                    "*_tf_pre.decomp = exact per-position triangle "
+                    "s = (wte+wpe) + oe + delta with s = ln_f input and "
+                    "delta = net Transformer-block contribution; share_x = "
+                    "(x . s_hat)/||s|| (shares sum to 1). "
                     "train = head of training stream (seen ~3x by step 1000); "
                     "val = the fixed val batches used during training.",
         },
