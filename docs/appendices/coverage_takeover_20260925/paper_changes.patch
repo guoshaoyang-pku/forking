@@ -1,5 +1,5 @@
 diff --git a/sections/03_empirical.tex b/sections/03_empirical.tex
-index 5718d5f..49ab6e9 100644
+index 5718d5f..9bf682b 100644
 --- a/sections/03_empirical.tex
 +++ b/sections/03_empirical.tex
 @@ -4,16 +4,16 @@
@@ -11,14 +11,14 @@ index 5718d5f..49ab6e9 100644
  
  \paragraph{Context frequency.}
 -A finite corpus does not fully represent the continuation distribution of each context: a context whose population distribution assigns equal probability to $C$ and $D$ may appear three times with $C$ and once with $D$ in training, so fitting the sample underpredicts $D$ on fresh data. Enabling both tables ($2^{20}$ rows each) and measuring context-matched fixed-probe gaps at step 1000, grouped by the context count $F$ in the unrepeated corpus, shows that low-frequency contexts have systematically larger gaps, approximately as a power law in $F$ over the measured range (Figure~\ref{fig:frequency}; markers are token-mass-weighted bin means, dashed lines the fits derived in Section~\ref{sec:coverage}).
-+A finite corpus does not fully represent the continuation distribution of each context: a context whose population distribution assigns equal probability to $C$ and $D$ may appear three times with $C$ and once with $D$ in training, so fitting the sample underpredicts $D$ on fresh data. Enabling both tables ($2^{20}$ rows each) and measuring online gaps at step 1000, grouped by the context count $F$ in the unrepeated corpus, shows that low-frequency contexts have systematically larger gaps (Figure~\ref{fig:frequency}; markers are native-bin means, dashed lines the coverage-based fits of Section~\ref{sec:coverage}).
++A finite corpus does not fully represent the continuation distribution of each context: a context whose population distribution assigns equal probability to $C$ and $D$ may appear three times with $C$ and once with $D$ in training, so fitting the sample underpredicts $D$ on fresh data. Enabling both tables ($2^{20}$ rows each) and measuring online gaps at step 1000, grouped by the context count $F$ in the unrepeated corpus, shows that low-frequency contexts have systematically larger gaps (Figure~\ref{fig:frequency}; markers are native-bin means, dashed lines the coverage-based fits of Appendix~\ref{app:coverage-tests}).
  
  \paragraph{Table capacity.}
  Bigger tables make forking worse. Across three decades of table rows $R$ in bigram-only and trigram-only models, the step-1000 gap generally increases, sublinearly on log-log axes, with the bigram curve flattening toward the upper end of the measured range (Figure~\ref{fig:capacity}).
  
  \paragraph{Training corpus size.}
 -Bigger corpora make forking milder. In a trigram-only model with $2^{20}$ rows trained for three epochs, varying the corpus over 20 sizes from 6M to 994M prediction tokens per epoch ($0.125D_1$--$20D_1$, where $D_1$ is the single-shard budget of 337 batches), the epoch-2 and epoch-3 end gaps fall by more than an order of magnitude as the corpus grows, reaching 0.13 and 0.22 nats at $20D_1$ (Figure~\ref{fig:corpus-size}). Two multiplicative factors account for the decay: each context's unseen-continuation mass falls as a power of its training count (Section~\ref{sec:coverage}), and, at fixed table size, a larger corpus spreads each table row over more distinct contexts, diluting per-context memorization. Both factors point the same way for production pretraining---a single pass over a corpus far larger than the memory---where forking should vanish; the adverse corner, small corpora replayed for many passes, is exactly post-training, which we test in Section~\ref{sec:transfer}.
-+Bigger corpora make forking milder. In a trigram-only model with $2^{20}$ rows trained for three epochs, varying the corpus over 20 sizes from 6M to 994M prediction tokens per epoch ($0.125D_1$--$20D_1$, where $D_1$ is the single-shard budget of 337 batches), the epoch-2 and epoch-3 end gaps fall by more than an order of magnitude as the corpus grows, reaching 0.13 and 0.22 nats at $20D_1$ (Figure~\ref{fig:corpus-size}). Two factors can contribute to the decay: a context's unseen-continuation mass decreases with its training count (Section~\ref{sec:coverage}), and, at fixed table size, a larger corpus spreads each table row over more distinct contexts, diluting per-context memorization. Both factors point the same way for production pretraining---a single pass over a corpus far larger than the memory---where the coverage account predicts weaker forking; the adverse corner, small corpora replayed for many passes, is exactly post-training, which we test in Section~\ref{sec:transfer}.
++Bigger corpora make forking milder. In a trigram-only model with $2^{20}$ rows trained for three epochs, varying the corpus over 20 sizes from 6M to 994M prediction tokens per epoch ($0.125D_1$--$20D_1$, where $D_1$ is the single-shard budget of 337 batches), the epoch-2 and epoch-3 end gaps fall by more than an order of magnitude as the corpus grows, reaching 0.13 and 0.22 nats at $20D_1$ (Figure~\ref{fig:corpus-size}). Two factors can contribute to the decay: a context's unseen-continuation mass decreases with its training count (Appendix~\ref{app:gt-identity}), and, at fixed table size, a larger corpus spreads each table row over more distinct contexts, diluting per-context memorization. Both factors point the same way for production pretraining---a single pass over a corpus far larger than the memory---where the coverage account predicts weaker forking; the adverse corner, small corpora replayed for many passes, is exactly post-training, which we test in Section~\ref{sec:transfer}.
  
  \paragraph{Epoch count.}
  With the corpus fixed, replay alone drives the growth: over 20 epochs, epoch-end gaps increase monotonically for the trigram-only and both-table models while the no-gram control stays near zero (Figure~\ref{fig:staircase}b). Dense 2000-step traces (Figure~\ref{fig:staircase}a) show the growth concentrating at replay boundaries, matching Figure~\ref{fig:injection-curves}b.
@@ -41,40 +41,28 @@ index 5718d5f..49ab6e9 100644
  \end{figure}
  
 diff --git a/sections/04_mechanism.tex b/sections/04_mechanism.tex
-index f029e7e..e3cb06a 100644
+index f029e7e..1c76f9d 100644
 --- a/sections/04_mechanism.tex
 +++ b/sections/04_mechanism.tex
-@@ -1,34 +1,46 @@
+@@ -1,34 +1,7 @@
  \section{Mechanism of Forking}
  \label{sec:mechanism}
  
 -Section~\ref{sec:empirical} left two questions: why the gap follows a power law in context frequency, and why replay keeps widening it. We answer the first with continuation \emph{coverage} and the second with \emph{crowding-out} inside context subspaces, then show that the $n$-gram module is what makes those subspaces independent. Additional experimental details are in Appendix~\ref{app:mechanistic}.
-+Section~\ref{sec:empirical} left two questions: why the gap depends on context frequency, and why replay keeps widening it. We answer the first with continuation \emph{coverage} and the second with \emph{crowding-out} inside context subspaces, then show that the $n$-gram module is what makes those subspaces independent. Additional experimental details are in Appendix~\ref{app:mechanistic}.
- 
- \subsection{Coverage and the frequency law}
- \label{sec:coverage}
+-
+-\subsection{Coverage and the frequency law}
+-\label{sec:coverage}
 -Section~\ref{sec:forking-factors} found that low-frequency contexts carry most of the gap. Overfitting, in general, hurts on the validation samples that training never showed; in next-token prediction these are the positions whose context occurs in training but whose true continuation never followed it there---\emph{seen context, novel continuation}. Every validation position therefore falls into one of two classes, and the gap splits accordingly. Averaged over the contexts that occur $F$ times in training,
-+Section~\ref{sec:forking-factors} found that low-frequency contexts carry most of the gap. A finite training corpus leaves some plausible continuations of each context unobserved. Let $f(F)$ be the fraction of validation positions whose context occurs $F\ge1$ times in training but whose true continuation never followed it there---\emph{seen context, novel continuation}. Averaged over a frequency bin, the gap splits exactly into a novel and a seen term,
- \begin{equation}
+-\begin{equation}
 -\gap(F)=f(F)\,\underbrace{\big[\ell^{\mathrm{val}}_{\mathrm{novel}}(F)-\ell^{\mathrm{tr}}(F)\big]}_{D(F)}
 -\;+\;\big(1-f(F)\big)\big[\ell^{\mathrm{val}}_{\mathrm{seen}}(F)-\ell^{\mathrm{tr}}(F)\big],
-+\begin{aligned}
-+\gap_t(F)&=f(F)D_t(F)+\big(1-f(F)\big)S_t(F),\\
-+D_t(F)&=\ell^{\mathrm{val}}_{\mathrm{novel},t}(F)-\ell^{\mathrm{tr}}_t(F),\qquad
-+S_t(F)=\ell^{\mathrm{val}}_{\mathrm{seen},t}(F)-\ell^{\mathrm{tr}}_t(F).
-+\end{aligned}
- \label{eq:gap-decomp}
- \end{equation}
+-\label{eq:gap-decomp}
+-\end{equation}
 -where $f(F)$ is the fraction of validation positions at those contexts whose continuation is novel, $\ell^{\mathrm{tr}}$ is the training loss at the same contexts, and $D(F)$ is the depth to which novel continuations sit below the training fit. The second bracket compares validation and training positions that share both the context row and the continuation, and it is small: novel-continuation positions make up 31\% of the validation stream when contexts are counted as bigrams, yet they carry 73\% of the both-table model's excess validation loss over the no-gram control at step 1000; adding the seen continuations of rare contexts ($F\le 31$) brings this to 77\%, and at trigram granularity novel continuations account for essentially all of it (Appendix~\ref{app:novel-share}). The first bracket carries the frequency law. Replay reinforces the continuations a context was seen with but supplies no evidence about the others, so $D$ grows with the number of passes $j$ (Section~\ref{sec:sharpening}); if it does not otherwise depend on $F$,
-+Here $\ell^{\mathrm{tr}}_t$ is the current-batch training loss and the validation means use the fixed validation pool at the same logged step. These are means within a frequency bin, not losses matched context by context. Coverage sets the weights; $D_t$ and $S_t$ describe how the model responds. The seen term need not be small.
-+
-+\paragraph{From coverage to the frequency law.}
-+If $D_t$ and $S_t$ were constant across $F$, the decomposition would be affine in $f$. We test the corresponding two-parameter approximation directly,
- \begin{equation}
+-\begin{equation}
 -\gap_j(F)\approx D_j\,f(F).
-+\gap_t(F)\approx a_t f(F)+b_t.
- \label{eq:gap_j}
- \end{equation}
+-\label{eq:gap_j}
+-\end{equation}
 -The measured gaps of Figure~\ref{fig:frequency} fit
 -\begin{equation}
 -\gap^{\mathrm{bi}}(F)\approx 7.21\,F^{-0.233},\qquad
@@ -82,20 +70,61 @@ index f029e7e..e3cb06a 100644
 -\label{eq:gap-fits}
 -\end{equation}
 -Natural language supplies the power law in $f$. Good--Turing estimation \citep{good1953population,gale1995good} gives the probability that a context seen $F$ times is followed by an unseen continuation as $\hat f(F)=N_1(F)/F$, where $N_1$ counts continuation types that followed it exactly once---a statistic of the text, not of any model. If conditional continuation frequencies have a Zipf-like tail $p_{(r)}\propto r^{-s}$, this novel-continuation rate decays as $F^{-\alpha}$ with $\alpha=1-1/s$ \citep{gnedin2007occupancy}; the derivation is in Appendix~\ref{app:math}. On our corpus the estimate, averaged over the contexts at each count $F$, is a clean power law over the window $F\le10^3$ in which the gap is measured (Appendix Figure~\ref{fig:b_t_MF}),
-+For the both-table model, 18 frequency bins spanning $F=1$--$1000$ lie close to a line in the directly measured novel fraction (Figure~\ref{fig:coverage}b,c). For fits to the three-seed mean at steps 670, 1000, 1340 and 2000, relative rms residuals are 3--8\% for bigram and 3--11\% for trigram contexts. The intercept matters: at step 2000 the bigram fit has $b_t=1.89$ nats; forcing the line through zero increases rms error from 0.20 to 0.76 nats. This approximate affine relation summarizes the frequency dependence, but does not establish constant component losses: a fitted $b_t$ is not in general the measured $S_t(F)$ (Appendix~\ref{app:coverage-tests}).
-+
-+\paragraph{Coverage from corpus counts.}
-+For a context with independent continuation draws, the expected singleton fraction after $F+1$ observations equals the expected missing mass after $F$. Pooling heterogeneous contexts additionally requires a model for their occurrence counts. Under Poisson counts and matched train/validation distributions, the token-weighted population novel fraction satisfies
- \begin{equation}
+-\begin{equation}
 -\hat f^{\mathrm{bi}}(F)\approx 0.95\,F^{-0.287},\qquad
 -\hat f^{\mathrm{tri}}(F)\approx 0.97\,F^{-0.314}.
 -\label{eq:gt-fits}
-+f_\star(F)=\frac{\mathbb E N_1(F+1)}{(F+1)\mathbb E n(F+1)},\qquad
-+\widehat f_{\mathrm{GT}}(F)=\frac{N_1(F+1)}{(F+1)n(F+1)},
-+\label{eq:gt}
- \end{equation}
+-\end{equation}
 -The exponents read off corpus counts thus land within $0.05$ (bigram) and $0.01$ (trigram) of those the model produces, and a single depth $D$ per branch turns $\hat f(F)$ into the measured gap: across the seven observed frequency bins the ratio $\operatorname{gap}/\hat f$ is constant to within 9\% and 18\% (Appendix Figure~\ref{fig:gt-kernel}). For bigram contexts that ratio is about 8 nats---the size of the seen-to-novel log-odds shift visible on a single context in Figure~\ref{fig:walk-their-dog}. The frequency law of Section~\ref{sec:forking-factors} is therefore a property of the corpus: rare contexts have more of their continuation mass unseen. Coverage does not account for everything---about a quarter of the excess loss falls on seen continuations of frequent contexts, and for trigram contexts $D$ drifts slightly with $F$ (Appendix~\ref{app:gt-fits})---but it fixes the exponent.
-+where $n(k)$ counts contexts observed $k$ times and $N_1(k)$ their singleton context--continuation types. The first equality is a Good--Turing expectation identity; the second defines its empirical estimator \citep{good1953population,gale1995good}. The derivation and assumptions are in Appendix~\ref{app:gt-identity}. On our corpus the uncalibrated estimate tracks held-out novelty but underestimates it: its ratio to the direct count is 0.870--0.885 for bigram and 0.857--0.937 for trigram contexts (Figure~\ref{fig:coverage}a). No validation-fitted correction is applied.
++A finite corpus shows each context only some of its plausible continuations, so a validation position can pair a \emph{seen context} with a \emph{novel continuation} that never followed it in training. Replay reinforces the observed continuations without supplying evidence for the others, and can crowd those alternatives out. We show how this happens, then test why the $n$-gram module allows it to proceed separately within each context; additional experimental details are in Appendix~\ref{app:mechanistic}.
+ 
+ \begin{figure}[!t]
+ \centering
+@@ -50,9 +23,11 @@ The exponents read off corpus counts thus land within $0.05$ (bigram) and $0.01$
+ 
+ \subsection{Crowding-out under replay}
+ \label{sec:sharpening}
+-Coverage says what is missing. The more important questions are why replay turns the missing coverage into loss, why the $n$-gram module is needed for it, and how the damage evolves with the number of passes. Our answer is that forking is ordinary overfitting confined to very small problems. For a context $c_i$, call the next-token logits computed from it its \emph{context subspace}, and split the vocabulary into the continuations of $c_i$ seen in training, those that appear only in validation, and the rest (Appendix~\ref{app:crowding-derivation}). If training shows a single continuation $C$, the loss in that subspace is $-\ln p_C$; a gradient step raises the logit of $C$ by $\eta(1-p_C)$ and, through the softmax, lowers every other logit by $\eta p_v$. Mass flows from the unseen continuations onto the seen one, so the validation loss on plausible-but-unseen continuations rises by the same shift that lowers the training loss, and the seen-to-unseen odds grow by a factor above one at every pass with nothing to stop them while $p_C<1$ (Appendix Equation~\eqref{eq:zt}). We call this \emph{crowding-out}; it is the growth of the depth $D_j$ in Equation~\eqref{eq:gap-decomp} with replay.
++Forking is ordinary overfitting confined to very small problems. For a context $c_i$, call the next-token logits computed from it its \emph{context subspace}, and split the vocabulary into the continuations of $c_i$ seen in training, those that appear only in validation, and the rest (Appendix~\ref{app:crowding-derivation}). If training shows a single continuation $C$, the loss in that subspace is $-\ln p_C$; an idealized step directly in logit coordinates raises the logit of $C$ by $\eta(1-p_C)$ and, through the softmax, lowers every other logit by $\eta p_v$. Mass flows from the unseen continuations onto the seen one, so the seen-to-unseen odds grow by a factor above one at every pass with nothing to stop them while $p_C<1$ (Appendix Equation~\eqref{eq:zt}). We call this \emph{crowding-out}; it provides an idealized account of the growth in the novel-continuation penalty with replay.
++
++Figure~\ref{fig:walk-their-dog} shows the picture on one context. ``walk their dog'' is followed by \emph{down} once in training and, in the fixed validation window, once each by \emph{daily} and \emph{for}. Probed with context-only input, the probability of \emph{down} rises by more than an order of magnitude over five passes while \emph{daily} and \emph{for} are compressed---\emph{daily} by orders of magnitude---and so is the total mass outside the continuations observed in either sample. Figure~\ref{fig:crowd-ce} shows that the context is typical. Pooling validation positions whose bigram context occurs in training, split by whether the continuation was seen there (405{,}058 positions) or not (158{,}790), both models do well on seen continuations over the first three passes: the control's cross-entropy falls from 4.3 to 2.8 nats and the both-table model's stays near 3.4. On novel continuations they diverge: the control still improves, 6.9 to 5.6 nats, while the both-table model deteriorates from 7.5 to 9.0 with a step at every epoch boundary---the staircase of Figure~\ref{fig:staircase}. Consistently, at epoch~3 the both-table model's predictive entropy on validation is 2.93 nats against a cross-entropy of 5.26, whereas the control's are 3.59 and 3.58 (same runs as Figure~\ref{fig:crowd-ce}): far more confident than accurate, the signature of a model that has committed to few continuations per context \citep{carlsson2025hyperfitting}. Crowding-out also explains why freezing the tables does not stop forking (Section~\ref{sec:interventions}): the subspace coordinate is already in place, and the backbone can continue the descent on its own.
+ 
+-Figure~\ref{fig:walk-their-dog} shows the picture on one context. ``walk their dog'' is followed by \emph{down} once in training and, in the fixed validation window, once each by \emph{daily} and \emph{for}. Probed with context-only input, the probability of \emph{down} rises by more than an order of magnitude over five passes while \emph{daily} and \emph{for} are compressed---\emph{daily} by orders of magnitude---and so is the total mass outside the continuations observed in either sample. Figure~\ref{fig:crowd-ce} shows that the context is typical. Pooling validation positions whose bigram context occurs in training, split by whether the continuation was seen there (405{,}058 positions) or not (158{,}790), both models do well on seen continuations: the control's cross-entropy falls from 4.3 to 2.8 nats and the both-table model's stays near 3.4. On novel continuations they diverge: the control still improves, 6.9 to 5.6 nats, while the both-table model deteriorates from 7.5 to 9.0 with a step at every epoch boundary---the staircase of Figure~\ref{fig:staircase}. Consistently, at epoch~3 the both-table model's predictive entropy on validation is 2.93 nats against a cross-entropy of 5.26, whereas the control's are 3.59 and 3.58 (same runs as Figure~\ref{fig:crowd-ce}): far more confident than accurate, the signature of a model that has committed to few continuations per context \citep{carlsson2025hyperfitting}. Crowding-out also explains why freezing the tables does not stop forking (Section~\ref{sec:interventions}): the subspace coordinate is already in place, and the backbone can continue the descent on its own. Coverage thus fixes the size of the target, $f\propto F^{-\alpha}$, crowding-out fixes its depth, $D_j$, and their product is the gap.
++Crowding-out hurts more where novel continuations are common. Rare contexts have had fewer chances to reveal their continuations; under heavy-tailed conditional distributions, the novel fraction falls slowly with frequency, offering an explanation for the approximate power-law trend in the gap. Appendix~\ref{app:math} develops this connection through the seen/novel gap decomposition and Good--Turing estimation, including the terms that prevent exact proportionality.
+ 
+ \subsection{Context subspaces are independent}
+ \label{sec:context-locality}
+diff --git a/sections/appendix_e_theory.tex b/sections/appendix_e_theory.tex
+index f93fb86..a046dca 100644
+--- a/sections/appendix_e_theory.tex
++++ b/sections/appendix_e_theory.tex
+@@ -1,7 +1,71 @@
+ \section{Mathematical Derivations and Model Tests}
+ \label{app:math}
+ 
+-\subsection{Conditional continuation tails and the novel-continuation rate}
++\subsection{From novel continuations to the frequency law}
++\label{app:coverage}
++
++Fix a training step $t$ and group prediction positions by the training count $F\ge1$ of their context. Within a frequency bin, let $f(F)$ be the fraction of validation positions whose true continuation never followed that context in training. The token itself may be common; what training never showed is the context--continuation pair. The gap splits exactly into two terms:
++\begin{equation}
++\begin{aligned}
++\gap_t(F)&=f(F)D_t(F)+\big(1-f(F)\big)S_t(F),\\
++D_t(F)&=\ell^{\mathrm{val}}_{\mathrm{novel},t}(F)-\ell^{\mathrm{tr}}_t(F),\qquad
++S_t(F)=\ell^{\mathrm{val}}_{\mathrm{seen},t}(F)-\ell^{\mathrm{tr}}_t(F).
++\end{aligned}
++\label{eq:gap-decomp}
++\end{equation}
++Here $D_t$ and $S_t$ compare novel and seen validation losses with the same online training loss. All three losses are bin means at the same logged step, rather than losses matched context by context. Coverage sets the mixture weights; the model determines the two loss differences.
++
++If both differences vary little with $F$, this decomposition is approximately affine in the novel fraction:
++\begin{equation}
++\gap_t(F)\approx a_t f(F)+b_t.
++\label{eq:gap_j}
++\end{equation}
++When the seen term is also negligible, it reduces to $\gap_t(F)\approx D_t f(F)$: the gap is the fraction exposed to crowding-out times its loss penalty. The affine relation describes the measured bins well (Figure~\ref{fig:coverage}b,c), but the fitted intercept is not generally the seen term; frequency-dependent components can also produce a close fit.
++
++Good--Turing connects missing continuation mass to singleton counts (Appendix~\ref{app:gt-identity}). For a fixed context with a conditional tail $p_{(r)}\sim A r^{-s}$, the expected missing mass decays as $F^{-(1-1/s)}$ over an intermediate range (Equation~\eqref{eq:occupancy}). This gives a source of slow, approximately power-law decay. Pooling heterogeneous contexts and including the seen term can change the gap's slope, so coverage helps explain the shape without fixing a universal exponent. Appendix~\ref{app:coverage-tests} tests the approximation and its limits.
 +
 +\begin{figure}[!t]
 +\centering
@@ -104,34 +133,9 @@ index f029e7e..e3cb06a 100644
 +\label{fig:coverage}
 +\end{figure}
 +
-+Coverage also varies among contexts with the same count. At exact $F=4$, splitting bigram contexts by their training singleton fraction gives novel fractions 0.25 versus 0.80 and diagnostic gaps 3.23 versus 6.01 nats in the extreme strata (seed 42, step 1000; fixed-probe diagnostic in Appendix~\ref{app:coverage-tests}). This supports a role for continuation statistics beyond count alone, without isolating coverage from conditional entropy or optimization. Conditional heavy tails explain why missing mass can decay slowly, but do not fix a cross-context gap exponent. Coverage describes which continuations lack evidence; the replay dynamics below determine the response to that missing evidence.
- 
- \begin{figure}[!t]
- \centering
-@@ -50,9 +62,9 @@ The exponents read off corpus counts thus land within $0.05$ (bigram) and $0.01$
- 
- \subsection{Crowding-out under replay}
- \label{sec:sharpening}
--Coverage says what is missing. The more important questions are why replay turns the missing coverage into loss, why the $n$-gram module is needed for it, and how the damage evolves with the number of passes. Our answer is that forking is ordinary overfitting confined to very small problems. For a context $c_i$, call the next-token logits computed from it its \emph{context subspace}, and split the vocabulary into the continuations of $c_i$ seen in training, those that appear only in validation, and the rest (Appendix~\ref{app:crowding-derivation}). If training shows a single continuation $C$, the loss in that subspace is $-\ln p_C$; a gradient step raises the logit of $C$ by $\eta(1-p_C)$ and, through the softmax, lowers every other logit by $\eta p_v$. Mass flows from the unseen continuations onto the seen one, so the validation loss on plausible-but-unseen continuations rises by the same shift that lowers the training loss, and the seen-to-unseen odds grow by a factor above one at every pass with nothing to stop them while $p_C<1$ (Appendix Equation~\eqref{eq:zt}). We call this \emph{crowding-out}; it is the growth of the depth $D_j$ in Equation~\eqref{eq:gap-decomp} with replay.
-+Coverage says what is missing. The more important questions are why replay turns the missing coverage into loss, why the $n$-gram module is needed for it, and how the damage evolves with the number of passes. Our answer is that forking is ordinary overfitting confined to very small problems. For a context $c_i$, call the next-token logits computed from it its \emph{context subspace}, and split the vocabulary into the continuations of $c_i$ seen in training, those that appear only in validation, and the rest (Appendix~\ref{app:crowding-derivation}). If training shows a single continuation $C$, the loss in that subspace is $-\ln p_C$; an idealized step directly in logit coordinates raises the logit of $C$ by $\eta(1-p_C)$ and, through the softmax, lowers every other logit by $\eta p_v$. Mass flows from the unseen continuations onto the seen one, so the seen-to-unseen odds grow by a factor above one at every pass with nothing to stop them while $p_C<1$ (Appendix Equation~\eqref{eq:zt}). We call this \emph{crowding-out}; it provides an idealized account of the growth in the novel-continuation penalty with replay.
- 
--Figure~\ref{fig:walk-their-dog} shows the picture on one context. ``walk their dog'' is followed by \emph{down} once in training and, in the fixed validation window, once each by \emph{daily} and \emph{for}. Probed with context-only input, the probability of \emph{down} rises by more than an order of magnitude over five passes while \emph{daily} and \emph{for} are compressed---\emph{daily} by orders of magnitude---and so is the total mass outside the continuations observed in either sample. Figure~\ref{fig:crowd-ce} shows that the context is typical. Pooling validation positions whose bigram context occurs in training, split by whether the continuation was seen there (405{,}058 positions) or not (158{,}790), both models do well on seen continuations: the control's cross-entropy falls from 4.3 to 2.8 nats and the both-table model's stays near 3.4. On novel continuations they diverge: the control still improves, 6.9 to 5.6 nats, while the both-table model deteriorates from 7.5 to 9.0 with a step at every epoch boundary---the staircase of Figure~\ref{fig:staircase}. Consistently, at epoch~3 the both-table model's predictive entropy on validation is 2.93 nats against a cross-entropy of 5.26, whereas the control's are 3.59 and 3.58 (same runs as Figure~\ref{fig:crowd-ce}): far more confident than accurate, the signature of a model that has committed to few continuations per context \citep{carlsson2025hyperfitting}. Crowding-out also explains why freezing the tables does not stop forking (Section~\ref{sec:interventions}): the subspace coordinate is already in place, and the backbone can continue the descent on its own. Coverage thus fixes the size of the target, $f\propto F^{-\alpha}$, crowding-out fixes its depth, $D_j$, and their product is the gap.
-+Figure~\ref{fig:walk-their-dog} shows the picture on one context. ``walk their dog'' is followed by \emph{down} once in training and, in the fixed validation window, once each by \emph{daily} and \emph{for}. Probed with context-only input, the probability of \emph{down} rises by more than an order of magnitude over five passes while \emph{daily} and \emph{for} are compressed---\emph{daily} by orders of magnitude---and so is the total mass outside the continuations observed in either sample. Figure~\ref{fig:crowd-ce} shows that the context is typical. Pooling validation positions whose bigram context occurs in training, split by whether the continuation was seen there (405{,}058 positions) or not (158{,}790), both models do well on seen continuations: the control's cross-entropy falls from 4.3 to 2.8 nats and the both-table model's stays near 3.4. On novel continuations they diverge: the control still improves, 6.9 to 5.6 nats, while the both-table model deteriorates from 7.5 to 9.0 with a step at every epoch boundary---the staircase of Figure~\ref{fig:staircase}. Consistently, at epoch~3 the both-table model's predictive entropy on validation is 2.93 nats against a cross-entropy of 5.26, whereas the control's are 3.59 and 3.58 (same runs as Figure~\ref{fig:crowd-ce}): far more confident than accurate, the signature of a model that has committed to few continuations per context \citep{carlsson2025hyperfitting}. Crowding-out also explains why freezing the tables does not stop forking (Section~\ref{sec:interventions}): the subspace coordinate is already in place, and the backbone can continue the descent on its own. Coverage sets the fraction of novel continuations, while replay changes the novel and seen loss differences in Equation~\eqref{eq:gap-decomp}.
- 
- \subsection{Context subspaces are independent}
- \label{sec:context-locality}
-diff --git a/sections/appendix_e_theory.tex b/sections/appendix_e_theory.tex
-index f93fb86..72347b1 100644
---- a/sections/appendix_e_theory.tex
-+++ b/sections/appendix_e_theory.tex
-@@ -1,7 +1,41 @@
- \section{Mathematical Derivations and Model Tests}
- \label{app:math}
- 
--\subsection{Conditional continuation tails and the novel-continuation rate}
 +\subsection{Good--Turing estimation and continuation coverage}
 +\label{app:gt-identity}
-+For context $i$, let $p_{iy}$ be its continuation distribution and $m_i(F)=\sum_y p_{iy}(1-p_{iy})^F$ its expected missing mass after $F$ independent draws. If $K_{i,1}(k)$ counts continuation types occurring exactly once in $k$ draws, then
++Good--Turing estimation relates unseen probability mass to observed singletons \citep{good1953population,gale1995good}. For context $i$, let $p_{iy}$ be its continuation distribution and $m_i(F)=\sum_y p_{iy}(1-p_{iy})^F$ its expected missing mass after $F$ independent draws. If $K_{i,1}(k)$ counts continuation types occurring exactly once in $k$ draws, then
 +\begin{equation}
 +\frac{\mathbb E K_{i,1}(F+1)}{F+1}
 +=\sum_y p_{iy}(1-p_{iy})^F=m_i(F).
@@ -167,12 +171,12 @@ index f93fb86..72347b1 100644
  For a context $c_i$ with $F_i=F$, let $y_{i,(r)}$ denote the $r$-th most likely continuation and $p_{i,(r)}$ its true conditional probability. Model the observed continuations $Y_{i,1},\ldots,Y_{i,F}$ as independent draws, with counts $n_{i,(r)}(F)=\#\{k\in\{1,\ldots,F\}:Y_{i,k}=y_{i,(r)}\}$. The novel-continuation rate $f_i(F)$ and its expectation under this sampling model are
  \begin{equation}
  f_i(F)=\sum_r p_{i,(r)}
-@@ -28,12 +62,12 @@ F^{-(1-1/s)}\\
+@@ -28,12 +92,12 @@ F^{-(1-1/s)}\\
  \label{eq:occupancy}
  \end{equation}
  
 -This provides a conditional explanation of the empirical scaling in Section~\ref{sec:coverage}. Finite vocabulary limits the power-law regime to an intermediate range. Heterogeneity across contexts may alter the observed effective exponent.
-+This gives an asymptotic account of slow missing-mass decay for a fixed context; it does not determine the cross-context gap exponent in Section~\ref{sec:coverage}. Finite vocabulary limits the power-law regime to an intermediate range. Heterogeneity across contexts may alter the observed effective exponent.
++This gives an asymptotic account of slow missing-mass decay for a fixed context; it does not determine the cross-context gap exponent of Section~\ref{sec:forking-factors}. Finite vocabulary limits the power-law regime to an intermediate range. Heterogeneity across contexts may alter the observed effective exponent.
  
  \subsection{Crowding-out within a context subspace}
  \label{app:crowding-derivation}
@@ -182,7 +186,7 @@ index f93fb86..72347b1 100644
  \begin{equation}
  a_v^{(t+1)}-a_v^{(t)}=-\eta\frac{\partial\ell_C}{\partial a_v}=-\eta\left(p_v^{(t)}-\mathbf{1}[v=C]\right),\qquad \eta>0,
  \label{eq:av}
-@@ -43,7 +77,7 @@ raising $a_C$ by $\eta(1-p_C)$ and lowering every other logit by $\eta p_v$. For
+@@ -43,7 +107,7 @@ raising $a_C$ by $\eta(1-p_C)$ and lowering every other logit by $\eta p_v$. For
  z(t+1)=z(t)\exp\!\left[\eta\left(1-p_C^{(t)}+p_u^{(t)}\right)\right]>z(t),
  \label{eq:zt}
  \end{equation}
@@ -191,7 +195,7 @@ index f93fb86..72347b1 100644
  
  \subsection{Position-class decomposition of the excess validation loss}
  \label{app:novel-share}
-@@ -65,42 +99,46 @@ trigram & novel continuation & 66\% & 100\% \\
+@@ -65,42 +129,49 @@ trigram & novel continuation & 66\% & 100\% \\
  \end{tabular}
  \end{table}
  
@@ -205,26 +209,28 @@ index f93fb86..72347b1 100644
 -%These assumptions are restrictive. Adding independent data can change the context set, continuation coverage, and the effective frequency distribution. At a fixed step budget, it also changes the number of replays. Fixed-step and fixed-pass comparisons are therefore needed to separate coverage from repeated reinforcement.
 -
 -%The measured decay is faster than coverage alone: in the dose sweep of Figure~\ref{fig:corpus-size}, the epoch-3 gap falls with corpus size with a local log-log slope of about $0.15$--$0.26$ below $2D_1$ but $0.8$--$0.95$ above it, whereas $k^{-\alpha}$ with $\alpha\in[0.23,0.38]$ predicts a constant slope of at most $0.38$. The missing factor is load suppression. The number of distinct contexts $K(D)$ grows with the corpus while $R$ stays fixed, and an empirical dilution surface built from the single-table bigram table-size sweep (\code{s1v5_128_tbl_bi1_R*_fixed}, seed 42, step 1000) shows a suppression factor $a(K/R)$ that is nearly flat in context frequency and scales approximately as $(K/R)^{-0.59}$ over loads $10$--$1000$; the same exponent accounts for the table-size slope of Figure~\ref{fig:capacity}. Combining the two factors, $\operatorname{gap}(D)\approx A(\text{passes})\cdot a(K(D)/R)\cdot\sum_f \mu_f M(f)$: coverage supplies the $D^{-\alpha}$ part, load suppression steepens the middle range, per-context damage saturation caps the small-$D$ end, and the replay-free residual bounds the large-$D$ end, where the memory-specific component of the gap vanishes. The function $a(\cdot)$ is an empirical factor; its microscopic origin (backbone readout calibration versus row-level traffic competition) remains open.
+-
+-%Hash collisions may reduce the independence of local memory signals, but they can also mix unrelated contexts; they are one candidate micro-origin of the load factor above, not yet separated from the backbone-readout channel.
 +These are shares of the excess \emph{validation} loss relative to no-gram, not shares of a model's train--validation gap. They do not imply $S_t(F)\approx0$. In particular, the table includes $F=0$ positions; the frequency-gap tests below exclude them because no training counterpart exists.
  
--%Hash collisions may reduce the independence of local memory signals, but they can also mix unrelated contexts; they are one candidate micro-origin of the load factor above, not yet separated from the backbone-readout channel.
--
 -%\pending{Complete token-mass-weighted aggregation when the frequency distribution changes, the collision model, and matched data-volume experiments. The epoch-length figure is awaiting replacement. Closing the dose axis additionally requires the distinct-context count $K(D)$ at each dose.}
 -
 -%\subsection{Further tests of multi-epoch dynamics}
--
--%\pending{Derive the optimizer-dependent margin evolution and align it with measured per-pass damage. Distinguish approximately linear accumulation over a finite window, decreasing increments, and a possible long-run plateau. Specify observations that would falsify the model. The local margin, transfer coefficient, and aggregate gap slope currently serve as constraints, not a closed derivation.}
--
--\subsection{Frequency-scaling fits}
 +\subsection{Tests of the coverage approximation}
 +\label{app:coverage-tests}
- \label{app:gt-fits}
++\label{app:gt-fits}
 +\paragraph{Protocol.}
 +The online-gap tests use \code{fig1v5_rp_both_s42_fixed}, \code{fig1v5_rp_both_s43_fixed} and \code{fig1v5_rp_both_s44_fixed}, with matched \code{fig1v5_rp_nogram_s42_fixed}, \code{fig1v5_rp_nogram_s43_fixed} and \code{fig1v5_rp_nogram_s44_fixed} controls. They use the standard input-injection setting: RMSProp tables without momentum, table LR $128\times$, $2^{20}$ rows per table, backbone LR $0.0006$, and a 100-step warmup followed by constant LR. Training replays shard 1; the fixed validation pool contains 589,824 positions from the first four batches of shard 2. Direct novelty counts match every plotted validation bin's token count exactly. Training losses are recorded before the update and validation losses after it, at the same logged step.
  
--The Good--Turing novel-continuation rate is recomputed from the raw training shard (seed-42 \code{shard_00001.bin}, 49.7M positions, chunked exactly as the data loader chunks it) as $\hat f(F)=N_1(F)/(F\,n(F))$, where $n(F)$ is the number of contexts with exact count $F$ and $N_1(F)$ the number of context--continuation types occurring once among them. Figure~\ref{fig:b_t_MF} shows every positive exact-$F$ layer. Beyond $F\approx10^3$ each layer holds only a handful of contexts (0.1\% of bigram contexts and fewer than 0.01\% of trigram contexts lie there) and the estimates fan out by two orders of magnitude from sampling noise. A fit that weights every layer equally over the full range is dominated by this tail and returns $\alpha=0.45$ (bigram) and $0.43$ (trigram); the version of this figure in an earlier draft, which fitted the per-count total $F\hat f(F)$ the same way, gave $0.34$ and $0.38$. We therefore fit on $F\le10^3$, the window in which the gap is measured and which holds 76\% (bigram) and 97\% (trigram) of training tokens, and weight each context equally, which is the estimator of the per-context mean that Equation~\eqref{eq:gap_j} averages. Under this weighting the tail no longer matters (the fit is unchanged if the window is widened to all $F$), and the exponents are $0.287$ and $0.314$. Weighting by tokens ($F\,n(F)$) instead gives $0.266$ and $0.246$; the spread between the two weightings, about $0.02$ for bigram and $0.07$ for trigram, is the corpus-side uncertainty of the exponent.
+-%\pending{Derive the optimizer-dependent margin evolution and align it with measured per-pass damage. Distinguish approximately linear accumulation over a finite window, decreasing increments, and a possible long-run plateau. Specify observations that would falsify the model. The local margin, transfer coefficient, and aggregate gap slope currently serve as constraints, not a closed derivation.}
 +All 18 native bins contained in $1\le F\le1000$ have at least 300 train and validation tokens at the reported steps; no positive-gap filtering is applied. The bins are $1,2,3,4,5,6$--$8,9$--$12,13$--$20,21$--$30,31$--$50,51$--$75,76$--$100,101$--$150,151$--$200,201$--$300,301$--$500,501$--$750,751$--$1000$. Steps 670, 1000, 1340 and 2000 lie near the ends of passes 2, 3, 4 and 6, but are not exact pass boundaries. We fit the seed-mean gap by equal-bin least squares. The same held-out corpus supplies $f$ for all seeds.
-+
+ 
+-\subsection{Frequency-scaling fits}
+-\label{app:gt-fits}
++\paragraph{Fit quality.}
++For fits to the three-seed mean at the four reported steps, relative rms residuals are 3--8\% for bigram and 3--11\% for trigram contexts (Table~\ref{tab:affine}). The intercept matters: at step 2000 the bigram fit has $b_t=1.89$ nats; forcing the line through zero increases rms error from 0.20 to 0.76 nats. Thus the proportional approximation does not describe the later gap as well as the affine relation.
+ 
+-The Good--Turing novel-continuation rate is recomputed from the raw training shard (seed-42 \code{shard_00001.bin}, 49.7M positions, chunked exactly as the data loader chunks it) as $\hat f(F)=N_1(F)/(F\,n(F))$, where $n(F)$ is the number of contexts with exact count $F$ and $N_1(F)$ the number of context--continuation types occurring once among them. Figure~\ref{fig:b_t_MF} shows every positive exact-$F$ layer. Beyond $F\approx10^3$ each layer holds only a handful of contexts (0.1\% of bigram contexts and fewer than 0.01\% of trigram contexts lie there) and the estimates fan out by two orders of magnitude from sampling noise. A fit that weights every layer equally over the full range is dominated by this tail and returns $\alpha=0.45$ (bigram) and $0.43$ (trigram); the version of this figure in an earlier draft, which fitted the per-count total $F\hat f(F)$ the same way, gave $0.34$ and $0.38$. We therefore fit on $F\le10^3$, the window in which the gap is measured and which holds 76\% (bigram) and 97\% (trigram) of training tokens, and weight each context equally, which is the estimator of the per-context mean that Equation~\eqref{eq:gap_j} averages. Under this weighting the tail no longer matters (the fit is unchanged if the window is widened to all $F$), and the exponents are $0.287$ and $0.314$. Weighting by tokens ($F\,n(F)$) instead gives $0.266$ and $0.246$; the spread between the two weightings, about $0.02$ for bigram and $0.07$ for trigram, is the corpus-side uncertainty of the exponent.
 +\begin{table}[!htbp]
 +\centering\small
 +\caption{Online gap fit $af+b$ on 18 bins. Coefficients and rms errors are in nats; relative rms is divided by mean absolute bin gap. The holdout fit uses alternating frequency bins and evaluates the others, testing interpolation on this corpus rather than corpus transfer.}

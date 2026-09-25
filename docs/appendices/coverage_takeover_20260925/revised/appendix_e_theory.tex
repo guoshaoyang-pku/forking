@@ -1,9 +1,39 @@
 \section{Mathematical Derivations and Model Tests}
 \label{app:math}
 
+\subsection{From novel continuations to the frequency law}
+\label{app:coverage}
+
+Fix a training step $t$ and group prediction positions by the training count $F\ge1$ of their context. Within a frequency bin, let $f(F)$ be the fraction of validation positions whose true continuation never followed that context in training. The token itself may be common; what training never showed is the context--continuation pair. The gap splits exactly into two terms:
+\begin{equation}
+\begin{aligned}
+\gap_t(F)&=f(F)D_t(F)+\big(1-f(F)\big)S_t(F),\\
+D_t(F)&=\ell^{\mathrm{val}}_{\mathrm{novel},t}(F)-\ell^{\mathrm{tr}}_t(F),\qquad
+S_t(F)=\ell^{\mathrm{val}}_{\mathrm{seen},t}(F)-\ell^{\mathrm{tr}}_t(F).
+\end{aligned}
+\label{eq:gap-decomp}
+\end{equation}
+Here $D_t$ and $S_t$ compare novel and seen validation losses with the same online training loss. All three losses are bin means at the same logged step, rather than losses matched context by context. Coverage sets the mixture weights; the model determines the two loss differences.
+
+If both differences vary little with $F$, this decomposition is approximately affine in the novel fraction:
+\begin{equation}
+\gap_t(F)\approx a_t f(F)+b_t.
+\label{eq:gap_j}
+\end{equation}
+When the seen term is also negligible, it reduces to $\gap_t(F)\approx D_t f(F)$: the gap is the fraction exposed to crowding-out times its loss penalty. The affine relation describes the measured bins well (Figure~\ref{fig:coverage}b,c), but the fitted intercept is not generally the seen term; frequency-dependent components can also produce a close fit.
+
+Good--Turing connects missing continuation mass to singleton counts (Appendix~\ref{app:gt-identity}). For a fixed context with a conditional tail $p_{(r)}\sim A r^{-s}$, the expected missing mass decays as $F^{-(1-1/s)}$ over an intermediate range (Equation~\eqref{eq:occupancy}). This gives a source of slow, approximately power-law decay. Pooling heterogeneous contexts and including the seen term can change the gap's slope, so coverage helps explain the shape without fixing a universal exponent. Appendix~\ref{app:coverage-tests} tests the approximation and its limits.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\linewidth]{fig_coverage_linear.pdf}
+\caption{Coverage and the gap. (a) Novel fraction predicted from training counts against directly measured held-out novelty; the dashed diagonal is equality. (b,c) Online gap against the directly measured novel fraction, with affine fits at four training steps. Each point is a frequency bin; bars in (b,c) show the standard deviation across three seeds. The no-gram control is shown at step 1000. All panels use linear axes; protocol and residuals are in Appendix~\ref{app:coverage-tests}.}
+\label{fig:coverage}
+\end{figure}
+
 \subsection{Good--Turing estimation and continuation coverage}
 \label{app:gt-identity}
-For context $i$, let $p_{iy}$ be its continuation distribution and $m_i(F)=\sum_y p_{iy}(1-p_{iy})^F$ its expected missing mass after $F$ independent draws. If $K_{i,1}(k)$ counts continuation types occurring exactly once in $k$ draws, then
+Good--Turing estimation relates unseen probability mass to observed singletons \citep{good1953population,gale1995good}. For context $i$, let $p_{iy}$ be its continuation distribution and $m_i(F)=\sum_y p_{iy}(1-p_{iy})^F$ its expected missing mass after $F$ independent draws. If $K_{i,1}(k)$ counts continuation types occurring exactly once in $k$ draws, then
 \begin{equation}
 \frac{\mathbb E K_{i,1}(F+1)}{F+1}
 =\sum_y p_{iy}(1-p_{iy})^F=m_i(F).
@@ -62,7 +92,7 @@ F^{-(1-1/s)}\\
 \label{eq:occupancy}
 \end{equation}
 
-This gives an asymptotic account of slow missing-mass decay for a fixed context; it does not determine the cross-context gap exponent in Section~\ref{sec:coverage}. Finite vocabulary limits the power-law regime to an intermediate range. Heterogeneity across contexts may alter the observed effective exponent.
+This gives an asymptotic account of slow missing-mass decay for a fixed context; it does not determine the cross-context gap exponent of Section~\ref{sec:forking-factors}. Finite vocabulary limits the power-law regime to an intermediate range. Heterogeneity across contexts may alter the observed effective exponent.
 
 \subsection{Crowding-out within a context subspace}
 \label{app:crowding-derivation}
@@ -108,6 +138,9 @@ These are shares of the excess \emph{validation} loss relative to no-gram, not s
 The online-gap tests use \code{fig1v5_rp_both_s42_fixed}, \code{fig1v5_rp_both_s43_fixed} and \code{fig1v5_rp_both_s44_fixed}, with matched \code{fig1v5_rp_nogram_s42_fixed}, \code{fig1v5_rp_nogram_s43_fixed} and \code{fig1v5_rp_nogram_s44_fixed} controls. They use the standard input-injection setting: RMSProp tables without momentum, table LR $128\times$, $2^{20}$ rows per table, backbone LR $0.0006$, and a 100-step warmup followed by constant LR. Training replays shard 1; the fixed validation pool contains 589,824 positions from the first four batches of shard 2. Direct novelty counts match every plotted validation bin's token count exactly. Training losses are recorded before the update and validation losses after it, at the same logged step.
 
 All 18 native bins contained in $1\le F\le1000$ have at least 300 train and validation tokens at the reported steps; no positive-gap filtering is applied. The bins are $1,2,3,4,5,6$--$8,9$--$12,13$--$20,21$--$30,31$--$50,51$--$75,76$--$100,101$--$150,151$--$200,201$--$300,301$--$500,501$--$750,751$--$1000$. Steps 670, 1000, 1340 and 2000 lie near the ends of passes 2, 3, 4 and 6, but are not exact pass boundaries. We fit the seed-mean gap by equal-bin least squares. The same held-out corpus supplies $f$ for all seeds.
+
+\paragraph{Fit quality.}
+For fits to the three-seed mean at the four reported steps, relative rms residuals are 3--8\% for bigram and 3--11\% for trigram contexts (Table~\ref{tab:affine}). The intercept matters: at step 2000 the bigram fit has $b_t=1.89$ nats; forcing the line through zero increases rms error from 0.20 to 0.76 nats. Thus the proportional approximation does not describe the later gap as well as the affine relation.
 
 \begin{table}[!htbp]
 \centering\small
