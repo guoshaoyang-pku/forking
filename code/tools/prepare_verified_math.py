@@ -49,64 +49,66 @@ def main():
     token_total = collections.Counter()
     source_hashes = {}
     row_provenance = (a.out / 'examples.jsonl').open('w')
+    # Scan the complete pinned default files, then order both splits by a
+    # second independent hash. A short validation budget must not select only
+    # the first source file while training spans several source blocks.
+    candidates_by_problem = {}
+    for path in sorted(a.raw_dir.glob('default-*.parquet')):
+        source_hashes[str(path)] = sha(path)
+        for batch in pq.ParquetFile(path).iter_batches(batch_size=128):
+            for r in batch.to_pylist():
+                scanned['source_records'] += 1
+                if r['problem_type'] != 'Algebra':
+                    continue
+                scanned['algebra_records'] += 1
+                problem = re.sub(r'\s+', ' ', r['problem']).strip()
+                key = hashlib.sha256(problem.encode()).hexdigest()
+                uid = r['uuid']
+                ok = r.get('correctness_math_verify') or []
+                complete = r.get('is_reasoning_complete') or []
+                indices = [i for i,g in enumerate(r['generations'])
+                           if i < len(ok) and ok[i] is True
+                           and i < len(complete) and complete[i] is True
+                           and isinstance(g,str) and g.strip()]
+                if not indices:
+                    scanned['no_complete_math_verified_trace'] += 1
+                    continue
+                if key in seen_problem or uid in seen_uuid:
+                    scanned['duplicate_problem_or_uuid'] += 1
+                    continue
+                seen_problem.add(key); seen_uuid.add(uid)
+                index = indices[0]
+                split = 'val' if int(key[:16],16)%10==0 else 'train'
+                candidates_by_problem[key] = dict(split=split,uuid=uid,
+                    problem_sha256=key,generation_index=index,source_file=path.name,
+                    source=r['source'],problem_type=r['problem_type'],math_verify=True,
+                    reasoning_complete=True,problem=r['problem'],response=r['generations'][index])
+    ordered = sorted(candidates_by_problem.values(),
+                     key=lambda r: hashlib.sha256(('order42:'+r['problem_sha256']).encode()).hexdigest())
     try:
-        for path in sorted(a.raw_dir.glob('default-*.parquet')):
-            if all(counts[k] == targets[k] for k in targets):
+        for r in ordered:
+            split=r['split']
+            if counts[split] == targets[split]:
+                continue
+            response=r.pop('response');problem=r.pop('problem')
+            tokens=[bos]+enc.encode_ordinary(problem+'\n\n'+response)
+            assert max(tokens)<8192
+            offset=counts[split]*2049+len(buffers[split])
+            meta=dict(r,token_offset=offset,record_tokens=len(tokens),response_chars=len(response))
+            used[split].append(meta)
+            row_provenance.write(json.dumps(meta)+'\n')
+            prefixes[' '.join(response.split()[:8])] += 1
+            token_total[split] += len(tokens)
+            buffers[split].extend(tokens)
+            n=min(len(buffers[split])//2049,targets[split]-counts[split])
+            if n:
+                np.asarray(buffers[split][:n*2049],dtype=np.uint16).tofile(files[split])
+                del buffers[split][:n*2049]
+                counts[split]+=n
+            if all(counts[k]==targets[k] for k in targets):
                 break
-            source_hashes[str(path)] = sha(path)
-            for batch in pq.ParquetFile(path).iter_batches(batch_size=128):
-                for r in batch.to_pylist():
-                    scanned['source_records'] += 1
-                    if r['problem_type'] != 'Algebra':
-                        continue
-                    scanned['algebra_records'] += 1
-                    problem = re.sub(r'\s+', ' ', r['problem']).strip()
-                    key = hashlib.sha256(problem.encode()).hexdigest()
-                    uid = r['uuid']
-                    if key in seen_problem or uid in seen_uuid:
-                        scanned['duplicate_problem_or_uuid'] += 1
-                        continue
-                    seen_problem.add(key); seen_uuid.add(uid)
-                    split = 'val' if int(key[:16], 16) % 10 == 0 else 'train'
-                    if counts[split] == targets[split]:
-                        continue
-                    ok = r.get('correctness_math_verify') or []
-                    complete = r.get('is_reasoning_complete') or []
-                    candidates = [i for i,g in enumerate(r['generations'])
-                                  if i < len(ok) and ok[i] is True
-                                  and i < len(complete) and complete[i] is True
-                                  and isinstance(g,str) and g.strip()]
-                    if not candidates:
-                        scanned['no_complete_math_verified_trace'] += 1
-                        continue
-                    index = candidates[0]
-                    response = r['generations'][index]
-                    text = r['problem'] + '\n\n' + response
-                    tokens = [bos] + enc.encode_ordinary(text)
-                    assert max(tokens) < 8192
-                    offset = counts[split] * 2049 + len(buffers[split])
-                    meta = dict(split=split, uuid=uid, problem_sha256=key,
-                                generation_index=index, source_file=path.name,
-                                source=r['source'], problem_type=r['problem_type'],
-                                math_verify=True, reasoning_complete=True,
-                                token_offset=offset, record_tokens=len(tokens),
-                                response_chars=len(response))
-                    used[split].append(meta)
-                    row_provenance.write(json.dumps(meta) + '\n')
-                    prefixes[' '.join(response.split()[:8])] += 1
-                    token_total[split] += len(tokens)
-                    buffers[split].extend(tokens)
-                    n = min(len(buffers[split]) // 2049, targets[split] - counts[split])
-                    if n:
-                        np.asarray(buffers[split][:n*2049], dtype=np.uint16).tofile(files[split])
-                        del buffers[split][:n*2049]
-                        counts[split] += n
-                    if all(counts[k] == targets[k] for k in targets):
-                        break
-                if all(counts[k] == targets[k] for k in targets):
-                    break
     finally:
-        for f in files.values(): f.close()
+        for f in files.values():f.close()
         row_provenance.close()
     assert counts == targets, (counts, targets)
     assert not ({r['uuid'] for r in used['train']} & {r['uuid'] for r in used['val']})
@@ -133,6 +135,7 @@ def main():
                     dataset='open-r1/OpenR1-Math-220k',revision=REVISION,
                     problem_type='Algebra', selection='first complete Math-Verify-correct generation per unique normalized problem/uuid',
                     split='sha256(whitespace-normalized problem) first64bits modulo10: 0=val, else train; before packing',
+                    order='all pinned default shards scanned; independent sha256(order42:problem_hash) ordering before token-budget selection',
                     internal_replay=False, examples={k:len(v) for k,v in used.items()},
                     train_val_problem_overlap=0,train_val_uuid_overlap=0,
                     rows=counts,row_len=2049,sequence_len=2048,
@@ -141,6 +144,8 @@ def main():
                     tokenizer=str(a.tokenizer),tokenizer_sha256=sha(a.tokenizer),
                     raw_sha256=source_hashes,
                     output_sha256={p.name:sha(p) for p in a.out.glob('*.bin')},
+                    split_source_counts={k:dict(collections.Counter(r['source'] for r in v)) for k,v in used.items()},
+                    split_file_counts={k:dict(collections.Counter(r['source_file'] for r in v)) for k,v in used.items()},
                     top_response_8word_prefixes=prefixes.most_common(10),
                     old_rlvr_audit=audit,
                     ceiling='static all-token continued LM; not response-only SFT or on-policy RLVR; exact normalized-text disjoint, no semantic-duplicate guarantee')
