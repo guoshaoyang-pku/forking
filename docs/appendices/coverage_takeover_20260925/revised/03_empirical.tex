@@ -7,7 +7,7 @@
 All experiments below use input injection and, where tables are enabled, a table learning rate $128$ times the backbone learning rate. The frequency analysis uses seeds 42, 43 and 44; the remaining experiments use seed 42. All use the online gap of Section~\ref{sec:setting}.
 
 \paragraph{Context frequency.}
-A finite corpus does not fully represent the continuation distribution of each context: a context whose population distribution assigns equal probability to $C$ and $D$ may appear three times with $C$ and once with $D$ in training, so fitting the sample underpredicts $D$ on fresh data. Enabling both tables ($2^{20}$ rows each) and measuring online gaps at step 1000, grouped by the context count $F$ in the unrepeated corpus, shows that low-frequency contexts have systematically larger gaps (Figure~\ref{fig:frequency}; markers are native-bin means, dashed lines the coverage-based fits of Appendix~\ref{app:coverage-tests}).
+Enabling both tables ($2^{20}$ rows each) and measuring online gaps at step 1000, grouped by the context count $F$ in the unrepeated corpus, shows that the gap falls with $F$ in an approximate power law (Figure~\ref{fig:frequency}; markers are native-bin means). Section~\ref{sec:coverage} connects this trend to the fraction of novel continuations, whose scaled and shifted values give the dashed curves.
 
 \paragraph{Table capacity.}
 Bigger tables make forking worse. Across three decades of table rows $R$ in bigram-only and trigram-only models, the step-1000 gap generally increases, sublinearly on log-log axes, with the bigram curve flattening toward the upper end of the measured range (Figure~\ref{fig:capacity}).
@@ -38,7 +38,7 @@ With the corpus fixed, replay alone drives the growth: over 20 epochs, epoch-end
 \subcaption{}
 \label{fig:corpus-size}
 \end{subfigure}
-\caption{Empirical scaling laws of the gap: (a) context frequency (both-table model, online gap at step 1000; native frequency-bin means over seeds 42, 43 and 44, with standard deviations; dashed curves use Equation~\eqref{eq:gap_j} and directly measured novelty), (b) table capacity, (c) training corpus size.}
+\caption{Empirical scaling laws of the gap: (a) context frequency (both-table model, online gap at step 1000; native frequency-bin means over seeds 42, 43 and 44, with standard deviations; dashed curves use Equation~\eqref{eq:coverage-main} and directly measured novelty), (b) table capacity, (c) training corpus size.}
 \label{fig:scaling}
 \end{figure}
 

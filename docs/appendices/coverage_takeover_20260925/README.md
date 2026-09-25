@@ -67,11 +67,16 @@ The original archive/ is immutable. The initial overleaf_patch/ proposal in
 commit 47f27d8 was not compiled; the working packet is superseded by the actual
 edited manuscript. Use paper/ or revised/, not that initial proposal.
 
-The current readability revision is paper commit 28efa42. Chapter 4 now begins
-with crowding-out (4.1) and the original context-subspace text (4.2); the coverage
-formulas and linear figure are in Appendix E. Two completed Fable calls supplied
-prose drafts, integrated and fact-checked locally. See readability_revision/.
-The isolated manuscript compiles to 29 pages without undefined references or
-overfull boxes. The shared working manuscript compiles to 32 pages and includes
-concurrent Appendix B/C work outside this task. Chapter 4 and Appendix E were
-rendered for visual QA. The standalone PDF under revised/ excludes that work.
+The current narrative revision is paper commit ed4205d. It supersedes the
+readability-only structure: Chapter 4 again starts with the frequency-to-novel
+clue (4.1), then replay/crowding-out (4.2), then a test of locality (4.3).
+The full coverage decomposition, GT derivation and mathematical qualifications
+remain in Appendix E. Appendix F records the measured early-pass increments
+and an unresolved conflict between the original context-mask figures and
+registered reruns. Independence is no longer stated as established.
+Two further completed Fable calls drafted/reviewed the discovery narrative;
+see narrative_revision/ for prompts, outputs and source checks.
+The current isolated PDF is 31 pages (Chapter 4: 5–7; E: 23–27; F: 27–28).
+The shared PDF is 34 pages and includes concurrent Appendix B/C work.
+Both builds passed, without undefined references or overfull boxes; affected
+pages were rendered and inspected. Current snapshots are in revised/.

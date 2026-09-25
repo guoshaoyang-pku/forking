@@ -1,15 +1,17 @@
 {
   "archive_commit": "47f27d8",
-  "paper_commit": "28efa42ec6c1910549fee626b43d8a35c058b952",
+  "paper_commit": "ed4205d4b7b36720add270b8d0f4cf9c85a4bf17",
   "paper_base": "d04f9ee8ae1b70641508c94b7d4a6b0307fd5ba7",
   "compiled": true,
   "undefined_references": false,
   "overfull_boxes": false,
   "pushed": false,
   "isolated_pdf": "revised/paper_coverage_revision.pdf",
-  "previous_paper_commit": "9c549a8af1c8bd779fba37def05f653adc99cfed",
-  "isolated_pages": 29,
-  "shared_pages": 32,
+  "previous_paper_commit": "28efa42",
+  "isolated_pages": 31,
+  "shared_pages": 34,
   "readability_revision": "readability_revision/README.md",
-  "fable_calls_completed": 2
+  "fable_calls_completed": 4,
+  "narrative_revision": "narrative_revision/README.md",
+  "context_mask_status": "Original diagnostic and registered reruns unreconciled; independence not established"
 }

@@ -1,0 +1,42 @@
+[
+  {
+    "branch": "bigram",
+    "step": 1000,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "bins": 18,
+    "F_range": [
+      1,
+      1000
+    ],
+    "weighting": "equal-bin OLS in log-log",
+    "F_coordinate": "geometric midpoint",
+    "beta": 0.2508722117071168,
+    "prefactor": 7.793322450412671,
+    "R2_log": 0.996803585801361,
+    "note": "Descriptive shape check only; main figure dashed curves remain affine measured-novelty fits."
+  },
+  {
+    "branch": "trigram",
+    "step": 1000,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "bins": 18,
+    "F_range": [
+      1,
+      1000
+    ],
+    "weighting": "equal-bin OLS in log-log",
+    "F_coordinate": "geometric midpoint",
+    "beta": 0.4660382448607564,
+    "prefactor": 5.437048299206223,
+    "R2_log": 0.8426637159536808,
+    "note": "Descriptive shape check only; main figure dashed curves remain affine measured-novelty fits."
+  }
+]
