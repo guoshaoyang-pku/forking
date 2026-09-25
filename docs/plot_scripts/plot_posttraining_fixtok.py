@@ -221,7 +221,14 @@ def diagnostic_figures(data):
 
 def main():
     OUT.mkdir(parents=True,exist_ok=True);apply_style();data=load()
-    overview(data,SOURCES,'fig_posttraining_combined','Continued-LM replay stress tests')
+    # Publication overview: keep the four source columns, but compare only
+    # the two n-gram table policies.  The no-gram arm remains available in
+    # the explicitly named diagnostic output below and is not part of this
+    # SFT/RL comparison.
+    overview(data,SOURCES,'fig_sft_rl_combined','Continued-LM and static-RLVR replay',arms=ARMS[:2])
+    # Preserve the historical basename as an alias with the same contents so
+    # existing figure references cannot silently pick up the old no-gram panel.
+    overview(data,SOURCES,'fig_posttraining_combined','Continued-LM and static-RLVR replay',arms=ARMS[:2])
     overview(data,SOURCES[:3],'fig_sft_unified','SFT-source continued-LM stress tests')
     overview(data,SOURCES[3:],'fig_rlvr_unified','Static RLVR-MATH replay proxy')
     overview(data,SOURCES,'fig_nogram_audit','No-gram baseline: train, validation and gap',arms=ARMS[2:],pdf=False)

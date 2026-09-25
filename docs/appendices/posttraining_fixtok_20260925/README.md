@@ -117,7 +117,8 @@ Outputs are under `docs/figs/posttraining_fixtok_20260925/`.
 
 | Output | Contents |
 |---|---|
-| `fig_posttraining_combined.{pdf,png,svg}` | All four sources, train/val above and online gap below |
+| `fig_sft_rl_combined.{pdf,png,svg}` | Publication overview: all four sources, train/val above and online gap below; table-trainable and table-frozen arms only |
+| `fig_posttraining_combined.{pdf,png,svg}` | Backward-compatible alias of the two-arm four-column publication overview |
 | `fig_sft_unified.{pdf,png,svg}` | ID, Magicoder, OpenR1 subset in the same style |
 | `fig_rlvr_unified.{pdf,png,svg}` | RLVR static proxy in the same style |
 | `fig_nogram_audit.{png,svg}` | No-gram-only curves for all sources |
@@ -127,7 +128,7 @@ Outputs are under `docs/figs/posttraining_fixtok_20260925/`.
 | `fig_pretraining_freeze_reference.{png,svg}` | Canonical pretraining reference with freeze at step 338 |
 | `posttraining_all_seed_curves.pdf` | 17-page atlas: 4 source summaries, 10 individual source/seed pages, 3 diagnostics |
 
-Suggested combined caption: **Continued-LM replay stress tests with corrected tokenization.** Columns show ID, Magicoder, OpenR1, and the static RLVR-MATH proxy. Top: current-batch online training loss (solid) and four-batch fixed-validation loss (dashed); bottom: their difference. Arms are trainable trigram table, frozen trigram table, and no-gram. Curves show raw logged-point means and ±1 sample SD across downstream seeds 42/43/44, with only seed 42 for ID, through step 1665. No temporal smoothing is applied. Each nominal pass replays the fixed 333-batch pool; for RLVR this pool already contains approximately 8.54 raw-source token cycles. These are all-token continued-LM tests, not end-to-end SFT/RL replications. Run IDs and settings are given in this packet.
+Suggested combined caption: **Continued-LM and static-RLVR replay stress tests with corrected tokenization.** Columns show ID, Magicoder, OpenR1, and the static RLVR-MATH proxy. Top: current-batch online training loss (solid) and four-batch fixed-validation loss (dashed); bottom: their difference. Curves compare a trainable trigram table with a frozen trigram table; the no-gram arm is retained only in the separate diagnostic figure. Curves show raw logged-point means and ±1 sample SD across downstream seeds 42/43/44, with only seed 42 for ID, through step 1665. No temporal smoothing is applied. Each nominal pass replays the fixed 333-batch pool; for RLVR this pool already contains approximately 8.54 raw-source token cycles. These are all-token continued-LM tests, not end-to-end SFT/RL replications. Run IDs and settings are given in this packet.
 
 The separate SFT-source and RLVR figures use the same color mapping, line conventions, fonts, and metric. The source-specific atlas uses one source color across separate arm panels, preserving the earlier SFT plotting layout. All 17 PDF pages were rendered and visually inspected; legends, axis labels, and footer text are visible. Main overview figures were also inspected individually.
 
