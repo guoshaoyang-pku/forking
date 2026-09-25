@@ -4649,3 +4649,19 @@ Engineering smoke before formal launch: trainable and nogram, 2 updates/full mod
 | ptov_seen_frozen0_q4_mb18_s42_fixed | a100_perm:5 | planned |
 | ptov_seen_frozen1_q4_mb18_s42_fixed | a100_perm:6 | planned |
 | ptov_seen_nogram_q4_mb18_s42_fixed | a100_perm:7 | planned |
+
+
+## Final readout (2026-09-25)
+
+All 8 registered runs completed on a100_perm with artifact QC pass. The smoke was separate and is not included. The effective optimizer update remains 147,456 tokens: microbatch 18 × accumulation 4; the A100 route is an explicitly recorded engineering deviation from H200 microbatch 72.
+
+| pool | trainable online / fixed | frozen from start online / fixed | frozen after pass 1 online / fixed | no-gram online / fixed |
+|---|---:|---:|---:|---:|
+| unseen | 0.7867 / 0.8860 | 0.1846 / 0.1762 | 0.3546 / 0.3000 | 0.2130 / 0.2322 |
+| seen | 1.2566 / 1.4313 | 0.3695 / 0.4340 | 0.5921 / 0.6005 | 0.1868 / 0.2399 |
+
+At the first-pass boundary (step 333), trainable and frozen-after-pass-1 fixed gaps agree to numerical noise: unseen 0.1207 vs 0.1206; seen 0.3465 vs 0.3463. After that boundary, fixed gap continues to grow even with the table frozen: unseen frozen-after-pass-1 0.1206→0.3000, seen 0.3463→0.6005. The growth is smaller than with a trainable table (unseen +0.7654 vs +0.1794 after step 333; seen +1.0849 vs +0.2542). Thus freezing stops table writes but does not stop backbone adaptation or replay-induced train/validation separation.
+
+The main comparison is the excess over matched no-gram, not the absolute gap. At step 1665, trainable minus no-gram fixed gap is +0.6538 (unseen) and +1.1914 (seen). With a table frozen from the start, the corresponding excess is −0.0560 and +0.1941. Freezing after one pass retains +0.0677 and +0.3606. The same-domain unseen pool still produces a clear trainable-table fork, so pretraining overlap is not required, although exact overlap raises the initial gap and the final excess in this pair.
+
+These endpoint claims are single-seed and use a microbatch/accumulation implementation on A100; they reproduce the direction of the corrected-tokenizer H200 post-training result but are not a replacement for the 24-run H200 batch72 sweep. Curves and machine-readable rows are in docs/appendices/posttraining_overlap_20260925/ and docs/figs/posttraining_overlap_20260925/.

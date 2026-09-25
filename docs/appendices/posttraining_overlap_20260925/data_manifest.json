@@ -1,0 +1,30 @@
+{
+  "seen": {
+    "source": "/data/guoshaoyang/ngram-gap-lab/data/tokenized/shard_00001.bin",
+    "source_sha256": "e8dfa753beed211885b60b4a71e79a40c9a7249c465dcf405d4a4aefc9764911",
+    "train_rows": 23976,
+    "duplicate_train_rows": 0,
+    "val_rows": 288,
+    "train_val_duplicate_rows": 0,
+    "train_sha256": "e9fe74d1c7091a43ba605d8a9890a4e3358ba126e8eed0c13a2205e15df2c65a",
+    "val_sha256": "53f483abca9bd5d805a16c183550a1bdc5c4db9af5c38f34d9d3818734a610dd",
+    "target_tokens_per_pass": 49102848,
+    "updates_per_pass": 333,
+    "passes": 5,
+    "pretraining_relation": "exact prefix within pretraining shards 0-20"
+  },
+  "unseen": {
+    "source": "/data/guoshaoyang/ngram-gap-lab/data/tokenized_epoch20/shard_00021.bin",
+    "source_sha256": "3df7458d09f7e412a8e42904c1bc5b031048badb3539651d094ee594036cccb6",
+    "train_rows": 23976,
+    "duplicate_train_rows": 0,
+    "val_rows": 288,
+    "train_val_duplicate_rows": 0,
+    "train_sha256": "3df7458d09f7e412a8e42904c1bc5b031048badb3539651d094ee594036cccb6",
+    "val_sha256": "53f483abca9bd5d805a16c183550a1bdc5c4db9af5c38f34d9d3818734a610dd",
+    "target_tokens_per_pass": 49102848,
+    "updates_per_pass": 333,
+    "passes": 5,
+    "pretraining_relation": "same-domain shard 21; no pretraining optimization; prior pretraining validation shard"
+  }
+}

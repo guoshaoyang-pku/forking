@@ -1,0 +1,42 @@
+[
+  {
+    "run_id": "ptov_unseen_trainable_q4_mb18_s42_fixed",
+    "gpu": 0,
+    "pid": 3398042
+  },
+  {
+    "run_id": "ptov_unseen_frozen0_q4_mb18_s42_fixed",
+    "gpu": 1,
+    "pid": 3398043
+  },
+  {
+    "run_id": "ptov_unseen_frozen1_q4_mb18_s42_fixed",
+    "gpu": 2,
+    "pid": 3398044
+  },
+  {
+    "run_id": "ptov_unseen_nogram_q4_mb18_s42_fixed",
+    "gpu": 3,
+    "pid": 3398045
+  },
+  {
+    "run_id": "ptov_seen_trainable_q4_mb18_s42_fixed",
+    "gpu": 4,
+    "pid": 3398046
+  },
+  {
+    "run_id": "ptov_seen_frozen0_q4_mb18_s42_fixed",
+    "gpu": 5,
+    "pid": 3398048
+  },
+  {
+    "run_id": "ptov_seen_frozen1_q4_mb18_s42_fixed",
+    "gpu": 6,
+    "pid": 3398049
+  },
+  {
+    "run_id": "ptov_seen_nogram_q4_mb18_s42_fixed",
+    "gpu": 7,
+    "pid": 3398050
+  }
+]
