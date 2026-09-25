@@ -4723,3 +4723,8 @@ Target360-2, isolated output /data/shared/guoshaoyang/ngram-gap-lab/multilayer_p
 | ptml_math_module_L14_q4_s42_fixed | math | module | planned |
 | ptml_math_trainable_L14_q4_s42_fixed | math | trainable | planned |
 | ptml_math_nogram_L14_q4_s42_fixed | math | nogram | planned |
+
+
+§72 preparation update (2026-09-25 23:04 Beijing): final math pool v2 is9140/115 source problems,49102848/589824 target tokens, sampled after scanning all93733 default records and independent hash ordering. Exact normalized problem and UUID train/val intersections are empty; both splits span all10rawfiles. Selected R1 response prefixes show lexical concentration (top10 first8word prefixes4629/9255=50.02%). Old RLVR fixed four-example prefix contributes approximately87.175% of token mass. Old OpenR1 reads reference solutions. These audits correct data semantics but are not causal gap evidence. Full provenance: math_manifest_v2.json/math_examples_v2.json in the packet.
+
+CPU semantic check on the actual13GB checkpoint passes strict load, four tables/four gates at1,4, lookup gradients absent and gate/backbone gradients present. Full-batch GPU smoke not yet run: all360-2GPUs are occupied by other work. Original idle queue stopped before any admission to improve source-order balance. Replacement root is /data/shared/guoshaoyang/ngram-gap-lab/multilayer_posttraining_20260925_r2, dispatcherPID251300, eight pending, zero active/done/failed at23:04. Idle-only admission expires8h after launch. Source331a9d0/0a6b266; no scientific result. Original staged79-item diff preserved. No push.

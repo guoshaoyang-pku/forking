@@ -227,3 +227,8 @@ LR1/4,5passes. Separates lookup-only freezing from table+gate freezing. No endpo
 Evidence/protocol: docs/appendices/multilayer_posttraining_20260925/README.md.
 Old RLVR-MATH is repeated few-shot prompts+reference answers; old OpenR1 uses reference
 solutions, not sampled R1 generations. Neither should be called on-policy RLVR.
+
+§72 update: v2 source-balanced R1 Algebra pool ready (9140train/115val questions;
+49.10M targets/pass); exact question/UUID split and tokenizer hashes checked.
+Eight idle-only queued runs on360-2, no GPU admission/scientific endpoint as of23:04.
+Actual-checkpoint CPU freeze/gate gradient check passed. Queue root ends20260925_r2.

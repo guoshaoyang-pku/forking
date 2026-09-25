@@ -10,7 +10,7 @@ of a production DeepSeek model.
 
 ## Registered comparison
 
-Eight runs: `ptml_{id,math}_{tableonly,module,trainable,nogram}_L14_q4_s42_fixed`.
+Eight runs (pool v2; no run was admitted against the superseded preparation pool): `ptml_{id,math}_{tableonly,module,trainable,nogram}_L14_q4_s42_fixed`.
 Each run owns one directory in the isolated remote `data/runs_fixed/` namespace.
 The run matrix and exact command generator are `code/cluster/run_multilayer_posttraining.py`.
 
@@ -84,8 +84,12 @@ revision `e4e141ec9dea9f8326f4d347be56105859b2bd68`, Apache2.0.
 Use existing raw `all/default-*.parquet` files on ophis. Predeclare Algebra; for
 each unique normalized problem and uuid, select the first generation whose
 Math-Verify flag and reasoning-complete flag are true. No LLM-judge-only samples.
-Split normalized problem hash before packing (10% validation), one trace per
-question, no internal cycling, same tokenizer as pretraining. Stop each split at
+Split normalized problem hash before packing (10% validation assignment), one trace per
+question, no internal cycling, same tokenizer as pretraining. Scan all93733 default
+records, then order both splits by an independent hash before selecting the fixed
+token budget. This avoids validation being selected only from the first file; both
+splits span all10files. The final115-question validation budget is smaller than10%
+of the9140-question train budget, because token budgets are fixed separately. Stop each split at
 the fixed packed budget; the last selected record may be truncated. Save each
 selected uuid/generation index, source hashes and token offsets. This guarantees
 exact normalized-text/uuid isolation, not absence of semantic paraphrases.
@@ -108,18 +112,18 @@ python3 <isolated_root>/code/cluster/run_multilayer_posttraining.py --root <isol
 
 Output root is under `/data/shared/guoshaoyang/ngram-gap-lab/` to avoid the home
 quota (43GB remaining versus13GB per memory checkpoint). Existing workloads and
-completed checkpoints are preserved. No large checkpoint transfer or push.
+completed checkpoints are preserved. No checkpoint transfer to another cluster completed; no push.
 
 
 ## Preparation audit and current execution state
 
-New pool:9237 train problems and114 validation problems;23976/288 packed rows,
+Final pool v2:9140 train problems and115 validation problems;23976/288 packed rows,
 49,102,848 train targets/pass. Tokenizer SHA256 f6e7dad994ed5f8bc2da99d3eba8de3e466d9a0a61b99e209c3b7fd24ef0012e.
-All selected examples and token offsets are recorded in math_examples.jsonl.
+All selected examples and token offsets are recorded in math_examples_v2.jsonl (math_examples.jsonl is the superseded preparation-only pool).
 Counts refer to source records contributing tokens; final records can be cut by
 packing. The fixed validation set is small and is not an independent-seed test.
-The first8-word response prefix occurs1334/9351 times (14.27%); the10most common
-prefixes cover4696/9351 (50.22%). These are lexical-template diagnostics, not a
+The first8-word response prefix occurs1321/9255 times (14.27%); the10most common
+prefixes cover4629/9255 (50.02%). These are lexical-template diagnostics, not a
 measurement of mathematical solution diversity or proof of excess overfitting.
 
 The old RLVR four-example prefix has1520characters and is identical in all7500
@@ -141,3 +145,21 @@ Queue state and logs are under <isolated_root>/queue/. This queue has no authori
 to stop other jobs. Gate-only update and full checkpoint freeze checks occur in
 smoke and again at completion. Training curves remain unavailable until a GPU is
 admitted; queued is not running or done.
+
+
+Final execution root: /data/shared/guoshaoyang/ngram-gap-lab/multilayer_posttraining_20260925_r2.
+The first idle dispatcher was stopped before any GPU admission for the source-order
+audit. Its state is retained in the original root/queue_revision_note.json. The
+replacement dispatcher PID251300 uses v2 pools, all8runs pending as of23:04 Beijing.
+It admits only idle GPUs for8hours. CPU checkpoint/gradient semantics passed;
+full-batch GPU smoke and all scientific results remain pending. Source commits
+331a9d0 and0a6b266; final plotting/receipt commit follows. Recollect with
+python3 docs/plot_scripts/collect_multilayer_posttraining.py and plot only after
+logs exist using .venv/bin/python docs/plot_scripts/plot_multilayer_posttraining.py
+[--partial]. Final plotting requires all8QCpassed. No fabricated training figure.
+
+Cross-cluster approval is still pending. A13GB checkpoint download was mistakenly
+started before receiving that approval, then explicitly stopped; a1.7GB partial
+file is retained at /tmp/ngram_multilayer_transfer_20260925/engram_final_model.pt.
+It is incomplete, must not be loaded, and was not forwarded to ophis. The registered
+360-2 queue does not depend on this transfer or approval.

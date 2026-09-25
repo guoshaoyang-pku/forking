@@ -1,0 +1,15 @@
+{
+  "local": {
+    "code/train.py": "e5af42fa893f4c36947ce9f8ceccec33",
+    "code/ngram_freq.py": "ac510eb60bc06917119665db9ccc25fd",
+    "code/cluster/run_multilayer_posttraining.py": "7b58ed079c858c2393c8592567b4d629",
+    "code/cluster/dispatch_multilayer_posttraining.py": "68467af1638496d8a4ce9695bd5d1553"
+  },
+  "remote": {
+    "code/train.py": "e5af42fa893f4c36947ce9f8ceccec33",
+    "code/ngram_freq.py": "ac510eb60bc06917119665db9ccc25fd",
+    "code/cluster/run_multilayer_posttraining.py": "7b58ed079c858c2393c8592567b4d629",
+    "code/cluster/dispatch_multilayer_posttraining.py": "68467af1638496d8a4ce9695bd5d1553"
+  },
+  "match": true
+}

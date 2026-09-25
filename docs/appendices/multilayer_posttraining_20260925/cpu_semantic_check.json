@@ -1,0 +1,25 @@
+{
+  "checkpoint_strict_load": true,
+  "selected_layers": [
+    1,
+    4
+  ],
+  "table_names": [
+    "bigram_ves.1.0.weight",
+    "bigram_ves.4.0.weight",
+    "trigram_ves.1.0.weight",
+    "trigram_ves.4.0.weight"
+  ],
+  "gate_names": [
+    "transformer.h.1.attn.bigram_gate.weight",
+    "transformer.h.1.attn.trigram_gate.weight",
+    "transformer.h.4.attn.bigram_gate.weight",
+    "transformer.h.4.attn.trigram_gate.weight"
+  ],
+  "lookup_gradients_absent": true,
+  "gate_and_backbone_gradients_present": true,
+  "loss": 6.046200752258301,
+  "device": "cpu",
+  "sequence_len": 8,
+  "ceiling": "semantic check on actual checkpoint and data, not full batch GPU acceptance"
+}
