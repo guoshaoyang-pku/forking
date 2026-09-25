@@ -3,8 +3,9 @@
 User-requested figure revision, 2026-09-25. No model evaluation or training.
 
 Layout: petting your, introducing your, there is a; three rows, no-gram left
-and bigram-plus-trigram right. Only negative natural log probability bars
-remain, with zero baseline and shared 0–16-nat scale. Epochs 1 and 5 are
+and bigram-plus-trigram right. Bars show natural log probability, rising
+from a shared -16-nat plotting baseline on a -16–0-nat scale. Taller bars
+mean higher probability. Epochs 1 and 5 are
 light and solid. Details belong in the LaTeX caption, not a figure footer.
 
 Archived logits: existing ep5ckpt_v5_{nogram,both}_s42_fixed runs, seed42,
@@ -24,13 +25,13 @@ train shard1, heldout shards2,3,4; context and target inside2049-token chunks.
 Do not conflate these with earlier candidate-selection metadata counts.
 Labels are per exact context-token pair, not token-global. Counts are saved.
 
-Others is negative log of arithmetic mean of top20 remaining probabilities,
+Others is log of arithmetic mean of top20 remaining probabilities,
 excluding dog/cat/fish/horse/bird. Membership is reselected per distribution.
 It is a rank statistic, not fixed-group or remaining mass, nor mean token NLL.
 
 Reproduce from repository root:
 
-    .venv/bin/python docs/plot_scripts/plot_context_examples_nll.py
+    .venv/bin/python docs/plot_scripts/plot_context_examples_logp.py
 
 Outputs: docs/figs/context_examples_20260925 (PDF/PNG/SVG, values/classes CSV,
 manifest). Paper supplement contains corresponding CSV and checkpoint hashes.

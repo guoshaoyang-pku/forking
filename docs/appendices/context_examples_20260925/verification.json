@@ -1,9 +1,7 @@
 {
-  "paper_base": "06508baf68ca2dbabfb5ba6b6f71ef4299ad1fb0",
+  "paper_base": "95c4a4a29a3813606818d885cbad40f7ff1fc5fb",
   "build_pages": 37,
   "rendered_pages": [
-    7,
-    32,
     34
   ],
   "undefined_references": false,
@@ -12,6 +10,14 @@
   "bar_count": 72,
   "classes_count": 15,
   "macro_pdf_unchanged": true,
-  "new_figure_sha256": "5b100e8edc36d306309af3d68357a369c21fa9b8917d4018247e5479f4e44fe4",
-  "no_new_training_or_model_forward": true
+  "new_figure_sha256": "b24a05ef047fb1387f51b17af4111cb403b1e701f552a1a51acaa75976705581",
+  "no_new_training_or_model_forward": true,
+  "metric": "natural log probability",
+  "shared_ylim": [
+    -16,
+    0
+  ],
+  "bar_baseline": -16,
+  "all_72_probabilities_unchanged": true,
+  "all_72_values_exactly_sign_reversed": true
 }

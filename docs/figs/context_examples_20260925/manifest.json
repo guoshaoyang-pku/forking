@@ -2,8 +2,8 @@
   "source": "docs/appendices/context_examples_20260925/logits.json",
   "source_sha256": "2ab83ec0ac08725e1fda463c49c301f4bbc814bc6b67c9780e020b15297bb065",
   "counts_sha256": "162e41934390c6e4831b06a301c6a78a1655e32ed8ea96dc82258dfc4ebbfb64",
-  "script": "docs/plot_scripts/plot_context_examples_nll.py",
-  "metric": "negative natural log probability",
+  "script": "docs/plot_scripts/plot_context_examples_logp.py",
+  "metric": "natural log probability",
   "max_abs_logp_difference_from_export": 1.5016857535243844e-06,
   "epochs": [
     1,
@@ -19,9 +19,11 @@
     2
   ],
   "shared_ylim": [
-    0,
-    16.0
+    -16.0,
+    0
   ],
+  "bar_baseline": -16.0,
+  "bar_top": "log probability; higher means more probable",
   "token_classes": "valid chunk positions; training shard 1; held-out shards 2,3,4",
-  "others": "negative log of mean top20 probability excluding named tokens; reselected per distribution"
+  "others": "log of mean top20 probability excluding named tokens; reselected per distribution"
 }

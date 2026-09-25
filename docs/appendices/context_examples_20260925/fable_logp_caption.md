@@ -1,0 +1,1 @@
+Bar tops indicate $\log p$ in nats on a shared scale, with all bars rising from a common plotting baseline of $-16$, so taller bars correspond to higher probability. For \emph{others}, the bar shows the log of the mean probability over the top 20 tokens outside the five named animals.
