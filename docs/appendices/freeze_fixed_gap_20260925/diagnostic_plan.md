@@ -1,0 +1,9 @@
+# Freeze-intervention fixed-gap audit, 2026-09-25
+
+User asks whether the freeze-table result is inherited first-pass gap revealed by online measurement rather than further fixed-gap growth. This is a read-only audit of canonical completed runs, not a new training experiment or injection architecture.
+
+First, recover fixed-head training/validation loss by summing all token loss sums and counts in the exact-frequency logs. Historical code b976c71 captures the first four training batches independently, evaluates them after updates, and includes every frequency bin. Both bigram and trigram partitions must give the same global mean, with constant per-bin counts and 589824 tokens per split. Older diagnostic forwards use FP32; newer fast diagnostics use BF16. Do not conflate their scalar values with BF16 online train loss.
+
+Second, the fixed head may be biased after deterministic replay: the head was last written hundreds of updates before table freezing, while late batches were written recently. Completed seed 43 and 44 freeze-table runs have final checkpoints, but no boundary checkpoints. Re-evaluate all 337 training batches at the final checkpoint plus the four original fixed validation batches. No gradients, optimizer, or weight mutation; strict state-dict load, BF16, batch 72, sequence 2048, full pool. Validate reproduced validation and compare head-versus-tail losses. This cannot reconstruct a full-pool gap history before/after freezing; absence of boundary checkpoints is a material limit.
+
+Diagnostic ID: freeze_full_train_audit_20260925. Source: ophis-gpu data/runs_fixed/causalv5c_freeze_table_e1_128x_s{43,44}_fixed. Reserve an idle GPU for forward evaluation only; keep checkpoints remote. The source code/train.py hash must match local before execution. Evaluator: code/tools/audit_freeze_full_train.py. Write a fresh diagnostic JSON and never overwrite training artifacts.
