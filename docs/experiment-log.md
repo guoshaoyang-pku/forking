@@ -4596,35 +4596,35 @@ Measurement addition, identical in all new arms: four fixed UNIFORM training-pro
 
 Data: ophis corrected *_fixtok files; ID epoch20 shard21/train,22-23/val. Copied checkpoints/data must match inputs_manifest.json SHA256. Data unchanged, including known one-record train/val boundary crossing in Magicoder/OpenR1; matched historical protocol, not strict-example-split claim. RLVR is static all-token replay, about42.7 source cycles, not on-policy RL.
 
-Compute plan:360-2 eight H200 trainable arms;a100_perm eight A100 frozen arms;a100_t1 eight A100 no-gram arms. LR pair stays on same host/software. Cross-hardware/torch arm contrasts are screened comparisons; original LR ran on ophis. A100 batch72 must pass10-step representative smoke; if OOM preserve failure/reassign H200 without changing batch. Idle check immediately before launch. Isolated code snapshots. User request authorizes input staging needed for parallel training; no deletion/push.
+Compute update: A100 Tione no-gram batch72 smoke OOMed on first forward (40GB insufficient); no formal A100 jobs launched. All24 formal jobs move to360-2 H200 with identical torch/code/batch. Other workloads occupied GPUs0-4 before input staging completed; dispatcher uses immediately idle GPUs only and admits further idle cards as available. Output root /data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed has6.5TB filesystem free, avoiding the45GB remaining home quota. Inputs stay in /data/home/guoshaoyang/ngram-gap-lab/data. No scientific setting changes. Original LR ran on ophis, so numerical cross-software limits remain for historical comparisons. Isolated code snapshots; all inputs SHA256 verified before smoke/formal launch. User request authorizes necessary staging; no deletion/push.
 
-Packet:docs/appendices/posttraining_lr_sweep_20260925/. Exact assignment/LR in assignments.json; hashes in inputs_manifest.json and code_hashes.json. Output each host:data/runs_fixed/<run_id> (IDs already end_fixed). Command:<python> <isolated_root>/code/cluster/run_posttraining_lr_sweep.py --root <isolated_root> --data-root <root>/data --out-root <root>/data/runs_fixed --source <source> --arm <arm> --lr-tag <q4|q10> --gpu <gpu>. Smoke adds --smoke and uses provisioning/posttraining_lr_20260925/smoke; distinct IDs not scientific endpoints.
+Packet:docs/appendices/posttraining_lr_sweep_20260925/. Exact assignment/LR in assignments.json; hashes in inputs_manifest.json and code_hashes.json. Output: shared root above/<run_id> (IDs already end_fixed); no home-quota checkpoint accumulation. Command:<python> <isolated_root>/code/cluster/run_posttraining_lr_sweep.py --root <isolated_root> --data-root <root>/data --out-root <root>/data/runs_fixed --source <source> --arm <arm> --lr-tag <q4|q10> --gpu <gpu>. Smoke adds --smoke and uses provisioning/posttraining_lr_20260925/smoke; distinct IDs not scientific endpoints.
 
 Acceptance:normal exit;summary/config identity;steps10,20,...1660,1665;finite train/val/online/fixed losses;uniform probe hash identical within source;frozen RMS constant;final checkpoint/probe tokens;hashes verified. Only then done.
 
 | run_id | host:GPU planned | LR | status |
 |---|---|---:|---|
-| ptlr_id_trainable_q4_s42_fixed | 360-2:0 | 0.00015 | planned |
-| ptlr_id_trainable_q10_s42_fixed | 360-2:1 | 6e-05 | planned |
-| ptlr_magicoder_trainable_q4_s42_fixed | 360-2:2 | 0.00015 | planned |
-| ptlr_magicoder_trainable_q10_s42_fixed | 360-2:3 | 6e-05 | planned |
-| ptlr_openr1_trainable_q4_s42_fixed | 360-2:4 | 0.00015 | planned |
-| ptlr_openr1_trainable_q10_s42_fixed | 360-2:5 | 6e-05 | planned |
-| ptlr_rlvr_trainable_q4_s42_fixed | 360-2:6 | 0.00015 | planned |
-| ptlr_rlvr_trainable_q10_s42_fixed | 360-2:7 | 6e-05 | planned |
-| ptlr_id_frozen_q4_s42_fixed | a100_perm:0 | 0.00015 | planned |
-| ptlr_id_frozen_q10_s42_fixed | a100_perm:1 | 6e-05 | planned |
-| ptlr_magicoder_frozen_q4_s42_fixed | a100_perm:2 | 0.00015 | planned |
-| ptlr_magicoder_frozen_q10_s42_fixed | a100_perm:3 | 6e-05 | planned |
-| ptlr_openr1_frozen_q4_s42_fixed | a100_perm:4 | 0.00015 | planned |
-| ptlr_openr1_frozen_q10_s42_fixed | a100_perm:5 | 6e-05 | planned |
-| ptlr_rlvr_frozen_q4_s42_fixed | a100_perm:6 | 0.00015 | planned |
-| ptlr_rlvr_frozen_q10_s42_fixed | a100_perm:7 | 6e-05 | planned |
-| ptlr_id_nogram_q4_s42_fixed | a100_t1:0 | 0.00015 | planned |
-| ptlr_id_nogram_q10_s42_fixed | a100_t1:1 | 6e-05 | planned |
-| ptlr_magicoder_nogram_q4_s42_fixed | a100_t1:2 | 0.00015 | planned |
-| ptlr_magicoder_nogram_q10_s42_fixed | a100_t1:3 | 6e-05 | planned |
-| ptlr_openr1_nogram_q4_s42_fixed | a100_t1:4 | 0.00015 | planned |
-| ptlr_openr1_nogram_q10_s42_fixed | a100_t1:5 | 6e-05 | planned |
-| ptlr_rlvr_nogram_q4_s42_fixed | a100_t1:6 | 0.00015 | planned |
-| ptlr_rlvr_nogram_q10_s42_fixed | a100_t1:7 | 6e-05 | planned |
+| ptlr_id_trainable_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_id_trainable_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
+| ptlr_magicoder_trainable_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_magicoder_trainable_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
+| ptlr_openr1_trainable_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_openr1_trainable_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
+| ptlr_rlvr_trainable_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_rlvr_trainable_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
+| ptlr_id_frozen_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_id_frozen_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
+| ptlr_magicoder_frozen_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_magicoder_frozen_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
+| ptlr_openr1_frozen_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_openr1_frozen_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
+| ptlr_rlvr_frozen_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_rlvr_frozen_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
+| ptlr_id_nogram_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_id_nogram_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
+| ptlr_magicoder_nogram_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_magicoder_nogram_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
+| ptlr_openr1_nogram_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_openr1_nogram_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
+| ptlr_rlvr_nogram_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_rlvr_nogram_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |

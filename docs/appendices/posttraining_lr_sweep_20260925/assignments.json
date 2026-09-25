@@ -10,8 +10,9 @@
     "host": "360-2",
     "root": "/data/home/guoshaoyang/ngram-gap-lab",
     "python": "python3",
-    "gpu": 0,
-    "status": "planned"
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_id_trainable_q10_s42_fixed",
@@ -24,8 +25,9 @@
     "host": "360-2",
     "root": "/data/home/guoshaoyang/ngram-gap-lab",
     "python": "python3",
-    "gpu": 1,
-    "status": "planned"
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_magicoder_trainable_q4_s42_fixed",
@@ -38,8 +40,9 @@
     "host": "360-2",
     "root": "/data/home/guoshaoyang/ngram-gap-lab",
     "python": "python3",
-    "gpu": 2,
-    "status": "planned"
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_magicoder_trainable_q10_s42_fixed",
@@ -52,8 +55,9 @@
     "host": "360-2",
     "root": "/data/home/guoshaoyang/ngram-gap-lab",
     "python": "python3",
-    "gpu": 3,
-    "status": "planned"
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_openr1_trainable_q4_s42_fixed",
@@ -66,8 +70,9 @@
     "host": "360-2",
     "root": "/data/home/guoshaoyang/ngram-gap-lab",
     "python": "python3",
-    "gpu": 4,
-    "status": "planned"
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_openr1_trainable_q10_s42_fixed",
@@ -80,8 +85,9 @@
     "host": "360-2",
     "root": "/data/home/guoshaoyang/ngram-gap-lab",
     "python": "python3",
-    "gpu": 5,
-    "status": "planned"
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_rlvr_trainable_q4_s42_fixed",
@@ -94,8 +100,9 @@
     "host": "360-2",
     "root": "/data/home/guoshaoyang/ngram-gap-lab",
     "python": "python3",
-    "gpu": 6,
-    "status": "planned"
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_rlvr_trainable_q10_s42_fixed",
@@ -108,8 +115,9 @@
     "host": "360-2",
     "root": "/data/home/guoshaoyang/ngram-gap-lab",
     "python": "python3",
-    "gpu": 7,
-    "status": "planned"
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_id_frozen_q4_s42_fixed",
@@ -119,11 +127,12 @@
     "lr": 0.00015,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_perm",
-    "root": "/data/guoshaoyang/ngram-gap-lab",
-    "python": "/data/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 0,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_id_frozen_q10_s42_fixed",
@@ -133,11 +142,12 @@
     "lr": 6e-05,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_perm",
-    "root": "/data/guoshaoyang/ngram-gap-lab",
-    "python": "/data/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 1,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_magicoder_frozen_q4_s42_fixed",
@@ -147,11 +157,12 @@
     "lr": 0.00015,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_perm",
-    "root": "/data/guoshaoyang/ngram-gap-lab",
-    "python": "/data/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 2,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_magicoder_frozen_q10_s42_fixed",
@@ -161,11 +172,12 @@
     "lr": 6e-05,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_perm",
-    "root": "/data/guoshaoyang/ngram-gap-lab",
-    "python": "/data/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 3,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_openr1_frozen_q4_s42_fixed",
@@ -175,11 +187,12 @@
     "lr": 0.00015,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_perm",
-    "root": "/data/guoshaoyang/ngram-gap-lab",
-    "python": "/data/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 4,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_openr1_frozen_q10_s42_fixed",
@@ -189,11 +202,12 @@
     "lr": 6e-05,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_perm",
-    "root": "/data/guoshaoyang/ngram-gap-lab",
-    "python": "/data/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 5,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_rlvr_frozen_q4_s42_fixed",
@@ -203,11 +217,12 @@
     "lr": 0.00015,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_perm",
-    "root": "/data/guoshaoyang/ngram-gap-lab",
-    "python": "/data/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 6,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_rlvr_frozen_q10_s42_fixed",
@@ -217,11 +232,12 @@
     "lr": 6e-05,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_perm",
-    "root": "/data/guoshaoyang/ngram-gap-lab",
-    "python": "/data/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 7,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_id_nogram_q4_s42_fixed",
@@ -231,11 +247,12 @@
     "lr": 0.00015,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_t1",
-    "root": "/home/tione/guoshaoyang/ngram-gap-lab",
-    "python": "/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 0,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_id_nogram_q10_s42_fixed",
@@ -245,11 +262,12 @@
     "lr": 6e-05,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_t1",
-    "root": "/home/tione/guoshaoyang/ngram-gap-lab",
-    "python": "/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 1,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_magicoder_nogram_q4_s42_fixed",
@@ -259,11 +277,12 @@
     "lr": 0.00015,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_t1",
-    "root": "/home/tione/guoshaoyang/ngram-gap-lab",
-    "python": "/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 2,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_magicoder_nogram_q10_s42_fixed",
@@ -273,11 +292,12 @@
     "lr": 6e-05,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_t1",
-    "root": "/home/tione/guoshaoyang/ngram-gap-lab",
-    "python": "/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 3,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_openr1_nogram_q4_s42_fixed",
@@ -287,11 +307,12 @@
     "lr": 0.00015,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_t1",
-    "root": "/home/tione/guoshaoyang/ngram-gap-lab",
-    "python": "/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 4,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_openr1_nogram_q10_s42_fixed",
@@ -301,11 +322,12 @@
     "lr": 6e-05,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_t1",
-    "root": "/home/tione/guoshaoyang/ngram-gap-lab",
-    "python": "/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 5,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_rlvr_nogram_q4_s42_fixed",
@@ -315,11 +337,12 @@
     "lr": 0.00015,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_t1",
-    "root": "/home/tione/guoshaoyang/ngram-gap-lab",
-    "python": "/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 6,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {
     "run_id": "ptlr_rlvr_nogram_q10_s42_fixed",
@@ -329,10 +352,11 @@
     "lr": 6e-05,
     "seed": 42,
     "steps": 1665,
-    "host": "a100_t1",
-    "root": "/home/tione/guoshaoyang/ngram-gap-lab",
-    "python": "/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python",
-    "gpu": 7,
-    "status": "planned"
+    "host": "360-2",
+    "root": "/data/home/guoshaoyang/ngram-gap-lab",
+    "python": "python3",
+    "gpu": null,
+    "status": "planned",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   }
 ]

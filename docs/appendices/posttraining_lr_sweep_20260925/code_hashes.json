@@ -2,5 +2,6 @@
   "code/train.py": "cf6ef3e78cad67ced506dd8d480d450995a9bf91b6a519d7326ba4a1975d1369",
   "code/ngram_freq.py": "bdfa7b0fe3a105b231b31da036a2a282dde1e185094e6da2f1620c6fa356ba92",
   "code/diag_worker.py": "14f0aa23ccd4aa4ace8e0e4924bf6706e7d44345a06dd0a9cceb674c19879e69",
-  "code/cluster/run_posttraining_lr_sweep.py": "d073a5ff79c0ab31674afc881852ba807b840a62ab6740880c021bc74f733f8c"
+  "code/cluster/run_posttraining_lr_sweep.py": "d073a5ff79c0ab31674afc881852ba807b840a62ab6740880c021bc74f733f8c",
+  "code/cluster/continue_posttraining_lr_queue.py": "541a847ed408ab53cab79060b4f0554a8cdf076af40574a7ce6cf2d46b0facff"
 }
