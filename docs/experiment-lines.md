@@ -66,7 +66,7 @@ T1 目前仅完成远端 summary 回收与冲突审计；33 个重复 ID 均存�
 
 ## Continued pretraining 与多层 memory 对照
 
-当前新批：§68，正确 tokenizer 的 ID/Magicoder/OpenR1/RLVR × trainable/frozen/nogram × LR 1/4、1/10，共24组seed42；planned。附加uniform fixed-train probe，主口径仍是online gap。登记/哈希见 docs/appendices/posttraining_lr_sweep_20260925/。
+当前新批：§68，正确 tokenizer 的 ID/Magicoder/OpenR1/RLVR × trainable/frozen/nogram × LR 1/4、1/10，共24组seed42；running（idle H200 queue，A100 batch72 OOM 后转360-2，保持原 batch）。附加uniform fixed-train probe，主口径仍是online gap。登记/哈希见 docs/appendices/posttraining_lr_sweep_20260925/。
 
 | 线名 | 科学问题 | run_id 前缀 | 状态 | 证据位置 |
 |---|---|---|---|---|

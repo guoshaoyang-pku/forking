@@ -10,8 +10,8 @@
     "host": "360-2",
     "root": "/data/home/guoshaoyang/ngram-gap-lab",
     "python": "python3",
-    "gpu": null,
-    "status": "planned",
+    "gpu": 7,
+    "status": "running",
     "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
   },
   {

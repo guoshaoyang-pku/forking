@@ -1,0 +1,35 @@
+{
+  "pending": [
+    "ptlr_id_frozen_q4_s42_fixed",
+    "ptlr_id_nogram_q4_s42_fixed",
+    "ptlr_id_trainable_q10_s42_fixed",
+    "ptlr_id_frozen_q10_s42_fixed",
+    "ptlr_id_nogram_q10_s42_fixed",
+    "ptlr_magicoder_trainable_q4_s42_fixed",
+    "ptlr_magicoder_frozen_q4_s42_fixed",
+    "ptlr_magicoder_nogram_q4_s42_fixed",
+    "ptlr_magicoder_trainable_q10_s42_fixed",
+    "ptlr_magicoder_frozen_q10_s42_fixed",
+    "ptlr_magicoder_nogram_q10_s42_fixed",
+    "ptlr_openr1_trainable_q4_s42_fixed",
+    "ptlr_openr1_frozen_q4_s42_fixed",
+    "ptlr_openr1_nogram_q4_s42_fixed",
+    "ptlr_openr1_trainable_q10_s42_fixed",
+    "ptlr_openr1_frozen_q10_s42_fixed",
+    "ptlr_openr1_nogram_q10_s42_fixed",
+    "ptlr_rlvr_trainable_q4_s42_fixed",
+    "ptlr_rlvr_frozen_q4_s42_fixed",
+    "ptlr_rlvr_nogram_q4_s42_fixed",
+    "ptlr_rlvr_trainable_q10_s42_fixed",
+    "ptlr_rlvr_frozen_q10_s42_fixed",
+    "ptlr_rlvr_nogram_q10_s42_fixed"
+  ],
+  "running": {
+    "7": {
+      "run_id": "ptlr_id_trainable_q4_s42_fixed",
+      "pid": 191921
+    }
+  },
+  "completed": [],
+  "updated_unix": 1790319805.9770029
+}

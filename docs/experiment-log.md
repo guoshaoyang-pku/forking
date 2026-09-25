@@ -4586,7 +4586,7 @@ trigram 行不同（911073 vs 789118）→ 表对 T 的贡献≈0；bigram ` is 
 **落地**：docs/appendices/coverage_takeover_20260925/README.md + CSV/manifest；脚本 docs/plot_scripts/plot_coverage_takeover.py；正式线性三联图及 Figure3a 在 docs/figs/coverage_20260925/。paper 的 03/04/E 已直接修改；保留原有效 Zipf 积分、crowding-out 公式、E3 表。复杂残差/分层图仅存档。独立论文构建通过，当前共享 paper 也编译通过；未 push。
 
 
-## §68 · Correct-tokenizer post-training LR reduction sweep (2026-09-25, planned)
+## §68 · Correct-tokenizer post-training LR reduction sweep (2026-09-25, running)
 
 User explicitly requested parallel lower-LR runs across existing settings. Scientific variable: a common LR multiplier, 1/4 or 1/10 of current downstream LR, preserving table/backbone ratio128. This tests optimization-dose sensitivity, not causal isolation of domain overlap. Owner: Codex current task.
 
@@ -4604,7 +4604,7 @@ Acceptance:normal exit;summary/config identity;steps10,20,...1660,1665;finite tr
 
 | run_id | host:GPU planned | LR | status |
 |---|---|---:|---|
-| ptlr_id_trainable_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
+| ptlr_id_trainable_q4_s42_fixed | 360-2:7 | 0.00015 | running |
 | ptlr_id_trainable_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
 | ptlr_magicoder_trainable_q4_s42_fixed | 360-2:idle queue | 0.00015 | planned |
 | ptlr_magicoder_trainable_q10_s42_fixed | 360-2:idle queue | 6e-05 | planned |
