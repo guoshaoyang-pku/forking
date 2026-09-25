@@ -1,0 +1,15 @@
+# Appendix D minimal evidence packet
+
+Source coordinates for the compact Appendix D figures. These local summary and curve copies support reproducible plotting; they are not a second run namespace. Regenerate the figures from the repository root with
+
+~~~bash
+.venv/bin/python docs/plot_scripts/plot_appendix_d_minimal.py
+~~~
+
+The script checks the saved settings, run IDs, event semantics, final gaps, and all 20 replay boundary points before producing the six PDF/PNG files in `docs/figs/appendices/appendix_d/`. Source JSONL and summaries were mirrored from the run artifacts. On 2026-09-26, SHA-256 checks against live source files on ophis-gpu and 360-2 matched for all three 20-epoch summaries and curves, all seven plotted intervention summaries and curves, the 2000-step no-gram control, and all 14 high- and four low-threshold endpoint summaries. The packet does not contain complete training directories; this check covers the mirrored source files used by these plots.
+
+- Causal arms: `causalv5c_none_128x_fixed`, `causalv5m_mask_low_le8_e1_fixed`, `causalv5m2_mask_high_t200_e1_fixed`, `causalv5c_hash_reseed_e1_128x_fixed`, `causalv5c_hash_reseed_e1e2_fixed`, `causalv5c_freeze_table_e1_128x_fixed`, and `causalv5c_freeze_backbone_e1_128x_fixed`. All use seed 42, 1000 steps, 10-step validation, online train loss, fixed validation loss, and 128x table LR. The intervention curves' net gap subtracts the *same-step first 1000 steps* of the separately run 2000-step no-gram control `nglab1x_nogram_v5_128x_freq10_fixed`. Its data, seed, batch size, validation shards, optimizer schedule, and first-1000-step eval cadence match the intervention family.
+- Frequency thresholds: `causalv5m2_mask_high_t{1,2,5,10,25,50,100,200,400,800,1600,3200,6400,12800}_e1_fixed` have recorded event semantics `F >= t`, including the boundary, and exclude novel `F=0` contexts. `causalv5m_mask_low_le{1,2,4,8}_e1_fixed` use `F <= t` and include novel contexts. All plotted values are seed 42, step 1000 endpoints; see `docs/experiment-log.md` §35.8.1. The old strict-`F>t` batch in §35.7 is not plotted.
+- Replay boundaries: `s1v5_128_ep_tri_1xL4_20ep_fixed`, `s1v5_128_ep1xL4_20ep_both_fixed`, and `s1v5_128_ep1xL4_20ep_nogram_fixed` are registered done in `docs/experiment-log.md` §41. They use seed 42, 20 epochs, 337 updates per epoch, with measured validation at each boundary. `epoch20_points.csv` includes an earlier 10-epoch run family for historical comparison, but the 20-epoch plot reads only the three 20-epoch curves and checks their points against the CSV. The 10-epoch figure does not support a 20-epoch fit.
+
+**Namespace reconciliation needed:** the replay summaries and CSV identify their source directories as `data/runs_scaling/*_fixed`, while `agents.md` P4 calls only `data/runs_fixed/*_fixed` authoritative. Section 41 registers these runs as completed, but the path conflict needs a project-level ruling before treating this plot as unqualified canonical evidence. This is an evidence-status issue, not a numerical mismatch: the copied summary, JSONL, and CSV agree at all 20 boundaries.

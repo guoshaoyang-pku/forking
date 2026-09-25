@@ -87,6 +87,11 @@ log 图只使用 train 和 validation 都有 token 且 gap 为正的 bucket。
 
 ## 生成流程
 
+附录 D 的论文 PDF/PNG 由 plot_appendix_d_minimal.py 从
+docs/appendices/appendix_d_minimal/ 的固定 run 小型证据镜像重画。
+三幅图分别报告七臂 train/val/raw/net 轨迹、含等号 F>=t 阈值扫描、
+实测 20 轮回放；原始 run、seed、step 与数据源见该目录 README 和 summary。
+
 在 repo 根目录执行：
 
 ```bash
