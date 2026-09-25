@@ -59,11 +59,18 @@ def main():
              'python3 docs/plot_scripts/collect_posttraining_lr_sweep_20260925.py',
              '.venv/bin/python docs/plot_scripts/plot_posttraining_lr_sweep_20260925.py'+(' --partial' if count<24 else ''),
              'python3 docs/plot_scripts/report_posttraining_lr_sweep_20260925.py', '```', '']
+    if all('best_logged_val_loss' in r for r in rows):
+        text += ['', '## Validation deterioration after the best logged point', '',
+                 'Descriptive values from the recorded curve; these are not checkpoint selection claims. Only final weights were saved in this sweep.', '',
+                 '| Source | Arm | LR | Best logged validation | Step | Final minus best |',
+                 '|---|---|---:|---:|---:|---:|']
+        for row in rows:
+            text.append('| %s | %s | %s | %.4f | %s | %.4f |' % (row['source'],row['arm'],row['lr_tag'],float(row['best_logged_val_loss']),row['best_logged_val_step'],float(row['final_val_above_best'])))
     baseline_path=P/'baseline_uniform4.json'
     if baseline_path.exists():
         baseline=json.loads(baseline_path.read_text())
         text += ['', '## Initial-checkpoint fixed gap and growth', '',
-                 'These use the identical four uniform training-probe batches and fixed validation set. Initial gap is a train/val sample-difficulty offset before downstream optimization. Growth is final fixed gap minus this initial value, a separate diagnostic from the primary online gap.', '',
+                 'These use the identical four uniform training-probe batches and fixed validation set. Initial gap is a train/val sample-difficulty offset before downstream optimization. Growth is final fixed gap minus this initial value, a separate diagnostic from the primary online gap. A negative net change does not imply no replay effect: rapid initial adaptation can reduce the offset before later gap growth. The full fixed-gap curves and min_logged_fixed_gap/fixed_gap_growth_after_min in endpoints.csv preserve this distinction.', '',
                  '| Source | Arm | Initial fixed gap | Final growth at LR 1 | At LR 1/4 | At LR 1/10 |',
                  '|---|---|---:|---:|---:|---:|']
         for source,label in sources:

@@ -1,6 +1,6 @@
 # Correct-tokenizer post-training LR sweep
 
-Status: 11/24 new runs passed artifact and metric QC. Seed 42 only. Original-LR comparison uses the matching seed-42 runs.
+Status: 20/24 new runs passed artifact and metric QC. Seed 42 only. Original-LR comparison uses the matching seed-42 runs.
 
 ## Protocol
 
@@ -31,11 +31,20 @@ Primary online gap = fixed validation loss after update minus the current 72-exa
 | Magicoder | frozen | 1/10 | 1.5634 | 1.5987 | 0.0353 | 0.0829 |
 | Magicoder | nogram | 1 | 0.7225 | 0.8762 | 0.1537 | 0.2189 |
 | Magicoder | nogram | 1/4 | 0.8403 | 0.9102 | 0.0699 | 0.1299 |
+| Magicoder | nogram | 1/10 | 0.9589 | 0.9839 | 0.0250 | 0.0791 |
 | OpenR1 | trainable | 1 | 0.6870 | 1.3726 | 0.6855 | 0.7312 |
+| OpenR1 | trainable | 1/4 | 0.9798 | 1.2452 | 0.2654 | 0.2940 |
+| OpenR1 | trainable | 1/10 | 1.1791 | 1.2974 | 0.1184 | 0.1347 |
 | OpenR1 | frozen | 1 | 1.0425 | 1.2011 | 0.1587 | 0.1811 |
+| OpenR1 | frozen | 1/4 | 1.2014 | 1.2810 | 0.0796 | 0.0860 |
+| OpenR1 | frozen | 1/10 | 1.3481 | 1.3933 | 0.0452 | 0.0496 |
 | OpenR1 | nogram | 1 | 0.8254 | 0.9820 | 0.1566 | 0.1666 |
+| OpenR1 | nogram | 1/4 | 0.9322 | 1.0099 | 0.0777 | 0.0859 |
+| OpenR1 | nogram | 1/10 | 1.0340 | 1.0710 | 0.0370 | 0.0438 |
 | RLVR-MATH | trainable | 1 | 0.0115 | 0.5108 | 0.4993 | 0.5020 |
+| RLVR-MATH | trainable | 1/4 | 0.0110 | 0.4583 | 0.4473 | 0.4482 |
 | RLVR-MATH | frozen | 1 | 0.0137 | 0.4357 | 0.4220 | 0.4178 |
+| RLVR-MATH | frozen | 1/4 | 0.0215 | 0.3787 | 0.3571 | 0.3537 |
 | RLVR-MATH | nogram | 1 | 0.0183 | 0.3291 | 0.3108 | 0.3035 |
 
 ## Changes relative to original LR
@@ -55,6 +64,15 @@ Negative validation-loss change is an improvement. Negative gap change alone can
 | magicoder | frozen | q4 | +0.2294 | +0.1274 | -0.1019 | 0.469 |
 | magicoder | frozen | q10 | +0.4535 | +0.2969 | -0.1566 | 0.184 |
 | magicoder | nogram | q4 | +0.1179 | +0.0340 | -0.0838 | 0.455 |
+| magicoder | nogram | q10 | +0.2365 | +0.1077 | -0.1287 | 0.162 |
+| openr1 | trainable | q4 | +0.2928 | -0.1274 | -0.4202 | 0.387 |
+| openr1 | trainable | q10 | +0.4921 | -0.0751 | -0.5672 | 0.173 |
+| openr1 | frozen | q4 | +0.1589 | +0.0799 | -0.0790 | 0.502 |
+| openr1 | frozen | q10 | +0.3056 | +0.1922 | -0.1135 | 0.285 |
+| openr1 | nogram | q4 | +0.1067 | +0.0279 | -0.0788 | 0.496 |
+| openr1 | nogram | q10 | +0.2086 | +0.0890 | -0.1196 | 0.236 |
+| rlvr | trainable | q4 | -0.0005 | -0.0525 | -0.0520 | 0.896 |
+| rlvr | frozen | q4 | +0.0078 | -0.0570 | -0.0649 | 0.846 |
 
 ## Excess gap over matched no-gram
 
@@ -65,7 +83,10 @@ Negative validation-loss change is an improvement. Negative gap change alone can
 | ID | 1/10 | +0.2230 | -0.0089 |
 | Magicoder | 1 | +0.7739 | +0.0382 |
 | Magicoder | 1/4 | +0.2819 | +0.0201 |
+| Magicoder | 1/10 | +0.1267 | +0.0103 |
 | OpenR1 | 1 | +0.5290 | +0.0021 |
+| OpenR1 | 1/4 | +0.1877 | +0.0019 |
+| OpenR1 | 1/10 | +0.0814 | +0.0082 |
 | RLVR-MATH | 1 | +0.1885 | +0.1112 |
 
 ## Interpretation limits
@@ -93,9 +114,48 @@ python3 docs/plot_scripts/report_posttraining_lr_sweep_20260925.py
 ```
 
 
+## Validation deterioration after the best logged point
+
+Descriptive values from the recorded curve; these are not checkpoint selection claims. Only final weights were saved in this sweep.
+
+| Source | Arm | LR | Best logged validation | Step | Final minus best |
+|---|---|---:|---:|---:|---:|
+| id | trainable | base | 3.2851 | 60 | 1.0911 |
+| id | trainable | q4 | 3.1956 | 660 | 0.1795 |
+| id | trainable | q10 | 3.1914 | 1010 | 0.0201 |
+| id | frozen | base | 3.2958 | 360 | 0.0758 |
+| id | frozen | q4 | 3.2526 | 980 | 0.0109 |
+| id | frozen | q10 | 3.2460 | 1660 | 0.0002 |
+| id | nogram | base | 2.7040 | 30 | 0.1596 |
+| id | nogram | q4 | 2.6702 | 370 | 0.0510 |
+| id | nogram | q10 | 2.6646 | 680 | 0.0163 |
+| magicoder | trainable | base | 1.3326 | 730 | 0.2137 |
+| magicoder | trainable | q4 | 1.3318 | 1510 | 0.0061 |
+| magicoder | trainable | q10 | 1.4186 | 1665 | 0.0000 |
+| magicoder | frozen | base | 1.2968 | 1640 | 0.0051 |
+| magicoder | frozen | q4 | 1.4292 | 1665 | 0.0000 |
+| magicoder | frozen | q10 | 1.5987 | 1665 | 0.0000 |
+| magicoder | nogram | base | 0.8701 | 1420 | 0.0060 |
+| magicoder | nogram | q4 | 0.9102 | 1665 | 0.0000 |
+| magicoder | nogram | q10 | 0.9839 | 1665 | 0.0000 |
+| openr1 | trainable | base | 1.2214 | 710 | 0.1512 |
+| openr1 | trainable | q4 | 1.2402 | 1400 | 0.0050 |
+| openr1 | trainable | q10 | 1.2974 | 1665 | 0.0000 |
+| openr1 | frozen | base | 1.1985 | 1620 | 0.0026 |
+| openr1 | frozen | q4 | 1.2797 | 1660 | 0.0013 |
+| openr1 | frozen | q10 | 1.3933 | 1665 | 0.0000 |
+| openr1 | nogram | base | 0.9709 | 1580 | 0.0111 |
+| openr1 | nogram | q4 | 1.0087 | 1610 | 0.0011 |
+| openr1 | nogram | q10 | 1.0710 | 1665 | 0.0000 |
+| rlvr | trainable | base | 0.2726 | 170 | 0.2382 |
+| rlvr | trainable | q4 | 0.2875 | 290 | 0.1708 |
+| rlvr | frozen | base | 0.2419 | 300 | 0.1938 |
+| rlvr | frozen | q4 | 0.2443 | 460 | 0.1344 |
+| rlvr | nogram | base | 0.1905 | 250 | 0.1386 |
+
 ## Initial-checkpoint fixed gap and growth
 
-These use the identical four uniform training-probe batches and fixed validation set. Initial gap is a train/val sample-difficulty offset before downstream optimization. Growth is final fixed gap minus this initial value, a separate diagnostic from the primary online gap.
+These use the identical four uniform training-probe batches and fixed validation set. Initial gap is a train/val sample-difficulty offset before downstream optimization. Growth is final fixed gap minus this initial value, a separate diagnostic from the primary online gap. A negative net change does not imply no replay effect: rapid initial adaptation can reduce the offset before later gap growth. The full fixed-gap curves and min_logged_fixed_gap/fixed_gap_growth_after_min in endpoints.csv preserve this distinction.
 
 | Source | Arm | Initial fixed gap | Final growth at LR 1 | At LR 1/4 | At LR 1/10 |
 |---|---|---:|---:|---:|---:|
@@ -104,12 +164,12 @@ These use the identical four uniform training-probe batches and fixed validation
 | ID | nogram | -0.0264 | 0.3821 | 0.2608 | 0.1329 |
 | Magicoder | trainable | -0.0629 | 1.0922 | 0.5042 | 0.2906 |
 | Magicoder | frozen | -0.0629 | 0.3384 | 0.2149 | 0.1458 |
-| Magicoder | nogram | 0.0007 | 0.2182 | 0.1292 | pending |
-| OpenR1 | trainable | 0.2241 | 0.5071 | pending | pending |
-| OpenR1 | frozen | 0.2241 | -0.0429 | pending | pending |
-| OpenR1 | nogram | 0.0354 | 0.1312 | pending | pending |
-| RLVR-MATH | trainable | 0.0319 | 0.4702 | pending | pending |
-| RLVR-MATH | frozen | 0.0319 | 0.3860 | pending | pending |
+| Magicoder | nogram | 0.0007 | 0.2182 | 0.1292 | 0.0785 |
+| OpenR1 | trainable | 0.2241 | 0.5071 | 0.0700 | -0.0894 |
+| OpenR1 | frozen | 0.2241 | -0.0429 | -0.1381 | -0.1745 |
+| OpenR1 | nogram | 0.0354 | 0.1312 | 0.0505 | 0.0084 |
+| RLVR-MATH | trainable | 0.0319 | 0.4702 | 0.4164 | pending |
+| RLVR-MATH | frozen | 0.0319 | 0.3860 | 0.3219 | pending |
 | RLVR-MATH | nogram | -0.0288 | 0.3323 | pending | pending |
 
 ## Domain-distribution diagnostic

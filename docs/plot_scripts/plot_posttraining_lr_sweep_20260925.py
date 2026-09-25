@@ -81,6 +81,8 @@ def load(partial):
                         if k!='step':assert len({r[k] for r in norms})==1
                 row={'source':source,'arm':arm,'lr_tag':tag,'lr':lr,'run_id':rid,'seed':42,'step':1665,
                      'train_loss':s['final_train_loss'],'val_loss':s['final_val_loss'],'online_gap':s['final_gap']}
+                best=int(np.argmin(a['val_loss']))
+                row.update(best_logged_val_loss=float(a['val_loss'][best]),best_logged_val_step=int(a['step'][best]),final_val_above_best=float(a['val_loss'][-1]-a['val_loss'][best]))
                 initial=next((x for x in baseline['runs'] if x['source']==legacy and x['arm']==arm),None)
                 if initial:
                     row['initial_fixed_gap']=initial['base_fixed_gap']
@@ -96,6 +98,8 @@ def load(partial):
                         row[k]=s['final_'+k]
                     assert np.allclose(a['fixed_val_loss']-a['fixed_train_loss'],a['fixed_gap'],rtol=0,atol=1e-7)
                     a['fixed_step']=np.array([r['step'] for r in fixed]);row['probe_sha256']=h
+                    low=int(np.argmin(a['fixed_gap']))
+                    row.update(min_logged_fixed_gap=float(a['fixed_gap'][low]),min_fixed_gap_step=int(a['fixed_step'][low]),fixed_gap_growth_after_min=float(a['fixed_gap'][-1]-a['fixed_gap'][low]))
                     for r in fixed:curves.append({'source':source,'arm':arm,'lr_tag':tag,'run_id':rid,'step':r['step'],'metric':'fixed_gap','value':r['fixed_gap']})
                 else:
                     b=next((x for x in baseline['runs'] if x['source']==legacy and x['arm']==arm),None)
@@ -159,7 +163,7 @@ def plot(data,partial):
                     axs[2,j].text(.5,.5,'Fixed-probe results pending',transform=axs[2,j].transAxes,ha='center',color='#777',fontsize=9)
                 axs[2,j].set_xlabel('Replay pass')
             for i,label in enumerate(['Loss (nats/token)','Online gap (nats/token)','Fixed-probe gap (nats/token)']):axs[i,0].set_ylabel(label)
-            fig.text(.5,.025,'Raw points; no smoothing. Fixed diagnostic uses 4 uniform train batches. Original-LR fixed value is endpoint-only.',ha='center',fontsize=8.5)
+            fig.text(.5,.025,'Raw points; no smoothing. Fixed probe: 4 uniform batches; square = initialization, gray dot = original-LR endpoint.',ha='center',fontsize=8.5)
             save(fig,'lr_curves_'+source);book.savefig(fig,bbox_inches='tight');plt.close(fig)
     fig,axs=plt.subplots(2,4,figsize=(12,5.8),sharex=True)
     fig.subplots_adjust(left=.075,right=.99,bottom=.14,top=.82,wspace=.31,hspace=.32)
