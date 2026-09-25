@@ -14,6 +14,7 @@ REMOTE = '/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/r
 SCRIPT = '''import hashlib,json
 from pathlib import Path
 r=Path(REMOTE_ROOT)
+cache=CACHE
 rows=[]
 for p in sorted(r.glob('ptlr_*_s42_fixed')):
  if not (p/'status.json').exists():continue
@@ -21,17 +22,23 @@ for p in sorted(r.glob('ptlr_*_s42_fixed')):
  for name in ['summary.json','train_log.jsonl','fixed_train_loss.jsonl','table_norm.jsonl','status.json','launch.json','train.log','final_model.pt','probe_tokens.npz']:
   f=p/name
   if f.exists():
+   previous=cache.get(p.name,{}).get(name,{})
+   if previous.get('bytes')==f.stat().st_size and previous.get('mtime_ns')==f.stat().st_mtime_ns:
+    files[name]=previous
+    continue
    h=hashlib.sha256()
    with f.open('rb') as src:
     for b in iter(lambda:src.read(8*1024*1024),b''):h.update(b)
-   files[name]={'bytes':f.stat().st_size,'sha256':h.hexdigest()}
+   files[name]={'bytes':f.stat().st_size,'mtime_ns':f.stat().st_mtime_ns,'sha256':h.hexdigest()}
  rows.append({'run_id':p.name,'host':'360-2','path':str(p),'files':files})
 print(json.dumps(rows))
 '''.replace('REMOTE_ROOT', repr(REMOTE))
 
 
 def main():
-    cmd='python3 -c '+shlex.quote(SCRIPT)
+    previous=PACKET/'artifact_manifest.json'
+    cache={r['run_id']:r['files'] for r in json.loads(previous.read_text())} if previous.exists() else {}
+    cmd='python3 -c '+shlex.quote(SCRIPT.replace('CACHE',repr(cache)))
     rows=json.loads(subprocess.check_output(['ssh','360-2',cmd],text=True))
     wanted=[]
     for row in rows:

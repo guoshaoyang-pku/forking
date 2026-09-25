@@ -1,1 +1,574 @@
-[]
+[
+  {
+    "run_id": "ptlr_id_frozen_q10_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_id_frozen_q10_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3263,
+        "mtime_ns": 1790320598581523050,
+        "sha256": "48a808323b5f12ef83a18ea9f944a1c0e2dceedbad2336afff87ca3169a6b487"
+      },
+      "train_log.jsonl": {
+        "bytes": 28272,
+        "mtime_ns": 1790320594069628764,
+        "sha256": "f9d932f4d1efa0cbb62c79372afa4601d947c2e1f6550accb8f7a47f2601e1f6"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26333,
+        "mtime_ns": 1790320594625615737,
+        "sha256": "5de59ede452b3bbbecf6dc91c28ae69884401676737e469e46c2f8077e7b2180"
+      },
+      "table_norm.jsonl": {
+        "bytes": 10848,
+        "mtime_ns": 1790320592789658754,
+        "sha256": "8ba7c2b62aa2366a6c47b78b0c7574bf4824acc9e46e27289d032f0d6722389d"
+      },
+      "status.json": {
+        "bytes": 375,
+        "mtime_ns": 1790320599193508711,
+        "sha256": "8f40beafd8dbc54b82e210da69aa3fd66e1e107de668fef6e76442a051b74fcf"
+      },
+      "launch.json": {
+        "bytes": 2393,
+        "mtime_ns": 1790320111164943239,
+        "sha256": "bd9b13ab9605f3a75d3a8ec4e295bc8ffdd102df6d82dfe778fc3aeba0114b5c"
+      },
+      "train.log": {
+        "bytes": 29018,
+        "mtime_ns": 1790320598581523050,
+        "sha256": "62e26fd7971d6f3ec927dc944f4f1823ca723945384921472f51c3f4a9bcf7ae"
+      },
+      "final_model.pt": {
+        "bytes": 3479539169,
+        "mtime_ns": 1790320598573523237,
+        "sha256": "5a449b3d9b389397077ee2f6b36968ce3665bc1117881a0e36ce1cd51a4dc95a"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790320598581523050,
+        "sha256": "ff4583317ed8bc3d6b38fdb5d445f7913f8c28af190b1f6984a3a57e34db11fb"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_id_frozen_q4_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_id_frozen_q4_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3265,
+        "mtime_ns": 1790320480156297758,
+        "sha256": "db899104ef8376b68f50dbcb7f4a47a689de4d0dba2307d3b4970c6df5672311"
+      },
+      "train_log.jsonl": {
+        "bytes": 28225,
+        "mtime_ns": 1790320475540405908,
+        "sha256": "0d8915fae00f715e037dbca46884c037b709c2c22b1ddff7af622a2c2d942935"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26256,
+        "mtime_ns": 1790320476076393350,
+        "sha256": "f796acc0f287ff34f3b4f4ca0bc9336364c5a961ba11f20770b17ed766fd5eed"
+      },
+      "table_norm.jsonl": {
+        "bytes": 10848,
+        "mtime_ns": 1790320474300434961,
+        "sha256": "8ba7c2b62aa2366a6c47b78b0c7574bf4824acc9e46e27289d032f0d6722389d"
+      },
+      "status.json": {
+        "bytes": 377,
+        "mtime_ns": 1790320480796282763,
+        "sha256": "da13cae283b6f4995340fce51b413e3f660feb73ba256c92bc7cf27722591b7c"
+      },
+      "launch.json": {
+        "bytes": 2393,
+        "mtime_ns": 1790320004823434825,
+        "sha256": "6c0cf8b341b609870c75b97d1adfa0a0cd42005be376922997063453e7f12ce2"
+      },
+      "train.log": {
+        "bytes": 29016,
+        "mtime_ns": 1790320480156297758,
+        "sha256": "4e0784436ec3211d705443e9b5895e5b4f81c6da0b083a6e3f154261d273f838"
+      },
+      "final_model.pt": {
+        "bytes": 3479539169,
+        "mtime_ns": 1790320480144298039,
+        "sha256": "9d73e28a7a827c18d3969efdc56629ecf1579eed815f231258dffd5e1a160620"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790320480156297758,
+        "sha256": "ff4583317ed8bc3d6b38fdb5d445f7913f8c28af190b1f6984a3a57e34db11fb"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_id_nogram_q10_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_id_nogram_q10_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3275,
+        "mtime_ns": 1790320607877305249,
+        "sha256": "2093917cc2b3cead8f26b699eb1e0ee31d3f8f9ae8fb6d48f8ed0958210de1c6"
+      },
+      "train_log.jsonl": {
+        "bytes": 28249,
+        "mtime_ns": 1790320607137322587,
+        "sha256": "dc51b855b9f575b9c054d1147712d808ede6c2b558d00d3b1c89418e7d72237e"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26308,
+        "mtime_ns": 1790320607673310029,
+        "sha256": "be30ee6d3391044e0bc5cccad727306b3b897609a3da89884c18b74ea0b91d6b"
+      },
+      "table_norm.jsonl": {
+        "bytes": 2382,
+        "mtime_ns": 1790320605885351921,
+        "sha256": "16cdf7ce3ee20d115e27ab462c904d5cfe4fbcc162945b72a1e138eb1594b2a5"
+      },
+      "status.json": {
+        "bytes": 376,
+        "mtime_ns": 1790320608341294378,
+        "sha256": "e389c83f5d4f9ccef0148ecfb8c0cdd3c280520a1c1654062004fc3e43066295"
+      },
+      "launch.json": {
+        "bytes": 2381,
+        "mtime_ns": 1790320141396234919,
+        "sha256": "95fa8a7262c5488c0301b5fbf69cc1f114fa189ce9f3233f998b90f8aed1e059"
+      },
+      "train.log": {
+        "bytes": 28971,
+        "mtime_ns": 1790320607877305249,
+        "sha256": "e6978a8ca262b73325aa7c3498462082827c91170c5267e5fdefd7e548e7eb24"
+      },
+      "final_model.pt": {
+        "bytes": 258313247,
+        "mtime_ns": 1790320607865305531,
+        "sha256": "2eb6a834cf1da5791f0f14a567e39b92a28fbd729e5ccea4c89d49ef931f8020"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790320607877305249,
+        "sha256": "ff4583317ed8bc3d6b38fdb5d445f7913f8c28af190b1f6984a3a57e34db11fb"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_id_nogram_q4_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_id_nogram_q4_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3275,
+        "mtime_ns": 1790320549502672969,
+        "sha256": "fdf4bda94f71772ae5655962b510107c61e75bcd596a850d15416540d92c2c4e"
+      },
+      "train_log.jsonl": {
+        "bytes": 28180,
+        "mtime_ns": 1790320548758690401,
+        "sha256": "6114184f4ce4c7a84c0df3551e1d5f40dab4202a268e71e690a86849145c3db0"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26213,
+        "mtime_ns": 1790320549298677749,
+        "sha256": "b6d5798e7cd8022e1cebbe16bffc586c6a60422d358aee220675be4fca2ded1e"
+      },
+      "table_norm.jsonl": {
+        "bytes": 2382,
+        "mtime_ns": 1790320547502719828,
+        "sha256": "16cdf7ce3ee20d115e27ab462c904d5cfe4fbcc162945b72a1e138eb1594b2a5"
+      },
+      "status.json": {
+        "bytes": 376,
+        "mtime_ns": 1790320550010661067,
+        "sha256": "a974f3acd7526f9d7f1d584701edd7aee81172364bfe5e8cd0f50ea537d7135b"
+      },
+      "launch.json": {
+        "bytes": 2381,
+        "mtime_ns": 1790320080885652684,
+        "sha256": "e56378ee2781269a06df81d61b6391a35f44638d3b89b79ac38cab3b5c2a9c04"
+      },
+      "train.log": {
+        "bytes": 28970,
+        "mtime_ns": 1790320549502672969,
+        "sha256": "cbfa6ae83352d2f87ca9776cc381c68a6a66604ec198d9baeb97a35247bd6911"
+      },
+      "final_model.pt": {
+        "bytes": 258313247,
+        "mtime_ns": 1790320549494673157,
+        "sha256": "7fa93cfc868cab39ee95d597f0eed83b669a2fb3ec6cd0135defc487a74fae57"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790320549502672969,
+        "sha256": "ff4583317ed8bc3d6b38fdb5d445f7913f8c28af190b1f6984a3a57e34db11fb"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_id_trainable_q10_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_id_trainable_q10_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3272,
+        "mtime_ns": 1790320618477056897,
+        "sha256": "356036012090e8d70bed205ced3a9d085b9cc5a1ff0f5bbf0facc41d37e21789"
+      },
+      "train_log.jsonl": {
+        "bytes": 28205,
+        "mtime_ns": 1790320613905164017,
+        "sha256": "f699b3f59e0e79ee060c2667a321d028460cdf13e07eec03c1025f51adb2688b"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26221,
+        "mtime_ns": 1790320614457151083,
+        "sha256": "4cf0902608d356ddd8e12e1c78e00c38515017a8c920f16763cc3b06da48923c"
+      },
+      "table_norm.jsonl": {
+        "bytes": 10818,
+        "mtime_ns": 1790320612573195225,
+        "sha256": "e428703ae01a12ace37374160dd0f0ffb657cb53046855db1c7475893a1fe9f8"
+      },
+      "status.json": {
+        "bytes": 377,
+        "mtime_ns": 1790320619109042089,
+        "sha256": "d824587c25fc10a479405d0246ef46297ecefedfb44a0d5a25d4e39e4728ce02"
+      },
+      "launch.json": {
+        "bytes": 2377,
+        "mtime_ns": 1790320111180942864,
+        "sha256": "8812c0f55c8691046d36792ae54f123b867a4792e40971fc9b71393ff1461f36"
+      },
+      "train.log": {
+        "bytes": 28962,
+        "mtime_ns": 1790320618477056897,
+        "sha256": "ee1e08fe3b6b1f4aab8092ffe5c6cec630b70d2c56d59b4ab9446bc3c5911947"
+      },
+      "final_model.pt": {
+        "bytes": 3479539169,
+        "mtime_ns": 1790320618465057178,
+        "sha256": "f1ca9aa7845bed51872e82fc35bba37b2e33282ce2cfba8d4136fdf5265e7965"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790320618477056897,
+        "sha256": "ff4583317ed8bc3d6b38fdb5d445f7913f8c28af190b1f6984a3a57e34db11fb"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_id_trainable_q4_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_id_trainable_q4_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3269,
+        "mtime_ns": 1790320065710008250,
+        "sha256": "4ffeb219047eec8c8b337afb285e4323c07d7577e8cc2e8508527e2bbcdb8769"
+      },
+      "train_log.jsonl": {
+        "bytes": 28113,
+        "mtime_ns": 1790320060262135894,
+        "sha256": "1def47b3dd041b958dc9d31fbc6c692c370dff5fc29ddb680d89f94f628baca8"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26126,
+        "mtime_ns": 1790320060814122961,
+        "sha256": "f7c456b88750e5ec29981b863168f17839b1b65d23c922b96c53d4e3b80b421d"
+      },
+      "table_norm.jsonl": {
+        "bytes": 10830,
+        "mtime_ns": 1790320058922167289,
+        "sha256": "a527e55e633bee60e95f4bf8241496e14470aa27507009c6d5b3c6e1ce513610"
+      },
+      "status.json": {
+        "bytes": 374,
+        "mtime_ns": 1790320066653986132,
+        "sha256": "e695764572fda2048950ab3f70d2158c39f770bb9d1f43b56b5baee23f16ba47"
+      },
+      "launch.json": {
+        "bytes": 2377,
+        "mtime_ns": 1790319549294107894,
+        "sha256": "5bef53a01deccf1e2530154e912876981c630155aebd9066941baef09b065604"
+      },
+      "train.log": {
+        "bytes": 28961,
+        "mtime_ns": 1790320065710008250,
+        "sha256": "201da63761caa243cdd7d735657a713a90abb85f02ddc606cd8cf70652cca6e2"
+      },
+      "final_model.pt": {
+        "bytes": 3479539169,
+        "mtime_ns": 1790320065698008531,
+        "sha256": "15fe275a439cf2ce787aee2f14019c7a8376bbce229e6122940ebe7658862340"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790320065710008250,
+        "sha256": "ff4583317ed8bc3d6b38fdb5d445f7913f8c28af190b1f6984a3a57e34db11fb"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_magicoder_frozen_q10_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_magicoder_frozen_q10_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3279,
+        "mtime_ns": 1790321113049469046,
+        "sha256": "c24492d4c504c33028536f932384394fad64db8f539c16b9be4fb289f19621fe"
+      },
+      "train_log.jsonl": {
+        "bytes": 28292,
+        "mtime_ns": 1790321108445576916,
+        "sha256": "d49a68d53ab35c5569e03e547c9ab22a95875151d6345419992aae22b720a465"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26313,
+        "mtime_ns": 1790321108997563983,
+        "sha256": "dbbb082b3c78d141223d08edb3e7dc41ae12ffc3fc325ad5be590744dd16125a"
+      },
+      "table_norm.jsonl": {
+        "bytes": 10848,
+        "mtime_ns": 1790321107169606812,
+        "sha256": "8ba7c2b62aa2366a6c47b78b0c7574bf4824acc9e46e27289d032f0d6722389d"
+      },
+      "status.json": {
+        "bytes": 376,
+        "mtime_ns": 1790321113749452646,
+        "sha256": "96756fdd42ed1d517a856935c719171e9ac68abccc1209fb5b533f1f33560deb"
+      },
+      "launch.json": {
+        "bytes": 2415,
+        "mtime_ns": 1790320627472846125,
+        "sha256": "d1809e468fb4b904aa796a4b09f438f314dc9689c84815d4ffb445452065a096"
+      },
+      "train.log": {
+        "bytes": 29022,
+        "mtime_ns": 1790321113049469046,
+        "sha256": "fc8c2360c11ca94b2709f840ae5610e1e0aa1ef43eba739bf4ced7a0073a96d3"
+      },
+      "final_model.pt": {
+        "bytes": 3479539169,
+        "mtime_ns": 1790321113029469515,
+        "sha256": "cf3713e8f68afdc875d3867e7b2dc50c964627279affa417950b88f45bd53b2f"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790321113049469046,
+        "sha256": "169d3743400500fd56a372c08a17a26a5d4056f37d5d73b5606f6b57e7fec6c1"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_magicoder_frozen_q4_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_magicoder_frozen_q4_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3278,
+        "mtime_ns": 1790321047047015486,
+        "sha256": "b568860e179c15eb0a8f20b50d0cf25ecbb9a3ce0dfa770b64b48b48663135a4"
+      },
+      "train_log.jsonl": {
+        "bytes": 28268,
+        "mtime_ns": 1790321042547120919,
+        "sha256": "03c90bd2291467bde4d175427a2afdbc4111bcb6d448c694549af8ef8759c85d"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26248,
+        "mtime_ns": 1790321043091108173,
+        "sha256": "a860775853daa24c646bccd16b7db58407a0f277d75b48b726cb47d0eda1b60b"
+      },
+      "table_norm.jsonl": {
+        "bytes": 10848,
+        "mtime_ns": 1790321041291150347,
+        "sha256": "8ba7c2b62aa2366a6c47b78b0c7574bf4824acc9e46e27289d032f0d6722389d"
+      },
+      "status.json": {
+        "bytes": 375,
+        "mtime_ns": 1790321047651001335,
+        "sha256": "c741a343f8eb2f03f72ef3c6e0a838c71092e9cbfc0deb56ab958ff0c1264c31"
+      },
+      "launch.json": {
+        "bytes": 2415,
+        "mtime_ns": 1790320566714269701,
+        "sha256": "48687bd1b176449a9ab9309b3f8791444c2afe280a4e66bde472d77d3809f8d2"
+      },
+      "train.log": {
+        "bytes": 29021,
+        "mtime_ns": 1790321047047015486,
+        "sha256": "1f4363bc24ae5f41c8c752bd946602d59221cd358ff4a9859f04102a4d44ce67"
+      },
+      "final_model.pt": {
+        "bytes": 3479539169,
+        "mtime_ns": 1790321047039015674,
+        "sha256": "3233e7720b9753f000a7b7ce7c410f547c149b2255c541ce0109cb60a4cce891"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790321047047015486,
+        "sha256": "169d3743400500fd56a372c08a17a26a5d4056f37d5d73b5606f6b57e7fec6c1"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_magicoder_nogram_q4_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_magicoder_nogram_q4_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3291,
+        "mtime_ns": 1790321078138287017,
+        "sha256": "d2e140221a6d86b47775ab5c1aae1217840d79a3ee0e249955fb40790dc3f027"
+      },
+      "train_log.jsonl": {
+        "bytes": 28350,
+        "mtime_ns": 1790321077394304448,
+        "sha256": "90e33936acfee9884a2b2707d060bbc208691660b187f098beb5b2de645f5676"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26328,
+        "mtime_ns": 1790321077934291796,
+        "sha256": "ac8934dee33e2dc22e282e54fbdcd706f416d9ecf19a6564d89b6f5c5b7fed7f"
+      },
+      "table_norm.jsonl": {
+        "bytes": 2382,
+        "mtime_ns": 1790321076146333688,
+        "sha256": "16cdf7ce3ee20d115e27ab462c904d5cfe4fbcc162945b72a1e138eb1594b2a5"
+      },
+      "status.json": {
+        "bytes": 377,
+        "mtime_ns": 1790321078682274271,
+        "sha256": "647a0fe3141e693ab713d1e4a704613266ec3ce425db7521ae3fb00b4f903413"
+      },
+      "launch.json": {
+        "bytes": 2403,
+        "mtime_ns": 1790320612293201785,
+        "sha256": "ffe4afbad3a415e3aa763e219f0c7bbcaee7719a6820c567364bc03ad9a175b9"
+      },
+      "train.log": {
+        "bytes": 28975,
+        "mtime_ns": 1790321078138287017,
+        "sha256": "ea3e88a283a48b48639916cc11c859846a8640dc7466a73b252f21a7ddc7c5d6"
+      },
+      "final_model.pt": {
+        "bytes": 258313247,
+        "mtime_ns": 1790321078126287298,
+        "sha256": "cc1af925463449811bd4f4417c500970ef1e020b6af6e3676702bd950f26806f"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790321078138287017,
+        "sha256": "169d3743400500fd56a372c08a17a26a5d4056f37d5d73b5606f6b57e7fec6c1"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_magicoder_trainable_q10_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_magicoder_trainable_q10_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3284,
+        "mtime_ns": 1790321122101256963,
+        "sha256": "70ad5bbe0dba0c799e68a36bfb60efa5aadebfa2b3881a59f275e94ddd125956"
+      },
+      "train_log.jsonl": {
+        "bytes": 28230,
+        "mtime_ns": 1790321117545363707,
+        "sha256": "3d299cffbe58a3ce94675723cf46583776f91808bd4c8bf468a31b86ae417aff"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26254,
+        "mtime_ns": 1790321118101350681,
+        "sha256": "30a76c4c008642acf47ac1652ac8d60278a33ae243d6d91130b3461271e7ce3f"
+      },
+      "table_norm.jsonl": {
+        "bytes": 10821,
+        "mtime_ns": 1790321116201395197,
+        "sha256": "eda71704102f1c9f6d09426cfd06cbd86d4bcfd6a07958a69eb15d9127215ebc"
+      },
+      "status.json": {
+        "bytes": 374,
+        "mtime_ns": 1790321122785240937,
+        "sha256": "88962e007e9f50d6379d1b34583ab3b1690740525476034b2480bd3618e449b3"
+      },
+      "launch.json": {
+        "bytes": 2399,
+        "mtime_ns": 1790320612277202160,
+        "sha256": "afa8ca44698ae60778cf397ef1dcf07fb1fc3ce2920484fc4698579f2790c9b2"
+      },
+      "train.log": {
+        "bytes": 28967,
+        "mtime_ns": 1790321122101256963,
+        "sha256": "0c23433c011a7ad1d3196da20bafc8a3cf821494ecb323ac2c367cfa5a93fa1e"
+      },
+      "final_model.pt": {
+        "bytes": 3479539169,
+        "mtime_ns": 1790321122089257244,
+        "sha256": "dbc2b0624d350a091bac0342a6d1c3ea6c17aae9eadf94b9c4521e282aba2378"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790321122097257056,
+        "sha256": "169d3743400500fd56a372c08a17a26a5d4056f37d5d73b5606f6b57e7fec6c1"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_magicoder_trainable_q4_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_magicoder_trainable_q4_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3287,
+        "mtime_ns": 1790320987288415633,
+        "sha256": "1345dfffa293ebd3651daa06c7d3f7e37014b19e7e7df08169cedd7b8ace4210"
+      },
+      "train_log.jsonl": {
+        "bytes": 28226,
+        "mtime_ns": 1790320982776521347,
+        "sha256": "ebfa64028d81a2f7c994e8f21a82a8225b3b9aa7d399f8f318aa6a547a367d35"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26235,
+        "mtime_ns": 1790320983316508695,
+        "sha256": "d5cb81296579dc3be0e724bd6296a27224f4e17dc97bc3f133d7ec76bea71ed0"
+      },
+      "table_norm.jsonl": {
+        "bytes": 10807,
+        "mtime_ns": 1790320981472551899,
+        "sha256": "54e8534933ca6b615e341bd62caa29675ea67deac5df9bee418d134a4ebbcb29"
+      },
+      "status.json": {
+        "bytes": 377,
+        "mtime_ns": 1790320987988399232,
+        "sha256": "394703037343b06dbc62ae0f97fc66c2f79ed2b0ef0da3a3a9a76a251b369801"
+      },
+      "launch.json": {
+        "bytes": 2399,
+        "mtime_ns": 1790320490732049967,
+        "sha256": "6f540d0f0ee1d78eb858bce33570f19926b5f8cd262aae84c9fc428ed274ea3b"
+      },
+      "train.log": {
+        "bytes": 28965,
+        "mtime_ns": 1790320987288415633,
+        "sha256": "c1b74280c164838d7cd7d1d6ad87569bb9321b77357be2df4efabacec456fb2f"
+      },
+      "final_model.pt": {
+        "bytes": 3479539169,
+        "mtime_ns": 1790320987276415914,
+        "sha256": "3d3d1349e05742a3b208f1e2b7251767f683b470f11369f3c22d400a9fb4d01f"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790320987288415633,
+        "sha256": "169d3743400500fd56a372c08a17a26a5d4056f37d5d73b5606f6b57e7fec6c1"
+      }
+    }
+  }
+]

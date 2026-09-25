@@ -59,6 +59,38 @@ def main():
              'python3 docs/plot_scripts/collect_posttraining_lr_sweep_20260925.py',
              '.venv/bin/python docs/plot_scripts/plot_posttraining_lr_sweep_20260925.py'+(' --partial' if count<24 else ''),
              'python3 docs/plot_scripts/report_posttraining_lr_sweep_20260925.py', '```', '']
+    baseline_path=P/'baseline_uniform4.json'
+    if baseline_path.exists():
+        baseline=json.loads(baseline_path.read_text())
+        text += ['', '## Initial-checkpoint fixed gap and growth', '',
+                 'These use the identical four uniform training-probe batches and fixed validation set. Initial gap is a train/val sample-difficulty offset before downstream optimization. Growth is final fixed gap minus this initial value, a separate diagnostic from the primary online gap.', '',
+                 '| Source | Arm | Initial fixed gap | Final growth at LR 1 | At LR 1/4 | At LR 1/10 |',
+                 '|---|---|---:|---:|---:|---:|']
+        for source,label in sources:
+            legacy={'openr1':'openr1_10shards','rlvr':'rlvr_math'}.get(source,source)
+            for arm in ['trainable','frozen','nogram']:
+                initial=next(r['base_fixed_gap'] for r in baseline['runs'] if r['source']==legacy and r['arm']==arm)
+                growth=[]
+                for tag in ['base','q4','q10']:
+                    row=index.get((source,arm,tag),{})
+                    growth.append('%.4f' % (float(row['fixed_gap'])-initial) if row.get('fixed_gap') else 'pending')
+                text.append('| %s | %s | %.4f | %s |' % (label,arm,initial,' | '.join(growth)))
+    domain_path=P/'domain_overlap.json'
+    if domain_path.exists():
+        domain=json.loads(domain_path.read_text())
+        text += ['', '## Domain-distribution diagnostic', '',
+                 'Token histograms use the entire unique pretraining pool (993,853,440 target tokens) and each full downstream packed train pool. JS divergence is in nats (0 means identical unigram distributions). Exact n-gram coverage uses the same 4,096 uniformly sampled pretraining rows and 288 uniformly sampled downstream rows per source; it is a token-occurrence-weighted sampled lower bound on full-pretraining coverage, not a hash-table hit rate.', '',
+                 '| Source | Unigram JS from pretraining | Sampled bigram coverage | Sampled trigram coverage |',
+                 '|---|---:|---:|---:|']
+        for row in domain['sources']:
+            d=row['train']
+            text.append(f"| {row['source']} | {d['unigram_js_from_pretrain']:.6f} | {100*d['sampled_pretrain_2gram_coverage']:.2f}% | {100*d['sampled_pretrain_3gram_coverage']:.2f}% |")
+        text += ['', 'ID is much closer in unigram distribution; OOD nevertheless reuses almost exclusively previously seen vocabulary and many sampled contexts. This measures marginal distribution and sampled identity overlap, not conditional continuation similarity, causal explanation of the gap ranking, or suitability of the pretraining corpus. Artifacts: domain_overlap.json and domain_overlap_provenance.json; CPU-only script code/tools/audit_posttraining_domain_overlap.py.', '']
+    coverage_path=P/'table_row_coverage.json'
+    if coverage_path.exists():
+        coverage=json.loads(coverage_path.read_text())
+        text += ['', '## Hash-table address coverage', '',
+                 'Using the actual input-trigram hash, the first %s pretraining rows visit all %s table addresses (within-row contexts only). A previously unseen exact context therefore need not address an unused parameter row: collisions share rows. This confirms address coverage, not exact-context familiarity, useful learned content, or a nonzero net gradient for every row. Source: table_row_coverage.json; script code/tools/audit_posttraining_table_row_coverage.py.' % (coverage['rows_scanned'],coverage['table_rows']), '']
     (P/'README.md').write_text(chr(10).join(text))
     print(f'Report: {count}/24 new runs')
 

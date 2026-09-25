@@ -1,6 +1,6 @@
 # Correct-tokenizer post-training LR sweep
 
-Status: 0/24 new runs passed artifact and metric QC. Seed 42 only. Original-LR comparison uses the matching seed-42 runs.
+Status: 11/24 new runs passed artifact and metric QC. Seed 42 only. Original-LR comparison uses the matching seed-42 runs.
 
 ## Protocol
 
@@ -14,18 +14,29 @@ Primary online gap = fixed validation loss after update minus the current 72-exa
 
 | Source | Arm | LR fraction | Train | Validation | Online gap | Fixed gap |
 |---|---|---:|---:|---:|---:|---:|
-| ID | trainable | 1 | 1.9132 | 4.3761 | 2.4629 | pending uniform4 audit |
-| ID | frozen | 1 | 3.0305 | 3.3715 | 0.3410 | pending uniform4 audit |
-| ID | nogram | 1 | 2.5476 | 2.8636 | 0.3159 | pending uniform4 audit |
-| Magicoder | trainable | 1 | 0.6187 | 1.5463 | 0.9276 | pending uniform4 audit |
-| Magicoder | frozen | 1 | 1.1100 | 1.3018 | 0.1919 | pending uniform4 audit |
-| Magicoder | nogram | 1 | 0.7225 | 0.8762 | 0.1537 | pending uniform4 audit |
-| OpenR1 | trainable | 1 | 0.6870 | 1.3726 | 0.6855 | pending uniform4 audit |
-| OpenR1 | frozen | 1 | 1.0425 | 1.2011 | 0.1587 | pending uniform4 audit |
-| OpenR1 | nogram | 1 | 0.8254 | 0.9820 | 0.1566 | pending uniform4 audit |
-| RLVR-MATH | trainable | 1 | 0.0115 | 0.5108 | 0.4993 | pending uniform4 audit |
-| RLVR-MATH | frozen | 1 | 0.0137 | 0.4357 | 0.4220 | pending uniform4 audit |
-| RLVR-MATH | nogram | 1 | 0.0183 | 0.3291 | 0.3108 | pending uniform4 audit |
+| ID | trainable | 1 | 1.9132 | 4.3761 | 2.4629 | 2.7786 |
+| ID | trainable | 1/4 | 2.5896 | 3.3751 | 0.7855 | 0.8815 |
+| ID | trainable | 1/10 | 2.8803 | 3.2115 | 0.3312 | 0.3544 |
+| ID | frozen | 1 | 3.0305 | 3.3715 | 0.3410 | 0.3645 |
+| ID | frozen | 1/4 | 3.0783 | 3.2635 | 0.1853 | 0.1760 |
+| ID | frozen | 1/10 | 3.1469 | 3.2462 | 0.0993 | 0.0707 |
+| ID | nogram | 1 | 2.5476 | 2.8636 | 0.3159 | 0.3557 |
+| ID | nogram | 1/4 | 2.5063 | 2.7213 | 0.2150 | 0.2344 |
+| ID | nogram | 1/10 | 2.5727 | 2.6809 | 0.1082 | 0.1065 |
+| Magicoder | trainable | 1 | 0.6187 | 1.5463 | 0.9276 | 1.0293 |
+| Magicoder | trainable | 1/4 | 0.9861 | 1.3379 | 0.3518 | 0.4412 |
+| Magicoder | trainable | 1/10 | 1.2669 | 1.4186 | 0.1516 | 0.2277 |
+| Magicoder | frozen | 1 | 1.1100 | 1.3018 | 0.1919 | 0.2754 |
+| Magicoder | frozen | 1/4 | 1.3393 | 1.4292 | 0.0899 | 0.1520 |
+| Magicoder | frozen | 1/10 | 1.5634 | 1.5987 | 0.0353 | 0.0829 |
+| Magicoder | nogram | 1 | 0.7225 | 0.8762 | 0.1537 | 0.2189 |
+| Magicoder | nogram | 1/4 | 0.8403 | 0.9102 | 0.0699 | 0.1299 |
+| OpenR1 | trainable | 1 | 0.6870 | 1.3726 | 0.6855 | 0.7312 |
+| OpenR1 | frozen | 1 | 1.0425 | 1.2011 | 0.1587 | 0.1811 |
+| OpenR1 | nogram | 1 | 0.8254 | 0.9820 | 0.1566 | 0.1666 |
+| RLVR-MATH | trainable | 1 | 0.0115 | 0.5108 | 0.4993 | 0.5020 |
+| RLVR-MATH | frozen | 1 | 0.0137 | 0.4357 | 0.4220 | 0.4178 |
+| RLVR-MATH | nogram | 1 | 0.0183 | 0.3291 | 0.3108 | 0.3035 |
 
 ## Changes relative to original LR
 
@@ -33,13 +44,27 @@ Negative validation-loss change is an improvement. Negative gap change alone can
 
 | Source | Arm | LR fraction | Change in train | Change in validation | Change in online gap | Gap / original |
 |---|---|---:|---:|---:|---:|---:|
+| id | trainable | q4 | +0.6764 | -1.0011 | -1.6774 | 0.319 |
+| id | trainable | q10 | +0.9671 | -1.1646 | -2.1317 | 0.134 |
+| id | frozen | q4 | +0.0478 | -0.1080 | -0.1558 | 0.543 |
+| id | frozen | q10 | +0.1164 | -0.1253 | -0.2417 | 0.291 |
+| id | nogram | q4 | -0.0414 | -0.1423 | -0.1009 | 0.681 |
+| id | nogram | q10 | +0.0250 | -0.1827 | -0.2077 | 0.343 |
+| magicoder | trainable | q4 | +0.3674 | -0.2084 | -0.5758 | 0.379 |
+| magicoder | trainable | q10 | +0.6483 | -0.1277 | -0.7760 | 0.163 |
+| magicoder | frozen | q4 | +0.2294 | +0.1274 | -0.1019 | 0.469 |
+| magicoder | frozen | q10 | +0.4535 | +0.2969 | -0.1566 | 0.184 |
+| magicoder | nogram | q4 | +0.1179 | +0.0340 | -0.0838 | 0.455 |
 
 ## Excess gap over matched no-gram
 
 | Source | LR fraction | Trainable minus no-gram | Frozen minus no-gram |
 |---|---:|---:|---:|
 | ID | 1 | +2.1470 | +0.0251 |
+| ID | 1/4 | +0.5705 | -0.0297 |
+| ID | 1/10 | +0.2230 | -0.0089 |
 | Magicoder | 1 | +0.7739 | +0.0382 |
+| Magicoder | 1/4 | +0.2819 | +0.0201 |
 | OpenR1 | 1 | +0.5290 | +0.0021 |
 | RLVR-MATH | 1 | +0.1885 | +0.1112 |
 
@@ -66,3 +91,41 @@ python3 docs/plot_scripts/collect_posttraining_lr_sweep_20260925.py
 .venv/bin/python docs/plot_scripts/plot_posttraining_lr_sweep_20260925.py --partial
 python3 docs/plot_scripts/report_posttraining_lr_sweep_20260925.py
 ```
+
+
+## Initial-checkpoint fixed gap and growth
+
+These use the identical four uniform training-probe batches and fixed validation set. Initial gap is a train/val sample-difficulty offset before downstream optimization. Growth is final fixed gap minus this initial value, a separate diagnostic from the primary online gap.
+
+| Source | Arm | Initial fixed gap | Final growth at LR 1 | At LR 1/4 | At LR 1/10 |
+|---|---|---:|---:|---:|---:|
+| ID | trainable | -0.0312 | 2.8098 | 0.9127 | 0.3856 |
+| ID | frozen | -0.0312 | 0.3957 | 0.2072 | 0.1019 |
+| ID | nogram | -0.0264 | 0.3821 | 0.2608 | 0.1329 |
+| Magicoder | trainable | -0.0629 | 1.0922 | 0.5042 | 0.2906 |
+| Magicoder | frozen | -0.0629 | 0.3384 | 0.2149 | 0.1458 |
+| Magicoder | nogram | 0.0007 | 0.2182 | 0.1292 | pending |
+| OpenR1 | trainable | 0.2241 | 0.5071 | pending | pending |
+| OpenR1 | frozen | 0.2241 | -0.0429 | pending | pending |
+| OpenR1 | nogram | 0.0354 | 0.1312 | pending | pending |
+| RLVR-MATH | trainable | 0.0319 | 0.4702 | pending | pending |
+| RLVR-MATH | frozen | 0.0319 | 0.3860 | pending | pending |
+| RLVR-MATH | nogram | -0.0288 | 0.3323 | pending | pending |
+
+## Domain-distribution diagnostic
+
+Token histograms use the entire unique pretraining pool (993,853,440 target tokens) and each full downstream packed train pool. JS divergence is in nats (0 means identical unigram distributions). Exact n-gram coverage uses the same 4,096 uniformly sampled pretraining rows and 288 uniformly sampled downstream rows per source; it is a token-occurrence-weighted sampled lower bound on full-pretraining coverage, not a hash-table hit rate.
+
+| Source | Unigram JS from pretraining | Sampled bigram coverage | Sampled trigram coverage |
+|---|---:|---:|---:|
+| id | 0.000081 | 89.32% | 50.49% |
+| magicoder | 0.218077 | 80.59% | 35.16% |
+| openr1 | 0.309210 | 87.45% | 46.37% |
+| rlvr | 0.413521 | 88.98% | 43.46% |
+
+ID is much closer in unigram distribution; OOD nevertheless reuses almost exclusively previously seen vocabulary and many sampled contexts. This measures marginal distribution and sampled identity overlap, not conditional continuation similarity, causal explanation of the gap ranking, or suitability of the pretraining corpus. Artifacts: domain_overlap.json and domain_overlap_provenance.json; CPU-only script code/tools/audit_posttraining_domain_overlap.py.
+
+
+## Hash-table address coverage
+
+Using the actual input-trigram hash, the first 15872 pretraining rows visit all 1048576 table addresses (within-row contexts only). A previously unseen exact context therefore need not address an unused parameter row: collisions share rows. This confirms address coverage, not exact-context familiarity, useful learned content, or a nonzero net gradient for every row. Source: table_row_coverage.json; script code/tools/audit_posttraining_table_row_coverage.py.

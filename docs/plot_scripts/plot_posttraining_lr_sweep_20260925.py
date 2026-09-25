@@ -33,6 +33,7 @@ def load(partial):
     data={};end=[];curves=[];hashes={}
     oldmanifest={r['run_id']:r for r in json.loads((OLD/'source_manifest.json').read_text())}
     manifest={r['run_id']:r for r in json.loads((PACKET/'artifact_manifest.json').read_text())}
+    code_hashes=json.loads((PACKET/'code_hashes.json').read_text())
     baseline_path=PACKET/'baseline_uniform4.json'
     baseline=json.loads(baseline_path.read_text()) if baseline_path.exists() else {'runs':[]}
     for source,_ in SOURCES:
@@ -55,6 +56,9 @@ def load(partial):
                             assert hashlib.sha256((path/fn).read_bytes()).hexdigest()==meta['sha256']
                     assert manifest[rid]['files']['final_model.pt']['bytes']>250000000
                     assert manifest[rid]['files']['probe_tokens.npz']['bytes']>4000000
+                    launch=json.loads((path/'launch.json').read_text())
+                    assert launch['torch']=='2.13.0+cu130'
+                    for f,h in launch['code_sha256'].items():assert h==code_hashes[f],(rid,f)
                 s=json.loads((path/'summary.json').read_text());c=s['config'];rows=read_jsonl(path/'train_log.jsonl')
                 assert s['steps']==1665 and s['seed']==42 and [r['step'] for r in rows]==STEPS
                 assert c['nanogpt_adam_lr']==lr and c['table_lr_scale']==128
@@ -63,6 +67,10 @@ def load(partial):
                 assert c['enable_trigram_ve']==(arm!='nogram') and not c['enable_bigram_ve']
                 assert s['freeze_table']==(arm=='frozen') and s['compute_dtype']=='bf16'
                 assert c['val_batches']==4 and c['val_interval_steps']==10
+                expected_base='s1v5_128_ep20_nogram_20p0xL4_3ep_ckpt_fixed' if arm=='nogram' else 'sftbase_ep20_tri_ckpt_fixed'
+                assert Path(s['init_model']).parent.name==expected_base
+                expected_data={'id':'tokenized_epoch20','magicoder':'ood_tokenized_magicoder_fixtok','openr1':'ood_tokenized_openr1_10shards_fixtok','rlvr':'math_fixtok'}[source]
+                assert Path(c['data_dir']).name==expected_data
                 a={k:np.array([r[k] for r in rows]) for k in ['step','train_loss','val_loss','gap']}
                 assert all(np.isfinite(v).all() for v in a.values())
                 assert np.allclose(a['val_loss']-a['train_loss'],a['gap'],rtol=0,atol=1e-7)
@@ -73,6 +81,11 @@ def load(partial):
                         if k!='step':assert len({r[k] for r in norms})==1
                 row={'source':source,'arm':arm,'lr_tag':tag,'lr':lr,'run_id':rid,'seed':42,'step':1665,
                      'train_loss':s['final_train_loss'],'val_loss':s['final_val_loss'],'online_gap':s['final_gap']}
+                initial=next((x for x in baseline['runs'] if x['source']==legacy and x['arm']==arm),None)
+                if initial:
+                    row['initial_fixed_gap']=initial['base_fixed_gap']
+                    row['initial_val_loss']=initial['base_fixed_val']
+                    a['initial_fixed_gap']=initial['base_fixed_gap']
                 if tag!='base':
                     assert s['fixed_train_probe_batches']==4 and s['train_probe_mode']=='uniform'
                     h=s['fixed_train_probe_sha256'];hashes.setdefault(source,set()).add(h)
@@ -90,6 +103,7 @@ def load(partial):
                         assert abs(b['val_reproduction_error'])<0.005
                         row.update(fixed_train_loss=b['fixed_train'],fixed_val_loss=b['fixed_val'],fixed_gap=b['fixed_gap'],probe_sha256=b['probe_sha256'])
                         hashes.setdefault(source,set()).add(b['probe_sha256']);a['fixed_endpoint']=b['fixed_gap']
+                if 'fixed_gap' in row and initial:row['fixed_gap_change_from_initial']=row['fixed_gap']-initial['base_fixed_gap']
                 data[source,arm,tag]=a;end.append(row)
                 for r in rows:
                     for k in ['train_loss','val_loss','gap']:curves.append({'source':source,'arm':arm,'lr_tag':tag,'run_id':rid,'step':r['step'],'metric':k,'value':r[k]})
@@ -97,7 +111,7 @@ def load(partial):
     for name,rows in [('endpoints.csv',end),('curves.csv',curves)]:
         fields=list(dict.fromkeys(k for r in rows for k in r))
         with (PACKET/name).open('w') as f:
-            w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(rows)
+            w=csv.DictWriter(f,fieldnames=fields,lineterminator=chr(10));w.writeheader();w.writerows(rows)
     return data,end
 
 
@@ -139,6 +153,8 @@ def plot(data,partial):
                     if 'fixed_step' in a:axs[2,j].plot(a['fixed_step']/333,a['fixed_gap'],color=color,lw=1.1)
                     if 'fixed_endpoint' in a:axs[2,j].plot(5,a['fixed_endpoint'],'o',color=color,ms=5,clip_on=False)
                 for i in range(3):style(axs[i,j],i>0)
+                initial=data.get((source,arm,'base'),{}).get('initial_fixed_gap')
+                if initial is not None:axs[2,j].plot(0,initial,marker='s',color='#444',ms=4,clip_on=False)
                 if not axs[2,j].lines or not any('fixed_step' in data.get((source,arm,tag),{}) or 'fixed_endpoint' in data.get((source,arm,tag),{}) for tag,_,_,_ in LRS):
                     axs[2,j].text(.5,.5,'Fixed-probe results pending',transform=axs[2,j].transAxes,ha='center',color='#777',fontsize=9)
                 axs[2,j].set_xlabel('Replay pass')

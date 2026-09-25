@@ -1,0 +1,81 @@
+{
+  "pretrain_pool_target_tokens": 993853440,
+  "pretrain_sample_rows": 4096,
+  "pretrain_sample_indices_sha256": "999ae4285f0a539956c733eb682451bfa37c92eff7039d985a2da4c609ea43fe",
+  "context_metric": "Exact n-gram identity, collision-free base8192 encoding; token-weighted occurrence coverage against 4096 uniformly sampled pretraining rows. This is sampled coverage, not full-pretraining support or table-row hits.",
+  "unigram_metric": "JS divergence in nats, full pretraining pool vs full downstream packed train/val target-token histograms; distributional description, not causal evidence.",
+  "pretrain_sample_distinct_contexts": {
+    "2": 1273988,
+    "3": 4604940
+  },
+  "sources": [
+    {
+      "source": "id",
+      "train": {
+        "target_tokens": 49102848,
+        "unigram_js_from_pretrain": 8.065182949765838e-05,
+        "unigram_unseen_pretrain_fraction": 0.0,
+        "sampled_pretrain_2gram_coverage": 0.8932245019812192,
+        "sampled_pretrain_3gram_coverage": 0.5049215270989464
+      },
+      "val": {
+        "target_tokens": 589824,
+        "unigram_js_from_pretrain": 0.006152591664310422,
+        "unigram_unseen_pretrain_fraction": 0.0,
+        "sampled_pretrain_2gram_coverage": 0.894165920316995,
+        "sampled_pretrain_3gram_coverage": 0.5069512327576844
+      }
+    },
+    {
+      "source": "magicoder",
+      "train": {
+        "target_tokens": 49102848,
+        "unigram_js_from_pretrain": 0.21807735114591165,
+        "unigram_unseen_pretrain_fraction": 2.647504275108442e-07,
+        "sampled_pretrain_2gram_coverage": 0.805859184171959,
+        "sampled_pretrain_3gram_coverage": 0.3515701368523949
+      },
+      "val": {
+        "target_tokens": 589824,
+        "unigram_js_from_pretrain": 0.22765766342834354,
+        "unigram_unseen_pretrain_fraction": 0.0,
+        "sampled_pretrain_2gram_coverage": 0.8045802122347067,
+        "sampled_pretrain_3gram_coverage": 0.354136119257087
+      }
+    },
+    {
+      "source": "openr1",
+      "train": {
+        "target_tokens": 49102848,
+        "unigram_js_from_pretrain": 0.3092095356608501,
+        "unigram_unseen_pretrain_fraction": 1.0590017100433768e-06,
+        "sampled_pretrain_2gram_coverage": 0.8744843402268903,
+        "sampled_pretrain_3gram_coverage": 0.4637317394373846
+      },
+      "val": {
+        "target_tokens": 589824,
+        "unigram_js_from_pretrain": 0.3113589391984817,
+        "unigram_unseen_pretrain_fraction": 0.0,
+        "sampled_pretrain_2gram_coverage": 0.8695991423763774,
+        "sampled_pretrain_3gram_coverage": 0.45529216900184644
+      }
+    },
+    {
+      "source": "rlvr",
+      "train": {
+        "target_tokens": 49102848,
+        "unigram_js_from_pretrain": 0.4135214626322455,
+        "unigram_unseen_pretrain_fraction": 0.0,
+        "sampled_pretrain_2gram_coverage": 0.8898438772186941,
+        "sampled_pretrain_3gram_coverage": 0.43463872596937114
+      },
+      "val": {
+        "target_tokens": 589824,
+        "unigram_js_from_pretrain": 0.41494459943544826,
+        "unigram_unseen_pretrain_fraction": 0.0,
+        "sampled_pretrain_2gram_coverage": 0.8884292053411497,
+        "sampled_pretrain_3gram_coverage": 0.4317502986857826
+      }
+    }
+  ]
+}

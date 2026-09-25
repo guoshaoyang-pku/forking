@@ -1,0 +1,41 @@
+{
+  "pretrain_data": "data/tokenized_epoch20",
+  "pretrain_shards": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "pretrain_row_budget": 485280,
+  "hash_primes": [
+    16777619,
+    2166136261,
+    3432918353
+  ],
+  "row_formula": "((prev2*p0) XOR (prev1*p1) XOR current*p2) modulo1048576",
+  "positions": "Within-row trigram contexts in input positions2..2047; boundary padding omitted",
+  "method": "Scan consecutive pretraining rows in512-row CPU chunks; stop when all rows visited",
+  "rows_scanned": 15872,
+  "unique_table_rows_visited": 1048576,
+  "table_rows": 1048576,
+  "fraction": 1.0,
+  "ceiling": "Parameter-row address coverage only, not exact context identity, information quality, or proof of nonzero net gradient on every row",
+  "script_sha256": "87444175b23786f063a81bcccce703e01534a690326d9bb193302f248db44222"
+}

@@ -1,0 +1,13 @@
+{
+  "returncode": 0,
+  "finished_utc": "2026-09-25T07:16:59.111572+00:00",
+  "metrics": {
+    "final_train_loss": 2.8802671432495117,
+    "final_val_loss": 3.2114996910095215,
+    "final_gap": 0.33123254776000977,
+    "final_fixed_train_loss": 2.8571202754974365,
+    "final_fixed_val_loss": 3.2114996910095215,
+    "final_fixed_gap": 0.35437941551208496
+  },
+  "qc": "pass"
+}

@@ -1,0 +1,357 @@
+{
+  "pending": [
+    "ptlr_rlvr_frozen_q4_s42_fixed",
+    "ptlr_rlvr_nogram_q4_s42_fixed",
+    "ptlr_rlvr_trainable_q10_s42_fixed",
+    "ptlr_rlvr_frozen_q10_s42_fixed",
+    "ptlr_rlvr_nogram_q10_s42_fixed"
+  ],
+  "running": {
+    "4": {
+      "run_id": "ptlr_magicoder_nogram_q10_s42_fixed",
+      "pid": 194987
+    },
+    "7": {
+      "run_id": "ptlr_openr1_trainable_q4_s42_fixed",
+      "pid": 195115
+    },
+    "5": {
+      "run_id": "ptlr_openr1_frozen_q4_s42_fixed",
+      "pid": 195199
+    },
+    "3": {
+      "run_id": "ptlr_openr1_trainable_q10_s42_fixed",
+      "pid": 195317
+    },
+    "6": {
+      "run_id": "ptlr_openr1_frozen_q10_s42_fixed",
+      "pid": 195318
+    },
+    "1": {
+      "run_id": "ptlr_openr1_nogram_q4_s42_fixed",
+      "pid": 195419
+    },
+    "0": {
+      "run_id": "ptlr_openr1_nogram_q10_s42_fixed",
+      "pid": 195538
+    },
+    "2": {
+      "run_id": "ptlr_rlvr_trainable_q4_s42_fixed",
+      "pid": 195539
+    }
+  },
+  "completed": [
+    {
+      "run_id": "ptlr_id_trainable_q4_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:07:46.652760+00:00",
+        "metrics": {
+          "final_train_loss": 2.589571952819824,
+          "final_val_loss": 3.3750550746917725,
+          "final_gap": 0.7854831218719482,
+          "final_fixed_train_loss": 2.4935402870178223,
+          "final_fixed_val_loss": 3.3750550746917725,
+          "final_fixed_gap": 0.8815147876739502
+        },
+        "qc": "pass"
+      }
+    },
+    {
+      "run_id": "ptlr_id_frozen_q4_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:14:40.800056+00:00",
+        "metrics": {
+          "final_train_loss": 3.0782737731933594,
+          "final_val_loss": 3.2635263204574585,
+          "final_gap": 0.18525254726409912,
+          "final_fixed_train_loss": 3.0874879360198975,
+          "final_fixed_val_loss": 3.2635263204574585,
+          "final_fixed_gap": 0.17603838443756104
+        },
+        "qc": "pass"
+      }
+    },
+    {
+      "run_id": "ptlr_id_nogram_q4_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:15:50.010706+00:00",
+        "metrics": {
+          "final_train_loss": 2.5062625408172607,
+          "final_val_loss": 2.7212607860565186,
+          "final_gap": 0.2149982452392578,
+          "final_fixed_train_loss": 2.4868890047073364,
+          "final_fixed_val_loss": 2.7212607860565186,
+          "final_fixed_gap": 0.23437178134918213
+        },
+        "qc": "pass"
+      }
+    },
+    {
+      "run_id": "ptlr_id_frozen_q10_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:16:39.194541+00:00",
+        "metrics": {
+          "final_train_loss": 3.146900177001953,
+          "final_val_loss": 3.2462486624717712,
+          "final_gap": 0.09934848546981812,
+          "final_fixed_train_loss": 3.1755011677742004,
+          "final_fixed_val_loss": 3.2462486624717712,
+          "final_fixed_gap": 0.0707474946975708
+        },
+        "qc": "pass"
+      }
+    },
+    {
+      "run_id": "ptlr_id_nogram_q10_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:16:48.344402+00:00",
+        "metrics": {
+          "final_train_loss": 2.5726842880249023,
+          "final_val_loss": 2.6808998584747314,
+          "final_gap": 0.1082155704498291,
+          "final_fixed_train_loss": 2.5744064450263977,
+          "final_fixed_val_loss": 2.6808998584747314,
+          "final_fixed_gap": 0.10649341344833374
+        },
+        "qc": "pass"
+      }
+    },
+    {
+      "run_id": "ptlr_id_trainable_q10_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:16:59.111572+00:00",
+        "metrics": {
+          "final_train_loss": 2.8802671432495117,
+          "final_val_loss": 3.2114996910095215,
+          "final_gap": 0.33123254776000977,
+          "final_fixed_train_loss": 2.8571202754974365,
+          "final_fixed_val_loss": 3.2114996910095215,
+          "final_fixed_gap": 0.35437941551208496
+        },
+        "qc": "pass"
+      }
+    },
+    {
+      "run_id": "ptlr_magicoder_trainable_q4_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:23:07.990387+00:00",
+        "metrics": {
+          "final_train_loss": 0.9861109852790833,
+          "final_val_loss": 1.3379000425338745,
+          "final_gap": 0.35178905725479126,
+          "final_fixed_train_loss": 0.8966559618711472,
+          "final_fixed_val_loss": 1.3379000425338745,
+          "final_fixed_gap": 0.44124408066272736
+        },
+        "qc": "pass"
+      }
+    },
+    {
+      "run_id": "ptlr_magicoder_frozen_q4_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:24:07.650894+00:00",
+        "metrics": {
+          "final_train_loss": 1.339333176612854,
+          "final_val_loss": 1.4292386770248413,
+          "final_gap": 0.0899055004119873,
+          "final_fixed_train_loss": 1.2772490978240967,
+          "final_fixed_val_loss": 1.4292386770248413,
+          "final_fixed_gap": 0.15198957920074463
+        },
+        "qc": "pass"
+      }
+    },
+    {
+      "run_id": "ptlr_magicoder_nogram_q4_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:24:38.684350+00:00",
+        "metrics": {
+          "final_train_loss": 0.8403136134147644,
+          "final_val_loss": 0.9101690053939819,
+          "final_gap": 0.06985539197921753,
+          "final_fixed_train_loss": 0.7802586406469345,
+          "final_fixed_val_loss": 0.9101690053939819,
+          "final_fixed_gap": 0.12991036474704742
+        },
+        "qc": "pass"
+      }
+    },
+    {
+      "run_id": "ptlr_magicoder_trainable_q10_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:25:22.785772+00:00",
+        "metrics": {
+          "final_train_loss": 1.2669486999511719,
+          "final_val_loss": 1.418588936328888,
+          "final_gap": 0.15164023637771606,
+          "final_fixed_train_loss": 1.1909028589725494,
+          "final_fixed_val_loss": 1.418588936328888,
+          "final_fixed_gap": 0.2276860773563385
+        },
+        "qc": "pass"
+      }
+    },
+    {
+      "run_id": "ptlr_magicoder_frozen_q10_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:25:13.749997+00:00",
+        "metrics": {
+          "final_train_loss": 1.5634195804595947,
+          "final_val_loss": 1.5986722111701965,
+          "final_gap": 0.03525263071060181,
+          "final_fixed_train_loss": 1.5157765448093414,
+          "final_fixed_val_loss": 1.5986722111701965,
+          "final_fixed_gap": 0.0828956663608551
+        },
+        "qc": "pass"
+      }
+    }
+  ],
+  "updated_unix": 1790321343.4327745,
+  "progress": [
+    {
+      "run_id": "ptlr_id_trainable_q4_s42_fixed",
+      "step": 1665,
+      "gap": 0.7854831218719482,
+      "val": 3.3750550746917725,
+      "elapsed_s": 493.4767460823059
+    },
+    {
+      "run_id": "ptlr_id_frozen_q4_s42_fixed",
+      "step": 1665,
+      "gap": 0.18525254726409912,
+      "val": 3.2635263204574585,
+      "elapsed_s": 461.79219365119934
+    },
+    {
+      "run_id": "ptlr_id_nogram_q4_s42_fixed",
+      "step": 1665,
+      "gap": 0.2149982452392578,
+      "val": 2.7212607860565186,
+      "elapsed_s": 465.4109649658203
+    },
+    {
+      "run_id": "ptlr_id_frozen_q10_s42_fixed",
+      "step": 1665,
+      "gap": 0.09934848546981812,
+      "val": 3.2462486624717712,
+      "elapsed_s": 474.0078363418579
+    },
+    {
+      "run_id": "ptlr_id_trainable_q10_s42_fixed",
+      "step": 1665,
+      "gap": 0.33123254776000977,
+      "val": 3.2114996910095215,
+      "elapsed_s": 493.8451335430145
+    },
+    {
+      "run_id": "ptlr_id_nogram_q10_s42_fixed",
+      "step": 1665,
+      "gap": 0.1082155704498291,
+      "val": 2.6808998584747314,
+      "elapsed_s": 463.59034395217896
+    },
+    {
+      "run_id": "ptlr_magicoder_trainable_q4_s42_fixed",
+      "step": 1665,
+      "gap": 0.35178905725479126,
+      "val": 1.3379000425338745,
+      "elapsed_s": 482.90810203552246
+    },
+    {
+      "run_id": "ptlr_magicoder_frozen_q4_s42_fixed",
+      "step": 1665,
+      "gap": 0.0899055004119873,
+      "val": 1.4292386770248413,
+      "elapsed_s": 467.44599413871765
+    },
+    {
+      "run_id": "ptlr_magicoder_trainable_q10_s42_fixed",
+      "step": 1665,
+      "gap": 0.15164023637771606,
+      "val": 1.418588936328888,
+      "elapsed_s": 496.05612540245056
+    },
+    {
+      "run_id": "ptlr_magicoder_nogram_q4_s42_fixed",
+      "step": 1665,
+      "gap": 0.06985539197921753,
+      "val": 0.9101690053939819,
+      "elapsed_s": 462.49357318878174
+    },
+    {
+      "run_id": "ptlr_magicoder_frozen_q10_s42_fixed",
+      "step": 1665,
+      "gap": 0.03525263071060181,
+      "val": 1.5986722111701965,
+      "elapsed_s": 472.2141602039337
+    },
+    {
+      "run_id": "ptlr_magicoder_nogram_q10_s42_fixed",
+      "step": 1300,
+      "gap": 0.034942686557769775,
+      "val": 1.0030567049980164,
+      "elapsed_s": 358.6257314682007
+    },
+    {
+      "run_id": "ptlr_openr1_trainable_q4_s42_fixed",
+      "step": 980,
+      "gap": 0.09844768047332764,
+      "val": 1.272618055343628,
+      "elapsed_s": 289.33412885665894
+    },
+    {
+      "run_id": "ptlr_openr1_frozen_q4_s42_fixed",
+      "step": 910,
+      "gap": 0.013640284538269043,
+      "val": 1.374037265777588,
+      "elapsed_s": 257.832802772522
+    },
+    {
+      "run_id": "ptlr_openr1_trainable_q10_s42_fixed",
+      "step": 710,
+      "gap": 0.02703508734703064,
+      "val": 1.4577991664409637,
+      "elapsed_s": 212.99101424217224
+    },
+    {
+      "run_id": "ptlr_openr1_frozen_q10_s42_fixed",
+      "step": 740,
+      "gap": 0.08388683199882507,
+      "val": 1.5604128539562225,
+      "elapsed_s": 211.0030233860016
+    },
+    {
+      "run_id": "ptlr_openr1_nogram_q4_s42_fixed",
+      "step": 650,
+      "gap": 0.04543474316596985,
+      "val": 1.0981374084949493,
+      "elapsed_s": 191.74457383155823
+    },
+    {
+      "run_id": "ptlr_rlvr_trainable_q4_s42_fixed",
+      "step": 450,
+      "gap": 0.19475434720516205,
+      "val": 0.29733628779649734,
+      "elapsed_s": 141.00467538833618
+    },
+    {
+      "run_id": "ptlr_openr1_nogram_q10_s42_fixed",
+      "step": 500,
+      "gap": 0.016565531492233276,
+      "val": 1.1968031823635101,
+      "elapsed_s": 148.82884407043457
+    }
+  ]
+}
