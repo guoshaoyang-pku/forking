@@ -1,0 +1,640 @@
+{
+  "host": "360-1",
+  "root": "/data/home/guoshaoyang/ngram-gap-lab",
+  "captured_at_utc": "2026-09-25T09:06:41.973206+00:00",
+  "runs": [
+    {
+      "run_id": "s1v5_128_epfx_tri_2p0xL4_3ep_fixed",
+      "path": "/data/home/guoshaoyang/ngram-gap-lab/data/runs_scaling/s1v5_128_epfx_tri_2p0xL4_3ep_fixed",
+      "status": "summary_present",
+      "summary": {
+        "run_id": "s1v5_128_epfx_tri_2p0xL4_3ep_fixed",
+        "injection_position": "input",
+        "steps": 2010,
+        "seed": 42,
+        "epoch_batches": 670,
+        "fixed_train_probe_sha256": null,
+        "fixed_train_probe_batches": 0,
+        "train_probe_mode": null,
+        "probe_eval_interval": 10,
+        "val_steps": [
+          670,
+          1340,
+          2010
+        ],
+        "exact_freq_eval_interval": 10,
+        "fixed_train_loss_log": null,
+        "fixed_train_freq_bin_log": null,
+        "exact_freq_log": "exact_freq_loss.jsonl",
+        "freq_index": "/data/home/guoshaoyang/ngram-gap-lab/data/freq_index_train2x_fine.npz",
+        "freq_index_sha256": "2b550cd0c828c2019f6ebabefd9e154dfde15b9ad0c006a7ebbe9ec281c8c960",
+        "intervention": {
+          "kind": "none",
+          "epoch0": 1,
+          "epochs_due": null,
+          "low_inclusive": false,
+          "frequency_threshold": 200,
+          "events": []
+        },
+        "compute_dtype": "bf16",
+        "torch_compile": false,
+        "final_train_loss": 4.136224269866943,
+        "final_val_loss": 6.0910258293151855,
+        "final_gap": 1.9548015594482422,
+        "final_fixed_train_loss": null,
+        "final_fixed_val_loss": null,
+        "final_fixed_gap": null,
+        "n_params": 869875200,
+        "bigram_perfect_rows": null,
+        "config": {
+          "vocab_size": 8192,
+          "n_layer": 8,
+          "n_head": 6,
+          "n_embd": 768,
+          "sequence_len": 2048,
+          "dropout": 0.0,
+          "bias": true,
+          "enable_nanogpt_ngram_ve": true,
+          "enable_unigram_ve": false,
+          "enable_bigram_ve": false,
+          "enable_trigram_ve": true,
+          "enable_fourgram_ve": false,
+          "nanogpt_ngram_injection_position": "input",
+          "nanogpt_adam_lr": 0.0006,
+          "ngram_table_betas": [
+            0.0,
+            0.99
+          ],
+          "table_optimizer": "rmsprop",
+          "table_lr_scale": 128.0,
+          "table_betas": [
+            0.0,
+            0.99
+          ],
+          "table_mult": 64,
+          "bigram_clean_table": 0,
+          "trigram_clean_table": 1048576,
+          "bigram_table_dim": 0,
+          "trigram_table_dim": 0,
+          "bigram_perfect_map": "",
+          "bigram_single_layer": false,
+          "intervention": "none",
+          "intervention_epoch": 1,
+          "intervention_epochs": [],
+          "intervention_freq_threshold": 200,
+          "intervention_low_inclusive": false,
+          "adam_betas": [
+            0.8,
+            0.95
+          ],
+          "weight_decay": 0.1,
+          "seed": 42,
+          "max_steps": 2010,
+          "device_batch_size": 72,
+          "total_batch_size": 147456,
+          "val_interval_steps": 10,
+          "val_steps": [
+            670,
+            1340,
+            2010
+          ],
+          "val_batches": 4,
+          "table_norm_interval_steps": 10,
+          "warmup_steps": 100,
+          "warmup_start_lr_mult": 0.25,
+          "cosine_min_lr_mult": 0.05,
+          "warmdown_ratio": 0.65,
+          "lr_schedule_epochs": 0,
+          "lr_schedule": "warmup_constant",
+          "data_dir": "/data/home/guoshaoyang/ngram-gap-lab/data/tokenized",
+          "train_shards": [
+            1,
+            2
+          ],
+          "val_shards": [
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            6542
+          ],
+          "data_mode": "fixed",
+          "data_seed": 42,
+          "epoch_batches": 670,
+          "out_dir": "/data/home/guoshaoyang/ngram-gap-lab/data/runs_scaling/s1v5_128_epfx_tri_2p0xL4_3ep_fixed"
+        }
+      },
+      "summary_sha256": "901c7d43d48debc8d2ad76e73ec20d0a75c5029075f85f0e6a3e84c60a05dd7b",
+      "log_sha256": "044ca2343728e08301354e408f7d23842bfaa3e4121dc4ad7eb167ba7679ba06",
+      "logged_steps": [
+        670,
+        1340,
+        2010
+      ],
+      "boundary_rows": [
+        {
+          "step": 670,
+          "train_loss": 5.804808139801025,
+          "val_loss": 5.8177876472473145,
+          "gap": 0.012979507446289062,
+          "lr_mult": 1.0,
+          "epoch": 1,
+          "elapsed_s": 140.86247324943542
+        },
+        {
+          "step": 1340,
+          "train_loss": 4.8494768142700195,
+          "val_loss": 5.756979823112488,
+          "gap": 0.9075030088424683,
+          "lr_mult": 1.0,
+          "epoch": 2,
+          "elapsed_s": 308.80619716644287
+        },
+        {
+          "step": 2010,
+          "train_loss": 4.136224269866943,
+          "val_loss": 6.0910258293151855,
+          "gap": 1.9548015594482422,
+          "lr_mult": 1.0,
+          "epoch": 3,
+          "elapsed_s": 473.5647003650665
+        }
+      ],
+      "max_gap_identity_error": 0.0,
+      "shards": {
+        "1": {
+          "bytes": 99433872,
+          "chunks": 24264
+        },
+        "2": {
+          "bytes": 98253648,
+          "chunks": 23976
+        },
+        "5": {
+          "bytes": 98548704,
+          "chunks": 24048
+        },
+        "6": {
+          "bytes": 97368480,
+          "chunks": 23760
+        },
+        "7": {
+          "bytes": 97073424,
+          "chunks": 23688
+        },
+        "8": {
+          "bytes": 97368480,
+          "chunks": 23760
+        },
+        "9": {
+          "bytes": 98548704,
+          "chunks": 24048
+        },
+        "10": {
+          "bytes": 98548704,
+          "chunks": 24048
+        },
+        "6542": {
+          "bytes": 98253648,
+          "chunks": 23976
+        }
+      },
+      "pool_capacity_batches": 670,
+      "declared_epoch_batches": 670,
+      "total_steps": 2010,
+      "declared_passes": 3.0,
+      "actual_prefix_batches": 670,
+      "pool_smaller_than_declared_epoch": false,
+      "checkpoints": []
+    },
+    {
+      "run_id": "s1v5_128_epfx_tri_3p0xL4_3ep_fixed",
+      "path": "/data/home/guoshaoyang/ngram-gap-lab/data/runs_scaling/s1v5_128_epfx_tri_3p0xL4_3ep_fixed",
+      "status": "summary_present",
+      "summary": {
+        "run_id": "s1v5_128_epfx_tri_3p0xL4_3ep_fixed",
+        "injection_position": "input",
+        "steps": 3000,
+        "seed": 42,
+        "epoch_batches": 1000,
+        "fixed_train_probe_sha256": null,
+        "fixed_train_probe_batches": 0,
+        "train_probe_mode": null,
+        "probe_eval_interval": 10,
+        "val_steps": [
+          1000,
+          2000,
+          3000
+        ],
+        "exact_freq_eval_interval": 10,
+        "fixed_train_loss_log": null,
+        "fixed_train_freq_bin_log": null,
+        "exact_freq_log": "exact_freq_loss.jsonl",
+        "freq_index": "/data/home/guoshaoyang/ngram-gap-lab/data/freq_index_train3x.npz",
+        "freq_index_sha256": "34cb913dde61581ec65a5459b4cac1f67b68ee0c3006b25cf0391e4eb337e6e5",
+        "intervention": {
+          "kind": "none",
+          "epoch0": 1,
+          "epochs_due": null,
+          "low_inclusive": false,
+          "frequency_threshold": 200,
+          "events": []
+        },
+        "compute_dtype": "bf16",
+        "torch_compile": false,
+        "final_train_loss": 4.208620071411133,
+        "final_val_loss": 5.727821469306946,
+        "final_gap": 1.519201397895813,
+        "final_fixed_train_loss": null,
+        "final_fixed_val_loss": null,
+        "final_fixed_gap": null,
+        "n_params": 869875200,
+        "bigram_perfect_rows": null,
+        "config": {
+          "vocab_size": 8192,
+          "n_layer": 8,
+          "n_head": 6,
+          "n_embd": 768,
+          "sequence_len": 2048,
+          "dropout": 0.0,
+          "bias": true,
+          "enable_nanogpt_ngram_ve": true,
+          "enable_unigram_ve": false,
+          "enable_bigram_ve": false,
+          "enable_trigram_ve": true,
+          "enable_fourgram_ve": false,
+          "nanogpt_ngram_injection_position": "input",
+          "nanogpt_adam_lr": 0.0006,
+          "ngram_table_betas": [
+            0.0,
+            0.99
+          ],
+          "table_optimizer": "rmsprop",
+          "table_lr_scale": 128.0,
+          "table_betas": [
+            0.0,
+            0.99
+          ],
+          "table_mult": 64,
+          "bigram_clean_table": 0,
+          "trigram_clean_table": 1048576,
+          "bigram_table_dim": 0,
+          "trigram_table_dim": 0,
+          "bigram_perfect_map": "",
+          "bigram_single_layer": false,
+          "intervention": "none",
+          "intervention_epoch": 1,
+          "intervention_epochs": [],
+          "intervention_freq_threshold": 200,
+          "intervention_low_inclusive": false,
+          "adam_betas": [
+            0.8,
+            0.95
+          ],
+          "weight_decay": 0.1,
+          "seed": 42,
+          "max_steps": 3000,
+          "device_batch_size": 72,
+          "total_batch_size": 147456,
+          "val_interval_steps": 10,
+          "val_steps": [
+            1000,
+            2000,
+            3000
+          ],
+          "val_batches": 4,
+          "table_norm_interval_steps": 10,
+          "warmup_steps": 100,
+          "warmup_start_lr_mult": 0.25,
+          "cosine_min_lr_mult": 0.05,
+          "warmdown_ratio": 0.65,
+          "lr_schedule_epochs": 0,
+          "lr_schedule": "warmup_constant",
+          "data_dir": "/data/home/guoshaoyang/ngram-gap-lab/data/tokenized",
+          "train_shards": [
+            1,
+            2,
+            3
+          ],
+          "val_shards": [
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            6542
+          ],
+          "data_mode": "fixed",
+          "data_seed": 42,
+          "epoch_batches": 1000,
+          "out_dir": "/data/home/guoshaoyang/ngram-gap-lab/data/runs_scaling/s1v5_128_epfx_tri_3p0xL4_3ep_fixed"
+        }
+      },
+      "summary_sha256": "926d156f6fe301acede74e25a07283d7e01962c911fdaaf48900ac3144997635",
+      "log_sha256": "75120a4b95d3c7b02971eb22c1b850fb49e8dcb5115073e54d2bab094af57530",
+      "logged_steps": [
+        1000,
+        2000,
+        3000
+      ],
+      "boundary_rows": [
+        {
+          "step": 1000,
+          "train_loss": 5.622648239135742,
+          "val_loss": 5.577435851097107,
+          "gap": -0.045212388038635254,
+          "lr_mult": 1.0,
+          "epoch": 1,
+          "elapsed_s": 215.24120211601257
+        },
+        {
+          "step": 2000,
+          "train_loss": 4.7972283363342285,
+          "val_loss": 5.460178017616272,
+          "gap": 0.6629496812820435,
+          "lr_mult": 1.0,
+          "epoch": 2,
+          "elapsed_s": 452.0008614063263
+        },
+        {
+          "step": 3000,
+          "train_loss": 4.208620071411133,
+          "val_loss": 5.727821469306946,
+          "gap": 1.519201397895813,
+          "lr_mult": 1.0,
+          "epoch": 3,
+          "elapsed_s": 689.3233823776245
+        }
+      ],
+      "max_gap_identity_error": 0.0,
+      "shards": {
+        "1": {
+          "bytes": 99433872,
+          "chunks": 24264
+        },
+        "2": {
+          "bytes": 98253648,
+          "chunks": 23976
+        },
+        "3": {
+          "bytes": 97368480,
+          "chunks": 23760
+        },
+        "5": {
+          "bytes": 98548704,
+          "chunks": 24048
+        },
+        "6": {
+          "bytes": 97368480,
+          "chunks": 23760
+        },
+        "7": {
+          "bytes": 97073424,
+          "chunks": 23688
+        },
+        "8": {
+          "bytes": 97368480,
+          "chunks": 23760
+        },
+        "9": {
+          "bytes": 98548704,
+          "chunks": 24048
+        },
+        "10": {
+          "bytes": 98548704,
+          "chunks": 24048
+        },
+        "6542": {
+          "bytes": 98253648,
+          "chunks": 23976
+        }
+      },
+      "pool_capacity_batches": 1000,
+      "declared_epoch_batches": 1000,
+      "total_steps": 3000,
+      "declared_passes": 3.0,
+      "actual_prefix_batches": 1000,
+      "pool_smaller_than_declared_epoch": false,
+      "checkpoints": []
+    },
+    {
+      "run_id": "s1v5_128_epfx_tri_4p0xL4_3ep_fixed",
+      "path": "/data/home/guoshaoyang/ngram-gap-lab/data/runs_scaling/s1v5_128_epfx_tri_4p0xL4_3ep_fixed",
+      "status": "summary_present",
+      "summary": {
+        "run_id": "s1v5_128_epfx_tri_4p0xL4_3ep_fixed",
+        "injection_position": "input",
+        "steps": 3990,
+        "seed": 42,
+        "epoch_batches": 1330,
+        "fixed_train_probe_sha256": null,
+        "fixed_train_probe_batches": 0,
+        "train_probe_mode": null,
+        "probe_eval_interval": 10,
+        "val_steps": [
+          1330,
+          2660,
+          3990
+        ],
+        "exact_freq_eval_interval": 10,
+        "fixed_train_loss_log": null,
+        "fixed_train_freq_bin_log": null,
+        "exact_freq_log": "exact_freq_loss.jsonl",
+        "freq_index": "/data/home/guoshaoyang/ngram-gap-lab/data/freq_index_train4x.npz",
+        "freq_index_sha256": "3765f9ef208274ab8f8ae6860f0515bb7319b0aa7313b562e46ce91e49d86523",
+        "intervention": {
+          "kind": "none",
+          "epoch0": 1,
+          "epochs_due": null,
+          "low_inclusive": false,
+          "frequency_threshold": 200,
+          "events": []
+        },
+        "compute_dtype": "bf16",
+        "torch_compile": false,
+        "final_train_loss": 4.183861255645752,
+        "final_val_loss": 5.451347351074219,
+        "final_gap": 1.2674860954284668,
+        "final_fixed_train_loss": null,
+        "final_fixed_val_loss": null,
+        "final_fixed_gap": null,
+        "n_params": 869875200,
+        "bigram_perfect_rows": null,
+        "config": {
+          "vocab_size": 8192,
+          "n_layer": 8,
+          "n_head": 6,
+          "n_embd": 768,
+          "sequence_len": 2048,
+          "dropout": 0.0,
+          "bias": true,
+          "enable_nanogpt_ngram_ve": true,
+          "enable_unigram_ve": false,
+          "enable_bigram_ve": false,
+          "enable_trigram_ve": true,
+          "enable_fourgram_ve": false,
+          "nanogpt_ngram_injection_position": "input",
+          "nanogpt_adam_lr": 0.0006,
+          "ngram_table_betas": [
+            0.0,
+            0.99
+          ],
+          "table_optimizer": "rmsprop",
+          "table_lr_scale": 128.0,
+          "table_betas": [
+            0.0,
+            0.99
+          ],
+          "table_mult": 64,
+          "bigram_clean_table": 0,
+          "trigram_clean_table": 1048576,
+          "bigram_table_dim": 0,
+          "trigram_table_dim": 0,
+          "bigram_perfect_map": "",
+          "bigram_single_layer": false,
+          "intervention": "none",
+          "intervention_epoch": 1,
+          "intervention_epochs": [],
+          "intervention_freq_threshold": 200,
+          "intervention_low_inclusive": false,
+          "adam_betas": [
+            0.8,
+            0.95
+          ],
+          "weight_decay": 0.1,
+          "seed": 42,
+          "max_steps": 3990,
+          "device_batch_size": 72,
+          "total_batch_size": 147456,
+          "val_interval_steps": 10,
+          "val_steps": [
+            1330,
+            2660,
+            3990
+          ],
+          "val_batches": 4,
+          "table_norm_interval_steps": 10,
+          "warmup_steps": 100,
+          "warmup_start_lr_mult": 0.25,
+          "cosine_min_lr_mult": 0.05,
+          "warmdown_ratio": 0.65,
+          "lr_schedule_epochs": 0,
+          "lr_schedule": "warmup_constant",
+          "data_dir": "/data/home/guoshaoyang/ngram-gap-lab/data/tokenized",
+          "train_shards": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "val_shards": [
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            6542
+          ],
+          "data_mode": "fixed",
+          "data_seed": 42,
+          "epoch_batches": 1330,
+          "out_dir": "/data/home/guoshaoyang/ngram-gap-lab/data/runs_scaling/s1v5_128_epfx_tri_4p0xL4_3ep_fixed"
+        }
+      },
+      "summary_sha256": "1b63b33340dd104344172e2d507030453fbe16c1a3b1574ce2818fb2221ae172",
+      "log_sha256": "d191af7cdf7abb02d712e94738dc517ab7ac8cb0e005401d88eb42a59a4e5d23",
+      "logged_steps": [
+        1330,
+        2660,
+        3990
+      ],
+      "boundary_rows": [
+        {
+          "step": 1330,
+          "train_loss": 5.41866397857666,
+          "val_loss": 5.404938817024231,
+          "gap": -0.0137251615524292,
+          "lr_mult": 1.0,
+          "epoch": 1,
+          "elapsed_s": 281.68512535095215
+        },
+        {
+          "step": 2660,
+          "train_loss": 4.6895318031311035,
+          "val_loss": 5.293243050575256,
+          "gap": 0.6037112474441528,
+          "lr_mult": 1.0,
+          "epoch": 2,
+          "elapsed_s": 584.8898403644562
+        },
+        {
+          "step": 3990,
+          "train_loss": 4.183861255645752,
+          "val_loss": 5.451347351074219,
+          "gap": 1.2674860954284668,
+          "lr_mult": 1.0,
+          "epoch": 3,
+          "elapsed_s": 888.8259644508362
+        }
+      ],
+      "max_gap_identity_error": 0.0,
+      "shards": {
+        "1": {
+          "bytes": 99433872,
+          "chunks": 24264
+        },
+        "2": {
+          "bytes": 98253648,
+          "chunks": 23976
+        },
+        "3": {
+          "bytes": 97368480,
+          "chunks": 23760
+        },
+        "4": {
+          "bytes": 97368480,
+          "chunks": 23760
+        },
+        "5": {
+          "bytes": 98548704,
+          "chunks": 24048
+        },
+        "6": {
+          "bytes": 97368480,
+          "chunks": 23760
+        },
+        "7": {
+          "bytes": 97073424,
+          "chunks": 23688
+        },
+        "8": {
+          "bytes": 97368480,
+          "chunks": 23760
+        },
+        "9": {
+          "bytes": 98548704,
+          "chunks": 24048
+        },
+        "10": {
+          "bytes": 98548704,
+          "chunks": 24048
+        },
+        "6542": {
+          "bytes": 98253648,
+          "chunks": 23976
+        }
+      },
+      "pool_capacity_batches": 1330,
+      "declared_epoch_batches": 1330,
+      "total_steps": 3990,
+      "declared_passes": 3.0,
+      "actual_prefix_batches": 1330,
+      "pool_smaller_than_declared_epoch": false,
+      "checkpoints": []
+    }
+  ]
+}

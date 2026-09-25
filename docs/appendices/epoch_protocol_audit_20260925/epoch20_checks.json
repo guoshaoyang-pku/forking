@@ -1,0 +1,402 @@
+[
+  {
+    "run_id": "s1v5_128_ep20_tri_0p125xL4_3ep_v2_fixed",
+    "epoch_batches": 42,
+    "steps": 126,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.01766383647918701,
+      1.7769535779953003,
+      2.9747122526168823
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_0p1667xL4_3ep_v2_fixed",
+    "epoch_batches": 56,
+    "steps": 168,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.02344369888305664,
+      1.8019694089889526,
+      3.6254302263259888
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_0p25xL4_3ep_v2_fixed",
+    "epoch_batches": 84,
+    "steps": 252,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      -0.007847070693969727,
+      1.686415433883667,
+      3.4593899250030518
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_0p3333xL4_3ep_v2_fixed",
+    "epoch_batches": 112,
+    "steps": 336,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.009084701538085938,
+      1.6590172052383423,
+      3.2893775701522827
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_0p5xL4_3ep_v2_fixed",
+    "epoch_batches": 168,
+    "steps": 504,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.04529750347137451,
+      1.4634718894958496,
+      3.0750863552093506
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_0p6667xL4_3ep_v2_fixed",
+    "epoch_batches": 224,
+    "steps": 672,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      -0.010260462760925293,
+      1.2033722400665283,
+      2.81131374835968
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_0p75xL4_3ep_v2_fixed",
+    "epoch_batches": 253,
+    "steps": 759,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      -0.05206167697906494,
+      1.2077172994613647,
+      2.753224730491638
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_10p0xL4_3ep_v2_fixed",
+    "epoch_batches": 3370,
+    "steps": 10110,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      -0.07335400581359863,
+      0.14593100547790527,
+      0.35257768630981445
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_15p0xL4_3ep_v2_fixed",
+    "epoch_batches": 5055,
+    "steps": 15165,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.06984126567840576,
+      0.18661129474639893,
+      0.3064773678779602
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_1p0xL4_3ep_v2_fixed",
+    "epoch_batches": 337,
+    "steps": 1011,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.03948092460632324,
+      1.0811725854873657,
+      2.5049984455108643
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_1p25xL4_3ep_v2_fixed",
+    "epoch_batches": 421,
+    "steps": 1263,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.020854473114013672,
+      1.0554149150848389,
+      2.394869327545166
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_1p5xL4_3ep_v2_fixed",
+    "epoch_batches": 506,
+    "steps": 1518,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.01564633846282959,
+      0.9716861248016357,
+      2.217480778694153
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_1p75xL4_3ep_v2_fixed",
+    "epoch_batches": 590,
+    "steps": 1770,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.0026404857635498047,
+      0.9147769212722778,
+      2.0652945041656494
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_20p0xL4_3ep_v2_fixed",
+    "epoch_batches": 6740,
+    "steps": 20220,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.03805077075958252,
+      0.13359510898590088,
+      0.22028154134750366
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_2p0xL4_3ep_v2_fixed",
+    "epoch_batches": 674,
+    "steps": 2022,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.000760197639465332,
+      0.8630921840667725,
+      1.9842547178268433
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_2p5xL4_3ep_v2_fixed",
+    "epoch_batches": 842,
+    "steps": 2526,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.016536355018615723,
+      0.7765631675720215,
+      1.7300739288330078
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_3p0xL4_3ep_v2_fixed",
+    "epoch_batches": 1011,
+    "steps": 3033,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.009822249412536621,
+      0.6899057626724243,
+      1.531240701675415
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_4p0xL4_3ep_v2_fixed",
+    "epoch_batches": 1348,
+    "steps": 4044,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      -0.006803035736083984,
+      0.600699782371521,
+      1.2323074340820312
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_6p0xL4_3ep_v2_fixed",
+    "epoch_batches": 2022,
+    "steps": 6066,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.0084381103515625,
+      0.46644270420074463,
+      0.9031322002410889
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_tri_8p0xL4_3ep_v2_fixed",
+    "epoch_batches": 2696,
+    "steps": 8088,
+    "pool_batches": 6981,
+    "passes": 3.0,
+    "summary_hash_unchanged": true,
+    "log_hash_unchanged": true,
+    "exact_logging_grid": true,
+    "complete_three_passes": true,
+    "no_within_epoch_capacity_wrap": true,
+    "correct_split": true,
+    "seed42": true,
+    "gap_identity": true,
+    "boundary_gaps": [
+      0.08194613456726074,
+      0.4505269527435303,
+      0.6704461574554443
+    ]
+  }
+]
