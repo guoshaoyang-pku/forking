@@ -4684,3 +4684,18 @@ Owner Codex, a100_perm; code commit/hash and source byte verification precede la
 The table-disabled fixed gaps are 0.045766 (unseen) / 0.039048 (seen). Trainable-minus-disabled fixed-gap growth from initialization is +0.888380 / +1.231413. Removing the table raises initial validation loss to 10.540319 (table base 3.345949; pretrained no-gram 2.736904), so this is a memory-removal/re-adaptation ablation, not a replacement architecture baseline. Primary trainable-minus-pretrained-no-gram excess is +0.573750 / +1.069807 online; initial-adjusted fixed-gap growth excess +0.658583 / +1.003355, all at1665/seed42.
 
 All ten curves, absolute losses, freeze-specific contrasts and claim limits are in docs/appendices/posttraining_samecheckpoint_20260925/results.md, with endpoints.csv/comparisons.csv/curves.csv. Figures: docs/figs/posttraining_samecheckpoint_20260925/fig_{primary_excess,freeze_excess,memory_removal_control}.{png,pdf,svg}; generators: docs/plot_scripts/{collect_posttraining_samecheckpoint,plot_posttraining_excess}.py. The source logs, smoke and equivalence evidence are committed as small files with manifests. External SSD became unmounted during final collection; local data/ symlink preserved, packet checked directly against remote runs_fixed hashes. No independent-replication significance claim.
+
+## §71 · Frozen-table post-training replay-intensity grid (2026-09-25, planned)
+
+User explicitly requires table frozen from the first downstream step to substantially exceed no-gram; trainable-table results in §69 do not meet that goal. Owner Codex. Full contract, deviations, hypothesis, controls, commands, source hashes and fixed endpoint: docs/appendices/frozen_replay_20260925/README.md. Two same-domain unseen nested prefix sizes42/84 updates/pass × backboneLR6e-4/1.5e-4 × frozen0/nogram;1680updates,40/20passes,seed42,A10018×4,initial+uniform288probe+fixed288val,dense10+boundaries. Independent no-gram base retained; no trainable warmup of table. Bounded exploratory grid, all outcomes retained, not independent-seed significance. Final bitwise freeze audit required.
+
+| run_id | host:GPU | status |
+|---|---|---|
+| ptfr_u42_frozen0_base_mb18_s42_fixed | a100_perm:0 | planned |
+| ptfr_u42_nogram_base_mb18_s42_fixed | a100_perm:1 | planned |
+| ptfr_u42_frozen0_q4_mb18_s42_fixed | a100_perm:2 | planned |
+| ptfr_u42_nogram_q4_mb18_s42_fixed | a100_perm:3 | planned |
+| ptfr_u84_frozen0_base_mb18_s42_fixed | a100_perm:4 | planned |
+| ptfr_u84_nogram_base_mb18_s42_fixed | a100_perm:5 | planned |
+| ptfr_u84_frozen0_q4_mb18_s42_fixed | a100_perm:6 | planned |
+| ptfr_u84_nogram_q4_mb18_s42_fixed | a100_perm:7 | planned |

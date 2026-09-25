@@ -1,0 +1,74 @@
+[
+  {
+    "run_id": "ptfr_u42_frozen0_base_mb18_s42_fixed",
+    "pool_updates": 42,
+    "rate": "base",
+    "arm": "frozen0",
+    "gpu": 0,
+    "seed": 42,
+    "status": "planned"
+  },
+  {
+    "run_id": "ptfr_u42_nogram_base_mb18_s42_fixed",
+    "pool_updates": 42,
+    "rate": "base",
+    "arm": "nogram",
+    "gpu": 1,
+    "seed": 42,
+    "status": "planned"
+  },
+  {
+    "run_id": "ptfr_u42_frozen0_q4_mb18_s42_fixed",
+    "pool_updates": 42,
+    "rate": "q4",
+    "arm": "frozen0",
+    "gpu": 2,
+    "seed": 42,
+    "status": "planned"
+  },
+  {
+    "run_id": "ptfr_u42_nogram_q4_mb18_s42_fixed",
+    "pool_updates": 42,
+    "rate": "q4",
+    "arm": "nogram",
+    "gpu": 3,
+    "seed": 42,
+    "status": "planned"
+  },
+  {
+    "run_id": "ptfr_u84_frozen0_base_mb18_s42_fixed",
+    "pool_updates": 84,
+    "rate": "base",
+    "arm": "frozen0",
+    "gpu": 4,
+    "seed": 42,
+    "status": "planned"
+  },
+  {
+    "run_id": "ptfr_u84_nogram_base_mb18_s42_fixed",
+    "pool_updates": 84,
+    "rate": "base",
+    "arm": "nogram",
+    "gpu": 5,
+    "seed": 42,
+    "status": "planned"
+  },
+  {
+    "run_id": "ptfr_u84_frozen0_q4_mb18_s42_fixed",
+    "pool_updates": 84,
+    "rate": "q4",
+    "arm": "frozen0",
+    "gpu": 6,
+    "seed": 42,
+    "status": "planned"
+  },
+  {
+    "run_id": "ptfr_u84_nogram_q4_mb18_s42_fixed",
+    "pool_updates": 84,
+    "rate": "q4",
+    "arm": "nogram",
+    "gpu": 7,
+    "seed": 42,
+    "status": "planned"
+  }
+]
