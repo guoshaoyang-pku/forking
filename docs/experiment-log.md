@@ -4630,3 +4630,22 @@ Acceptance:normal exit;summary/config identity;steps10,20,...1660,1665;finite tr
 | ptlr_rlvr_nogram_q10_s42_fixed | 360-2:1 | 6e-05 | done; online gap 0.235625; val 0.260289; fixed gap 0.231528 @1665 |
 
 **§68 final readout (all24 done, seed42, step1665)**: all12 source/arm combinations show lower online and uniform4 fixed gaps at1/4 and1/10 LR. Trainable online gap (original→1/4→1/10): ID2.462920→0.785483→0.331233; Magicoder0.927638→0.351789→0.151640; OpenR10.685547→0.265397→0.118368; RLVR0.499280→0.447268→0.375805. ID/RLVR final validation improves in every arm; Magicoder/OpenR1 frozen/no-gram final validation worsens despite smaller gap, and trainable validation is best among tested rates at1/4. RLVR frozen-minus-nogram at1/10 is0.002336 online /0.002399 fixed, so its original residual excess is LR-sensitive. Same total tokens does not mean matched convergence. Exact-probe old endpoints reproduced all12 val losses with zero error; final CPU audit verifies24 saved probes and bitwise identity of all8 frozen tables with changed backbones. Domain audit finds full-pool unigram JS ID0.000081 versus OOD0.218/0.309/0.414; sampled exact contexts and table-row address coverage differ. Not causal isolation of distribution shift. Full results/provenance/curves: docs/appendices/posttraining_lr_sweep_20260925/README.md and docs/figs/posttraining_lr_sweep_20260925/; no manuscript or blog mutation.
+
+## §69 · Post-training overlap × freeze timing reproduction (2026-09-25, planned)
+
+User explicitly authorizes a reproducible post-training fork, including trainable tables and pretraining/domain overlap. Owner: Codex. Complete contract, falsifiable criteria, code/data paths, executable command and engineering deviations: docs/appendices/posttraining_overlap_20260925/README.md.
+
+Two exact 333-update pools: pretraining-seen shard1 prefix versus same-domain shard21 not used for base optimization; shared disjoint shard22 validation. Both base checkpoints used 20× pool ×3 passes. Input trigram R=2^20 versus no-gram; fresh AdamW/RMSProp, LR=0.00015, table scale128, warmup100 then constant; 1665 updates/five passes, seed42. Four arms: trainable, frozen0, frozen1 (freeze before step334), nogram. Main baseline deviation: pretrained trigram-only (as §68), and A100 microbatch18 ×accum4 preserving 72 sequences/update. Val16×18 and uniform probe16×18 preserve 288 rows. Exact-length data avoids sampling untrained tail rows. Online gap and fixed diagnostic both recorded every10 plus exact boundaries. No freq_index. This is all-token continued LM, not response-only SFT or on-policy RL.
+
+Engineering smoke before formal launch: trainable and nogram, 2 updates/full model/full sequence; separate smoke paths. Code commit/hash and source-data/checkpoint SHA256 gate before compute. Planned target a100_perm only, idle GPU check. Full endpoint/data/table-freeze QC required before done. Negative arms retained; no post hoc endpoint selection.
+
+| run_id | planned GPU | status |
+|---|---:|---|
+| ptov_unseen_trainable_q4_mb18_s42_fixed | a100_perm:0 | planned |
+| ptov_unseen_frozen0_q4_mb18_s42_fixed | a100_perm:1 | planned |
+| ptov_unseen_frozen1_q4_mb18_s42_fixed | a100_perm:2 | planned |
+| ptov_unseen_nogram_q4_mb18_s42_fixed | a100_perm:3 | planned |
+| ptov_seen_trainable_q4_mb18_s42_fixed | a100_perm:4 | planned |
+| ptov_seen_frozen0_q4_mb18_s42_fixed | a100_perm:5 | planned |
+| ptov_seen_frozen1_q4_mb18_s42_fixed | a100_perm:6 | planned |
+| ptov_seen_nogram_q4_mb18_s42_fixed | a100_perm:7 | planned |
