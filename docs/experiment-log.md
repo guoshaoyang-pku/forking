@@ -4665,3 +4665,14 @@ At the first-pass boundary (step 333), trainable and frozen-after-pass-1 fixed g
 The main comparison is the excess over matched no-gram, not the absolute gap. At step 1665, trainable minus no-gram fixed gap is +0.6538 (unseen) and +1.1914 (seen). With a table frozen from the start, the corresponding excess is −0.0560 and +0.1941. Freezing after one pass retains +0.0677 and +0.3606. The same-domain unseen pool still produces a clear trainable-table fork, so pretraining overlap is not required, although exact overlap raises the initial gap and the final excess in this pair.
 
 These endpoint claims are single-seed and use a microbatch/accumulation implementation on A100; they reproduce the direction of the corrected-tokenizer H200 post-training result but are not a replacement for the 24-run H200 batch72 sweep. Curves and machine-readable rows are in docs/appendices/posttraining_overlap_20260925/ and docs/figs/posttraining_overlap_20260925/.
+
+## §70 · Same-checkpoint table-disabled post-training control (2026-09-25, planned)
+
+User requires substantial excess over no-gram. Supplement §69 with table-disabled arms preserving the same pretrained backbone; keep independently pretrained no-gram as the architecture baseline. Full contract, sources, acceptance and exact entry point: docs/appendices/posttraining_samecheckpoint_20260925/README.md. Single scientific change relative to table-trainable reference: zero and freeze the input table after strict checkpoint loading. Same base, data, warmup,LR1/4,1665steps,seed42,bf16,microbatch18xaccum4,val16x18,uniformprobe16x18,dense10plusboundaries. This tests removal of a co-adapted pathway and changes initial predictions; report initial gap and gap growth alongside endpoint. No frequency-index claim. Main baseline deviations are pretrained trigram-only and A100 accumulation, unchanged from §69.
+
+Owner Codex, a100_perm; code commit/hash and source byte verification precede launch; separate2-update smoke required. Run directory provisioning/posttraining_samecheckpoint_20260925/data/runs_fixed/run_id. No old results overwritten. False is an acceptable scientific outcome. Merely changing downstream seed on loaded weights/fixed data/dropout0 is not independent replication; the previously proposed three-seed significance claim is withdrawn before compute.
+
+| run_id | host:GPU | status |
+|---|---|---|
+| ptsc_unseen_disabled_q4_mb18_s42_fixed | a100_perm:0 | planned |
+| ptsc_seen_disabled_q4_mb18_s42_fixed | a100_perm:1 | planned |

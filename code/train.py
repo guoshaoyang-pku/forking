@@ -1818,7 +1818,11 @@ def main():
                         help="initialize model weights from a compatible final_model.pt state_dict")
     parser.add_argument("--freeze_table", action="store_true",
                         help="freeze n-gram tables and gates after initialization; optimizer state starts empty")
+    parser.add_argument("--disable_ngram_tables", action="store_true",
+                        help="zero and freeze n-gram table/gate parameters after loading; matched no-gram control")
     args = parser.parse_args()
+    if args.disable_ngram_tables and (not args.init_model or args.injection_position != "input"):
+        parser.error("--disable_ngram_tables requires --init_model and input injection")
     if args.warmup_steps < 1:
         parser.error("--warmup_steps must be >= 1")
     if not 0.0 <= args.warmup_start_lr_mult <= 1.0:
@@ -2004,6 +2008,16 @@ def main():
             raise SystemExit(
                 f"--init_model incompatible: missing={missing[:8]} unexpected={unexpected[:8]}")
         print(f"[nglab] initialized model from {init_path}")
+    if args.disable_ngram_tables:
+        disabled = 0
+        for name, p in model.named_parameters():
+            if any(marker in name for marker in ("value_embeds", "bigram_ves", "trigram_ves",
+                                                 "ve_gate", "bigram_gate", "trigram_gate")):
+                with torch.no_grad():
+                    p.zero_()
+                p.requires_grad_(False)
+                disabled += p.numel()
+        print(f"[nglab] disable_ngram_tables enabled: zeroed and froze {disabled:,} parameters")
     if args.freeze_table:
         frozen = 0
         for name, p in model.named_parameters():
@@ -2599,6 +2613,7 @@ def main():
         "torch_compile": args.compile,
         "init_model": os.path.abspath(args.init_model) if args.init_model else None,
         "freeze_table": bool(args.freeze_table),
+        "disable_ngram_tables": bool(args.disable_ngram_tables),
         "diag_forward_dtype": ("bf16" if diag_amp_dtype is not None else "fp32")
                               if (exact_freq_log is not None or freq_bin_log is not None) else None,
         "diag_async": diag_pool is not None,
