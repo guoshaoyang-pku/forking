@@ -1,0 +1,82 @@
+[
+  {
+    "run_id": "sftbase_ep20_tri_ckpt_fixed",
+    "path": "/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/sftbase_ep20_tri_ckpt_fixed",
+    "summary_sha256": "db7db45e858930517646078435e354be44868f7eb450bb0185160950f2b459fc",
+    "log_sha256": "b151daa8544e91b344447a6a1fa6304aeae493ef21119e4efda472d073911768",
+    "total_steps": 20220,
+    "declared_epoch_batches": 6740,
+    "boundary_rows": [
+      {
+        "step": 6740,
+        "train_loss": 4.13698148727417,
+        "val_loss": 4.165068626403809,
+        "gap": 0.028087139129638672,
+        "lr_mult": 1.0,
+        "epoch": 1,
+        "elapsed_s": 1637.8602402210236
+      },
+      {
+        "step": 13480,
+        "train_loss": 3.4227330684661865,
+        "val_loss": 3.548695206642151,
+        "gap": 0.12596213817596436,
+        "lr_mult": 1.0,
+        "epoch": 2,
+        "elapsed_s": 3168.695440530777
+      },
+      {
+        "step": 20220,
+        "train_loss": 3.1229352951049805,
+        "val_loss": 3.3369187712669373,
+        "gap": 0.2139834761619568,
+        "lr_mult": 1.0,
+        "epoch": 3,
+        "elapsed_s": 4698.747131109238
+      }
+    ],
+    "checkpoints": [
+      "final_model.pt"
+    ]
+  },
+  {
+    "run_id": "s1v5_128_ep20_nogram_20p0xL4_3ep_ckpt_fixed",
+    "path": "/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/s1v5_128_ep20_nogram_20p0xL4_3ep_ckpt_fixed",
+    "summary_sha256": "18159883dd066ea3eeeeb37d97fa154caa228060986cd79fe2b7cc033c9b664d",
+    "log_sha256": "0c22febe86ce1b0906bb1c268f76b525fbd6a5f19e4eb6a664a305d003c90652",
+    "total_steps": 20220,
+    "declared_epoch_batches": 6740,
+    "boundary_rows": [
+      {
+        "step": 6740,
+        "train_loss": 2.8603882789611816,
+        "val_loss": 2.8641668558120728,
+        "gap": 0.0037785768508911133,
+        "lr_mult": 1.0,
+        "epoch": 1,
+        "elapsed_s": 1619.417721271515
+      },
+      {
+        "step": 13480,
+        "train_loss": 2.7429754734039307,
+        "val_loss": 2.7515660524368286,
+        "gap": 0.00859057903289795,
+        "lr_mult": 1.0,
+        "epoch": 2,
+        "elapsed_s": 3236.2483308315277
+      },
+      {
+        "step": 20220,
+        "train_loss": 2.7056682109832764,
+        "val_loss": 2.7171098589897156,
+        "gap": 0.011441648006439209,
+        "lr_mult": 1.0,
+        "epoch": 3,
+        "elapsed_s": 4854.604050397873
+      }
+    ],
+    "checkpoints": [
+      "final_model.pt"
+    ]
+  }
+]

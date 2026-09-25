@@ -1,0 +1,74 @@
+[
+  {
+    "source_file": "/Users/guoshaoyang/.codex-phybench/sessions/2026/09/12/rollout-2026-09-12T22-13-44-01a095f7-8ddb-7371-879c-602c3c674da9.jsonl",
+    "source_line": 1813,
+    "timestamp_utc": "2026-09-14T07:34:42.250Z",
+    "role": "user",
+    "text": "图 7-2 epoch 长度轴 scaling（L4 倍数制）\n\n正文的图7-2。应该还是老的重复消费数据导致的随着epoch增长，gap变大的图片。看一下本地是否有修复的。需要替换那个图片。\n",
+    "source_record_sha256": "080151bd34cc5b223882de0fe36923f0f054fea3c3e62677fe0ab3d0fae6caa3"
+  },
+  {
+    "source_file": "/Users/guoshaoyang/.codex-phybench/sessions/2026/09/14/rollout-2026-09-14T18-07-08-01a095f7-8ddb-7371-879c-602c3c674da9_01a09f62-8415-7bb1-9b5c-c0ebbc589606.jsonl",
+    "source_line": 1191,
+    "timestamp_utc": "2026-09-14T12:40:57.373Z",
+    "role": "user",
+    "text": "很好，我认为你应该并行启动更多的点，采样至少20个点，最大的倍数做到20倍的训练长度（确保源数据够用）。\n先把实验排上。可能需要好几天才能训练完毕，这个时候可以先看 1epoch和2epoch的位置的gap。\n6 8 10 15 20\n1.5 1.25 1.75 2.5 也要补上点。\n",
+    "source_record_sha256": "ba8c60381d0cb20761b6a3cf9e6add1b4b51f244f8251eff2aa4f11c8e7b5c16"
+  },
+  {
+    "source_file": "/Users/guoshaoyang/.codex-phybench/sessions/2026/09/14/rollout-2026-09-14T18-07-08-01a095f7-8ddb-7371-879c-602c3c674da9_01a09f62-8415-7bb1-9b5c-c0ebbc589606.jsonl",
+    "source_line": 1935,
+    "timestamp_utc": "2026-09-14T15:35:27.811Z",
+    "role": "user",
+    "text": "我忘了epoch1没有gap了。这个图片不太有意义。后面作为背景板吧。epoch2再绘制。\n",
+    "source_record_sha256": "25bc47adaad0b6fc4ea222efaf49e8c917134be1b3438b483bb415cb25f71763"
+  },
+  {
+    "source_file": "/Users/guoshaoyang/.codex-phybench/sessions/2026/09/14/rollout-2026-09-14T18-07-08-01a095f7-8ddb-7371-879c-602c3c674da9_01a09f62-8415-7bb1-9b5c-c0ebbc589606.jsonl",
+    "source_line": 2321,
+    "timestamp_utc": "2026-09-14T17:42:19.401Z",
+    "role": "user",
+    "text": "epoch3呢？你的图片只包含了epoch2\n",
+    "source_record_sha256": "9a652d5bcf8f2279bf1c9073a82e288a3e2be541f3b594595db2a9a9b6bbf242"
+  },
+  {
+    "source_file": "/Users/guoshaoyang/.codex-phybench/sessions/2026/09/19/rollout-2026-09-19T16-45-00-01a0b8d7-1d7f-7140-978b-d5229dd59893.jsonl",
+    "source_line": 157,
+    "timestamp_utc": "2026-09-19T08:55:56.582Z",
+    "role": "user",
+    "text": "我先来说我的wish，我的初步实验设计。\n\n我们拿一个生产级的overencoding pretrain之后的ckpt，也可以是我们已经带有overencoding的长训练（比如说我们用20倍长度的corpus训练之后得到几乎没有gap）。此时gap非常小。\n\n第一步SFT我们先使用vanilla nanogpt用和预训练一样的infra继续训练下去。\n\n然后我们拿一个代理SFT数据去做后训练。长度就是一倍基础corpus，类似主实验。然后重复5个epoch，看一下是否会出现forking现象。\n\n这里的SFT数据集可以是训练集里面继续往后顺延一批（val数据集和train肯定是同分布的），也就是和pretrain同分布。也可以是ood的，我建议你找一些数学或者百科或者code的SFT开源数据集（不用下载很多，也不用下载很长）。\n\n建议在ophis-gpu上面直接下载那些数据，那个数据可以连接中国网络环境的外网，你可以用modelscope之类的代理来下载。\n\n训练setting由于训练量很小，建议试一下freeze ngram table和不freeze的，我猜测生产情况下应该会freeze table，因为生产情况下我们没有那么大的batch processing，反传table的梯度会很占用内存。\n\n我的预期是，同分布的pretrain数据集可能会展开微小的gap，甚至继续不太有gap。ood的应该会展开更大的gap。这里gap是否展开和是否freeze应该关系不大。\n",
+    "source_record_sha256": "881b8ba6c78e1e5b63f63f73648c65597c74ed4c6ac6e9be907cc64c62725234"
+  },
+  {
+    "source_file": "/Users/guoshaoyang/.codex-phybench/sessions/2026/09/19/rollout-2026-09-19T16-45-00-01a0b8d7-1d7f-7140-978b-d5229dd59893.jsonl",
+    "source_line": 276,
+    "timestamp_utc": "2026-09-19T10:05:18.695Z",
+    "role": "user",
+    "text": "先把数据都下载拉取下来。然后同质化数据的实验直接开始做，我们要快速转起来。\n学习率和optimizer state确实要重新开始，重新warmup，学习率先不变。我们要做比较干净的变量少的实验。\n",
+    "source_record_sha256": "74ff4b1fc695ac1b587a9a6ccf31a203e69df22e0c52dffcbbfa4fc8f292ee11"
+  },
+  {
+    "source_file": "/Users/guoshaoyang/.codex-phybench/sessions/2026/09/19/rollout-2026-09-19T16-45-00-01a0b8d7-1d7f-7140-978b-d5229dd59893.jsonl",
+    "source_line": 1278,
+    "timestamp_utc": "2026-09-19T13:58:38.784Z",
+    "role": "user",
+    "text": "已继续执行，当前状态如下。\n\n- **基座没有被中断**，仍在 GPU 2 上运行：\n  - run：`sftbase_ep20_tri_ckpt_fixed`\n  - 当前：step **5055 / 20220**\n  - 最近记录：train `4.5324`，val `4.6018`，gap `+0.0694`\n  - 当前还没有 `final_model.pt`，所以 ID/OOD 两个 launcher 都在等待基座完成。\n- **同分布 ID 线保持原计划**：\n\n这个不是老早就有训练完毕的20x的训的ckpt吗？应该不需要重新训练吧\n",
+    "source_record_sha256": "cb6277e3c5b8f1681431134dafd219953fa4f3ec68691c9923ad2683ce63e816"
+  },
+  {
+    "source_file": "/Users/guoshaoyang/.codex-phybench/sessions/2026/09/19/rollout-2026-09-19T16-45-00-01a0b8d7-1d7f-7140-978b-d5229dd59893.jsonl",
+    "source_line": 1335,
+    "timestamp_utc": "2026-09-19T14:01:08.307Z",
+    "role": "assistant",
+    "text": "你说得对，**20× replay 的训练早就完成了，不需要重新做这项科学实验**。\n\n我核对后的实际情况是：\n\n- 旧 run：`s1v5_128_ep20_tri_20p0xL4_3ep_v2_fixed`\n- 已完成：20,220 steps，3 个 epoch\n- final gap：`+0.2203`\n- 但这个目录只有：\n  - `summary.json`\n  - `train_log.jsonl`\n  - `train.log`\n  - `table_norm.jsonl`\n- **没有 `final_model.pt`**\n\n而 SFT 的 `--init_model` 需要完整的模型 `state_dict`，所以之前启动的：\n\n- `sftbase_ep20_tri_ckpt_fixed`\n\n本质上是一次 **checkpoint materialization rerun**：同样的模型、数据、seed、20× replay setting，只是额外打开了 `--save_final_model`，目的是补出可以给 SFT 加载的权重。它不是新的 20× 科学点。\n\n这次 rerun 得到：\n\n- final gap：`+0.2140`\n- 旧 run：`+0.2203`\n\n两者差异属于单 seed / GPU 数值波动范围，SFT 实验使用的是这个新生成的 `final_model.pt`。\n\n所以正确的结论是：\n\n1. **20× 训练结果原本就已经存在。**\n2. **原本缺的是 checkpoint 文件，而不是训练结果。**\n3. 之前重新训练是为了补 checkpoint，流程上可以理解，但没有必要把它当成新的基座科学实验。\n4. 当前已经完成的 ID、Magicoder 和 OpenR1 SFT 结果仍然有效，因为它们都从兼容的 20× 权重开始，并重新初始化了 optimizer state 和 warmup。\n\n我已经在 [docs/experiment-log.md](/Users/guoshaoyang/Desktop/workdir/ngram-gap-lab/docs/experiment-log.md) 中把这点改清楚，并提交为：\n\n```text\n8ca2dce Clarify 20x checkpoint materialization rerun\n```\n\n之后如果继续做 SFT，直接复用：\n\n```text\n/data4/guoshaoyang/ngram-gap-lab/data/runs_scaling/sftbase_ep20_tri_ckpt_fixed/final_model.pt\n```\n\n不再重跑 20× 基座。",
+    "source_record_sha256": "26667df1ad11d1ee7dc4588ccd126a30c0196c795c7195cedb44d15e690e00ff"
+  },
+  {
+    "source_file": "/Users/guoshaoyang/.codex-phybench/sessions/2026/09/19/rollout-2026-09-19T16-45-00-01a0b8d7-1d7f-7140-978b-d5229dd59893.jsonl",
+    "source_line": 1342,
+    "timestamp_utc": "2026-09-19T14:06:23.041Z",
+    "role": "user",
+    "text": "是的，你直接复用然后继续做SFT（其实是continue pretrain），然后测试效果。\n",
+    "source_record_sha256": "7a2acbd308be031d503e44bc6c1651884ff6b56678cdcdf3147acf27dda3290b"
+  }
+]
