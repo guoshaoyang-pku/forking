@@ -1,0 +1,32 @@
+{
+  "source": "docs/appendices/context_examples_20260925/logits.json",
+  "source_sha256": "2ab83ec0ac08725e1fda463c49c301f4bbc814bc6b67c9780e020b15297bb065",
+  "counts_sha256": "162e41934390c6e4831b06a301c6a78a1655e32ed8ea96dc82258dfc4ebbfb64",
+  "script": "docs/plot_scripts/plot_context_examples_points.py",
+  "input_reader": "docs/plot_scripts/plot_context_examples_logp.py",
+  "metric": "natural log probability",
+  "max_abs_logp_difference_from_export": 1.5016857535243844e-06,
+  "epochs": [
+    1,
+    5
+  ],
+  "steps": [
+    337,
+    1685
+  ],
+  "seed": 42,
+  "shape": [
+    3,
+    2
+  ],
+  "shared_ylim": [
+    -16,
+    0
+  ],
+  "encoding": "open epoch1 and filled epoch5 points joined; higher means more probable",
+  "color": "blue train-seen (both/train-only); orange val-only; grey neither; charcoal others",
+  "counts": "exact context-token occurrences: Train shard1; Val shards2,3,4; valid within-chunk positions",
+  "token_classes": "corpus membership, not separate model predictions for train and val",
+  "trajectory": "two endpoints only; connecting line does not imply monotone intermediate changes",
+  "others": "log of mean top20 probability excluding named tokens; reselected per distribution"
+}

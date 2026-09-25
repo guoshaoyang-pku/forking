@@ -1,0 +1,24 @@
+{
+  "paper_base": "f81d9e7b15412740c577b6c7b5ab5058b77e749c",
+  "all_72_probabilities_unchanged": true,
+  "all_15_membership_counts_unchanged": true,
+  "macro_pdf_unchanged": true,
+  "build_pages": 40,
+  "rendered_pages": [
+    7,
+    34
+  ],
+  "figure_number": 20,
+  "figure_page": 34,
+  "build_warnings_checked": {
+    "undefined references": false,
+    "undefined citations": false,
+    "Overfull": false,
+    "Float too large": false
+  },
+  "figure_sha256": "af5a18187b21a43e5c2313829cb012a459d3da98673f592ea16b4bf57154d3ae",
+  "source_files_sha256": {
+    "sections/04_mechanism.tex": "ecd7cf7c596b8c93478238b86026995293cd6e8c731e34bd5c7dd80e12001dda",
+    "sections/appendix_f_mechanism.tex": "2e567885d1f4d91584e604bca84c62da37f03f90ae1758cedb9f8119884dc339"
+  }
+}

@@ -1,0 +1,121 @@
+\section{Mechanistic Experiments and Diagnostics}
+\label{app:mechanistic}
+
+\subsection{Replay sharpening and crowding-out}
+\label{app:sharpening}
+\label{app:replay-clue}
+
+The experiments in this section examine whether replay increasingly favors continuations observed in training, as proposed in Section~\ref{sec:sharpening}. The temporal motivation is that the corpus remains fixed while the gap keeps growing. In the 20-pass both-table experiment with seed 42, the total online gaps at the ends of passes 1--4 are $-0.062$, $1.199$, $2.730$ and $3.917$ nats. Their increments are comparable early in training and later decline, reaching $0.241$ nats from pass 19 to 20. This is a clue about the model's response to replay, rather than evidence for a constant increase in novel-continuation loss.
+
+\subsubsection{Experimental setup and primary observations}
+\label{app:sharpening-setup}
+
+We use checkpoint probes to examine individual continuation distributions and fixed-validation evaluation to measure their aggregate behavior. The diagnostics examine models with both bigram and trigram tables and, where available, a no-gram control. All runs discussed here use seed 42. A training pass contains 337 optimizer updates; the five pass-end checkpoints are at steps 337, 674, 1011, 1348 and 1685. The input and aggregation conventions of each diagnostic are specified below.
+
+\paragraph{The original context probe.}
+For \emph{walk their dog}, \emph{down} occurs once as the next token in the training pass; \emph{daily} and \emph{for} occur once each in the fixed 128-batch validation window and never after this trigram in training. The probe in Figure~\ref{fig:walk-their-dog} inputs only the three original context tokens, without BOS or an earlier prefix, and reads the full-vocabulary next-token distribution at each checkpoint. The training loss is $-\log p(\textit{down})$; the validation loss is the mean of $-\log p(\textit{daily})$ and $-\log p(\textit{for})$. These are context-only diagnostic losses, distinct from the losses logged during training. Across the five passes, the probability of \emph{down} rises by more than an order of magnitude, while \emph{daily}, \emph{for}, and the total mass outside the observed continuations decline.
+
+\begin{figure}[!htbp]
+\centering
+\begin{subfigure}[b]{0.58\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/walk_their_dog_loss.pdf}
+\subcaption{}
+\label{fig:walk-their-dog}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.38\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/fig09_crowd_ce_seen_novel.pdf}
+\subcaption{}
+\label{fig:crowd-ce}
+\end{subfigure}
+\caption{Crowding-out: (a) context-only continuation losses for \emph{walk their dog}; (b) validation cross-entropy of train-seen and novel continuations, pooled over contexts.}
+\label{fig:crowding}
+\end{figure}
+
+\paragraph{Aggregate validation diagnostics.}
+Figure~\ref{fig:crowd-ce} uses full causal prefixes and position-weighted cross-entropy, comparing the original both-table checkpoints with a separately evaluated no-gram control at the same five pass ends. Of 589{,}248 classified validation positions, 405{,}058 have a training-seen bigram context and continuation, and 158{,}790 have a training-seen context with a novel continuation; the remaining 25{,}400 positions have contexts absent from training and are excluded from the two curves. Over the first three passes, seen-continuation cross-entropy falls from 4.3 to 2.8 nats for the control and stays near 3.4 for the both-table model. For novel continuations, the control improves from 6.9 to 5.6 nats, whereas the both-table model deteriorates from 7.5 to 9.0. This aggregate contrast supports a novel-continuation penalty under replay without implying that every individual context follows the same trajectory.
+
+Predictive entropy and cross-entropy are evaluated on the same fixed validation positions. At pass 3, the both-table model has entropy 2.93 nats and cross-entropy 5.26, compared with 3.59 and 3.58 for the control. The both-table model is thus more confident despite being less accurate, consistent with excessive concentration on a limited set of continuations \citep{carlsson2025hyperfitting}. These full-prefix measurements and the context-only illustration use different inputs and estimands; they are not a matched per-example loss decomposition.
+
+\pending{Before submission, register the entropy probe and its aggregation script.}
+
+\paragraph{Additional output-distribution probes.}
+Figures~\ref{fig:actual-petting}--\ref{fig:actual-there} compare the no-gram and both-table models at steps 337 and 1685. Unlike the original \emph{walk their dog} probe, these inputs contain BOS followed by the three context tokens. Probabilities use the full-vocabulary softmax; the upper and lower panels show probability and log probability. The named animals are single tokens under the training tokenizer. Here, \emph{Others} is the arithmetic mean of the 20 largest remaining token probabilities after excluding the named tokens, reselected for each distribution; it is not the total remaining mass. The lower panels show the logarithm of this mean.
+
+\subsubsection{Additional contexts and heterogeneous trajectories}
+\label{app:actual-logits}
+
+The selected \emph{petting your} and \emph{introducing your} contexts come from a cohort where dog follows the context in training and cat does not. Their checkpoint distributions illustrate suppression of an alternative continuation in the $n$-gram model alongside improvement for the no-gram control. The literal \emph{there is a} query has both dog and cat in training; its measured trajectory need not match the schematic in Figure~\ref{fig:replay-transfer}. These examples describe the response of the complete model and do not isolate the effect of training another context.
+
+The broader seed-42 context-only survey contains monotone trajectories, temporary reversals, and cases that do not follow the proposed pattern. For example, \emph{What do I} shows steadily increasing train-seen mass over five passes, whereas \emph{In this course} has a temporary increase in validation-only mass, and \emph{a raw vegan} has a substantial intermediate reversal in train-seen mass. These observations use the same five checkpoints and input convention as the \emph{walk their dog} probe and are illustrative rather than a population estimate. Increasing total mass on training-seen continuations also need not mean increasing mass on the single most frequent continuation. A real context may have several observed targets, and its predictions change through shared backbone parameters as well as its table representation. The order of training examples, competing updates from other contexts, and the sensitivity of low-frequency continuations are plausible sources of this variation; the present probes do not separate their causal contributions.
+
+\FloatBarrier
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\linewidth]{figures/fig_logits_petting_your.pdf}
+\caption{Output distributions after \emph{petting your}: pass 1 (light/open) and pass 5 (dark/filled), with shared scales within each row.}
+\label{fig:actual-petting}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\linewidth]{figures/fig_logits_introducing_your.pdf}
+\caption{Output distributions after \emph{introducing your}, using the conventions of Figure~\ref{fig:actual-petting}.}
+\label{fig:actual-introducing}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\linewidth]{figures/fig_logits_there_is_a.pdf}
+\caption{Output distributions after \emph{there is a}, where both dog and cat occur in training. Conventions follow Figure~\ref{fig:actual-petting}.}
+\label{fig:actual-there}
+\end{figure}
+\FloatBarrier
+
+\subsubsection{Variation across repeated runs}
+\label{app:run-variation}
+
+Our training runs do not enforce deterministic floating-point execution, so fixing the seed does not ensure identical trajectories. In seed-42 reruns, training loss already differed by about $10^{-5}$ nats at step 2. The repeated \emph{walk their dog} experiment retained the overall decrease in training-continuation loss and increase in validation-continuation loss, but the intermediate token probabilities were not identical and included reversals. Small numerical differences can therefore accompany different trajectories for an individual continuation, even when the overall trend is preserved.
+
+\FloatBarrier
+\subsection{Context locality under loss masking}
+\label{app:context-locality}
+
+\subsubsection{Experimental setup and original observations}
+\label{app:mask-setup}
+
+The experiment tests whether removing a context's own training loss suppresses further gap growth while the remaining contexts continue training. The original diagnostic selects a random 2\% of training trigram contexts (set $A$) and excludes next-token loss at their positions from the start of epoch 2 or 3. Input tokens, trainable parameters and the loss denominator are retained. A disjoint 2\% of contexts (set $B$) serves as unmasked peers, and each intervention is paired with normal training from the same checkpoint.
+
+Figure~\ref{fig:context-subspace-mask}(a) sums full-vocabulary softmax probabilities over training-seen or validation-only continuations, then averages the resulting mass over fixed validation positions. Validation-only continuations follow the context in fixed validation but not in training. The two supports need not exhaust the vocabulary, and their masses use separate vertical scales. Panel (b) measures the fixed-probe gap contribution
+\begin{equation}
+C_S=\sum_{i\in S}q_i\bigl[\bar\ell_{\mathrm{val},i}-\bar\ell_{\mathrm{tr},i}\bigr],
+\label{eq:context-gap-contribution}
+\end{equation}
+where $q_i$ weights each context by its validation-position share. These diagnostics measure the behavior of selected contexts without assuming mathematically independent parameter subspaces.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/fig09_dynamics.pdf}
+\caption{Context-masking dynamics: (a) mean probability mass on train-seen and validation-only continuations; (b) fixed-probe gap contributions. Other masking runs use different measurements and did not recover gap arrest; see Appendix~\ref{app:mask-reconciliation}.}
+\label{fig:context-subspace-mask}
+\end{figure}
+
+The four-pass diagnostic uses seed 42. Its mass panel compares the both-table and no-gram models with masking from epoch 2, evaluated at steps 337, 674, 1011 and 1348, with 8,167 masked and 8,266 peer validation positions. The gap panel compares normal training with masking from epoch 2 or epoch 3 in the both-table model, plotting fixed-probe contributions $C_A$ and $C_B$. Protocol differences from the separate one-pass experiments are discussed below.
+
+In the displayed trajectories, the masked gap contributions largely stop growing after the intervention, while the peer and normal-training curves continue to rise. In the $n$-gram model, unmasked contexts gain train-seen mass from $0.43$ to $0.69$, while masked contexts change from $0.43$ to $0.40$. The no-gram control gains train-seen mass with or without masking ($0.22\to0.39$ masked, versus $0.41$ unmasked at pass 4), and its validation-only mass also increases ($0.013\to0.06$). These observations motivate a locality interpretation: removing direct replay supervision can suppress further sharpening in the selected contexts.
+
+\subsubsection{Further analysis and interpretation}
+\label{app:mask-reconciliation}
+
+Independently archived one-pass experiments examine whether stable average gap implies stable predictions for individual contexts. They sample 2\% of exact training trigram contexts uniformly without replacement (selection seed 20260919). Of 379{,}789 selected contexts, 5{,}565 have fixed-validation support, covering 8{,}083 positions; a disjoint peer sample has 5{,}571 measurable contexts and 8{,}082 positions. Losses preserve full causal prefixes and are recomputed at a common checkpoint over each context's training and validation occurrences. We report the equally weighted mean of these per-context gaps; the separately computed contribution in Equation~\eqref{eq:context-gap-contribution} instead uses $q_i=N_{\mathrm{val},i}/589{,}824$, without renormalizing within a cohort.
+
+The epoch-2 experiment compares normal and masked training over steps 337--674; the epoch-3 experiment makes the same comparison over steps 674--1011. Both use seed 42. Within each pair, the two conditions begin from the same checkpoint and retain the original batch-token loss denominator. These are separate experiments, not segments of the four-pass trajectories in Figure~\ref{fig:context-subspace-mask}. Their settings follow Appendix~\ref{app:setting}, with two $2^{20}$-row tables, backbone LR $0.0006$ and RMSProp table LR $0.0768$.
+
+For epoch 2, the selected contexts' mean gap increases by $1.018$ nats under normal training and by only $0.007$ with masking; the peer increments remain $0.997$ and $0.998$. For epoch 3, the corresponding selected-context changes are $0.869$ and $-0.065$ nats, while the peer changes are $0.859$ and $0.856$. These comparisons support suppression of average additional gap accumulation. The masked gap can still rise temporarily within a pass, and its pre-existing value does not disappear.
+
+Average stability does not imply that individual predictions remain fixed. In the masked epoch-3 run, mean training and validation losses both increase, by $0.445$ and $0.380$ nats. Their similar changes produce the small net gap change. The mean absolute per-context gap change is $0.710$ nats in epoch 2 and $0.737$ in epoch 3, much larger than the signed averages; individual contexts move in both directions. Changes also vary across frequency groups, with sparse support at high frequencies. Shared-backbone updates and the retained optimizer state can still affect masked contexts, so these results support locality of average gap accumulation rather than complete independence of context subspaces.
+
+Other previously reported masking runs did not recover the arrest of gap growth. In a separate seed-42 comparison with masking from epoch 2, the online masked-cohort gap contribution is $0.0353$ nats at step 670, versus $0.0247$ under normal training. With masking from step 675, the corresponding contributions are $0.0551$ versus $0.0492$ at step 790. These quantities use the online training mean, whereas the figure and paired analyses use fixed probes. The intervention configurations and loss-denominator treatment also require reconciliation. The results therefore cannot be treated as matched replications, and the observed aggregate suppression does not establish context independence.
+
+\pending{Before submission, reconcile the archived multi-epoch masking protocol with the minimal-setting reruns. The independent one-pass experiments are not the provenance of Figure~\ref{fig:context-subspace-mask}.}
