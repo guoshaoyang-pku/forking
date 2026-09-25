@@ -1,0 +1,14 @@
+{
+  "ptsc_seen_disabled_q4_mb18_s42_fixed": {
+    "final_model.pt": 3479539169,
+    "probe_tokens.npz": 4721540
+  },
+  "ptsc_unseen_disabled_q4_mb18_s42_fixed": {
+    "final_model.pt": 3479539169,
+    "probe_tokens.npz": 4721540
+  },
+  "ptsc_unseen_disabled_q4_mb18_s42_smoke2_fixed": {
+    "final_model.pt": null,
+    "probe_tokens.npz": null
+  }
+}

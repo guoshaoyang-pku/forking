@@ -4631,7 +4631,7 @@ Acceptance:normal exit;summary/config identity;steps10,20,...1660,1665;finite tr
 
 **§68 final readout (all24 done, seed42, step1665)**: all12 source/arm combinations show lower online and uniform4 fixed gaps at1/4 and1/10 LR. Trainable online gap (original→1/4→1/10): ID2.462920→0.785483→0.331233; Magicoder0.927638→0.351789→0.151640; OpenR10.685547→0.265397→0.118368; RLVR0.499280→0.447268→0.375805. ID/RLVR final validation improves in every arm; Magicoder/OpenR1 frozen/no-gram final validation worsens despite smaller gap, and trainable validation is best among tested rates at1/4. RLVR frozen-minus-nogram at1/10 is0.002336 online /0.002399 fixed, so its original residual excess is LR-sensitive. Same total tokens does not mean matched convergence. Exact-probe old endpoints reproduced all12 val losses with zero error; final CPU audit verifies24 saved probes and bitwise identity of all8 frozen tables with changed backbones. Domain audit finds full-pool unigram JS ID0.000081 versus OOD0.218/0.309/0.414; sampled exact contexts and table-row address coverage differ. Not causal isolation of distribution shift. Full results/provenance/curves: docs/appendices/posttraining_lr_sweep_20260925/README.md and docs/figs/posttraining_lr_sweep_20260925/; no manuscript or blog mutation.
 
-## §69 · Post-training overlap × freeze timing reproduction (2026-09-25, planned)
+## §69 · Post-training overlap × freeze timing reproduction (2026-09-25, done)
 
 User explicitly authorizes a reproducible post-training fork, including trainable tables and pretraining/domain overlap. Owner: Codex. Complete contract, falsifiable criteria, code/data paths, executable command and engineering deviations: docs/appendices/posttraining_overlap_20260925/README.md.
 
@@ -4639,16 +4639,16 @@ Two exact 333-update pools: pretraining-seen shard1 prefix versus same-domain sh
 
 Engineering smoke before formal launch: trainable and nogram, 2 updates/full model/full sequence; separate smoke paths. Code commit/hash and source-data/checkpoint SHA256 gate before compute. Planned target a100_perm only, idle GPU check. Full endpoint/data/table-freeze QC required before done. Negative arms retained; no post hoc endpoint selection.
 
-| run_id | planned GPU | status |
+| run_id | host:GPU | status |
 |---|---:|---|
-| ptov_unseen_trainable_q4_mb18_s42_fixed | a100_perm:0 | planned |
-| ptov_unseen_frozen0_q4_mb18_s42_fixed | a100_perm:1 | planned |
-| ptov_unseen_frozen1_q4_mb18_s42_fixed | a100_perm:2 | planned |
-| ptov_unseen_nogram_q4_mb18_s42_fixed | a100_perm:3 | planned |
-| ptov_seen_trainable_q4_mb18_s42_fixed | a100_perm:4 | planned |
-| ptov_seen_frozen0_q4_mb18_s42_fixed | a100_perm:5 | planned |
-| ptov_seen_frozen1_q4_mb18_s42_fixed | a100_perm:6 | planned |
-| ptov_seen_nogram_q4_mb18_s42_fixed | a100_perm:7 | planned |
+| ptov_unseen_trainable_q4_mb18_s42_fixed | a100_perm:0 | done; QC pass @1665 |
+| ptov_unseen_frozen0_q4_mb18_s42_fixed | a100_perm:1 | done; QC pass @1665 |
+| ptov_unseen_frozen1_q4_mb18_s42_fixed | a100_perm:2 | done; QC pass @1665 |
+| ptov_unseen_nogram_q4_mb18_s42_fixed | a100_perm:3 | done; QC pass @1665 |
+| ptov_seen_trainable_q4_mb18_s42_fixed | a100_perm:4 | done; QC pass @1665 |
+| ptov_seen_frozen0_q4_mb18_s42_fixed | a100_perm:5 | done; QC pass @1665 |
+| ptov_seen_frozen1_q4_mb18_s42_fixed | a100_perm:6 | done; QC pass @1665 |
+| ptov_seen_nogram_q4_mb18_s42_fixed | a100_perm:7 | done; QC pass @1665 |
 
 
 ## Final readout (2026-09-25)
@@ -4666,7 +4666,9 @@ The main comparison is the excess over matched no-gram, not the absolute gap. At
 
 These endpoint claims are single-seed and use a microbatch/accumulation implementation on A100; they reproduce the direction of the corrected-tokenizer H200 post-training result but are not a replacement for the 24-run H200 batch72 sweep. Curves and machine-readable rows are in docs/appendices/posttraining_overlap_20260925/ and docs/figs/posttraining_overlap_20260925/.
 
-## §70 · Same-checkpoint table-disabled post-training control (2026-09-25, planned)
+**Excess-growth correction (seed42, step1665):** trainable online gap is 3.694× / 6.727× the independently pretrained no-gram on unseen/seen pools. Initial-adjusted excess fixed-gap growth is +0.658583 / +1.003355. The trainable increase is mainly after step333. In contrast, frozen1 growth after step333 exceeds no-gram by −0.014982 / +0.056320 only; frozen0 total fixed-gap growth excess is −0.051257 / +0.006054. Thus an endpoint above no-gram can be inherited, and these freeze arms do not establish large backbone-only excess. The two pools change text as well as pretraining familiarity; their difference is not a causal isolation of overlap.
+
+## §70 · Same-checkpoint table-disabled post-training control (2026-09-25, done)
 
 User requires substantial excess over no-gram. Supplement §69 with table-disabled arms preserving the same pretrained backbone; keep independently pretrained no-gram as the architecture baseline. Full contract, sources, acceptance and exact entry point: docs/appendices/posttraining_samecheckpoint_20260925/README.md. Single scientific change relative to table-trainable reference: zero and freeze the input table after strict checkpoint loading. Same base, data, warmup,LR1/4,1665steps,seed42,bf16,microbatch18xaccum4,val16x18,uniformprobe16x18,dense10plusboundaries. This tests removal of a co-adapted pathway and changes initial predictions; report initial gap and gap growth alongside endpoint. No frequency-index claim. Main baseline deviations are pretrained trigram-only and A100 accumulation, unchanged from §69.
 
@@ -4674,5 +4676,11 @@ Owner Codex, a100_perm; code commit/hash and source byte verification precede la
 
 | run_id | host:GPU | status |
 |---|---|---|
-| ptsc_unseen_disabled_q4_mb18_s42_fixed | a100_perm:0 | planned |
-| ptsc_seen_disabled_q4_mb18_s42_fixed | a100_perm:1 | planned |
+| ptsc_unseen_disabled_q4_mb18_s42_fixed | a100_perm:0 | done; QC pass @1665; train 3.416884; val 3.485911; online gap 0.069027; fixed gap 0.045766 |
+| ptsc_seen_disabled_q4_mb18_s42_fixed | a100_perm:1 | done; QC pass @1665; train 3.495566; val 3.486328; online gap -0.009238; fixed gap 0.039048 |
+
+**Final readout (19:31 Beijing, 2026-09-25):** 2/2 supplementary runs done and QC pass; exact-backbone/FP32 logit equivalence test passed, two-step full-model smoke passed, each final checkpoint 3,479,539,169 bytes and saved probe 4,721,540 bytes. Source commit 19cbd4a and SHA256 checked against isolated remote snapshot. No large weights transferred.
+
+The table-disabled fixed gaps are 0.045766 (unseen) / 0.039048 (seen). Trainable-minus-disabled fixed-gap growth from initialization is +0.888380 / +1.231413. Removing the table raises initial validation loss to 10.540319 (table base 3.345949; pretrained no-gram 2.736904), so this is a memory-removal/re-adaptation ablation, not a replacement architecture baseline. Primary trainable-minus-pretrained-no-gram excess is +0.573750 / +1.069807 online; initial-adjusted fixed-gap growth excess +0.658583 / +1.003355, all at1665/seed42.
+
+All ten curves, absolute losses, freeze-specific contrasts and claim limits are in docs/appendices/posttraining_samecheckpoint_20260925/results.md, with endpoints.csv/comparisons.csv/curves.csv. Figures: docs/figs/posttraining_samecheckpoint_20260925/fig_{primary_excess,freeze_excess,memory_removal_control}.{png,pdf,svg}; generators: docs/plot_scripts/{collect_posttraining_samecheckpoint,plot_posttraining_excess}.py. The source logs, smoke and equivalence evidence are committed as small files with manifests. External SSD became unmounted during final collection; local data/ symlink preserved, packet checked directly against remote runs_fixed hashes. No independent-replication significance claim.

@@ -96,13 +96,11 @@ shard 1；二者都使用固定且不重叠的 shard 22 验证集。
 | unseen | 0.7867 / 0.8860 | 0.1846 / 0.1762 | 0.3546 / 0.3000 | 0.2130 / 0.2322 |
 | seen | 1.2566 / 1.4313 | 0.3695 / 0.4340 | 0.5921 / 0.6005 | 0.1868 / 0.2399 |
 
-在 step 333，trainable 与 frozen1 的 fixed gap 几乎相同（unseen `0.1207/0.1206`，
-seen `0.3465/0.3463`）；step 333 后冻结表仍继续增长，但增长小于 trainable。
-这直接区分了“表写入停止”和“backbone 继续适应”：冻结表不会撤销第一遍已经诱导的
-gap，也不能阻止普通 replay-induced gap。即使训练池没有预训练前缀重合，trainable
-table 仍明显超过 no-gram；重合则抬高初始 fixed gap 并放大终点 excess。详细原始曲线、
-freeze event、probe hash 和机器可读终点见 `docs/appendices/posttraining_overlap_20260925/`
-与 `docs/figs/posttraining_overlap_20260925/`。
+在 step 333，trainable 与 frozen1 的 fixed gap 几乎相同（unseen 0.1207/0.1206，seen 0.3465/0.3463）。但之后 frozen1 的增长相对 no-gram：unseen 为 −0.0150，seen 仅 +0.0563。不能用这些冻结结果主张很强的 backbone-only excess，也不能说第一遍已诱导了大部分 trainable gap。
+
+**满足“大幅超过 no-gram”的是 trainable 臂**：终点 online gap 为 no-gram 的 3.69×（unseen）和 6.73×（seen）；扣掉初始 fixed-gap 差异后，额外增长仍为 +0.6586 / +1.0034 nats/token。证据范围为单个基座/数据实现的 all-token continued LM，不能写成多独立 seed 显著、response-only SFT 或 on-policy RLVR。原始 loss 更低的仍是独立预训练 no-gram。
+
+完整五臂结果、初始差异校正及同基座关表消融见 §70、docs/appendices/posttraining_samecheckpoint_20260925/；图见 docs/figs/posttraining_samecheckpoint_20260925/。原始八臂来源保留在 docs/appendices/posttraining_overlap_20260925/。
 
 ## Toy / synthetic 线（已退役）
 

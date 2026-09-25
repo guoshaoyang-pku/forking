@@ -1,0 +1,10 @@
+{
+  "backbone_exact": true,
+  "zeroed_names": [
+    "trigram_ves.1.0.weight"
+  ],
+  "zeroed_params": 805306368,
+  "fp32_logits_max_error": 0.0,
+  "checkpoint_bytes": 3479539169,
+  "torch": "2.9.1+cu126"
+}

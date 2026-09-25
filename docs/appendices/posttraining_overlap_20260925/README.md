@@ -1,6 +1,6 @@
 # Post-training overlap and freeze-timing reproduction
 
-Registered 2026-09-25 by Codex under the user's request to reproduce post-training forking, including trainable tables. Status: planned; engineering smoke before formal compute.
+Registered 2026-09-25 by Codex under the user's request to reproduce post-training forking, including trainable tables. Status: done; all eight formal runs reached step 1665 with artifact QC pass. Engineering smoke was separate. Final excess-over-no-gram analysis and the supplementary memory-removal control are in [the follow-up packet](../posttraining_samecheckpoint_20260925/README.md).
 
 This is an all-token continued-LM replay experiment from pretrained weights, not response-only SFT or online RL. Existing corrected-tokenizer trainable-table post-training already has excess gap over no-gram. This batch asks whether the effect replicates under a lower LR and whether exact pretraining-data overlap and freezing after one downstream pass change it. Negative and positive arms are both retained; no endpoint or seed is selected retrospectively.
 
@@ -22,7 +22,7 @@ All run IDs follow `ptov_<seen|unseen>_<trainable|frozen0|frozen1|nogram>_q4_mb1
 
 Acceptance: normal exit; correct 1665 updates and 5 passes; complete logged cadence; finite losses and gap arithmetic; matching probe and validation hashes across arms; frozen1 event exactly at update 334; constant table RMS after freezing; final weights and probe tokens. A gap is not inferred from process completion. Scientific criterion: positive trainable-minus-no-gram online and fixed gap at predeclared endpoint, together with raw train/val curves and changes from initialization. Validation deterioration from the best logged step is reported separately.
 
-Engineering smoke: two optimizer updates at the same full model, sequence length, effective batch, probe and validation settings for trainable and no-gram. IDs have `_smoke2_fixed`, outputs in a separate smoke directory; not scientific results. Seed 43/44 repeats are authorized follow-up after a positive reproducible condition, with settings held fixed.
+Engineering smoke: two optimizer updates at the same full model, sequence length, effective batch, probe and validation settings for trainable and no-gram. IDs have `_smoke2_fixed`, outputs in a separate smoke directory; not scientific results. Replication audit: changing only downstream seed 43/44 with fully loaded weights, fixed data and dropout 0 supplies no intended independent randomness. Such repeats cannot support statistical significance; genuine independent data or pretraining replications require a specified design.
 
 Exact executable entry point (run from the prepared isolated snapshot):
 
