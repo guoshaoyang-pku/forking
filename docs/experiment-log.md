@@ -4703,3 +4703,23 @@ User explicitly requires table frozen from the first downstream step to substant
 **Final readout (2026-09-25 20:32 Beijing):** 8/8 done and QC pass. Frozen0−nogram online excess at1680/seed42:6.19M LR6e-4 −0.196648;6.19M LR1.5e-4 −1.489034;12.39M LR6e-4 −0.589881;12.39M LR1.5e-4 −0.618048. Initial-adjusted fixed-growth excess respectively−0.269245/−1.354283/−0.529526/−0.605574. Thus this bounded replay-intensity/LR grid did NOT reproduce frozen-table excess; large absolute gaps do not meet the user's clarified criterion. No p-value or independent-seed stability claim. Final tables are bitwise unchanged with changed backbones in all4 frozen arms; complete code/data/step/probe/hash/checkpoint QC passed. Full curves, all endpoints and source logs: docs/appendices/frozen_replay_20260925/results.md and docs/figs/frozen_replay_20260925/fig_frozen_replay.{png,pdf,svg}; scripts docs/plot_scripts/{collect_frozen_replay,plot_frozen_replay}.py. Code snapshot b744c0b. No large transfer or previous-run overwrite.
 
 Prior-pretraining audit: causalv5c_freeze_table_e1_128x{,_s43,_s44}_fixed freeze at338 after jointly training on the same replay pool; summaries record fixed_train_probe_batches=0 and NaN final_fixed_gap, so these cannot answer the requested fixed-gap trajectory. Official Engram paper confirms trainable embedding with5× Adam LR during pretraining, not a verified production post-training freeze protocol. Multi-layer bases on360-2 are unavailable in this session (SSH connection closed twice); they use0-based1,4, not0,4. Existing --freeze_table also freezes gates for gated routes; table-only versus whole-module freezing must be separately registered if that line resumes.
+
+
+## 72. Multilayer frozen-memory post-training and verified R1 mathematics (2026-09-25)
+
+Owner: Codex; user explicitly requests multilayer Engram-like ID/math frozen-table excess over independently pretrained no-gram. Full contract, base coordinates, source selection, measurements, commands and acceptance are in docs/appendices/multilayer_posttraining_20260925/README.md. This is a registered departure from input injection: reuse the completed Engram-like dual-table base at zero-based blocks1,4 (layers2,5), not a new production Engram implementation. Backbone LR1.5e-4, warmup100 then constant, table/gate RMSProp(0,.99)128x, batch72x2048,333updates/passx5,seed42. Four arms isolate trainable/module-frozen/embedding-only-frozen/no-gram; embedding-only uses the new explicit --freeze_embeddings_only flag while preserving all existing defaults. Gates stay in the historical memory optimizer group. No claim of independent multi-seed replication.
+
+ID uses optimization-unseen shard21 and held-out shard22; math uses a fresh, predeclared Algebra subset of complete Math-Verify-correct R1 generations, unique problem/uuid split before packing, no internal replay. Existing RLVR data are user prompts with four repeated worked examples plus appended ground truth; old OpenR1 prep reads problem+reference solution rather than generations. Neither historical pool is a sampled R1/RLVR trajectory corpus. See new evidence packet; historical numbers remain artifact facts with corrected interpretation.
+
+Target360-2, isolated output /data/shared/guoshaoyang/ngram-gap-lab/multilayer_posttraining_20260925/data/runs_fixed/<run_id>/. Checkpoint remains on the same cluster; no >1GB transfer. GPUs currently occupied by cawm jobs; idle-only admission required. Each route must pass2step smoke with actual checkpoint, batch and data before formal1665steps. SHA256/MD5 source sync, strict model load, dense10step online and uniform fixed curves plus initial probe, bitwise freeze/gate checks, final checkpoint and probe artifact QC are mandatory before done. No frequency index in this raw-loss diagnostic.
+
+| run_id | source | arm | status |
+|---|---|---|---|
+| ptml_id_tableonly_L14_q4_s42_fixed | id | tableonly | planned |
+| ptml_id_module_L14_q4_s42_fixed | id | module | planned |
+| ptml_id_trainable_L14_q4_s42_fixed | id | trainable | planned |
+| ptml_id_nogram_L14_q4_s42_fixed | id | nogram | planned |
+| ptml_math_tableonly_L14_q4_s42_fixed | math | tableonly | planned |
+| ptml_math_module_L14_q4_s42_fixed | math | module | planned |
+| ptml_math_trainable_L14_q4_s42_fixed | math | trainable | planned |
+| ptml_math_nogram_L14_q4_s42_fixed | math | nogram | planned |

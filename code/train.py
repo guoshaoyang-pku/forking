@@ -1818,9 +1818,13 @@ def main():
                         help="initialize model weights from a compatible final_model.pt state_dict")
     parser.add_argument("--freeze_table", action="store_true",
                         help="freeze n-gram tables and gates after initialization; optimizer state starts empty")
+    parser.add_argument("--freeze_embeddings_only", action="store_true",
+                        help="freeze lookup embeddings after initialization; gates remain trainable")
     parser.add_argument("--disable_ngram_tables", action="store_true",
                         help="zero and freeze n-gram table/gate parameters after loading; matched no-gram control")
     args = parser.parse_args()
+    if args.freeze_embeddings_only and (args.freeze_table or args.disable_ngram_tables):
+        parser.error("--freeze_embeddings_only is exclusive with --freeze_table/--disable_ngram_tables")
     if args.disable_ngram_tables and (not args.init_model or args.injection_position != "input"):
         parser.error("--disable_ngram_tables requires --init_model and input injection")
     if args.warmup_steps < 1:
@@ -2026,6 +2030,13 @@ def main():
                 p.requires_grad_(False)
                 frozen += p.numel()
         print(f"[nglab] freeze_table enabled: {frozen:,} parameters frozen")
+    if args.freeze_embeddings_only:
+        frozen = 0
+        for name, p in model.named_parameters():
+            if any(marker in name for marker in ("value_embeds", "bigram_ves", "trigram_ves")):
+                p.requires_grad_(False)
+                frozen += p.numel()
+        print(f"[nglab] freeze_embeddings_only enabled: {frozen:,} parameters frozen; gates trainable")
     if args.compile:
         model = torch.compile(model)
     n_params = sum(p.numel() for p in model.parameters())
@@ -2613,6 +2624,7 @@ def main():
         "torch_compile": args.compile,
         "init_model": os.path.abspath(args.init_model) if args.init_model else None,
         "freeze_table": bool(args.freeze_table),
+        "freeze_embeddings_only": bool(args.freeze_embeddings_only),
         "disable_ngram_tables": bool(args.disable_ngram_tables),
         "diag_forward_dtype": ("bf16" if diag_amp_dtype is not None else "fp32")
                               if (exact_freq_log is not None or freq_bin_log is not None) else None,

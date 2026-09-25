@@ -1,0 +1,102 @@
+{
+  "kind": "static-verifier-selected-R1-algebra-all-token-LM",
+  "dataset": "open-r1/OpenR1-Math-220k",
+  "revision": "e4e141ec9dea9f8326f4d347be56105859b2bd68",
+  "problem_type": "Algebra",
+  "selection": "first complete Math-Verify-correct generation per unique normalized problem/uuid",
+  "split": "sha256(whitespace-normalized problem) first64bits modulo10: 0=val, else train; before packing",
+  "internal_replay": false,
+  "examples": {
+    "train": 9237,
+    "val": 114
+  },
+  "train_val_problem_overlap": 0,
+  "train_val_uuid_overlap": 0,
+  "rows": {
+    "train": 23976,
+    "val": 288
+  },
+  "row_len": 2049,
+  "sequence_len": 2048,
+  "target_tokens_per_pass": 49102848,
+  "source_token_totals": {
+    "train": 49132340,
+    "val": 592473
+  },
+  "scanned": {
+    "source_records": 43068,
+    "algebra_records": 15610,
+    "no_complete_math_verified_trace": 4814,
+    "duplicate_problem_or_uuid": 92
+  },
+  "tokenizer": "/data2/shared/ncpl-pathA/work/vbird_autoresearch/cache/tokenizer/tokenizer.pkl",
+  "tokenizer_sha256": "f6e7dad994ed5f8bc2da99d3eba8de3e466d9a0a61b99e209c3b7fd24ef0012e",
+  "raw_sha256": {
+    "data/ood_raw/openr1_default10/default-00000-of-00010.parquet": "ccc3a95e4875dc4cff9bec2f0fb1c93e4c9cbb24fb24853fd0b96c416e1a263c",
+    "data/ood_raw/openr1_default10/default-00001-of-00010.parquet": "a7d3eb54d97f7e1237a872947f2246de54a104be224646f62f588abdf6c7db60",
+    "data/ood_raw/openr1_default10/default-00002-of-00010.parquet": "a44a2354bfa752541ab768b62edf01f3df4b9b2a7660774ab1eb6e7f19f0a86b",
+    "data/ood_raw/openr1_default10/default-00003-of-00010.parquet": "dd7d2f0f04d80b3ae08484b706c4f7fd9dd29eeff4038c36257a307c77b877e9",
+    "data/ood_raw/openr1_default10/default-00004-of-00010.parquet": "e358157990d7744643e25f1e692556ac5fd4a2212c008cf67475b14e040861ea"
+  },
+  "output_sha256": {
+    "shard_00000.bin": "7e237e95ab4117578b623e0f55ecac7df42ac4df76076ada24d333aabc761472",
+    "shard_00001.bin": "09d1b15e879bceaa01daa55c0bee1db8a62cca59252e56003933a25961ad91fb"
+  },
+  "top_response_8word_prefixes": [
+    [
+      "<think> Okay, so I need to find the",
+      1334
+    ],
+    [
+      "<think> Okay, so I need to solve this",
+      628
+    ],
+    [
+      "<think> Okay, let me try to figure out",
+      475
+    ],
+    [
+      "<think> Okay, so I need to figure out",
+      450
+    ],
+    [
+      "<think> Okay, let's see. I need to find",
+      450
+    ],
+    [
+      "<think> Okay, so I have this problem here",
+      407
+    ],
+    [
+      "<think> Okay, let's try to figure out this",
+      258
+    ],
+    [
+      "<think> Okay, let's see. The problem is about",
+      246
+    ],
+    [
+      "<think> Okay, so I have this problem here:",
+      237
+    ],
+    [
+      "<think> Okay, let's tackle this problem step by",
+      211
+    ]
+  ],
+  "old_rlvr_audit": {
+    "source": "allenai/RLVR-MATH",
+    "revision": "bd2a93551b503a395fadd1a740d957559cfe6f3c",
+    "sha256": "2fb8483bf7a4ae9821bee1e715490fb8de5b59f0d2b58bd4de78cc75094d9422",
+    "records": 7500,
+    "message_roles": {
+      "user": 7500
+    },
+    "unique_fewshot_prefixes": 1,
+    "common_prefix_characters": 1520,
+    "prefix_token_fraction": 0.8717537903128342,
+    "record_token_total": 6056756,
+    "note": "user prompts include four fixed worked examples; no sampled assistant rollout; token fraction counts prefix independently"
+  },
+  "ceiling": "static all-token continued LM; not response-only SFT or on-policy RLVR; exact normalized-text disjoint, no semantic-duplicate guarantee"
+}

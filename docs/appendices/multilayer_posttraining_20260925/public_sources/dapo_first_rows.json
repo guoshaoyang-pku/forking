@@ -1,0 +1,2166 @@
+{
+  "dataset": "BytedTsinghua-SIA/DAPO-Math-17k",
+  "config": "default",
+  "split": "train",
+  "features": [
+    {
+      "feature_idx": 0,
+      "name": "data_source",
+      "type": {
+        "dtype": "string",
+        "_type": "Value"
+      }
+    },
+    {
+      "feature_idx": 1,
+      "name": "prompt",
+      "type": [
+        {
+          "content": {
+            "dtype": "string",
+            "_type": "Value"
+          },
+          "role": {
+            "dtype": "string",
+            "_type": "Value"
+          }
+        }
+      ]
+    },
+    {
+      "feature_idx": 2,
+      "name": "ability",
+      "type": {
+        "dtype": "string",
+        "_type": "Value"
+      }
+    },
+    {
+      "feature_idx": 3,
+      "name": "reward_model",
+      "type": {
+        "ground_truth": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "style": {
+          "dtype": "string",
+          "_type": "Value"
+        }
+      }
+    },
+    {
+      "feature_idx": 4,
+      "name": "extra_info",
+      "type": {
+        "index": {
+          "dtype": "string",
+          "_type": "Value"
+        }
+      }
+    }
+  ],
+  "rows": [
+    {
+      "row_idx": 0,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nIn triangle $ABC$, $\\sin \\angle A = \\frac{4}{5}$ and $\\angle A < 90^\\circ$. Let $D$ be a point outside triangle $ABC$ such that $\\angle BAD = \\angle DAC$ and $\\angle BDC = 90^\\circ$. Suppose that $AD = 1$ and that $\\frac{BD}{CD} = \\frac{3}{2}$. If $AB + AC$ can be expressed in the form $\\frac{a\\sqrt{b}}{c}$ where $a, b, c$ are pairwise relatively prime integers, find $a + b + c$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "34",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "9a9b6eb4-a1cb-49d1-8c1e-62eaf2f74079"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 1,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $ABCD$ be a unit square in the plane. Points $X$ and $Y$ are chosen independently and uniformly at random on the perimeter of $ABCD$. If the expected value of the area of triangle $\\triangle AXY$ can be expressed as $\\frac{m}{n}$ for relatively prime positive integers $m$ and $n$, compute $m+n$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "113",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "b426d104-244d-4831-a2c4-cd756b61700a"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 2,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $a, b, c$ be distinct numbers such that the equations $x^2 + ax + 1 = 0$ and $x^2 + bx + c = 0$ have a common real root, and the equations $x^2 + x + a = 0$ and $x^2 + cx + b = 0$ also have a common real root. Compute the sum $a + b + c$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "-3",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "6ff0b17f-7e5c-4ae9-b5e9-63ebecd2b9f7"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 3,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nThere are $7$ boxes arranged in a row and numbered $1$ through $7$. You have a stack of $2015$ cards, which you place one by one in the boxes. The first card is placed in box $1$, the second in box $2$, and so forth up to the seventh card which is placed in box $7$. You then start working back in the other direction, placing the eighth card in box $6$, the ninth in box $5$, up to the thirteenth card being placed in box $1$. The fourteenth card is then placed in box $2$, and this continues until every card is distributed. What box will the last card be placed in?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "3",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "186c94eb-3f6a-43b1-b2a4-f7dec58b7318"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 4,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $S$ be the set of triples $(a,b,c)$ of non-negative integers such that $a+b+c$ is even. The value of the sum\n\\[ \\sum_{(a,b,c) \\in S} \\frac{1}{2^a 3^b 5^c} \\]\ncan be expressed as $\\frac{m}{n}$, where $m$ and $n$ are relatively prime positive integers. Compute $m+n$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "37",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "485b39f5-e71b-42b3-931f-219becbee2a3"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 5,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFor which $n$ is $n^4 + 6n^3 + 11n^2 + 3n + 31$ a perfect square?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "10",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "96bd487f-c324-41b4-8015-f8234fe31bb4"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 6,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFour positive integers $a, b, c, d$ satisfy the condition $a < b < c < d$. Determine the smallest possible value of $d$ such that the arithmetic mean of the numbers $a, b, c$ is half of the arithmetic mean of the numbers $a, b, c, d$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "10",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "b9fe2231-060d-4b0a-bf73-7d4cfc8b7dd0"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 7,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\n$n$ coins are arranged in a circle. If two neighboring coins both show heads or both show tails, you can flip both coins. How many distinct arrangements of the coins are there such that no arrangement can be transformed into another by performing these operations?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "2",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "29f6a98f-0730-48f6-b637-2e902c24d9bd"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 8,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nDetermine the smallest prime $p$ such that $2018!$ is divisible by $p^3$, but not divisible by $p^4$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "509",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "4c4f3cb8-c7ae-4f8e-b9eb-d2fcfc2dd442"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 9,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nSuppose you have a sphere tangent to the $xy$-plane with its center having a positive $z$-coordinate. If it is projected from a point $P=(0,b,a)$ to the $xy$-plane, it gives the conic section $y=x^2$. If we write $a=\\frac{p}{q}$ where $p$ and $q$ are integers, find $p+q$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "3",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "e4eede97-5bed-4a2a-9b64-5de4e8cde3e8"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 10,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nThere are $10^{2015}$ planets in an Intergalactic empire. Every two planets are connected by a two-way space line served by one of $2015$ travel companies. The Emperor would like to close $k$ of these companies such that it is still possible to reach any planet from any other planet. Find the maximum value of $k$ for which this is always possible.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1007",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "bcdfd731-b3bb-4f5a-b775-a97e88c908b6"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 11,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nRectangle $HOMF$ has $HO = 11$ and $OM = 5$. Triangle $\\triangle ABC$ has orthocenter $H$ and circumcenter $O$. $M$ is the midpoint of $BC$, and altitude $AF$ meets $BC$ at $F$. Find the length of $BC$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "28",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "1d394a55-3ba5-40cd-90df-0eedf9a91e3b"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 12,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $a$, $b$, $c$ be the three roots of the equation $x^3-(k+1)x^2+kx+12=0$, where $k$ is a real number. If $(a-2)^3+(b-2)^3+(c-2)^3=-18$, find the value of $k$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "5",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "0dd91a3f-ac12-48e3-b4b3-b931738cb80a"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 13,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nTwo towns, $A$ and $B$, are $100$ miles apart. Every $20$ minutes (starting at midnight), a bus traveling at $60$ mph leaves town $A$ for town $B$, and every $30$ minutes (starting at midnight), a bus traveling at $20$ mph leaves town $B$ for town $A$. Dirk starts in Town $A$ and gets on a bus leaving for town $B$ at noon. However, Dirk is always afraid he has boarded a bus going in the wrong direction, so each time the bus he is in passes another bus, he gets out and transfers to that other bus. How many hours pass before Dirk finally reaches Town $B$?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "5",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "06f17afd-4946-4188-8c5f-0d372bc3b07a"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 14,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nBurrito Bear has a white unit square. She inscribes a circle inside the square and paints it black. She then inscribes a square inside the black circle and paints it white. Burrito repeats this process indefinitely. The total black area can be expressed as $\\frac{a\\pi+b}{c}$. Find $a+b+c$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "d3db6787-eeb1-4abf-8cdd-d26b37114c68"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 15,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nDanial went to a fruit stall that sells apples, mangoes, and papayas. Each apple costs $3$ RM, each mango costs $4$ RM, and each papaya costs $5$ RM. He bought at least one of each fruit and paid exactly $50$ RM. What is the maximum number of fruits that he could have bought?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "15",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "3e477408-f0be-488b-b64b-455c98f01220"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 16,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nSabrina has a fair tetrahedral die with faces numbered 1, 2, 3, and 4. She rolls the die to create a sequence by recording the number on its bottom face. However, she discards any roll if appending its number to the sequence results in two consecutive terms that sum to 5. Sabrina stops once all four numbers appear in the sequence. Find the expected (average) number of terms in Sabrina's sequence.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "10",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "a2731ba7-b002-4c81-ab9c-9ca08675a19d"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 17,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nDenote by $S(n)$ the sum of the digits of the positive integer $n$. Find all the solutions of the equation $n(S(n)-1)=2010.$\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "402",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "ad6027e0-ad02-4d3f-8d6e-a69d711c44dc"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 18,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFor each positive integer $n$, let $S(n)$ be the sum of the digits of $n$. Determine the smallest positive integer $a$ such that there are infinitely many positive integers $n$ for which $S(n) - S(n + a) = 2018$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "7",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "248c2eeb-cc07-482e-9231-58cf442b7c93"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 19,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind all integers $k$ such that all roots of the following polynomial are also integers:\n\n$$f(x) = x^3 - (k-3)x^2 - 11x + (4k-8).$$\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "5",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "b7119f82-4161-4e79-8194-93596b4f2fa3"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 20,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nA class has $25$ students. The teacher wants to stock $N$ candies and hold an Olympiad, distributing all $N$ candies based on student performance. The candies should be distributed such that students who solve the same number of tasks receive the same number of candies, and those who solve fewer tasks receive fewer candies, possibly receiving none. Determine the smallest value of $N$ for which this distribution is possible, regardless of the number of tasks in the Olympiad and the students' successes.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "300",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "0e3e66e1-4eba-4aeb-b480-c1a2fea08d0f"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 21,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nIf $a, b$ are real numbers such that $a^3 + 12a^2 + 49a + 69 = 0$ and $b^3 - 9b^2 + 28b - 31 = 0$, find $a + b$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "0ae83368-3a58-4faa-9ab6-91e989ac15e9"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 22,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $S$ be the set of triples $(a,b,c)$ of non-negative integers such that $a+b+c$ is even. Determine the value of the sum:\n\\[\n\\sum_{(a,b,c)\\in S}\\frac{1}{2^a3^b5^c}\n\\]\nThis sum can be expressed as $\\frac{m}{n}$, where $m$ and $n$ are relatively prime positive integers. Compute $m+n$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "37",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "5d21ea89-7190-4dc8-b6c2-540ec349219b"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 23,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nSome positive integers are initially written on a board, where each 2 of them are different. Each time we can do the following moves:  \n1. If there are 2 numbers (written on the board) in the form $n, n+1$, we can erase them and write down $n-2$.  \n2. If there are 2 numbers (written on the board) in the form $n, n+4$, we can erase them and write down $n-1$.  \n\nAfter some moves, there might appear negative numbers. Find the maximum value of the integer $c$ such that independently of the starting numbers, each number which appears in any move is greater than or equal to $c$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "-3",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "c37bdb6f-39ba-48c8-896f-e4e1760bd040"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 24,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind all positive integers $n$ for which the largest prime divisor of $n^2 + 3$ is equal to the least prime divisor of $n^4 + 6$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "3",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "34e6dee2-4e04-40c5-b334-ad1d42631c17"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 25,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nCharlie has a fair $n$-sided die (with each face showing a positive integer between $1$ and $n$ inclusive) and a list of $n$ consecutive positive integers. He first rolls the die, and if the number showing on top is $k$, he then uniformly and randomly selects a $k$-element subset from his list and calculates the sum of the numbers in his subset. Given that the expected value of this sum is $2020$, compute the sum of all possible values of $n$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "8556",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "983e41c8-805d-4669-9be6-11c1d5938192"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 26,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nThe integers from $1$ to $n$ are written, one on each of $n$ cards. The first player removes one card. Then the second player removes two cards with consecutive integers. After that, the first player removes three cards with consecutive integers. Finally, the second player removes four cards with consecutive integers.\n\nWhat is the smallest value of $n$ for which the second player can ensure that he completes both his moves?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "14",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "e4b51fc2-4672-4b39-bcbb-85270800a0e7"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 27,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nJoe has $1729$ randomly oriented and randomly arranged unit cubes, which are initially unpainted. He makes two cubes of side lengths $9$ and $10$ or of side lengths $1$ and $12$ (randomly chosen). These cubes are dipped into white paint. Then two more cubes of side lengths $1$ and $12$ or $9$ and $10$ are formed from the same unit cubes, again randomly oriented and randomly arranged, and dipped into paint. Joe continues this process until every side of every unit cube is painted. After how many times of doing this is the expected number of painted faces closest to half of the total?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "7",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "6fe5bcfc-af5a-42d7-80c9-bcae028c835f"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 28,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nThe circle $C_1$ is tangent to the circle $C_2$ internally at the point $A$. Let $O$ be the center of $C_2$. The point $P$ is on $C_1$, and the tangent line at $P$ passes through $O$. Let the ray $OP$ intersect with $C_2$ at $Q$, and let the tangent line of $C_1$ passing through $A$ intersect with the line $OP$ at $R$. If the radius of $C_2$ is 9 and $PQ = QR$, find the length of the segment $OP$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "3",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "374f27cd-2f00-43cd-ab54-d114f4712ce1"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 29,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nConsider two distinct positive integers $a$ and $b$ that have integer arithmetic, geometric, and harmonic means. Find the minimal value of $|a-b|$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "30",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "879b93ad-c7f5-4795-bc0a-3e9fe3c57566"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 30,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nDexter and Raquel are playing a game with $N$ stones. Dexter goes first and takes one stone from the pile. After that, the players alternate turns and can take anywhere from $1$ to $x + 1$ stones from the pile, where $x$ is the number of stones the other player took on the turn immediately prior. The winner is the one to take the last stone from the pile. Assuming Dexter and Raquel play optimally, compute the number of positive integers $N \\le 2021$ where Dexter wins this game.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1010",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "55d21e01-08c9-4d43-b828-c0c670e4710c"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 31,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nTriangle $\\triangle{ABC}$ is isosceles with $AB = AC$. Let the incircle of $\\triangle{ABC}$ intersect $BC$ and $AC$ at $D$ and $E$ respectively. Let $F \\neq A$ be the point such that $DF = DA$ and $EF = EA$. If $AF = 8$ and the circumradius of $\\triangle{AED}$ is $5$, find the area of $\\triangle{ABC}$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "40",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "bf2cddfc-c4c0-4067-b320-3bb506875cf5"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 32,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind the sum of all possible values of $a + b$ where $a$ and $b$ are nonnegative integers such that $4^a + 2^b + 5$ is a perfect square.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "9",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "f903c806-ade3-400a-a47d-001ffc79ba3c"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 33,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $M$ be the set of those positive integers which are not divisible by $3$. The sum of $2n$ consecutive elements of $M$ is $300$. Determine $n$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "10",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "6f87895c-7234-440a-9718-4c12506d3bb2"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 34,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nPetya and Vasya play the following game. Petya conceives a polynomial $P(x)$ with integer coefficients. On each move, Vasya pays him a ruble and calls an integer $a$ of his choice, which has not yet been called by him. Petya has to reply with the number of distinct integer solutions of the equation $P(x) = a$. The game continues until Petya is forced to repeat an answer. What is the minimal amount of rubles Vasya must pay in order to win?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "4",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "7c88d931-3bab-40c3-b474-f66e1910035b"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 35,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nDetermine the greatest power of $2$ that is a factor of $3^{15} + 3^{11} + 3^{6} + 1$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "64",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "af9089ec-686b-4471-ae02-8d196030763b"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 36,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nOn a board, the numbers from 1 to 2009 are written. A couple of them are erased and instead of them, the remainder of the sum of the erased numbers divided by 13 is written on the board. After a few repetitions of this process, only three numbers are left, of which two are 9 and 999. Find the third number.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "8",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "e9bd9300-a109-400b-b0b1-81714c1aae38"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 37,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFor positive integers $n$, let $s(n)$ be the sum of the digits of $n$. Over all four-digit positive integers $n$, which value of $n$ maximizes the ratio $\\frac{s(n)}{n}$?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1099",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "aea89852-b994-43bd-a1ee-e515555cdac4"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 38,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nSuppose that $n$ persons meet in a meeting, and that each of the persons is acquainted with exactly $8$ others. Any two acquainted persons have exactly $4$ common acquaintances, and any two non-acquainted persons have exactly $2$ common acquaintances. Find all possible values of $n$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "21",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "13b92cd1-6a1c-4212-9de2-a652f660cc44"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 39,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nHow many ways can $8$ mutually non-attacking rooks be placed on a $9 \\times 9$ chessboard so that all $8$ rooks are on squares of the same color?\n\n(Two rooks are said to be attacking each other if they are placed in the same row or column of the board.)\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "40320",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "8d76b16e-88ca-450d-83dc-f9fe14a6dd7e"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 40,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind a necessary and sufficient condition on the positive integer $n$ such that the equation $x^n + (2 + x)^n + (2 - x)^n = 0$ has a rational root.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "859f31a3-1613-46d0-a758-84c3228efd90"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 41,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $ABCDEFGHIJ$ be a regular 10-sided polygon inscribed in a circle with center $O$ and radius $5$. The diagonals $AD$ and $BE$ intersect at point $P$, and the diagonals $AH$ and $BI$ intersect at point $Q$. Calculate the length of segment $PQ$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "5",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "22c41ff8-45bf-4489-8e53-031ee4f78ce7"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 42,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nDetermine all integers $m$ for which all solutions of the equation $3x^3 - 3x^2 + m = 0$ are rational.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "0",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "3da20697-ce17-4435-a17b-1e71485c8c5b"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 43,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nThree boxes contain 600 balls each. The first box contains 600 identical red balls, the second box contains 600 identical white balls, and the third box contains 600 identical blue balls. From these three boxes, 900 balls are chosen. In how many ways can the balls be chosen? For example, one can choose 250 red balls, 187 white balls, and 463 blue balls, or one can choose 360 red balls and 540 blue balls.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "270901",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "79b529d7-8051-4345-82f4-1fdd83015820"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 44,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $A$, $B$, and $C$ be three points on the edge of a circular chord such that $B$ is due west of $C$ and $\\triangle ABC$ is an equilateral triangle with each side measuring $86$ meters. A boy swam from $A$ directly towards $B$. After covering a distance of $x$ meters, he turned and swam westward, reaching the shore after covering a distance of $y$ meters. If $x$ and $y$ are both positive integers, determine $y$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "12",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "b921bada-7372-4658-9150-b16e3d5298b0"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 45,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $A$, $B$, $C$, and $D$ be points on a circle such that $AB = 11$ and $CD = 19$. Point $P$ is on segment $AB$ with $AP = 6$, and $Q$ is on segment $CD$ with $CQ = 7$. The line through $P$ and $Q$ intersects the circle at $X$ and $Y$. If $PQ = 27$, find $XY$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "31",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "45ce7234-05f9-4aca-8552-b5853d2b18f0"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 46,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFor any real numbers $x$ and $y$ that satisfy the equations:\n\\[\nx + y - xy = 155\n\\]\nand\n\\[\nx^2 + y^2 = 325\n\\]\nFind $|x^3 - y^3|$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "4375",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "54d8c980-0fdd-4dac-b5b5-cd445466234e"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 47,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nThere are $2023$ distinct points on a plane, which are colored either white or red. For each white point, there are exactly two red points such that the distance from the white point to each of these red points is $2023$. Find the minimum number of red points.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "45",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "ebcaff72-48f0-45ed-bde6-16d99cf23d0e"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 48,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind all positive integers $k$ for which the equation:\n$$ \\text{lcm}(m,n) - \\text{gcd}(m,n) = k(m-n) $$\nhas no solution in positive integers $(m,n)$ with $m \\neq n$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "2",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "ff488394-9402-4ab4-ad48-3c57226c86ac"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 49,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nDetermine the largest $k$ such that for all competitive graphs with $2019$ vertices, if the difference between the in-degree and out-degree of any vertex is less than or equal to $k$, then this graph is strongly connected.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "b3d6095c-5105-43bd-ac97-15d3fb5fa1cf"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 50,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nGiven a regular tetrahedron with edge $a$, its edges are divided into $n$ equal segments, thus obtaining $n + 1$ points: $2$ at the ends and $n - 1$ inside. The following set of planes is considered:\n- Those that contain the faces of the tetrahedron, and\n- Each of the planes parallel to a face of the tetrahedron and containing at least one of the points determined above.\n\nNow all those points $P$ that belong (simultaneously) to four planes of that set are considered. Determine the smallest positive natural $n$ so that among those points $P$ the eight vertices of a square-based rectangular parallelepiped can be chosen.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "3",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "252e5683-3a33-46d1-ad78-918c2f76fc93"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 51,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFor some positive integer $n > m$, it turns out that $n$ can be represented as a sum of $2021$ non-negative integer powers of $m$, and also as a sum of $2021$ non-negative integer powers of $m+1$. Find the maximal value of the positive integer $m$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "2021",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "1606d6e5-a84f-41ac-a2e3-599c58dae42c"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 52,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nSuppose integers $a < b < c$ satisfy the following conditions:\n\\[\n a + b + c = 95 \\\\\n a^2 + b^2 + c^2 = 3083\n\\]\nFind the value of $c$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "37",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "626043de-ef55-4253-b1a9-b5027483cb76"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 53,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $a$, $b$, $c$ be real numbers such that $a^2 - 2 = 3b - c$, $b^2 + 4 = 3 + a$, and $c^2 + 4 = 3a - b$. Find $a^4 + b^4 + c^4$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "18",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "f885d323-1b6e-40c4-b485-9dad36eee691"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 54,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind the smallest natural number $n$ such that the expression $n^2 - n + 11$ has exactly four prime factors, which may not be distinct.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "132",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "7f660475-d091-4d5b-b852-464391ab7241"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 55,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $P$ be a regular $2006$-gon. A diagonal is called *good* if its endpoints divide the boundary of $P$ into two parts, each composed of an odd number of sides of $P$. The sides of $P$ are also called *good*.\n\nSuppose $P$ has been dissected into triangles by $2003$ diagonals, no two of which have a common point in the interior of $P$. Find the maximum number of isosceles triangles having two good sides that could appear in such a configuration.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1003",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "e1dbaa4f-0cd5-4b83-97b2-ce02106dca47"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 56,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nByan is playing a game called \"raven, raven, falcon\" with his three friends. His friends sit in a circle, and Byan walks clockwise around them, tapping each friend he passes on the head and saying either \"raven\" or \"falcon,\" each with a probability of $\\frac{1}{2}$. The game ends when Byan has said \"falcon\" twice. The probability that one of his friends will be called a \"falcon\" twice can be expressed as $\\frac{m}{n}$, where $m$ and $n$ are relatively prime positive integers. Find $100m + n$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "107",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "f233c131-de52-4a0c-84dc-7316a2aff5de"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 57,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind all positive integers $n$ for which all positive divisors of $n$ can be placed into the cells of a rectangular table under the following constraints:\n- Each cell contains a distinct divisor.\n- The sums of all rows are equal.\n- The sums of all columns are equal.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "fcabd287-8c09-4350-ac36-e157de849b92"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 58,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nOne day, students in school organized an exchange among themselves with the following rates:\n- $11$ strawberries exchange for $14$ raspberries.\n- $22$ cherries exchange for $21$ raspberries.\n- $10$ cherries exchange for $3$ bananas.\n- $5$ pears exchange for $2$ bananas.\n\nThe question is: How many pears does Amila need to give to get $7$ strawberries?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "7",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "3c982955-961b-4020-996d-785e03736223"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 59,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nIn triangle $ABC$, let $D$ be the foot of the altitude from $A$. Suppose that $AD = 4$, $BD = 3$, $CD = 2$, and $AB$ is extended past $B$ to a point $E$ such that $BE = 5$. Determine the value of $CE^2$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "80",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "15e67ed0-e8f0-4bdc-b644-a3c9ce799fa4"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 60,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind all integers $n$ such that $\\frac{5^n - 1}{3}$ is a prime or a perfect square of an integer.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "0",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "058d0f0c-94ca-4653-93bc-9463df11d7e1"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 61,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind the sum of all positive integers $x$ such that $|x^2-x-6|$ has exactly 4 positive integer divisors.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "10",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "fa4c762c-2f2b-48c2-8791-bd6587884db0"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 62,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nThe numbers $1, 2, \\ldots, 10000$ are placed in the cells of a $100 \\times 100$ square grid, each number appearing exactly once. In this arrangement, numbers that differ by $1$ are located in adjacent cells. We then calculate the distances between the centers of every pair of cells where the numbers differ by exactly $5000$. Let $S$ be the minimum of these distances. What is the largest value $S$ can take?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "50",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "c64599b1-6466-4bb5-a2ab-d1bc6c8b4b03"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 63,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nThe triangle $ABC$ has sides $AB = 137$, $AC = 241$, and $BC = 200$. There is a point $D$ on $BC$ such that both incircles of triangles $ABD$ and $ACD$ touch $AD$ at the same point $E$. Determine the length of $CD$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "152",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "cfd6aae2-02fd-4dac-b3dd-225314874b9b"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 64,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nAn arrangement of 12 real numbers in a row is called *good* if for any four consecutive numbers, the arithmetic mean of the first and last numbers is equal to the product of the two middle numbers. Determine how many good arrangements exist in which the first and last numbers are 1, and the second number is the same as the third.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "45",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "c5508fb1-703c-4cef-a533-e4ac784e3c33"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 65,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind all odd natural numbers $n$ such that $d(n)$ is the largest divisor of the number $n$ different from $n$. Here, $d(n)$ represents the number of divisors of the number $n$, including $1$ and $n$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "9",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "1440bcc4-be88-4ed3-96c7-35b8aeea3039"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 66,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nDetermine all natural numbers $n$ for which the number $A = n^4 + 4n^3 + 5n^2 + 6n$ is a perfect square of a natural number.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "4bc3f815-bd95-4a8c-a379-05d1e0363228"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 67,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet's consider a set of distinct positive integers with a sum equal to 2023. Among these integers, there are a total of $d$ even numbers and $m$ odd numbers. Determine the maximum possible value of $2d + 4m$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "200",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "0b1af1b6-125d-45b6-a9e1-0d324815a135"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 68,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nIt is given that $x = -2272$, $y = 10^3 + 10^2c + 10b + a$, and $z = 1$ satisfy the equation $ax + by + cz = 1$, where $a, b, c$ are positive integers with $a < b < c$. Find $y$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1987",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "b4143738-861e-4f11-8f99-56ed5e08de28"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 69,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $f(x)$ be a quadratic polynomial such that $f(f(1)) = f(-f(-1)) = 0$ and $f(1) \\neq -f(-1)$. Suppose furthermore that the quadratic $2f(x)$ has coefficients that are nonzero integers. Find $f(0)$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "3",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "bfaeac18-e266-4c9a-87d4-2b62069681d4"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 70,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind all natural numbers $a > 1$ with the property that every prime divisor of $a^6 - 1$ also divides at least one of the numbers $a^3 - 1$, $a^2 - 1$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "2",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "461726a9-fa69-4197-9e97-ac0ee198f8ad"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 71,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nGiven that nonzero real numbers $x$ and $y$ satisfy the equations $x + \\frac{1}{y} = 3$ and $y + \\frac{1}{x} = 4$, find the value of $xy + \\frac{1}{xy}$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "10",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "fc8e2f45-f4c2-4575-b4dc-bc3a4ae248e8"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 72,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind the smallest positive integer $k$ such that $k + 25973$ is a palindrome, a number that reads the same forward and backward.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "89",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "b149777a-d6b4-4af7-9473-cbfcd353163b"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 73,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind all values of the positive integer $m$ such that there exist polynomials $P(x)$, $Q(x)$, and $R(x,y)$ with real coefficients satisfying the condition: For every pair of real numbers $a$ and $b$ satisfying $a^m - b^2 = 0$, we always have $P(R(a,b)) = a$ and $Q(R(a,b)) = b$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "b274cff3-2bed-4b85-8826-0a798a94f3fb"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 74,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind the smallest positive integer $n$ such that the decimal representation of $n!(n+1)!(2n+1)! - 1$ has its last 30 digits all equal to 9.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "34",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "13c7cdf3-52d0-4ec2-84b3-347eba35a61d"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 75,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet the number of ways for a rook to return to its original square on a $4 \\times 4$ chessboard in 8 moves, starting from a corner, be $k$. Find the number of positive integers that are divisors of $k$. A \"move\" counts as shifting the rook by a positive number of squares on the board along a row or column. Note that the rook may return back to its original square during an intermediate step within its 8-move path.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "4",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "7180a4a0-2d91-48e1-9b42-154e531c6a74"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 76,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\n\\( \\triangle ABC \\) is an isosceles triangle with \\( AB = AC \\). Point \\( P \\) is located inside \\( \\triangle ABC \\) such that \\( \\angle BCP = 30^\\circ \\), \\( \\angle APB = 150^\\circ \\), and \\( \\angle CAP = 39^\\circ \\). Find \\( \\angle BAP \\).\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "13",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "31959e6e-f5c8-43fb-a0f4-8042160b38ae"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 77,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFive congruent circles have centers at the vertices of a regular pentagon so that each of the circles is tangent to its two neighbors. A sixth circle, congruent to the other five, is placed tangent to two of the five. If this sixth circle is allowed to roll without slipping around the exterior of the figure formed by the other five circles, then it will turn through an angle of $k$ degrees before it returns to its starting position. Find $k$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "720",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "fb0ef667-a1fd-4d1e-b1c1-fcb5fc7dbd44"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 78,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nThe thousands digit of a five-digit number which is divisible by $37$ and $173$ is $3$. What is the hundreds digit of this number?\n\n\\[\n\\textbf{a)}\\ 0 \\quad \\textbf{b)}\\ 2 \\quad \\textbf{c)}\\ 4 \\quad \\textbf{d)}\\ 6 \\quad \\textbf{e)}\\ 8\n\\]\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "2",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "3fa5dd7f-22e1-4e9b-a158-ad08686cf480"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 79,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $f(n)$ be a function satisfying the following three conditions for all positive integers $n$:\n\n1. $f(n)$ is a positive integer.\n2. $f(n + 1) > f(n)$.\n3. $f(f(n)) = 3n$.\n\nFind $f(2001)$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "3816",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "93d3fc9b-16fc-4313-a4a7-b5f44ef850c9"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 80,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $ABC$ be a triangle in the $xy$ plane, where $B$ is at the origin $(0,0)$. Extend $BC$ to $D$ such that $BC: CD = 1:1$, extend $CA$ to $E$ such that $CA: AE = 1:2$, and extend $AB$ to $F$ such that $AB: BF = 1:3$. Let $G(32,24)$ be the centroid of the triangle $ABC$ and $K$ be the centroid of the triangle $DEF$. Find the length $GK$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "40",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "5a292f7f-f5c1-4a9f-9c81-338a3bf07ae2"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 81,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nReal nonzero numbers $x, y, z$ satisfy $x + y + z = 0$. Furthermore, it is given that:\n\\[\nA = \\frac{x}{y} + \\frac{y}{z} + \\frac{z}{x} = \\frac{x}{z} + \\frac{z}{y} + \\frac{y}{x} + 1\n\\]\nDetermine the value of $A$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "-1",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "062bf4f7-e84d-4dd7-9acb-496fba7ec282"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 82,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind all prime numbers $p$ such that $4p^2 + 1$ and $6p^2 + 1$ are also prime numbers.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "5",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "9aad1783-fc56-44b1-a05d-c561e5a1f4bb"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 83,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nFind the sum of all positive integers $x$ such that $3 \\times 2^x = n^2 - 1$ for some positive integer $n$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "7",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "a6d38312-86c7-4022-b8d2-adcf19fa0c3a"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 84,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $x$, $y$, $z$ be positive real numbers satisfying the simultaneous equations:\n\\[\n\\begin{align*}\nx(y^2+yz+z^2)&=3y+10z,\\\\\ny(z^2+zx+x^2)&=21z+24x,\\\\\nz(x^2+xy+y^2)&=7x+28y.\n\\end{align*}\n\\]\nFind $xy+yz+zx$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "31",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "02e748ed-58af-45bc-af14-f620ed890500"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 85,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nGiven a pentagon $ABCDE$ with the following properties:\n\n1. Angles $\\angle A$ and $\\angle C$ are right angles.\n2. The side lengths are $|AB| = 4$, $|BC| = 5$, $|CD| = 10$, and $|DE| = 6$.\n3. Point $C'$ is the reflection of point $C$ across line $BD$ and lies on line segment $AE$.\n\nFind the measure of angle $\\angle E$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "90",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "ded6f725-9a2b-4e18-aa01-65e862a37b61"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 86,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $f(x) = x^3 + ax^2 + bx + c$ have solutions that are distinct negative integers. If $a+b+c = 2014$, find $c$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1440",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "26c1b2a0-b008-4c71-8af2-622d8d3e91ab"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 87,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $\\triangle ABC$ have $AB=9$ and $AC=10$. A semicircle is inscribed in $\\triangle ABC$ with its center on segment $BC$ such that it is tangent to $AB$ at point $D$ and $AC$ at point $E$. If $AD=2DB$ and $r$ is the radius of the semicircle, $r^2$ can be expressed as $\\frac{m}{n}$ for relatively prime positive integers $m$ and $n$. Compute $m+n$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "415",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "49322731-a106-4e27-a99c-b2403c96b0a4"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 88,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nTriangle $ABC$ is right-angled at $A$. The circle with center $A$ and radius $AB$ intersects $BC$ and $AC$ internally at points $D$ and $E$ respectively. Given that $BD = 20$ and $DC = 16$, determine $AC^2$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "936",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "d613dfb1-9bf4-4824-90ab-dfc83bccb040"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 89,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nPetya gave Vasya a number puzzle. Petya chose a digit $X$ and said, \"I am thinking of a three-digit number that is divisible by 11. The hundreds digit is $X$ and the tens digit is 3. Find the units digit.\" Vasya was excited because he knew how to solve this problem, but then realized that the problem Petya gave did not have an answer. What digit $X$ did Petya choose?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "4",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "d3ac5268-ee36-4f79-8705-ce986c06e6fe"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 90,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nA Haiku is a Japanese poem of seventeen syllables, in three lines of five, seven, and five.\n\nAda has been told to write down five haikus plus two more every hour. This means she needs to write down five in the first hour, seven in the second hour, nine in the third hour, and so on.\n\nAda has written forty haikus so far and writes down seven haikus every hour. At which hour after she begins will she not have enough haikus done?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "4",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "1ddc5b1e-6874-49af-b44c-012083a8f504"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 91,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nThe quadrilateral $ABCD$ satisfies the following conditions: \\( \\angle ABC = \\angle BCD = 150^{\\circ} \\). Additionally, \\( AB = 18 \\) and \\( BC = 24 \\). Equilateral triangles \\( \\triangle APB \\), \\( \\triangle BQC \\), and \\( \\triangle CRD \\) are constructed outside the quadrilateral. If \\( P(X) \\) represents the perimeter of polygon \\( X \\), then the equation \\( P(APQRD) = P(ABCD) + 32 \\) holds. Determine the length of side \\( CD \\).\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "10",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "e1d07660-04dd-4306-badc-8a63aefb15e2"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 92,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nWe are given a coin of diameter $\\frac{1}{2}$ and a checkerboard of $1 \\times 1$ squares with an area of $2010 \\times 2010$. We toss the coin such that it lands completely on the checkerboard. If the probability that the coin doesn't touch any of the lattice lines is $\\frac{a^2}{b^2}$, where $\\frac{a}{b}$ is a reduced fraction, find $a + b$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "6029",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "fae9a3ce-c9c0-43c0-a617-43aa1aa8c4d3"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 93,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nGraph $G_1$ of a quadratic trinomial $y = px^2 + qx + r$ with real coefficients intersects the graph $G_2$ of a quadratic trinomial $y = x^2$ at points $A$ and $B$. The intersection of tangents to $G_2$ at points $A$ and $B$ is point $C$. If $C$ lies on $G_1$, find all possible values of $p$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "2",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "9e6fb97d-e0ad-433f-825c-ccb612a80b45"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 94,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nLet $ABC$ be an acute-angled triangle. Construct points $A'$, $B'$, $C'$ on its sides $BC$, $CA$, $AB$ such that:\n- $A'B' \\parallel AB$, \n- $C'C$ is the bisector of angle $A'C'B'$, \n- $A'C' + B'C' = AB$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "1",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "7b999c0b-f929-4519-9817-fdf790909912"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 95,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nThe radius $r$ of a circle with center at the origin is an odd integer. There is a point $(p^m, q^n)$ on the circle, with $p, q$ being prime numbers and $m, n$ being positive integers. Determine $r$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "5",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "5cdc62b9-bb76-4d87-9200-5901d567078a"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 96,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nUsing each of the digits $1, 2, 3, \\ldots, 8, 9$ exactly once, we form nine, not necessarily distinct, nine-digit numbers. Their sum ends in $n$ zeroes, where $n$ is a non-negative integer. Determine the maximum possible value of $n$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "8",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "1dad8702-7b20-4528-b376-8a5d11135e4e"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 97,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nDetermine the largest positive integer $n$ such that the following statement holds:\n\nIf $a_1, a_2, a_3, a_4, a_5, a_6$ are six distinct positive integers less than or equal to $n$, then there exist three distinct positive integers from these six, say $a$, $b$, and $c$, such that $ab > c$, $bc > a$, and $ca > b$.\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "107",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "4fe69060-c57f-4375-8eb8-3431c2c74a76"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 98,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nSolve for $x$:\n\\[\nv - w + x - y + z = 79 \\\\\nv + w + x + y + z = -1 \\\\\nv + 2w + 4x + 8y + 16z = -2 \\\\\nv + 3w + 9x + 27y + 81z = -1 \\\\\nv + 5w + 25x + 125y + 625z = 79.\n\\]\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "24",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "efee17c8-42a5-40ab-85d1-9e8f59213869"
+        }
+      },
+      "truncated_cells": []
+    },
+    {
+      "row_idx": 99,
+      "row": {
+        "data_source": "math_dapo",
+        "prompt": [
+          {
+            "content": "Solve the following math problem step by step. The last line of your response should be of the form Answer: $Answer (without quotes) where $Answer is the answer to the problem.\n\nYou have a 4-digit whole number that is a perfect square. Another number is constructed by making the following changes to the digits of the original number:\n\n1. Add 1 to the unit's digit.\n2. Subtract 1 from the ten's digit.\n3. Add 1 to the hundred's digit.\n4. Subtract 1 from the thousand's digit.\n\nIf the resulting number is also a perfect square, find the original number. Is it unique?\n\nRemember to put your answer on its own line after \"Answer:\".",
+            "role": "user"
+          }
+        ],
+        "ability": "MATH",
+        "reward_model": {
+          "ground_truth": "3025",
+          "style": "rule-lighteval/MATH_v2"
+        },
+        "extra_info": {
+          "index": "c2825efe-9abc-426f-8304-b78efcffab0e"
+        }
+      },
+      "truncated_cells": []
+    }
+  ],
+  "truncated": true
+}

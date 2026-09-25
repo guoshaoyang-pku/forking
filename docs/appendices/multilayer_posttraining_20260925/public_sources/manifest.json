@@ -1,0 +1,32 @@
+[
+  {
+    "dataset": "allenai/RLVR-MATH",
+    "revision": "bd2a93551b503a395fadd1a740d957559cfe6f3c",
+    "url": "https://huggingface.co/datasets/allenai/RLVR-MATH",
+    "card": "allenai--RLVR-MATH.md"
+  },
+  {
+    "dataset": "open-r1/OpenR1-Math-220k",
+    "revision": "e4e141ec9dea9f8326f4d347be56105859b2bd68",
+    "url": "https://huggingface.co/datasets/open-r1/OpenR1-Math-220k",
+    "card": "open-r1--OpenR1-Math-220k.md"
+  },
+  {
+    "dataset": "agentica-org/DeepScaleR-Preview-Dataset",
+    "revision": "b6ae8c60f5c1f2b594e2140b91c49c9ad0949e29",
+    "url": "https://huggingface.co/datasets/agentica-org/DeepScaleR-Preview-Dataset",
+    "card": "agentica-org--DeepScaleR-Preview-Dataset.md"
+  },
+  {
+    "dataset": "BytedTsinghua-SIA/DAPO-Math-17k",
+    "revision": "65877096c24ffa7abc4e4fa5edb95cf3413a5674",
+    "url": "https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k",
+    "card": "BytedTsinghua-SIA--DAPO-Math-17k.md"
+  },
+  {
+    "dataset": "open-thoughts/OpenThoughts-114k",
+    "revision": "bd093c3994fd54d2390985b66988ddf282a55eb6",
+    "url": "https://huggingface.co/datasets/open-thoughts/OpenThoughts-114k",
+    "card": "open-thoughts--OpenThoughts-114k.md"
+  }
+]

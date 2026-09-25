@@ -217,3 +217,13 @@ batch 72×2048、2000 步、seed 42（并以完全相同口径复现 seed 43）�
 | T10 | 缩小单 epoch 数据量以放大 gap（**唯一必须等 T8 的动作**） | P2 | S1 epoch-length 阵列已覆盖相邻问题；重新注册协议前不启动 |
 | T11 | 工程整理：`RUNS_DIR` 环境变量化、抽 `table_opt_common.py`、包改名 | P3 | 随手做 |
 | T12 | 干预机制已接线（CLI + 主循环 + `run_causal_minimal.sh`） | P1 | 代码就绪，待 GPU 实跑 |
+
+
+### Multilayer post-training and verified R1 Algebra (§72, 2026-09-25)
+
+Eight planned ptml_{id,math}_{tableonly,module,trainable,nogram}_L14_q4_s42_fixed runs.
+Existing Engram-like blocks1,4 base, ID plus problem-disjoint Math-Verify-correct R1 Algebra,
+LR1/4,5passes. Separates lookup-only freezing from table+gate freezing. No endpoint yet.
+Evidence/protocol: docs/appendices/multilayer_posttraining_20260925/README.md.
+Old RLVR-MATH is repeated few-shot prompts+reference answers; old OpenR1 uses reference
+solutions, not sampled R1 generations. Neither should be called on-policy RLVR.

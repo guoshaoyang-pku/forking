@@ -1,0 +1,13 @@
+{
+  "snapshot_commit": "dc21b28731a1d8bdf465650dc9253f615c8c4bf8",
+  "snapshot_path": "/tmp/ngram_multilayer_source_20260925",
+  "repo_git_state": "original .git renamed externally to .git_disabled; not modified",
+  "sha256": {
+    "code/train.py": "83fe73204f35410d05602d86121a0f1689fa0d7d7ff556cae05f9539de7e9f56",
+    "code/ngram_freq.py": "bdfa7b0fe3a105b231b31da036a2a282dde1e185094e6da2f1620c6fa356ba92",
+    "code/diag_worker.py": "14f0aa23ccd4aa4ace8e0e4924bf6706e7d44345a06dd0a9cceb674c19879e69",
+    "code/cluster/run_multilayer_posttraining.py": "9a4876c7c7071374bd387daa158ce793f29f99ae746853a7b831dee373c63274",
+    "code/tools/prepare_verified_math.py": "364672897c0a5da9852b8ad3321a25f052b4785e0a0d3b78f678406667377f88",
+    "docs/appendices/multilayer_posttraining_20260925/README.md": "52b7a6913060685b989aab13bc78da88de9a15ab7e90a10fcc8220c5773d6d8b"
+  }
+}
