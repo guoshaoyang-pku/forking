@@ -8,6 +8,29 @@ All twelve source/arm combinations have smaller online and exact-probe fixed gap
 
 ID: all three arms improve final validation loss as LR decreases. The trainable-table online gap falls from2.462920 to0.785483 to0.331233. Frozen/no-gram remain close at each LR. The large original ID gap is therefore strongly sensitive to the downstream optimization rate.
 
+**Freeze timing clarification.** The `frozen` arms in this sweep are frozen from
+the first downstream step: `run_posttraining_lr_sweep.py` passes `--freeze_table`,
+and `train.py` loads the base checkpoint and sets the table and gate parameters
+to `requires_grad=False` before constructing the optimizer. They are not
+“trainable for epoch 1, then frozen.” Therefore the frozen q10 ID curve answers
+the question “what happens when the downstream backbone is trained against a
+pre-adapted but fixed table?” It does not answer the separate intervention
+“jointly adapt for one downstream epoch, then freeze.”
+
+For the ID frozen q10 arm, the exact-probe fixed gap is `−0.03196` at step 10,
+`−0.00850` at step 334, `+0.01326` at step 667, `+0.03335` at step 1000,
+`+0.05236` at step 1333, and `+0.07075` at step 1665. Thus the gap really
+does grow under immediate freezing; it is small because the low LR limits
+backbone adaptation over five passes, and because the initial fixed train/val
+offset is negative. The matched no-gram q10 curve grows from `−0.02620` to
+`+0.10649`, so this run does not show an excess frozen-table gap over no-gram.
+
+The separate pretraining causal runs named `causalv5c_freeze_table_e1_128x`
+freeze at a replay epoch boundary during training from scratch. Their protocol
+and data are different from this post-training LR sweep; they should not be
+combined into one curve or used to fill the missing “one downstream epoch, then
+freeze” condition.
+
 Magicoder/OpenR1: trainable-table validation is best among these three tested rates at1/4 LR, while frozen-table/no-gram validation worsens at lower rates despite smaller gaps. Lower gap alone cannot be described as improved generalization; slower adaptation at the fixed budget contributes.
 
 RLVR-MATH: reductions are weaker than for the other sources. At1/10 LR the frozen/no-gram online gaps are0.237961/0.235625 (difference0.002336); fixed gaps0.233927/0.231528 (difference0.002399). The trainable-table gap remains0.375805. Thus the original frozen-table excess over no-gram is not stable to this LR change. The large gaps within both frozen/no-gram arms remain consistent with strong replay of the small static pool, but this sweep does not causally isolate repetition or a particular mechanism.
@@ -18,7 +41,7 @@ Final QC: all24 runs reach1665 steps with finite dense curves and saved final/pr
 
 ## Protocol
 
-Four sources (ID, Magicoder, OpenR1, static RLVR-MATH) × three arms (trainable trigram table, frozen table, no-gram) × LR 1/4 or 1/10. Backbone LR 0.00015 / 0.00006; table/backbone ratio 128, giving trainable-table LR 0.0192 / 0.00768. Same pretrained checkpoints, correct-tokenizer packed data, fresh optimizer, 100-step warmup then constant, batch 72 × 2048, 1665 optimizer steps = five passes over 333 batches. This is continued all-token LM training, not response-only SFT or on-policy RL.
+Four sources (ID, Magicoder, OpenR1, static RLVR-MATH) × three arms (trainable trigram table, immediately frozen table, no-gram) × LR 1/4 or 1/10. Backbone LR 0.00015 / 0.00006; table/backbone ratio 128, giving trainable-table LR 0.0192 / 0.00768. Same pretrained checkpoints, correct-tokenizer packed data, fresh optimizer, 100-step warmup then constant, batch 72 × 2048, 1665 optimizer steps = five passes over 333 batches. This is continued all-token LM training, not response-only SFT or on-policy RL.
 
 Each downstream pass has 49,102,848 target tokens; total 245,514,240. Validation has 589,824 target tokens. RLVR packing repeats the small source internally, so five packed passes correspond to approximately 42.7 source cycles. The known one-record train/val boundary crossing in Magicoder/OpenR1 is retained for matched historical comparison; no strict example-disjoint claim is made.
 
