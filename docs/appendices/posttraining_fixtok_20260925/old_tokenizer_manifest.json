@@ -1,0 +1,68 @@
+[
+  {
+    "source": "old_magicoder",
+    "arm": "trainable",
+    "run_id": "sft_ood_magicoder_e5_freq10_trainable_s42",
+    "path": "/data4/guoshaoyang/ngram-gap-lab/data/runs_sft_ood_freq10/sft_ood_magicoder_e5_freq10_trainable_s42",
+    "sha256": {
+      "summary.json": "c44deec3470dba29d1e513085c61b0fa0fb41c1ba5b0858c20d08ccbf1b3e11b",
+      "train_log.jsonl": "7bd23b1f329da33e10615a96ac669568cbb0ce324f45e7abdc015c918f49d4f3"
+    },
+    "status": "INVALID tokenizer mismatch; comparison only"
+  },
+  {
+    "source": "old_magicoder",
+    "arm": "frozen",
+    "run_id": "sft_ood_magicoder_e5_freq10_frozen_s42",
+    "path": "/data4/guoshaoyang/ngram-gap-lab/data/runs_sft_ood_freq10/sft_ood_magicoder_e5_freq10_frozen_s42",
+    "sha256": {
+      "summary.json": "30c674efb9ac9abd5c87a6cfba69ac2178d3225437173727a356e7a5407ac6cb",
+      "train_log.jsonl": "431c9bd45a451e5dd545b59e229cc326d5ce3baac9c51afd2e162e5e27478feb"
+    },
+    "status": "INVALID tokenizer mismatch; comparison only"
+  },
+  {
+    "source": "old_openr1_10shards",
+    "arm": "trainable",
+    "run_id": "sft_ood_openr1_10shards_e5_freq10_trainable_s42",
+    "path": "/data4/guoshaoyang/ngram-gap-lab/data/runs_sft_ood_openr1_freq10/sft_ood_openr1_10shards_e5_freq10_trainable_s42",
+    "sha256": {
+      "summary.json": "379d0ba730c27ac8689968bce19f4fd2000d58378efe924932c6702d37409bc8",
+      "train_log.jsonl": "22d7cb4895ef172cefdea6aaac911a85f9cc7630cb91af06e2ea24ef7106166f"
+    },
+    "status": "INVALID tokenizer mismatch; comparison only"
+  },
+  {
+    "source": "old_openr1_10shards",
+    "arm": "frozen",
+    "run_id": "sft_ood_openr1_10shards_e5_freq10_frozen_s42",
+    "path": "/data4/guoshaoyang/ngram-gap-lab/data/runs_sft_ood_openr1_freq10/sft_ood_openr1_10shards_e5_freq10_frozen_s42",
+    "sha256": {
+      "summary.json": "d7e77cea8afffaeec62fc8fd8d590df7ea3a6ab79d942a50f9d40b88cd76149f",
+      "train_log.jsonl": "aa7b0ac88db28a1c935df767ad5c8ea57377894f8ef2b5816ddf7fd99e1a110b"
+    },
+    "status": "INVALID tokenizer mismatch; comparison only"
+  },
+  {
+    "source": "old_rlvr_math",
+    "arm": "trainable",
+    "run_id": "sft_rlvr_math_e5_trainable_s42",
+    "path": "/dev/shm/guoshaoyang_rlvr/runs/sft_rlvr_math_e5_trainable_s42",
+    "sha256": {
+      "summary.json": "adc86b41362f4b6c5a5520ccc7b0ce6ed4b14a7311a36d5e38754d05e9e4a34a",
+      "train_log.jsonl": "16a49d852df6382b6123f4c12d1ac6167252729facc6c8db05916d737fe6b4b2"
+    },
+    "status": "INVALID tokenizer mismatch; comparison only"
+  },
+  {
+    "source": "old_rlvr_math",
+    "arm": "frozen",
+    "run_id": "sft_rlvr_math_e5_frozen_s42",
+    "path": "/dev/shm/guoshaoyang_rlvr/runs/sft_rlvr_math_e5_frozen_s42",
+    "sha256": {
+      "summary.json": "bb84ebb34e64bb24fb213797d9c4e4e1aa10d621e22577c5939fd69f4d231daf",
+      "train_log.jsonl": "f7c66e6a9281697b6d137df3ac8beaf2551b3f8d65ce3e98dd5697a260fc18a2"
+    },
+    "status": "INVALID tokenizer mismatch; comparison only"
+  }
+]

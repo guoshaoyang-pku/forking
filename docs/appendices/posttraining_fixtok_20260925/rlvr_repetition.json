@@ -1,0 +1,12 @@
+{
+  "source_examples": 7500,
+  "train_examples": 7125,
+  "val_examples": 375,
+  "train_one_source_pass_tokens": 5749963,
+  "nominal_train_pool_tokens": 49126824,
+  "effective_source_passes_per_nominal_pass": 8.543850456081195,
+  "effective_source_passes_in_5_nominal_passes": 42.719252280405975,
+  "val_one_source_pass_tokens": 306787,
+  "fixed_val_pool_tokens": 590112,
+  "loss_scope": "all tokens including fixed prompt exemplars, problem and appended reference answer"
+}

@@ -1,0 +1,8 @@
+{
+  "checked_on": "2026-09-25",
+  "model": "DeepSeek-V4.1-Flash",
+  "hf_revision": "dba1be0a40aa45a94ad051997016db3960a90277",
+  "report_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/resolve/main/DeepSeek_V41_Tech_Report.pdf",
+  "report_sha256": "ba68e2e40408125ae6d2f63a9a241b61c73910691c74ec1a2a7023c851eac08d",
+  "engram_posttraining_freeze_status": "Not explicitly disclosed in the checked official report/model card/inference README. Do not infer parameter freezing from GPU residency or inference code."
+}

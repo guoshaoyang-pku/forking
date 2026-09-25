@@ -1,0 +1,29 @@
+[
+  {
+    "run_id": "causalv5c_freeze_table_e1_128x_fixed",
+    "source_namespace": "data/runs_fixed",
+    "source_path": "/Volumes/Extreme SSD/Mac\u5907\u4efd/workdir_offload/ngram-gap-lab/data/runs_fixed/causalv5c_freeze_table_e1_128x_fixed",
+    "sha256": {
+      "summary.json": "54ccf1c6e1157e7bab6ee7d17c438c5973802d8b7b7acc6e3e2076ece43723ee",
+      "train_log.jsonl": "3cf362d8f5579ab3810b4219d25d76deecdca3f76e2dfa9b987d08439d882f36"
+    }
+  },
+  {
+    "run_id": "causalv5c_none_128x_fixed",
+    "source_namespace": "data/runs_fixed",
+    "source_path": "/Volumes/Extreme SSD/Mac\u5907\u4efd/workdir_offload/ngram-gap-lab/data/runs_fixed/causalv5c_none_128x_fixed",
+    "sha256": {
+      "summary.json": "b74c71450c6782bffb68a6c8ff357a3bca9515f5b0e02acda1337a8e452d7755",
+      "train_log.jsonl": "d9c169591ca02b48c15d937153cb99ae0a8d3f3e8ea09fdc247eaeeb6efb6798"
+    }
+  },
+  {
+    "run_id": "nglab1x_nogram_v5_128x_freq10_fixed",
+    "source_namespace": "data/runs_fixed",
+    "source_path": "/Volumes/Extreme SSD/Mac\u5907\u4efd/workdir_offload/ngram-gap-lab/data/runs_fixed/nglab1x_nogram_v5_128x_freq10_fixed",
+    "sha256": {
+      "summary.json": "0a78e76f87ada6c885b86615cd5e1890430d432aa8af2265e06922bec9ffb5e9",
+      "train_log.jsonl": "a346183034aec39f8f24adbf8012254b5c0bfd1168cd94d6fffe67652e4fd3fd"
+    }
+  }
+]

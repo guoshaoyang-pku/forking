@@ -1,0 +1,102 @@
+[
+  {
+    "source": "magicoder",
+    "host": "ophis-gpu",
+    "path": "/data4/guoshaoyang/ngram-gap-lab/data/ood_tokenized_magicoder_fixtok/TOKENIZER.json",
+    "sha256": "b1c6b33befb8f03c99e1042ab3309fe7aabb45843cb4f9a5e9b49a4af36da259",
+    "content": {
+      "tokenizer_path": "/data2/ncpl-pathA/work/vbird_autoresearch/cache/tokenizer/tokenizer.pkl",
+      "tokenizer_sha256": "f6e7dad994ed5f8bc2da99d3eba8de3e466d9a0a61b99e209c3b7fd24ef0012e",
+      "note": "pretraining-corpus tokenizer (docs/notes/data/full-corpus-full163.md); re-encoded 2026-09-24 after tokenizer-mismatch audit (experiment-log sec66). The manifest.json 'tokenizer' string is hardcoded by prepare_ood_sft.py and is not authoritative."
+    }
+  },
+  {
+    "source": "magicoder",
+    "host": "ophis-gpu",
+    "path": "/data4/guoshaoyang/ngram-gap-lab/data/ood_tokenized_magicoder_fixtok/manifest.json",
+    "sha256": "edd63661b07d2707a40c81945e7d19403a7e62a59e3dcac90cca5c05ee457130",
+    "content": {
+      "row_len": 2049,
+      "train_rows": 23976,
+      "val_rows": 288,
+      "train_batches": 333,
+      "val_batches": 4,
+      "tokenizer": "pretraining autoresearch tokenizer.pkl",
+      "source": "streamed source; train rows precede held-out validation rows"
+    }
+  },
+  {
+    "source": "openr1_10shards",
+    "host": "ophis-gpu",
+    "path": "/data4/guoshaoyang/ngram-gap-lab/data/ood_tokenized_openr1_10shards_fixtok/TOKENIZER.json",
+    "sha256": "b1c6b33befb8f03c99e1042ab3309fe7aabb45843cb4f9a5e9b49a4af36da259",
+    "content": {
+      "tokenizer_path": "/data2/ncpl-pathA/work/vbird_autoresearch/cache/tokenizer/tokenizer.pkl",
+      "tokenizer_sha256": "f6e7dad994ed5f8bc2da99d3eba8de3e466d9a0a61b99e209c3b7fd24ef0012e",
+      "note": "pretraining-corpus tokenizer (docs/notes/data/full-corpus-full163.md); re-encoded 2026-09-24 after tokenizer-mismatch audit (experiment-log sec66). The manifest.json 'tokenizer' string is hardcoded by prepare_ood_sft.py and is not authoritative."
+    }
+  },
+  {
+    "source": "openr1_10shards",
+    "host": "ophis-gpu",
+    "path": "/data4/guoshaoyang/ngram-gap-lab/data/ood_tokenized_openr1_10shards_fixtok/manifest.json",
+    "sha256": "edd63661b07d2707a40c81945e7d19403a7e62a59e3dcac90cca5c05ee457130",
+    "content": {
+      "row_len": 2049,
+      "train_rows": 23976,
+      "val_rows": 288,
+      "train_batches": 333,
+      "val_batches": 4,
+      "tokenizer": "pretraining autoresearch tokenizer.pkl",
+      "source": "streamed source; train rows precede held-out validation rows"
+    }
+  },
+  {
+    "source": "rlvr_math",
+    "host": "ophis-gpu",
+    "path": "/data4/guoshaoyang/ngram-gap-lab/data/rlvr_tokenized/math_fixtok/TOKENIZER.json",
+    "sha256": "b1c6b33befb8f03c99e1042ab3309fe7aabb45843cb4f9a5e9b49a4af36da259",
+    "content": {
+      "tokenizer_path": "/data2/ncpl-pathA/work/vbird_autoresearch/cache/tokenizer/tokenizer.pkl",
+      "tokenizer_sha256": "f6e7dad994ed5f8bc2da99d3eba8de3e466d9a0a61b99e209c3b7fd24ef0012e",
+      "note": "pretraining-corpus tokenizer (docs/notes/data/full-corpus-full163.md); re-encoded 2026-09-24 after tokenizer-mismatch audit (experiment-log sec66). The manifest.json 'tokenizer' string is hardcoded by prepare_ood_sft.py and is not authoritative."
+    }
+  },
+  {
+    "source": "rlvr_math",
+    "host": "ophis-gpu",
+    "path": "/data4/guoshaoyang/ngram-gap-lab/data/rlvr_tokenized/math_fixtok/manifest.json",
+    "sha256": "fefd58d4d04e78fe2061cea004948606da92867d5a86fb9ceb1d080820b4b844",
+    "content": {
+      "kind": "verifier-selected-static-continued-pretraining-proxy",
+      "source_files": [
+        "/data4/guoshaoyang/ngram-gap-lab/data/rlvr_raw/rlvr_math.parquet"
+      ],
+      "source_sha256_combined": "2fb8483bf7a4ae9821bee1e715490fb8de5b59f0d2b58bd4de78cc75094d9422",
+      "source_revision": "bd2a93551b503a395fadd1a740d957559cfe6f3c",
+      "text_rule": "messages content verbatim, then one Answer + ground_truth; no duplicate answer append",
+      "sequence_len": 2048,
+      "row_len": 2049,
+      "train_batches": 333,
+      "val_batches": 4,
+      "batch_size": 72,
+      "train_rows": 23976,
+      "val_rows": 288,
+      "tokenizer": "/data2/shared/ncpl-pathA/work/vbird_autoresearch/cache/tokenizer/tokenizer.pkl",
+      "train_rows_precede_heldout_validation_rows": true,
+      "train_fraction_by_source_example": 0.95,
+      "source_examples": 7500,
+      "train_source_examples": 7125,
+      "val_source_examples": 375,
+      "stats": {
+        "source_rows_seen": 61592,
+        "dataset_counts": {
+          "MATH": 61592
+        },
+        "constraint_counts": {
+          "None": 61592
+        }
+      }
+    }
+  }
+]
