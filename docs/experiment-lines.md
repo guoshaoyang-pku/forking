@@ -66,6 +66,8 @@ T1 目前仅完成远端 summary 回收与冲突审计；33 个重复 ID 均存�
 
 ## Continued pretraining 与多层 memory 对照
 
+当前新批：§68，正确 tokenizer 的 ID/Magicoder/OpenR1/RLVR × trainable/frozen/nogram × LR 1/4、1/10，共24组seed42；planned。附加uniform fixed-train probe，主口径仍是online gap。登记/哈希见 docs/appendices/posttraining_lr_sweep_20260925/。
+
 | 线名 | 科学问题 | run_id 前缀 | 状态 | 证据位置 |
 |---|---|---|---|---|
 | **SFT/continued-LM dense cadence** | 从低 gap 20× checkpoint 继续在 ID/OOD 数据上训练时，trainable table 是否重新展开 gap；冻结 table 是否缓解 | `sft_*_e5_freq10_{trainable,frozen}_s42` | ✅ done；6/6 artifact QC 通过，step 1665 终点已回填 | `experiment-log.md` §57–§58；`docs/appendices/continue_pretrain_20260920_freq10/` |

@@ -4584,3 +4584,47 @@ trigram 行不同（911073 vs 789118）→ 表对 T 的贡献≈0；bigram ` is 
 **解释范围**：gap≈a f+b 是有系统残差的经验近似；相对 rms=RMSE/mean(abs gap)。b 不可直接等同于实测 S。验证 token 加权和交替 bin holdout 见 online_fits.csv。GT 的 F+1 identity 是 Poisson/matched/i.i.d. 模型下期望的比，不是经验比的无偏保证；完全 train-only pooled estimate / direct f 为 bi 0.870–0.885、tri 0.857–0.937，不用验证拟合修正。精确 F=2..8 的分层仅为 seed42 fixed-probe 补充，概率截断且 trigram 非严格单调，不能排除优化器机制。撤回“指数由语料确定、吻合到0.01”“seen 项小由73%推出”“所有配置1–5%”等旧表述。
 
 **落地**：docs/appendices/coverage_takeover_20260925/README.md + CSV/manifest；脚本 docs/plot_scripts/plot_coverage_takeover.py；正式线性三联图及 Figure3a 在 docs/figs/coverage_20260925/。paper 的 03/04/E 已直接修改；保留原有效 Zipf 积分、crowding-out 公式、E3 表。复杂残差/分层图仅存档。独立论文构建通过，当前共享 paper 也编译通过；未 push。
+
+
+## §68 · Correct-tokenizer post-training LR reduction sweep (2026-09-25, planned)
+
+User explicitly requested parallel lower-LR runs across existing settings. Scientific variable: a common LR multiplier, 1/4 or 1/10 of current downstream LR, preserving table/backbone ratio128. This tests optimization-dose sensitivity, not causal isolation of domain overlap. Owner: Codex current task.
+
+Baseline identity: §66 corrected-tokenizer continued-LM stress tests, input trigram-only clean R=1048576, no bigram/unigram/fourgram; no-gram disables trigram and uses its matched-budget no-gram checkpoint. These are explicitly registered deviations from main bigram+trigram random-init protocol, needed to reproduce downstream comparison. Vanilla8L/6H/768D, vocab8192, learned absolute PE, LayerNorm, tied embeddings, dropout0; AdamW(0.8,0.95), wd0.1; RMSProp table(0,0.99); bf16/no compile; seed/data_seed42; batch72×2048,total147456; five fixed passes×333=1665 steps. Fresh optimizer;100-step warmup0.25×→1× then constant. Only LR changes relative to each prior arm: backbone0.00015 or0.00006, trainable table0.0192 or0.00768. Frozen table freezes from initialization.
+
+Measurement addition, identical in all new arms: four fixed UNIFORM training-probe batches spanning333-batch pool, every10 steps/boundaries, diagnostic fixed gap separately from online gap. Fixed val4 batches every10 steps; table RMS every10. No compatible OOD frequency index, so no freq_index for any source. Final checkpoints/probe tokens saved; no epoch checkpoints. Original LR=1 online results reused; do not splice old33-batch audit into new4-batch fixed curves.
+
+Data: ophis corrected *_fixtok files; ID epoch20 shard21/train,22-23/val. Copied checkpoints/data must match inputs_manifest.json SHA256. Data unchanged, including known one-record train/val boundary crossing in Magicoder/OpenR1; matched historical protocol, not strict-example-split claim. RLVR is static all-token replay, about42.7 source cycles, not on-policy RL.
+
+Compute plan:360-2 eight H200 trainable arms;a100_perm eight A100 frozen arms;a100_t1 eight A100 no-gram arms. LR pair stays on same host/software. Cross-hardware/torch arm contrasts are screened comparisons; original LR ran on ophis. A100 batch72 must pass10-step representative smoke; if OOM preserve failure/reassign H200 without changing batch. Idle check immediately before launch. Isolated code snapshots. User request authorizes input staging needed for parallel training; no deletion/push.
+
+Packet:docs/appendices/posttraining_lr_sweep_20260925/. Exact assignment/LR in assignments.json; hashes in inputs_manifest.json and code_hashes.json. Output each host:data/runs_fixed/<run_id> (IDs already end_fixed). Command:<python> <isolated_root>/code/cluster/run_posttraining_lr_sweep.py --root <isolated_root> --data-root <root>/data --out-root <root>/data/runs_fixed --source <source> --arm <arm> --lr-tag <q4|q10> --gpu <gpu>. Smoke adds --smoke and uses provisioning/posttraining_lr_20260925/smoke; distinct IDs not scientific endpoints.
+
+Acceptance:normal exit;summary/config identity;steps10,20,...1660,1665;finite train/val/online/fixed losses;uniform probe hash identical within source;frozen RMS constant;final checkpoint/probe tokens;hashes verified. Only then done.
+
+| run_id | host:GPU planned | LR | status |
+|---|---|---:|---|
+| ptlr_id_trainable_q4_s42_fixed | 360-2:0 | 0.00015 | planned |
+| ptlr_id_trainable_q10_s42_fixed | 360-2:1 | 6e-05 | planned |
+| ptlr_magicoder_trainable_q4_s42_fixed | 360-2:2 | 0.00015 | planned |
+| ptlr_magicoder_trainable_q10_s42_fixed | 360-2:3 | 6e-05 | planned |
+| ptlr_openr1_trainable_q4_s42_fixed | 360-2:4 | 0.00015 | planned |
+| ptlr_openr1_trainable_q10_s42_fixed | 360-2:5 | 6e-05 | planned |
+| ptlr_rlvr_trainable_q4_s42_fixed | 360-2:6 | 0.00015 | planned |
+| ptlr_rlvr_trainable_q10_s42_fixed | 360-2:7 | 6e-05 | planned |
+| ptlr_id_frozen_q4_s42_fixed | a100_perm:0 | 0.00015 | planned |
+| ptlr_id_frozen_q10_s42_fixed | a100_perm:1 | 6e-05 | planned |
+| ptlr_magicoder_frozen_q4_s42_fixed | a100_perm:2 | 0.00015 | planned |
+| ptlr_magicoder_frozen_q10_s42_fixed | a100_perm:3 | 6e-05 | planned |
+| ptlr_openr1_frozen_q4_s42_fixed | a100_perm:4 | 0.00015 | planned |
+| ptlr_openr1_frozen_q10_s42_fixed | a100_perm:5 | 6e-05 | planned |
+| ptlr_rlvr_frozen_q4_s42_fixed | a100_perm:6 | 0.00015 | planned |
+| ptlr_rlvr_frozen_q10_s42_fixed | a100_perm:7 | 6e-05 | planned |
+| ptlr_id_nogram_q4_s42_fixed | a100_t1:0 | 0.00015 | planned |
+| ptlr_id_nogram_q10_s42_fixed | a100_t1:1 | 6e-05 | planned |
+| ptlr_magicoder_nogram_q4_s42_fixed | a100_t1:2 | 0.00015 | planned |
+| ptlr_magicoder_nogram_q10_s42_fixed | a100_t1:3 | 6e-05 | planned |
+| ptlr_openr1_nogram_q4_s42_fixed | a100_t1:4 | 0.00015 | planned |
+| ptlr_openr1_nogram_q10_s42_fixed | a100_t1:5 | 6e-05 | planned |
+| ptlr_rlvr_nogram_q4_s42_fixed | a100_t1:6 | 0.00015 | planned |
+| ptlr_rlvr_nogram_q10_s42_fixed | a100_t1:7 | 6e-05 | planned |
