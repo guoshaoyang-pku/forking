@@ -79,6 +79,31 @@ Magicoder `+1.012372/+0.212391`、OpenR1-10shard `+0.726493/+0.098207`。
 这些是单 seed continued-LM 结果，不等同于 response-only instruction SFT。多层路线的
 partial step 和 quota 错误只作工程 provenance，不能进入方法效果比较。
 
+### Post-training overlap × freeze timing (2026-09-25)
+
+`ptov_{seen,unseen}_{trainable,frozen0,frozen1,nogram}_q4_mb18_s42_fixed` 是一组
+A100 永久机上的配对复现：input trigram-only clean `R=2^20`，下游 backbone
+LR=`1.5e-4`、table scale=`128`，333 update/pass、5 pass；`frozen0` 在第一步前
+冻结，`frozen1` 在 step 334 前冻结。microbatch 18 × accumulation 4 保持每次
+optimizer update 的 147,456 token；这是相对 H200 batch-72 的工程偏差，不能与其
+逐位合并。`unseen` 使用同域但未用于基座优化的 shard 21，`seen` 使用基座训练前缀
+shard 1；二者都使用固定且不重叠的 shard 22 验证集。
+
+终点（seed 42，online / uniform fixed gap）为：
+
+| pool | trainable | frozen0 | frozen1 | no-gram |
+|---|---:|---:|---:|---:|
+| unseen | 0.7867 / 0.8860 | 0.1846 / 0.1762 | 0.3546 / 0.3000 | 0.2130 / 0.2322 |
+| seen | 1.2566 / 1.4313 | 0.3695 / 0.4340 | 0.5921 / 0.6005 | 0.1868 / 0.2399 |
+
+在 step 333，trainable 与 frozen1 的 fixed gap 几乎相同（unseen `0.1207/0.1206`，
+seen `0.3465/0.3463`）；step 333 后冻结表仍继续增长，但增长小于 trainable。
+这直接区分了“表写入停止”和“backbone 继续适应”：冻结表不会撤销第一遍已经诱导的
+gap，也不能阻止普通 replay-induced gap。即使训练池没有预训练前缀重合，trainable
+table 仍明显超过 no-gram；重合则抬高初始 fixed gap 并放大终点 excess。详细原始曲线、
+freeze event、probe hash 和机器可读终点见 `docs/appendices/posttraining_overlap_20260925/`
+与 `docs/figs/posttraining_overlap_20260925/`。
+
 ## Toy / synthetic 线（已退役）
 
 旧的 ngram5_freq_gap/ 受控数据 trainer 与 L1–L6 toy / synthetic 任务不再属于论文证据链，已于 2026-09-13 从当前工作树移除。历史实验日志、图和提交只用于 provenance，不再作为活动入口或新实验依赖。当前模型解释完全由 M2/V5、M8–M10、S1 以及 §48–§53 的自然语料证据承担。
