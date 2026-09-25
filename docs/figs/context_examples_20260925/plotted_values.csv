@@ -1,0 +1,73 @@
+context,arm,run_id,seed,epoch,step,token_or_statistic,category,negative_log_probability,probability
+petting your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,dog,both,3.7775521506550334,0.0228786263675744
+petting your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,cat,val-only,3.9192319144489787,0.01985634025673925
+petting your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,fish,neither,8.781452440190556,0.00015355489385266677
+petting your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,horse,neither,6.424727939534428,0.0016209742209462364
+petting your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,bird,val-only,8.45371355907941,0.00021310755661315732
+petting your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,others,rank statistic,3.424251175743363,0.03257366380832804
+introducing your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,dog,both,6.610526792691804,0.0013461228349258244
+introducing your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,cat,val-only,8.125169269727326,0.00029599462288705536
+introducing your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,fish,neither,9.937678270028687,4.831935900606382e-05
+introducing your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,horse,val-only,7.461984865354157,0.0005745147047002755
+introducing your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,bird,neither,10.287624500678636,3.405190769413698e-05
+introducing your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,others,rank statistic,4.062532875078566,0.01720538478817707
+there is a,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,dog,both,5.52146547035929,0.003999981790053275
+there is a,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,cat,both,6.158372094199622,0.0021156946214222084
+there is a,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,fish,train-only,8.542982747123206,0.00019490803088889258
+there is a,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,horse,both,6.0410887499308235,0.002378967402524173
+there is a,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,bird,both,8.314802815482581,0.0002448651724370949
+there is a,nogram,ep5ckpt_v5_nogram_s42_fixed,42,1,337,others,rank statistic,4.64249631539588,0.009633619034646468
+petting your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,dog,both,2.020459169014451,0.1325945677831052
+petting your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,cat,val-only,2.7215661941609355,0.06577166252270947
+petting your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,fish,neither,6.891947263344285,0.0010159336233136016
+petting your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,horse,neither,4.815804952248094,0.008100698777090356
+petting your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,bird,val-only,6.053742402657029,0.0023490544284835014
+petting your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,others,rank statistic,3.4436104991071352,0.0319491245516882
+introducing your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,dog,both,3.447322377843464,0.031830753101765
+introducing your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,cat,val-only,5.154966363591755,0.005770674176584958
+introducing your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,fish,neither,5.972876081151569,0.0025469057674125093
+introducing your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,horse,val-only,5.2897639366813545,0.005042950574839041
+introducing your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,bird,neither,6.853488216085041,0.0010557665205740711
+introducing your,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,others,rank statistic,4.350641522968027,0.012898535219108073
+there is a,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,dog,both,7.818138325504231,0.0004023700680559018
+there is a,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,cat,both,6.922760451129841,0.0009851068444717821
+there is a,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,fish,train-only,7.886919701389241,0.0003756248314516768
+there is a,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,horse,both,8.55112584858315,0.00019332731969855778
+there is a,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,bird,both,8.163581097415852,0.00028484052451468534
+there is a,nogram,ep5ckpt_v5_nogram_s42_fixed,42,5,1685,others,rank statistic,4.264004726149375,0.01406585955094479
+petting your,both,ep5ckpt_v5_both_s42_fixed,42,1,337,dog,both,2.6736958784520355,0.06899674989591327
+petting your,both,ep5ckpt_v5_both_s42_fixed,42,1,337,cat,val-only,4.916832284396859,0.007322289077440657
+petting your,both,ep5ckpt_v5_both_s42_fixed,42,1,337,fish,neither,6.385156945651742,0.001686403801091684
+petting your,both,ep5ckpt_v5_both_s42_fixed,42,1,337,horse,neither,4.45997078842518,0.011562701047242031
+petting your,both,ep5ckpt_v5_both_s42_fixed,42,1,337,bird,val-only,7.1693352026402675,0.0007698343449884991
+petting your,both,ep5ckpt_v5_both_s42_fixed,42,1,337,others,rank statistic,4.449855747960232,0.011680251749015949
+introducing your,both,ep5ckpt_v5_both_s42_fixed,42,1,337,dog,both,3.7595343993474875,0.023294583823771035
+introducing your,both,ep5ckpt_v5_both_s42_fixed,42,1,337,cat,val-only,6.898124258356276,0.0010096775481542456
+introducing your,both,ep5ckpt_v5_both_s42_fixed,42,1,337,fish,neither,8.842758099870863,0.00014442386141932486
+introducing your,both,ep5ckpt_v5_both_s42_fixed,42,1,337,horse,val-only,6.219729463892165,0.0019897834527265526
+introducing your,both,ep5ckpt_v5_both_s42_fixed,42,1,337,bird,neither,8.338684837656203,0.0002390865739182194
+introducing your,both,ep5ckpt_v5_both_s42_fixed,42,1,337,others,rank statistic,4.380873287644147,0.012514425154877409
+there is a,both,ep5ckpt_v5_both_s42_fixed,42,1,337,dog,both,8.850215109652845,0.00014335089679783203
+there is a,both,ep5ckpt_v5_both_s42_fixed,42,1,337,cat,both,7.943617733783094,0.00035492014630303815
+there is a,both,ep5ckpt_v5_both_s42_fixed,42,1,337,fish,train-only,8.279600533313124,0.00025363849993164804
+there is a,both,ep5ckpt_v5_both_s42_fixed,42,1,337,horse,both,8.8997556293672,0.00013642226000298358
+there is a,both,ep5ckpt_v5_both_s42_fixed,42,1,337,bird,both,9.046069058245985,0.0001178534024182294
+there is a,both,ep5ckpt_v5_both_s42_fixed,42,1,337,others,rank statistic,4.240514725781681,0.01440017779240398
+petting your,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,dog,both,0.5291541334453966,0.5891030615660156
+petting your,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,cat,val-only,7.175504040366784,0.0007650999796174946
+petting your,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,fish,neither,14.110200893527642,7.447621781215169e-07
+petting your,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,horse,neither,11.307119917518273,1.2285142930330527e-05
+petting your,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,bird,val-only,13.258299779540673,1.7457962903613578e-06
+petting your,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,others,rank statistic,4.145108313184384,0.015841719991253868
+introducing your,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,dog,both,3.4808925128541843,0.0307799272890219
+introducing your,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,cat,val-only,9.347779843863096,8.715871039233852e-05
+introducing your,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,fish,neither,11.232684466894712,1.323448722502693e-05
+introducing your,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,horse,val-only,8.046982142981138,0.00032006638102470764
+introducing your,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,bird,neither,13.396048758085813,1.5211426561100964e-06
+introducing your,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,others,rank statistic,3.6390811361345734,0.02627647738190483
+there is a,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,dog,both,8.231712968158934,0.00026608015282594485
+there is a,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,cat,both,7.978771598148559,0.0003426600883757564
+there is a,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,fish,train-only,8.757577569294188,0.00015726511136436675
+there is a,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,horse,both,9.274451405811522,9.379008550199533e-05
+there is a,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,bird,both,10.962347061443541,1.734255827511931e-05
+there is a,both,ep5ckpt_v5_both_s42_fixed,42,5,1685,others,rank statistic,4.236265004296027,0.014461504756325981

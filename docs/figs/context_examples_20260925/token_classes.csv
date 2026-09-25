@@ -1,0 +1,16 @@
+context,token,token_id,train_count,heldout_count,category
+petting your,dog,904,1,10,both
+petting your,cat,1107,0,4,val-only
+petting your,fish,1503,0,0,neither
+petting your,horse,3501,0,0,neither
+petting your,bird,3066,0,1,val-only
+introducing your,dog,904,3,10,both
+introducing your,cat,1107,0,3,val-only
+introducing your,fish,1503,0,0,neither
+introducing your,horse,3501,0,1,val-only
+introducing your,bird,3066,0,0,neither
+there is a,dog,904,1,2,both
+there is a,cat,1107,2,6,both
+there is a,fish,1503,1,0,train-only
+there is a,horse,3501,1,1,both
+there is a,bird,3066,1,5,both

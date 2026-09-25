@@ -1,0 +1,23 @@
+{
+  "source_lab_commit": "cfd6a9b",
+  "paper_before": "06508baf68ca2dbabfb5ba6b6f71ef4299ad1fb0",
+  "inputs": {
+    "logits.json": {
+      "original_path": "docs/appendices/subspace_probe_20260925/appendix_context_logits_top20.json",
+      "sha256": "2ab83ec0ac08725e1fda463c49c301f4bbc814bc6b67c9780e020b15297bb065"
+    },
+    "context_counts.json": {
+      "original_path": "docs/appendices/subspace_probe_20260925/bar_audit/context_counts.json",
+      "sha256": "162e41934390c6e4831b06a301c6a78a1655e32ed8ea96dc82258dfc4ebbfb64"
+    },
+    "source_summaries.jsonl": {
+      "original_path": "docs/appendices/subspace_probe_20260925/bar_audit/source_summaries.jsonl",
+      "sha256": "362758bebf0ed18888fd41f879debde8dfa983a3697f63107194ecc965bf63fb"
+    },
+    "export_logits.py": {
+      "original_path": "docs/plot_scripts/export_plan7_context_logits.py",
+      "sha256": "5f6558543356b8aa82765a16545f1a18b51d368427ef78f71036a7fb31c65668"
+    }
+  },
+  "preserved_macro_figure_sha256": "d62d7544440a7fc07c2652f87353892d9870bf77bca32c5860e5d8f794cb17ba"
+}
