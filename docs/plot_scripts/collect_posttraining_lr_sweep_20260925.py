@@ -38,8 +38,7 @@ print(json.dumps(rows))
 def main():
     previous=PACKET/'artifact_manifest.json'
     cache={r['run_id']:r['files'] for r in json.loads(previous.read_text())} if previous.exists() else {}
-    cmd='python3 -c '+shlex.quote(SCRIPT.replace('CACHE',repr(cache)))
-    rows=json.loads(subprocess.check_output(['ssh','360-2',cmd],text=True))
+    rows=json.loads(subprocess.check_output(['ssh','360-2','python3 -'],input=SCRIPT.replace('CACHE',repr(cache)),text=True))
     wanted=[]
     for row in rows:
         for name in row['files']:
@@ -47,8 +46,8 @@ def main():
                 wanted.append(row['run_id']+'/'+name)
     if not wanted:
         print('No completed runs yet');return
-    cmd='tar -cf - -C '+shlex.quote(REMOTE)+' '+' '.join(map(shlex.quote,wanted))
-    blob=subprocess.check_output(['ssh','360-2',cmd])
+    cmd='tar -cf - -C '+shlex.quote(REMOTE)+' -T -'
+    blob=subprocess.check_output(['ssh','360-2',cmd],input=(chr(10).join(wanted)+chr(10)).encode())
     raw=PACKET/'raw';raw.mkdir(exist_ok=True)
     with tarfile.open(fileobj=io.BytesIO(blob)) as tar:
         for member in tar:

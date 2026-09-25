@@ -98,6 +98,20 @@ def main():
         coverage=json.loads(coverage_path.read_text())
         text += ['', '## Hash-table address coverage', '',
                  'Using the actual input-trigram hash, the first %s pretraining rows visit all %s table addresses (within-row contexts only). A previously unseen exact context therefore need not address an unused parameter row: collisions share rows. This confirms address coverage, not exact-context familiarity, useful learned content, or a nonzero net gradient for every row. Source: table_row_coverage.json; script code/tools/audit_posttraining_table_row_coverage.py.' % (coverage['rows_scanned'],coverage['table_rows']), '']
+    if count==24:
+        findings=['## Completed-sweep findings','',
+          'All twelve source/arm combinations have smaller online and exact-probe fixed gaps at each lower LR. Lower rates reduce the gap at this fixed five-pass budget; this does not establish its converged limit. Trainable-table models retain positive excess gap over their matched no-gram controls at both lower rates in every source.',
+          '',
+          'ID: all three arms improve final validation loss as LR decreases. The trainable-table online gap falls from2.462920 to0.785483 to0.331233. Frozen/no-gram remain close at each LR. The large original ID gap is therefore strongly sensitive to the downstream optimization rate.',
+          '',
+          'Magicoder/OpenR1: trainable-table validation is best among these three tested rates at1/4 LR, while frozen-table/no-gram validation worsens at lower rates despite smaller gaps. Lower gap alone cannot be described as improved generalization; slower adaptation at the fixed budget contributes.',
+          '',
+          'RLVR-MATH: reductions are weaker than for the other sources. At1/10 LR the frozen/no-gram online gaps are0.237961/0.235625 (difference0.002336); fixed gaps0.233927/0.231528 (difference0.002399). The trainable-table gap remains0.375805. Thus the original frozen-table excess over no-gram is not stable to this LR change. The large gaps within both frozen/no-gram arms remain consistent with strong replay of the small static pool, but this sweep does not causally isolate repetition or a particular mechanism.',
+          '',
+          'Domain audit: ID unigram JS divergence is0.000081 versus0.218077/0.309210/0.413521 for the three OOD pools. This supports a real marginal distribution shift, not the claim that the pretraining corpus is defective or that shift causes the gap ranking. Almost all vocabulary is previously seen, and all table addresses are visited during pretraining; exact n-gram identity, address coverage, and conditional continuation distributions are different quantities.',
+          '',
+          'Final QC: all24 runs reach1665 steps with finite dense curves and saved final/probe artifacts. The saved probe tensors reproduce the logged source hashes. All8 frozen final tables are bitwise identical to their initial table, while their backbone changes. The12 historical validation endpoints reproduce exactly under the uniform-probe evaluator. See final_artifact_audit.json and baseline_uniform4.json.', '']
+        text[4:4]=findings
     (P/'README.md').write_text(chr(10).join(text))
     print(f'Report: {count}/24 new runs')
 

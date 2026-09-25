@@ -936,6 +936,58 @@
     }
   },
   {
+    "run_id": "ptlr_rlvr_frozen_q10_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_rlvr_frozen_q10_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3271,
+        "mtime_ns": 1790322121093850528,
+        "sha256": "5df5ff403cc63912e28a02cf218c74123bbbf04a15a7dd3f3c3287e3ab7485cc"
+      },
+      "train_log.jsonl": {
+        "bytes": 28485,
+        "mtime_ns": 1790322116613955492,
+        "sha256": "096e825a8909bca6cedd8af8fea4f58ee9c22cccd25a2e1610f2c4205d698a5e"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26498,
+        "mtime_ns": 1790322117165942559,
+        "sha256": "344a38d70db2849c364cfb9dc5475df17e067cdf3ed79f0e545128f2f64ed33f"
+      },
+      "table_norm.jsonl": {
+        "bytes": 10848,
+        "mtime_ns": 1790322115341985295,
+        "sha256": "8ba7c2b62aa2366a6c47b78b0c7574bf4824acc9e46e27289d032f0d6722389d"
+      },
+      "status.json": {
+        "bytes": 382,
+        "mtime_ns": 1790322124289775648,
+        "sha256": "cdc24afbcb2aee1021431ec61aa8d7eeecfe240f04c56bd6f1c2acb9d8b1c64f"
+      },
+      "launch.json": {
+        "bytes": 2401,
+        "mtime_ns": 1790321629241374650,
+        "sha256": "b0d72630d7ddd7bb314018a6b9cee09e6f33032ee36a5aa25ab9d636c1652d8e"
+      },
+      "train.log": {
+        "bytes": 29019,
+        "mtime_ns": 1790322121093850528,
+        "sha256": "dca1fb97f38017cb3619fc58a8838e75404f413fccecf06e151fc6e966b0b07c"
+      },
+      "final_model.pt": {
+        "bytes": 3479539169,
+        "mtime_ns": 1790322121081850809,
+        "sha256": "1e534c47a2fa89119d4cd6d718b9a9ce21cd9fa516a6c0575c1e64694fdde797"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790322121093850528,
+        "sha256": "aabc49e53ac25f5c2a89d80735f827e3f0eef57fe48d5e3bd1a0f5626bbb8e3d"
+      }
+    }
+  },
+  {
     "run_id": "ptlr_rlvr_frozen_q4_s42_fixed",
     "host": "360-2",
     "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_rlvr_frozen_q4_s42_fixed",
@@ -983,6 +1035,162 @@
       "probe_tokens.npz": {
         "bytes": 4721540,
         "mtime_ns": 1790321947429919481,
+        "sha256": "aabc49e53ac25f5c2a89d80735f827e3f0eef57fe48d5e3bd1a0f5626bbb8e3d"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_rlvr_nogram_q10_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_rlvr_nogram_q10_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3278,
+        "mtime_ns": 1790322121509840782,
+        "sha256": "f0860c0a9d68bcc16b54b22208272736ef67d990c7d3a85331cde1751ea56d3e"
+      },
+      "train_log.jsonl": {
+        "bytes": 28590,
+        "mtime_ns": 1790322120765858213,
+        "sha256": "50cc5d135b9ff4e47475f00155344e8e516d903e686b60dfeb05bd88c758d291"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26621,
+        "mtime_ns": 1790322121305845561,
+        "sha256": "f0a418cef61605e0fecc11ed409299d4ee4f670381f08ab1acd88fcecec87e7c"
+      },
+      "table_norm.jsonl": {
+        "bytes": 2382,
+        "mtime_ns": 1790322119513887547,
+        "sha256": "16cdf7ce3ee20d115e27ab462c904d5cfe4fbcc162945b72a1e138eb1594b2a5"
+      },
+      "status.json": {
+        "bytes": 378,
+        "mtime_ns": 1790322124405772930,
+        "sha256": "6fabaf1eebb01674338d9caf55966e7837b4de0a248b399efe6469eca4190ade"
+      },
+      "launch.json": {
+        "bytes": 2389,
+        "mtime_ns": 1790321649408902124,
+        "sha256": "fff4e5b5f54d690a43cc78993e0b0fa1cd970d34442204b3c9dc50abf910421b"
+      },
+      "train.log": {
+        "bytes": 28971,
+        "mtime_ns": 1790322121509840782,
+        "sha256": "c238eee3d8c270de8b599f3f4b80b79fac3e22e8741573e00e59bd3c1e1a51ab"
+      },
+      "final_model.pt": {
+        "bytes": 258313247,
+        "mtime_ns": 1790322121497841063,
+        "sha256": "7f4dcd618817702a596297c79b5413f024524917c5d6bcb534b0a6d820be9830"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790322121509840782,
+        "sha256": "aabc49e53ac25f5c2a89d80735f827e3f0eef57fe48d5e3bd1a0f5626bbb8e3d"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_rlvr_nogram_q4_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_rlvr_nogram_q4_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3278,
+        "mtime_ns": 1790322062635220216,
+        "sha256": "69d1c9aece4496d00e236e7a99ea0c100e1543d1c712d7d7e64bce3df6d1be58"
+      },
+      "train_log.jsonl": {
+        "bytes": 28579,
+        "mtime_ns": 1790322061863238304,
+        "sha256": "7458b0aaf5688b7e93514e3ea2df36ee2eca8c4fbc36154eb66db755c68a5f34"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26614,
+        "mtime_ns": 1790322062399225745,
+        "sha256": "64d02cfb12bc8ff918e1e030f0721639de0b1f791703d55d7d3262716acdd622"
+      },
+      "table_norm.jsonl": {
+        "bytes": 2382,
+        "mtime_ns": 1790322060623267356,
+        "sha256": "16cdf7ce3ee20d115e27ab462c904d5cfe4fbcc162945b72a1e138eb1594b2a5"
+      },
+      "status.json": {
+        "bytes": 378,
+        "mtime_ns": 1790322063483200348,
+        "sha256": "5499181fb4fefbe99fef7c9bf5fbe07aa1c07038f13c273df81109078e948ef2"
+      },
+      "launch.json": {
+        "bytes": 2389,
+        "mtime_ns": 1790321581162501140,
+        "sha256": "bf330a1c23439a375bf34a805fa9f64dad033b528e75e82c7362309ed7b50b42"
+      },
+      "train.log": {
+        "bytes": 28971,
+        "mtime_ns": 1790322062635220216,
+        "sha256": "28d860cf02e5126360b37d281fe07334c2836b54e5815130bda42b61f8b65f0e"
+      },
+      "final_model.pt": {
+        "bytes": 258313247,
+        "mtime_ns": 1790322062623220497,
+        "sha256": "f91c622c329851c728d8f57b3a5adeb915ddf6be89595a02fbf99de6d2944f05"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790322062635220216,
+        "sha256": "aabc49e53ac25f5c2a89d80735f827e3f0eef57fe48d5e3bd1a0f5626bbb8e3d"
+      }
+    }
+  },
+  {
+    "run_id": "ptlr_rlvr_trainable_q10_s42_fixed",
+    "host": "360-2",
+    "path": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_rlvr_trainable_q10_s42_fixed",
+    "files": {
+      "summary.json": {
+        "bytes": 3277,
+        "mtime_ns": 1790322100646329614,
+        "sha256": "dee6e46a3241456f29718ce254d8ac892f0728488a84d9282f280d50a4b5f4e7"
+      },
+      "train_log.jsonl": {
+        "bytes": 28447,
+        "mtime_ns": 1790322096130435422,
+        "sha256": "11641e973c2c78a3cee6f814a705963c5c03d3c6d61e5ea49f4567191baf7376"
+      },
+      "fixed_train_loss.jsonl": {
+        "bytes": 26486,
+        "mtime_ns": 1790322096670422770,
+        "sha256": "2a77d710cfaa5798a322f317be2f5fd7da8368621f3eeef46893482caec4e222"
+      },
+      "table_norm.jsonl": {
+        "bytes": 10807,
+        "mtime_ns": 1790322094814466255,
+        "sha256": "71e00469803d811e556873f0def36f8a8756dc502196d03f4ae7b2615dc0c958"
+      },
+      "status.json": {
+        "bytes": 381,
+        "mtime_ns": 1790322102422288004,
+        "sha256": "c42563443486d7a14327cd2680a4dd36e12f71871800b6532fbedb4ceef54d9c"
+      },
+      "launch.json": {
+        "bytes": 2385,
+        "mtime_ns": 1790321581162501140,
+        "sha256": "97b214eadcf7107f71dd743d7543dbc899b4ef4ec921b77e7f6c3e91f3d2db19"
+      },
+      "train.log": {
+        "bytes": 28965,
+        "mtime_ns": 1790322100646329614,
+        "sha256": "a7663605535ba4ed0260324b5c758571660077604fbb65dec7531e7f6f81b5f1"
+      },
+      "final_model.pt": {
+        "bytes": 3479539169,
+        "mtime_ns": 1790322100638329802,
+        "sha256": "9d5df7bc73f3be44330a5732825c1dc74b930f728ba3038b79495541559e3aa7"
+      },
+      "probe_tokens.npz": {
+        "bytes": 4721540,
+        "mtime_ns": 1790322100646329614,
         "sha256": "aabc49e53ac25f5c2a89d80735f827e3f0eef57fe48d5e3bd1a0f5626bbb8e3d"
       }
     }

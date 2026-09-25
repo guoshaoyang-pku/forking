@@ -1,19 +1,6 @@
 {
   "pending": [],
-  "running": {
-    "7": {
-      "run_id": "ptlr_rlvr_trainable_q10_s42_fixed",
-      "pid": 196768
-    },
-    "6": {
-      "run_id": "ptlr_rlvr_frozen_q10_s42_fixed",
-      "pid": 197031
-    },
-    "1": {
-      "run_id": "ptlr_rlvr_nogram_q10_s42_fixed",
-      "pid": 197227
-    }
-  },
+  "running": {},
   "completed": [
     {
       "run_id": "ptlr_id_trainable_q4_s42_fixed",
@@ -350,7 +337,55 @@
         },
         "qc": "pass"
       }
+    },
+    {
+      "run_id": "ptlr_rlvr_trainable_q10_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:41:42.423442+00:00",
+        "metrics": {
+          "final_train_loss": 0.030041081830859184,
+          "final_val_loss": 0.40584584325551987,
+          "final_gap": 0.3758047614246607,
+          "final_fixed_train_loss": 0.03034693468362093,
+          "final_fixed_val_loss": 0.40584584325551987,
+          "final_fixed_gap": 0.37549890857189894
+        },
+        "qc": "pass"
+      }
+    },
+    {
+      "run_id": "ptlr_rlvr_frozen_q10_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:42:04.293146+00:00",
+        "metrics": {
+          "final_train_loss": 0.062269993126392365,
+          "final_val_loss": 0.30023109912872314,
+          "final_gap": 0.23796110600233078,
+          "final_fixed_train_loss": 0.06630418915301561,
+          "final_fixed_val_loss": 0.30023109912872314,
+          "final_fixed_gap": 0.23392690997570753
+        },
+        "qc": "pass"
+      }
+    },
+    {
+      "run_id": "ptlr_rlvr_nogram_q10_s42_fixed",
+      "status": {
+        "returncode": 0,
+        "finished_utc": "2026-09-25T07:42:04.406822+00:00",
+        "metrics": {
+          "final_train_loss": 0.024663666263222694,
+          "final_val_loss": 0.2602890431880951,
+          "final_gap": 0.2356253769248724,
+          "final_fixed_train_loss": 0.02876087324693799,
+          "final_fixed_val_loss": 0.2602890431880951,
+          "final_fixed_gap": 0.2315281699411571
+        },
+        "qc": "pass"
+      }
     }
   ],
-  "updated_unix": 1790322104.4716742
+  "updated_unix": 1790322150.5350199
 }

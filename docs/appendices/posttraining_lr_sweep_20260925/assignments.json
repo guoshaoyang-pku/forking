@@ -186,8 +186,18 @@
     "root": "/data/home/guoshaoyang/ngram-gap-lab",
     "python": "python3",
     "gpu": 7,
-    "status": "running",
-    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
+    "status": "done",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed",
+    "gpu_uuid": "GPU-18926874-13d5-acc5-d946-5b376f9418be",
+    "actual_host": "gpu02.sid.shcdt.qihoo.net",
+    "metrics": {
+      "final_train_loss": 0.030041081830859184,
+      "final_val_loss": 0.40584584325551987,
+      "final_gap": 0.3758047614246607,
+      "final_fixed_train_loss": 0.03034693468362093,
+      "final_fixed_val_loss": 0.40584584325551987,
+      "final_fixed_gap": 0.37549890857189894
+    }
   },
   {
     "run_id": "ptlr_id_frozen_q4_s42_fixed",
@@ -376,8 +386,18 @@
     "root": "/data/home/guoshaoyang/ngram-gap-lab",
     "python": "python3",
     "gpu": 6,
-    "status": "running",
-    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
+    "status": "done",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed",
+    "gpu_uuid": "GPU-5c75ef81-4dbe-3beb-9353-ff5a040d6ff6",
+    "actual_host": "gpu02.sid.shcdt.qihoo.net",
+    "metrics": {
+      "final_train_loss": 0.062269993126392365,
+      "final_val_loss": 0.30023109912872314,
+      "final_gap": 0.23796110600233078,
+      "final_fixed_train_loss": 0.06630418915301561,
+      "final_fixed_val_loss": 0.30023109912872314,
+      "final_fixed_gap": 0.23392690997570753
+    }
   },
   {
     "run_id": "ptlr_id_nogram_q4_s42_fixed",
@@ -550,7 +570,9 @@
       "final_fixed_train_loss": 0.018912441097199917,
       "final_fixed_val_loss": 0.2893756255507469,
       "final_fixed_gap": 0.270463184453547
-    }
+    },
+    "gpu_uuid": "GPU-17a6138c-7edf-cf2c-e84b-f026431f96b6",
+    "actual_host": "gpu02.sid.shcdt.qihoo.net"
   },
   {
     "run_id": "ptlr_rlvr_nogram_q10_s42_fixed",
@@ -564,7 +586,17 @@
     "root": "/data/home/guoshaoyang/ngram-gap-lab",
     "python": "python3",
     "gpu": 1,
-    "status": "running",
-    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed"
+    "status": "done",
+    "out_root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed",
+    "gpu_uuid": "GPU-b6b41ef3-1fbd-0bf3-fb5f-5e856fd35c86",
+    "actual_host": "gpu02.sid.shcdt.qihoo.net",
+    "metrics": {
+      "final_train_loss": 0.024663666263222694,
+      "final_val_loss": 0.2602890431880951,
+      "final_gap": 0.2356253769248724,
+      "final_fixed_train_loss": 0.02876087324693799,
+      "final_fixed_val_loss": 0.2602890431880951,
+      "final_fixed_gap": 0.2315281699411571
+    }
   }
 ]

@@ -1,6 +1,20 @@
 # Correct-tokenizer post-training LR sweep
 
-Status: 20/24 new runs passed artifact and metric QC. Seed 42 only. Original-LR comparison uses the matching seed-42 runs.
+Status: 24/24 new runs passed artifact and metric QC. Seed 42 only. Original-LR comparison uses the matching seed-42 runs.
+
+## Completed-sweep findings
+
+All twelve source/arm combinations have smaller online and exact-probe fixed gaps at each lower LR. Lower rates reduce the gap at this fixed five-pass budget; this does not establish its converged limit. Trainable-table models retain positive excess gap over their matched no-gram controls at both lower rates in every source.
+
+ID: all three arms improve final validation loss as LR decreases. The trainable-table online gap falls from2.462920 to0.785483 to0.331233. Frozen/no-gram remain close at each LR. The large original ID gap is therefore strongly sensitive to the downstream optimization rate.
+
+Magicoder/OpenR1: trainable-table validation is best among these three tested rates at1/4 LR, while frozen-table/no-gram validation worsens at lower rates despite smaller gaps. Lower gap alone cannot be described as improved generalization; slower adaptation at the fixed budget contributes.
+
+RLVR-MATH: reductions are weaker than for the other sources. At1/10 LR the frozen/no-gram online gaps are0.237961/0.235625 (difference0.002336); fixed gaps0.233927/0.231528 (difference0.002399). The trainable-table gap remains0.375805. Thus the original frozen-table excess over no-gram is not stable to this LR change. The large gaps within both frozen/no-gram arms remain consistent with strong replay of the small static pool, but this sweep does not causally isolate repetition or a particular mechanism.
+
+Domain audit: ID unigram JS divergence is0.000081 versus0.218077/0.309210/0.413521 for the three OOD pools. This supports a real marginal distribution shift, not the claim that the pretraining corpus is defective or that shift causes the gap ranking. Almost all vocabulary is previously seen, and all table addresses are visited during pretraining; exact n-gram identity, address coverage, and conditional continuation distributions are different quantities.
+
+Final QC: all24 runs reach1665 steps with finite dense curves and saved final/probe artifacts. The saved probe tensors reproduce the logged source hashes. All8 frozen final tables are bitwise identical to their initial table, while their backbone changes. The12 historical validation endpoints reproduce exactly under the uniform-probe evaluator. See final_artifact_audit.json and baseline_uniform4.json.
 
 ## Protocol
 
@@ -43,9 +57,13 @@ Primary online gap = fixed validation loss after update minus the current 72-exa
 | OpenR1 | nogram | 1/10 | 1.0340 | 1.0710 | 0.0370 | 0.0438 |
 | RLVR-MATH | trainable | 1 | 0.0115 | 0.5108 | 0.4993 | 0.5020 |
 | RLVR-MATH | trainable | 1/4 | 0.0110 | 0.4583 | 0.4473 | 0.4482 |
+| RLVR-MATH | trainable | 1/10 | 0.0300 | 0.4058 | 0.3758 | 0.3755 |
 | RLVR-MATH | frozen | 1 | 0.0137 | 0.4357 | 0.4220 | 0.4178 |
 | RLVR-MATH | frozen | 1/4 | 0.0215 | 0.3787 | 0.3571 | 0.3537 |
+| RLVR-MATH | frozen | 1/10 | 0.0623 | 0.3002 | 0.2380 | 0.2339 |
 | RLVR-MATH | nogram | 1 | 0.0183 | 0.3291 | 0.3108 | 0.3035 |
+| RLVR-MATH | nogram | 1/4 | 0.0145 | 0.2894 | 0.2748 | 0.2705 |
+| RLVR-MATH | nogram | 1/10 | 0.0247 | 0.2603 | 0.2356 | 0.2315 |
 
 ## Changes relative to original LR
 
@@ -72,7 +90,11 @@ Negative validation-loss change is an improvement. Negative gap change alone can
 | openr1 | nogram | q4 | +0.1067 | +0.0279 | -0.0788 | 0.496 |
 | openr1 | nogram | q10 | +0.2086 | +0.0890 | -0.1196 | 0.236 |
 | rlvr | trainable | q4 | -0.0005 | -0.0525 | -0.0520 | 0.896 |
+| rlvr | trainable | q10 | +0.0185 | -0.1049 | -0.1235 | 0.753 |
 | rlvr | frozen | q4 | +0.0078 | -0.0570 | -0.0649 | 0.846 |
+| rlvr | frozen | q10 | +0.0486 | -0.1355 | -0.1840 | 0.564 |
+| rlvr | nogram | q4 | -0.0038 | -0.0398 | -0.0360 | 0.884 |
+| rlvr | nogram | q10 | +0.0063 | -0.0688 | -0.0752 | 0.758 |
 
 ## Excess gap over matched no-gram
 
@@ -88,6 +110,8 @@ Negative validation-loss change is an improvement. Negative gap change alone can
 | OpenR1 | 1/4 | +0.1877 | +0.0019 |
 | OpenR1 | 1/10 | +0.0814 | +0.0082 |
 | RLVR-MATH | 1 | +0.1885 | +0.1112 |
+| RLVR-MATH | 1/4 | +0.1724 | +0.0823 |
+| RLVR-MATH | 1/10 | +0.1402 | +0.0023 |
 
 ## Interpretation limits
 
@@ -109,7 +133,7 @@ From repository root:
 
 ```sh
 python3 docs/plot_scripts/collect_posttraining_lr_sweep_20260925.py
-.venv/bin/python docs/plot_scripts/plot_posttraining_lr_sweep_20260925.py --partial
+.venv/bin/python docs/plot_scripts/plot_posttraining_lr_sweep_20260925.py
 python3 docs/plot_scripts/report_posttraining_lr_sweep_20260925.py
 ```
 
@@ -149,9 +173,13 @@ Descriptive values from the recorded curve; these are not checkpoint selection c
 | openr1 | nogram | q10 | 1.0710 | 1665 | 0.0000 |
 | rlvr | trainable | base | 0.2726 | 170 | 0.2382 |
 | rlvr | trainable | q4 | 0.2875 | 290 | 0.1708 |
+| rlvr | trainable | q10 | 0.2945 | 520 | 0.1113 |
 | rlvr | frozen | base | 0.2419 | 300 | 0.1938 |
 | rlvr | frozen | q4 | 0.2443 | 460 | 0.1344 |
+| rlvr | frozen | q10 | 0.2492 | 700 | 0.0510 |
 | rlvr | nogram | base | 0.1905 | 250 | 0.1386 |
+| rlvr | nogram | q4 | 0.1861 | 280 | 0.1033 |
+| rlvr | nogram | q10 | 0.1858 | 370 | 0.0745 |
 
 ## Initial-checkpoint fixed gap and growth
 
@@ -168,9 +196,9 @@ These use the identical four uniform training-probe batches and fixed validation
 | OpenR1 | trainable | 0.2241 | 0.5071 | 0.0700 | -0.0894 |
 | OpenR1 | frozen | 0.2241 | -0.0429 | -0.1381 | -0.1745 |
 | OpenR1 | nogram | 0.0354 | 0.1312 | 0.0505 | 0.0084 |
-| RLVR-MATH | trainable | 0.0319 | 0.4702 | 0.4164 | pending |
-| RLVR-MATH | frozen | 0.0319 | 0.3860 | 0.3219 | pending |
-| RLVR-MATH | nogram | -0.0288 | 0.3323 | pending | pending |
+| RLVR-MATH | trainable | 0.0319 | 0.4702 | 0.4164 | 0.3436 |
+| RLVR-MATH | frozen | 0.0319 | 0.3860 | 0.3219 | 0.2021 |
+| RLVR-MATH | nogram | -0.0288 | 0.3323 | 0.2992 | 0.2603 |
 
 ## Domain-distribution diagnostic
 

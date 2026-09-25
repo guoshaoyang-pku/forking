@@ -1,0 +1,10 @@
+[nglab] device=cuda injection=input steps=10
+[nglab] fixed val batches: 4 x shape (72, 2048) + 4 freq-val batches
+[nglab] fixed train probe: 4 batches mode=uniform sha256=f99b58fc7387a4a8
+[nglab] grad_accum=1 train_chunks=23976 val_chunks=288
+[nglab] initialized model from /data/home/guoshaoyang/ngram-gap-lab/data/runs_scaling/sftbase_ep20_tri_ckpt_fixed/final_model.pt
+[nglab] model params: 869.9M
+[nglab] step   10 | train 5.0548 | val 4.9456 | gap -0.1092 | epoch 1 | lr_m 0.32 | 3s
+[nglab] probe step   10 | ftrain 4.9785 | fval 4.9456 | fgap -0.0329 | epoch 1
+[nglab] DONE. final gap = -0.1092
+[nglab] output: /data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/smoke/ptlr_magicoder_trainable_q4_s42_smoke10_fixed

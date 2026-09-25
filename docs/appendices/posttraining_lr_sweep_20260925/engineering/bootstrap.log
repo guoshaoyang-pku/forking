@@ -1,0 +1,12 @@
+SMOKE GPU 3
+Traceback (most recent call last):
+  File "/data/home/guoshaoyang/ngram-gap-lab/provisioning/posttraining_lr_20260925/snapshot/code/cluster/run_posttraining_lr_sweep.py", line 111, in <module>
+    if __name__=='__main__':main()
+  File "/data/home/guoshaoyang/ngram-gap-lab/provisioning/posttraining_lr_20260925/snapshot/code/cluster/run_posttraining_lr_sweep.py", line 87, in main
+    assert int(info.split(',')[-2].strip())<150, 'GPU is occupied: '+info
+AssertionError: GPU is occupied: GPU-b4051335-f0cc-2fef-6ec2-197b57f1f0c7, NVIDIA H200, 931, 0
+SMOKE EXIT 1
+SMOKE GPU 7
+{"returncode": 0, "finished_utc": "2026-09-25T06:58:57.126147+00:00", "metrics": {"final_train_loss": 5.054798603057861, "final_val_loss": 4.945607304573059, "final_gap": -0.10919129848480225, "final_fixed_train_loss": 4.9784969091415405, "final_fixed_val_loss": 4.945607304573059, "final_fixed_gap": -0.032889604568481445}, "qc": "pass"}
+SMOKE EXIT 0
+LAUNCHED ptlr_id_trainable_q4_s42_fixed GPU 7 PID 191921

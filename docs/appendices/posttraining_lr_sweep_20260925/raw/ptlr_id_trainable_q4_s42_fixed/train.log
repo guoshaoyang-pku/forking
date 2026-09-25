@@ -1,0 +1,347 @@
+[nglab] device=cuda injection=input steps=1665
+[nglab] fixed val batches: 4 x shape (72, 2048) + 4 freq-val batches
+[nglab] fixed train probe: 4 batches mode=uniform sha256=34d5fe7785b9bd11
+[nglab] grad_accum=1 train_chunks=23976 val_chunks=48240
+[nglab] initialized model from /data/home/guoshaoyang/ngram-gap-lab/data/runs_scaling/sftbase_ep20_tri_ckpt_fixed/final_model.pt
+[nglab] model params: 869.9M
+[nglab] step   10 | train 3.3041 | val 3.3130 | gap +0.0089 | epoch 1 | lr_m 0.32 | 3s
+[nglab] probe step   10 | ftrain 3.3435 | fval 3.3130 | fgap -0.0305 | epoch 1
+[nglab] step   20 | train 3.3110 | val 3.3033 | gap -0.0077 | epoch 1 | lr_m 0.39 | 6s
+[nglab] probe step   20 | ftrain 3.3318 | fval 3.3033 | fgap -0.0285 | epoch 1
+[nglab] step   30 | train 3.3279 | val 3.2967 | gap -0.0312 | epoch 1 | lr_m 0.47 | 9s
+[nglab] probe step   30 | ftrain 3.3223 | fval 3.2967 | fgap -0.0256 | epoch 1
+[nglab] step   40 | train 3.3301 | val 3.2904 | gap -0.0397 | epoch 1 | lr_m 0.55 | 12s
+[nglab] probe step   40 | ftrain 3.3127 | fval 3.2904 | fgap -0.0223 | epoch 1
+[nglab] step   50 | train 3.2892 | val 3.2852 | gap -0.0040 | epoch 1 | lr_m 0.62 | 15s
+[nglab] probe step   50 | ftrain 3.3034 | fval 3.2852 | fgap -0.0181 | epoch 1
+[nglab] step   60 | train 3.3699 | val 3.2803 | gap -0.0896 | epoch 1 | lr_m 0.70 | 18s
+[nglab] probe step   60 | ftrain 3.2952 | fval 3.2803 | fgap -0.0149 | epoch 1
+[nglab] step   70 | train 3.2945 | val 3.2760 | gap -0.0185 | epoch 1 | lr_m 0.77 | 21s
+[nglab] probe step   70 | ftrain 3.2856 | fval 3.2760 | fgap -0.0096 | epoch 1
+[nglab] step   80 | train 3.2798 | val 3.2719 | gap -0.0079 | epoch 1 | lr_m 0.85 | 23s
+[nglab] probe step   80 | ftrain 3.2762 | fval 3.2719 | fgap -0.0043 | epoch 1
+[nglab] step   90 | train 3.2713 | val 3.2675 | gap -0.0038 | epoch 1 | lr_m 0.92 | 26s
+[nglab] probe step   90 | ftrain 3.2669 | fval 3.2675 | fgap +0.0006 | epoch 1
+[nglab] step  100 | train 3.2915 | val 3.2636 | gap -0.0280 | epoch 1 | lr_m 1.00 | 29s
+[nglab] probe step  100 | ftrain 3.2563 | fval 3.2636 | fgap +0.0073 | epoch 1
+[nglab] step  110 | train 3.2057 | val 3.2596 | gap +0.0540 | epoch 1 | lr_m 1.00 | 32s
+[nglab] probe step  110 | ftrain 3.2468 | fval 3.2596 | fgap +0.0129 | epoch 1
+[nglab] step  120 | train 3.2184 | val 3.2580 | gap +0.0396 | epoch 1 | lr_m 1.00 | 35s
+[nglab] probe step  120 | ftrain 3.2392 | fval 3.2580 | fgap +0.0188 | epoch 1
+[nglab] step  130 | train 3.2210 | val 3.2530 | gap +0.0320 | epoch 1 | lr_m 1.00 | 38s
+[nglab] probe step  130 | ftrain 3.2275 | fval 3.2530 | fgap +0.0255 | epoch 1
+[nglab] step  140 | train 3.2270 | val 3.2487 | gap +0.0217 | epoch 1 | lr_m 1.00 | 41s
+[nglab] probe step  140 | ftrain 3.2187 | fval 3.2487 | fgap +0.0300 | epoch 1
+[nglab] step  150 | train 3.3771 | val 3.2450 | gap -0.1321 | epoch 1 | lr_m 1.00 | 44s
+[nglab] probe step  150 | ftrain 3.2093 | fval 3.2450 | fgap +0.0357 | epoch 1
+[nglab] step  160 | train 3.3024 | val 3.2428 | gap -0.0596 | epoch 1 | lr_m 1.00 | 47s
+[nglab] probe step  160 | ftrain 3.2017 | fval 3.2428 | fgap +0.0411 | epoch 1
+[nglab] step  170 | train 3.2994 | val 3.2396 | gap -0.0599 | epoch 1 | lr_m 1.00 | 50s
+[nglab] probe step  170 | ftrain 3.1931 | fval 3.2396 | fgap +0.0465 | epoch 1
+[nglab] step  180 | train 3.2599 | val 3.2360 | gap -0.0239 | epoch 1 | lr_m 1.00 | 53s
+[nglab] probe step  180 | ftrain 3.1843 | fval 3.2360 | fgap +0.0516 | epoch 1
+[nglab] step  190 | train 3.2665 | val 3.2341 | gap -0.0324 | epoch 1 | lr_m 1.00 | 56s
+[nglab] probe step  190 | ftrain 3.1774 | fval 3.2341 | fgap +0.0567 | epoch 1
+[nglab] step  200 | train 3.3051 | val 3.2311 | gap -0.0740 | epoch 1 | lr_m 1.00 | 59s
+[nglab] probe step  200 | ftrain 3.1677 | fval 3.2311 | fgap +0.0634 | epoch 1
+[nglab] step  210 | train 3.2191 | val 3.2284 | gap +0.0093 | epoch 1 | lr_m 1.00 | 62s
+[nglab] probe step  210 | ftrain 3.1627 | fval 3.2284 | fgap +0.0657 | epoch 1
+[nglab] step  220 | train 3.1614 | val 3.2252 | gap +0.0638 | epoch 1 | lr_m 1.00 | 65s
+[nglab] probe step  220 | ftrain 3.1539 | fval 3.2252 | fgap +0.0713 | epoch 1
+[nglab] step  230 | train 3.2359 | val 3.2229 | gap -0.0129 | epoch 1 | lr_m 1.00 | 68s
+[nglab] probe step  230 | ftrain 3.1468 | fval 3.2229 | fgap +0.0761 | epoch 1
+[nglab] step  240 | train 3.2161 | val 3.2205 | gap +0.0043 | epoch 1 | lr_m 1.00 | 71s
+[nglab] probe step  240 | ftrain 3.1405 | fval 3.2205 | fgap +0.0800 | epoch 1
+[nglab] step  250 | train 3.3096 | val 3.2182 | gap -0.0914 | epoch 1 | lr_m 1.00 | 74s
+[nglab] probe step  250 | ftrain 3.1335 | fval 3.2182 | fgap +0.0847 | epoch 1
+[nglab] step  260 | train 3.1545 | val 3.2153 | gap +0.0608 | epoch 1 | lr_m 1.00 | 76s
+[nglab] probe step  260 | ftrain 3.1258 | fval 3.2153 | fgap +0.0895 | epoch 1
+[nglab] step  270 | train 3.2036 | val 3.2135 | gap +0.0100 | epoch 1 | lr_m 1.00 | 79s
+[nglab] probe step  270 | ftrain 3.1208 | fval 3.2135 | fgap +0.0928 | epoch 1
+[nglab] step  280 | train 3.3145 | val 3.2119 | gap -0.1026 | epoch 1 | lr_m 1.00 | 82s
+[nglab] probe step  280 | ftrain 3.1132 | fval 3.2119 | fgap +0.0987 | epoch 1
+[nglab] step  290 | train 3.1945 | val 3.2101 | gap +0.0156 | epoch 1 | lr_m 1.00 | 85s
+[nglab] probe step  290 | ftrain 3.1081 | fval 3.2101 | fgap +0.1020 | epoch 1
+[nglab] step  300 | train 3.1929 | val 3.2076 | gap +0.0147 | epoch 1 | lr_m 1.00 | 88s
+[nglab] probe step  300 | ftrain 3.1006 | fval 3.2076 | fgap +0.1070 | epoch 1
+[nglab] step  310 | train 3.2073 | val 3.2063 | gap -0.0011 | epoch 1 | lr_m 1.00 | 91s
+[nglab] probe step  310 | ftrain 3.0952 | fval 3.2063 | fgap +0.1111 | epoch 1
+[nglab] step  320 | train 3.2159 | val 3.2040 | gap -0.0118 | epoch 1 | lr_m 1.00 | 94s
+[nglab] probe step  320 | ftrain 3.0902 | fval 3.2040 | fgap +0.1138 | epoch 1
+[nglab] step  330 | train 3.2023 | val 3.2024 | gap +0.0002 | epoch 1 | lr_m 1.00 | 97s
+[nglab] probe step  330 | ftrain 3.0831 | fval 3.2024 | fgap +0.1193 | epoch 1
+[nglab] probe step  334 | ftrain 3.0800 | fval 3.2018 | fgap +0.1218 | epoch 2
+[nglab] step  340 | train 3.1555 | val 3.2007 | gap +0.0453 | epoch 2 | lr_m 1.00 | 101s
+[nglab] probe step  340 | ftrain 3.0753 | fval 3.2007 | fgap +0.1254 | epoch 2
+[nglab] step  350 | train 3.2435 | val 3.1989 | gap -0.0447 | epoch 2 | lr_m 1.00 | 104s
+[nglab] probe step  350 | ftrain 3.0697 | fval 3.1989 | fgap +0.1291 | epoch 2
+[nglab] step  360 | train 3.0924 | val 3.1993 | gap +0.1069 | epoch 2 | lr_m 1.00 | 107s
+[nglab] probe step  360 | ftrain 3.0615 | fval 3.1993 | fgap +0.1379 | epoch 2
+[nglab] step  370 | train 3.1481 | val 3.1978 | gap +0.0497 | epoch 2 | lr_m 1.00 | 109s
+[nglab] probe step  370 | ftrain 3.0570 | fval 3.1978 | fgap +0.1408 | epoch 2
+[nglab] step  380 | train 3.1296 | val 3.1981 | gap +0.0685 | epoch 2 | lr_m 1.00 | 112s
+[nglab] probe step  380 | ftrain 3.0507 | fval 3.1981 | fgap +0.1474 | epoch 2
+[nglab] step  390 | train 3.0204 | val 3.1973 | gap +0.1769 | epoch 2 | lr_m 1.00 | 115s
+[nglab] probe step  390 | ftrain 3.0440 | fval 3.1973 | fgap +0.1533 | epoch 2
+[nglab] step  400 | train 3.0562 | val 3.1971 | gap +0.1408 | epoch 2 | lr_m 1.00 | 118s
+[nglab] probe step  400 | ftrain 3.0389 | fval 3.1971 | fgap +0.1581 | epoch 2
+[nglab] step  410 | train 3.1002 | val 3.1980 | gap +0.0979 | epoch 2 | lr_m 1.00 | 121s
+[nglab] probe step  410 | ftrain 3.0321 | fval 3.1980 | fgap +0.1659 | epoch 2
+[nglab] step  420 | train 3.1211 | val 3.1985 | gap +0.0773 | epoch 2 | lr_m 1.00 | 124s
+[nglab] probe step  420 | ftrain 3.0276 | fval 3.1985 | fgap +0.1708 | epoch 2
+[nglab] step  430 | train 3.0750 | val 3.2001 | gap +0.1251 | epoch 2 | lr_m 1.00 | 127s
+[nglab] probe step  430 | ftrain 3.0229 | fval 3.2001 | fgap +0.1772 | epoch 2
+[nglab] step  440 | train 3.0519 | val 3.1998 | gap +0.1479 | epoch 2 | lr_m 1.00 | 130s
+[nglab] probe step  440 | ftrain 3.0186 | fval 3.1998 | fgap +0.1811 | epoch 2
+[nglab] step  450 | train 3.0462 | val 3.2014 | gap +0.1552 | epoch 2 | lr_m 1.00 | 133s
+[nglab] probe step  450 | ftrain 3.0145 | fval 3.2014 | fgap +0.1869 | epoch 2
+[nglab] step  460 | train 3.0319 | val 3.1992 | gap +0.1673 | epoch 2 | lr_m 1.00 | 136s
+[nglab] probe step  460 | ftrain 3.0089 | fval 3.1992 | fgap +0.1903 | epoch 2
+[nglab] step  470 | train 3.0781 | val 3.1999 | gap +0.1218 | epoch 2 | lr_m 1.00 | 139s
+[nglab] probe step  470 | ftrain 3.0033 | fval 3.1999 | fgap +0.1966 | epoch 2
+[nglab] step  480 | train 3.0772 | val 3.2000 | gap +0.1228 | epoch 2 | lr_m 1.00 | 142s
+[nglab] probe step  480 | ftrain 2.9989 | fval 3.2000 | fgap +0.2011 | epoch 2
+[nglab] step  490 | train 3.1015 | val 3.2011 | gap +0.0996 | epoch 2 | lr_m 1.00 | 145s
+[nglab] probe step  490 | ftrain 2.9934 | fval 3.2011 | fgap +0.2076 | epoch 2
+[nglab] step  500 | train 3.0911 | val 3.2001 | gap +0.1090 | epoch 2 | lr_m 1.00 | 148s
+[nglab] probe step  500 | ftrain 2.9883 | fval 3.2001 | fgap +0.2118 | epoch 2
+[nglab] step  510 | train 3.0699 | val 3.1999 | gap +0.1300 | epoch 2 | lr_m 1.00 | 151s
+[nglab] probe step  510 | ftrain 2.9856 | fval 3.1999 | fgap +0.2143 | epoch 2
+[nglab] step  520 | train 3.0402 | val 3.1999 | gap +0.1596 | epoch 2 | lr_m 1.00 | 154s
+[nglab] probe step  520 | ftrain 2.9811 | fval 3.1999 | fgap +0.2187 | epoch 2
+[nglab] step  530 | train 3.1037 | val 3.1986 | gap +0.0949 | epoch 2 | lr_m 1.00 | 157s
+[nglab] probe step  530 | ftrain 2.9766 | fval 3.1986 | fgap +0.2220 | epoch 2
+[nglab] step  540 | train 3.0970 | val 3.1995 | gap +0.1025 | epoch 2 | lr_m 1.00 | 160s
+[nglab] probe step  540 | ftrain 2.9717 | fval 3.1995 | fgap +0.2278 | epoch 2
+[nglab] step  550 | train 2.9806 | val 3.1988 | gap +0.2182 | epoch 2 | lr_m 1.00 | 163s
+[nglab] probe step  550 | ftrain 2.9665 | fval 3.1988 | fgap +0.2323 | epoch 2
+[nglab] step  560 | train 3.1378 | val 3.1977 | gap +0.0599 | epoch 2 | lr_m 1.00 | 166s
+[nglab] probe step  560 | ftrain 2.9640 | fval 3.1977 | fgap +0.2337 | epoch 2
+[nglab] step  570 | train 3.0659 | val 3.1982 | gap +0.1323 | epoch 2 | lr_m 1.00 | 168s
+[nglab] probe step  570 | ftrain 2.9583 | fval 3.1982 | fgap +0.2399 | epoch 2
+[nglab] step  580 | train 3.0166 | val 3.1977 | gap +0.1812 | epoch 2 | lr_m 1.00 | 171s
+[nglab] probe step  580 | ftrain 2.9559 | fval 3.1977 | fgap +0.2419 | epoch 2
+[nglab] step  590 | train 3.1057 | val 3.1981 | gap +0.0925 | epoch 2 | lr_m 1.00 | 174s
+[nglab] probe step  590 | ftrain 2.9494 | fval 3.1981 | fgap +0.2488 | epoch 2
+[nglab] step  600 | train 2.9808 | val 3.1987 | gap +0.2179 | epoch 2 | lr_m 1.00 | 177s
+[nglab] probe step  600 | ftrain 2.9447 | fval 3.1987 | fgap +0.2541 | epoch 2
+[nglab] step  610 | train 2.9819 | val 3.1982 | gap +0.2163 | epoch 2 | lr_m 1.00 | 180s
+[nglab] probe step  610 | ftrain 2.9405 | fval 3.1982 | fgap +0.2577 | epoch 2
+[nglab] step  620 | train 3.1279 | val 3.1980 | gap +0.0700 | epoch 2 | lr_m 1.00 | 183s
+[nglab] probe step  620 | ftrain 2.9382 | fval 3.1980 | fgap +0.2598 | epoch 2
+[nglab] step  630 | train 3.0860 | val 3.1979 | gap +0.1119 | epoch 2 | lr_m 1.00 | 186s
+[nglab] probe step  630 | ftrain 2.9337 | fval 3.1979 | fgap +0.2642 | epoch 2
+[nglab] step  640 | train 3.0919 | val 3.1985 | gap +0.1067 | epoch 2 | lr_m 1.00 | 189s
+[nglab] probe step  640 | ftrain 2.9283 | fval 3.1985 | fgap +0.2703 | epoch 2
+[nglab] step  650 | train 3.0432 | val 3.1965 | gap +0.1533 | epoch 2 | lr_m 1.00 | 192s
+[nglab] probe step  650 | ftrain 2.9236 | fval 3.1965 | fgap +0.2728 | epoch 2
+[nglab] step  660 | train 3.0560 | val 3.1956 | gap +0.1396 | epoch 2 | lr_m 1.00 | 195s
+[nglab] probe step  660 | ftrain 2.9207 | fval 3.1956 | fgap +0.2749 | epoch 2
+[nglab] probe step  667 | ftrain 2.9157 | fval 3.1967 | fgap +0.2810 | epoch 3
+[nglab] step  670 | train 3.0469 | val 3.1982 | gap +0.1513 | epoch 3 | lr_m 1.00 | 199s
+[nglab] probe step  670 | ftrain 2.9136 | fval 3.1982 | fgap +0.2846 | epoch 3
+[nglab] step  680 | train 3.0033 | val 3.2006 | gap +0.1973 | epoch 3 | lr_m 1.00 | 202s
+[nglab] probe step  680 | ftrain 2.9066 | fval 3.2006 | fgap +0.2940 | epoch 3
+[nglab] step  690 | train 2.9986 | val 3.2005 | gap +0.2018 | epoch 3 | lr_m 1.00 | 204s
+[nglab] probe step  690 | ftrain 2.9028 | fval 3.2005 | fgap +0.2977 | epoch 3
+[nglab] step  700 | train 3.0808 | val 3.2041 | gap +0.1233 | epoch 3 | lr_m 1.00 | 207s
+[nglab] probe step  700 | ftrain 2.8977 | fval 3.2041 | fgap +0.3064 | epoch 3
+[nglab] step  710 | train 2.9608 | val 3.2061 | gap +0.2453 | epoch 3 | lr_m 1.00 | 210s
+[nglab] probe step  710 | ftrain 2.8922 | fval 3.2061 | fgap +0.3138 | epoch 3
+[nglab] step  720 | train 3.0459 | val 3.2067 | gap +0.1608 | epoch 3 | lr_m 1.00 | 213s
+[nglab] probe step  720 | ftrain 2.8890 | fval 3.2067 | fgap +0.3176 | epoch 3
+[nglab] step  730 | train 2.8468 | val 3.2107 | gap +0.3639 | epoch 3 | lr_m 1.00 | 216s
+[nglab] probe step  730 | ftrain 2.8817 | fval 3.2107 | fgap +0.3290 | epoch 3
+[nglab] step  740 | train 3.0056 | val 3.2092 | gap +0.2037 | epoch 3 | lr_m 1.00 | 219s
+[nglab] probe step  740 | ftrain 2.8773 | fval 3.2092 | fgap +0.3320 | epoch 3
+[nglab] step  750 | train 2.9242 | val 3.2123 | gap +0.2881 | epoch 3 | lr_m 1.00 | 222s
+[nglab] probe step  750 | ftrain 2.8730 | fval 3.2123 | fgap +0.3393 | epoch 3
+[nglab] step  760 | train 2.9270 | val 3.2165 | gap +0.2895 | epoch 3 | lr_m 1.00 | 225s
+[nglab] probe step  760 | ftrain 2.8675 | fval 3.2165 | fgap +0.3490 | epoch 3
+[nglab] step  770 | train 2.8804 | val 3.2168 | gap +0.3364 | epoch 3 | lr_m 1.00 | 228s
+[nglab] probe step  770 | ftrain 2.8659 | fval 3.2168 | fgap +0.3509 | epoch 3
+[nglab] step  780 | train 2.9019 | val 3.2169 | gap +0.3150 | epoch 3 | lr_m 1.00 | 231s
+[nglab] probe step  780 | ftrain 2.8655 | fval 3.2169 | fgap +0.3515 | epoch 3
+[nglab] step  790 | train 2.8775 | val 3.2198 | gap +0.3424 | epoch 3 | lr_m 1.00 | 234s
+[nglab] probe step  790 | ftrain 2.8569 | fval 3.2198 | fgap +0.3629 | epoch 3
+[nglab] step  800 | train 2.8429 | val 3.2205 | gap +0.3776 | epoch 3 | lr_m 1.00 | 237s
+[nglab] probe step  800 | ftrain 2.8523 | fval 3.2205 | fgap +0.3682 | epoch 3
+[nglab] step  810 | train 3.0026 | val 3.2246 | gap +0.2220 | epoch 3 | lr_m 1.00 | 240s
+[nglab] probe step  810 | ftrain 2.8471 | fval 3.2246 | fgap +0.3775 | epoch 3
+[nglab] step  820 | train 2.9628 | val 3.2214 | gap +0.2586 | epoch 3 | lr_m 1.00 | 243s
+[nglab] probe step  820 | ftrain 2.8430 | fval 3.2214 | fgap +0.3784 | epoch 3
+[nglab] step  830 | train 2.9218 | val 3.2258 | gap +0.3040 | epoch 3 | lr_m 1.00 | 246s
+[nglab] probe step  830 | ftrain 2.8390 | fval 3.2258 | fgap +0.3868 | epoch 3
+[nglab] step  840 | train 2.8597 | val 3.2269 | gap +0.3672 | epoch 3 | lr_m 1.00 | 249s
+[nglab] probe step  840 | ftrain 2.8347 | fval 3.2269 | fgap +0.3922 | epoch 3
+[nglab] step  850 | train 2.9421 | val 3.2251 | gap +0.2830 | epoch 3 | lr_m 1.00 | 252s
+[nglab] probe step  850 | ftrain 2.8322 | fval 3.2251 | fgap +0.3929 | epoch 3
+[nglab] step  860 | train 2.8701 | val 3.2290 | gap +0.3589 | epoch 3 | lr_m 1.00 | 255s
+[nglab] probe step  860 | ftrain 2.8274 | fval 3.2290 | fgap +0.4016 | epoch 3
+[nglab] step  870 | train 2.9726 | val 3.2219 | gap +0.2493 | epoch 3 | lr_m 1.00 | 258s
+[nglab] probe step  870 | ftrain 2.8248 | fval 3.2219 | fgap +0.3972 | epoch 3
+[nglab] step  880 | train 2.8781 | val 3.2239 | gap +0.3458 | epoch 3 | lr_m 1.00 | 261s
+[nglab] probe step  880 | ftrain 2.8192 | fval 3.2239 | fgap +0.4048 | epoch 3
+[nglab] step  890 | train 2.8048 | val 3.2237 | gap +0.4189 | epoch 3 | lr_m 1.00 | 264s
+[nglab] probe step  890 | ftrain 2.8146 | fval 3.2237 | fgap +0.4091 | epoch 3
+[nglab] step  900 | train 2.9289 | val 3.2241 | gap +0.2952 | epoch 3 | lr_m 1.00 | 266s
+[nglab] probe step  900 | ftrain 2.8131 | fval 3.2241 | fgap +0.4110 | epoch 3
+[nglab] step  910 | train 2.9194 | val 3.2265 | gap +0.3071 | epoch 3 | lr_m 1.00 | 269s
+[nglab] probe step  910 | ftrain 2.8076 | fval 3.2265 | fgap +0.4189 | epoch 3
+[nglab] step  920 | train 2.9750 | val 3.2293 | gap +0.2543 | epoch 3 | lr_m 1.00 | 272s
+[nglab] probe step  920 | ftrain 2.8028 | fval 3.2293 | fgap +0.4265 | epoch 3
+[nglab] step  930 | train 2.8772 | val 3.2247 | gap +0.3474 | epoch 3 | lr_m 1.00 | 275s
+[nglab] probe step  930 | ftrain 2.8008 | fval 3.2247 | fgap +0.4239 | epoch 3
+[nglab] step  940 | train 2.9309 | val 3.2278 | gap +0.2969 | epoch 3 | lr_m 1.00 | 278s
+[nglab] probe step  940 | ftrain 2.7945 | fval 3.2278 | fgap +0.4333 | epoch 3
+[nglab] step  950 | train 2.9257 | val 3.2240 | gap +0.2982 | epoch 3 | lr_m 1.00 | 281s
+[nglab] probe step  950 | ftrain 2.7924 | fval 3.2240 | fgap +0.4316 | epoch 3
+[nglab] step  960 | train 2.8261 | val 3.2284 | gap +0.4023 | epoch 3 | lr_m 1.00 | 284s
+[nglab] probe step  960 | ftrain 2.7875 | fval 3.2284 | fgap +0.4408 | epoch 3
+[nglab] step  970 | train 2.9402 | val 3.2263 | gap +0.2861 | epoch 3 | lr_m 1.00 | 287s
+[nglab] probe step  970 | ftrain 2.7845 | fval 3.2263 | fgap +0.4418 | epoch 3
+[nglab] step  980 | train 2.9243 | val 3.2319 | gap +0.3077 | epoch 3 | lr_m 1.00 | 290s
+[nglab] probe step  980 | ftrain 2.7793 | fval 3.2319 | fgap +0.4526 | epoch 3
+[nglab] step  990 | train 2.9317 | val 3.2353 | gap +0.3036 | epoch 3 | lr_m 1.00 | 293s
+[nglab] probe step  990 | ftrain 2.7733 | fval 3.2353 | fgap +0.4620 | epoch 3
+[nglab] step 1000 | train 2.8942 | val 3.2285 | gap +0.3343 | epoch 4 | lr_m 1.00 | 296s
+[nglab] probe step 1000 | ftrain 2.7712 | fval 3.2285 | fgap +0.4573 | epoch 4
+[nglab] step 1010 | train 2.8947 | val 3.2345 | gap +0.3397 | epoch 4 | lr_m 1.00 | 299s
+[nglab] probe step 1010 | ftrain 2.7642 | fval 3.2345 | fgap +0.4702 | epoch 4
+[nglab] step 1020 | train 2.8124 | val 3.2396 | gap +0.4272 | epoch 4 | lr_m 1.00 | 302s
+[nglab] probe step 1020 | ftrain 2.7582 | fval 3.2396 | fgap +0.4814 | epoch 4
+[nglab] step 1030 | train 2.8281 | val 3.2406 | gap +0.4125 | epoch 4 | lr_m 1.00 | 305s
+[nglab] probe step 1030 | ftrain 2.7546 | fval 3.2406 | fgap +0.4860 | epoch 4
+[nglab] step 1040 | train 2.7658 | val 3.2483 | gap +0.4825 | epoch 4 | lr_m 1.00 | 308s
+[nglab] probe step 1040 | ftrain 2.7475 | fval 3.2483 | fgap +0.5007 | epoch 4
+[nglab] step 1050 | train 2.8176 | val 3.2529 | gap +0.4353 | epoch 4 | lr_m 1.00 | 311s
+[nglab] probe step 1050 | ftrain 2.7450 | fval 3.2529 | fgap +0.5079 | epoch 4
+[nglab] step 1060 | train 2.7831 | val 3.2566 | gap +0.4736 | epoch 4 | lr_m 1.00 | 314s
+[nglab] probe step 1060 | ftrain 2.7386 | fval 3.2566 | fgap +0.5180 | epoch 4
+[nglab] step 1070 | train 2.8141 | val 3.2583 | gap +0.4443 | epoch 4 | lr_m 1.00 | 317s
+[nglab] probe step 1070 | ftrain 2.7337 | fval 3.2583 | fgap +0.5246 | epoch 4
+[nglab] step 1080 | train 2.7887 | val 3.2604 | gap +0.4717 | epoch 4 | lr_m 1.00 | 320s
+[nglab] probe step 1080 | ftrain 2.7305 | fval 3.2604 | fgap +0.5298 | epoch 4
+[nglab] step 1090 | train 2.8137 | val 3.2672 | gap +0.4535 | epoch 4 | lr_m 1.00 | 323s
+[nglab] probe step 1090 | ftrain 2.7276 | fval 3.2672 | fgap +0.5397 | epoch 4
+[nglab] step 1100 | train 2.8323 | val 3.2714 | gap +0.4391 | epoch 4 | lr_m 1.00 | 326s
+[nglab] probe step 1100 | ftrain 2.7235 | fval 3.2714 | fgap +0.5479 | epoch 4
+[nglab] step 1110 | train 2.7537 | val 3.2782 | gap +0.5245 | epoch 4 | lr_m 1.00 | 329s
+[nglab] probe step 1110 | ftrain 2.7203 | fval 3.2782 | fgap +0.5579 | epoch 4
+[nglab] step 1120 | train 2.7413 | val 3.2713 | gap +0.5300 | epoch 4 | lr_m 1.00 | 332s
+[nglab] probe step 1120 | ftrain 2.7128 | fval 3.2713 | fgap +0.5585 | epoch 4
+[nglab] step 1130 | train 2.6738 | val 3.2726 | gap +0.5989 | epoch 4 | lr_m 1.00 | 334s
+[nglab] probe step 1130 | ftrain 2.7057 | fval 3.2726 | fgap +0.5670 | epoch 4
+[nglab] step 1140 | train 2.7771 | val 3.2689 | gap +0.4918 | epoch 4 | lr_m 1.00 | 337s
+[nglab] probe step 1140 | ftrain 2.7049 | fval 3.2689 | fgap +0.5640 | epoch 4
+[nglab] step 1150 | train 2.7921 | val 3.2780 | gap +0.4859 | epoch 4 | lr_m 1.00 | 340s
+[nglab] probe step 1150 | ftrain 2.6981 | fval 3.2780 | fgap +0.5799 | epoch 4
+[nglab] step 1160 | train 2.6975 | val 3.2680 | gap +0.5705 | epoch 4 | lr_m 1.00 | 343s
+[nglab] probe step 1160 | ftrain 2.6953 | fval 3.2680 | fgap +0.5727 | epoch 4
+[nglab] step 1170 | train 2.7691 | val 3.2749 | gap +0.5058 | epoch 4 | lr_m 1.00 | 346s
+[nglab] probe step 1170 | ftrain 2.6927 | fval 3.2749 | fgap +0.5823 | epoch 4
+[nglab] step 1180 | train 2.7989 | val 3.2750 | gap +0.4761 | epoch 4 | lr_m 1.00 | 349s
+[nglab] probe step 1180 | ftrain 2.6891 | fval 3.2750 | fgap +0.5860 | epoch 4
+[nglab] step 1190 | train 2.7397 | val 3.2916 | gap +0.5518 | epoch 4 | lr_m 1.00 | 352s
+[nglab] probe step 1190 | ftrain 2.6863 | fval 3.2916 | fgap +0.6053 | epoch 4
+[nglab] step 1200 | train 2.7886 | val 3.2917 | gap +0.5030 | epoch 4 | lr_m 1.00 | 355s
+[nglab] probe step 1200 | ftrain 2.6783 | fval 3.2917 | fgap +0.6134 | epoch 4
+[nglab] step 1210 | train 2.7946 | val 3.2784 | gap +0.4837 | epoch 4 | lr_m 1.00 | 358s
+[nglab] probe step 1210 | ftrain 2.6800 | fval 3.2784 | fgap +0.5984 | epoch 4
+[nglab] step 1220 | train 2.7490 | val 3.2865 | gap +0.5375 | epoch 4 | lr_m 1.00 | 361s
+[nglab] probe step 1220 | ftrain 2.6730 | fval 3.2865 | fgap +0.6134 | epoch 4
+[nglab] step 1230 | train 2.7382 | val 3.2840 | gap +0.5459 | epoch 4 | lr_m 1.00 | 364s
+[nglab] probe step 1230 | ftrain 2.6663 | fval 3.2840 | fgap +0.6178 | epoch 4
+[nglab] step 1240 | train 2.7796 | val 3.2762 | gap +0.4965 | epoch 4 | lr_m 1.00 | 367s
+[nglab] probe step 1240 | ftrain 2.6673 | fval 3.2762 | fgap +0.6088 | epoch 4
+[nglab] step 1250 | train 2.7627 | val 3.2808 | gap +0.5180 | epoch 4 | lr_m 1.00 | 370s
+[nglab] probe step 1250 | ftrain 2.6601 | fval 3.2808 | fgap +0.6207 | epoch 4
+[nglab] step 1260 | train 2.7681 | val 3.2905 | gap +0.5225 | epoch 4 | lr_m 1.00 | 373s
+[nglab] probe step 1260 | ftrain 2.6563 | fval 3.2905 | fgap +0.6342 | epoch 4
+[nglab] step 1270 | train 2.7472 | val 3.2797 | gap +0.5325 | epoch 4 | lr_m 1.00 | 376s
+[nglab] probe step 1270 | ftrain 2.6533 | fval 3.2797 | fgap +0.6264 | epoch 4
+[nglab] step 1280 | train 2.6915 | val 3.2928 | gap +0.6014 | epoch 4 | lr_m 1.00 | 379s
+[nglab] probe step 1280 | ftrain 2.6498 | fval 3.2928 | fgap +0.6430 | epoch 4
+[nglab] step 1290 | train 2.7675 | val 3.2828 | gap +0.5153 | epoch 4 | lr_m 1.00 | 382s
+[nglab] probe step 1290 | ftrain 2.6486 | fval 3.2828 | fgap +0.6341 | epoch 4
+[nglab] step 1300 | train 2.6707 | val 3.2920 | gap +0.6213 | epoch 4 | lr_m 1.00 | 385s
+[nglab] probe step 1300 | ftrain 2.6400 | fval 3.2920 | fgap +0.6520 | epoch 4
+[nglab] step 1310 | train 2.7702 | val 3.2837 | gap +0.5135 | epoch 4 | lr_m 1.00 | 388s
+[nglab] probe step 1310 | ftrain 2.6387 | fval 3.2837 | fgap +0.6449 | epoch 4
+[nglab] step 1320 | train 2.7173 | val 3.2977 | gap +0.5804 | epoch 4 | lr_m 1.00 | 391s
+[nglab] probe step 1320 | ftrain 2.6336 | fval 3.2977 | fgap +0.6641 | epoch 4
+[nglab] step 1330 | train 2.7377 | val 3.2921 | gap +0.5544 | epoch 4 | lr_m 1.00 | 394s
+[nglab] probe step 1330 | ftrain 2.6336 | fval 3.2921 | fgap +0.6585 | epoch 4
+[nglab] probe step 1333 | ftrain 2.6284 | fval 3.2870 | fgap +0.6586 | epoch 5
+[nglab] step 1340 | train 2.7514 | val 3.3009 | gap +0.5495 | epoch 5 | lr_m 1.00 | 397s
+[nglab] probe step 1340 | ftrain 2.6240 | fval 3.3009 | fgap +0.6769 | epoch 5
+[nglab] step 1350 | train 2.7488 | val 3.2949 | gap +0.5461 | epoch 5 | lr_m 1.00 | 400s
+[nglab] probe step 1350 | ftrain 2.6183 | fval 3.2949 | fgap +0.6767 | epoch 5
+[nglab] step 1360 | train 2.6930 | val 3.3039 | gap +0.6108 | epoch 5 | lr_m 1.00 | 403s
+[nglab] probe step 1360 | ftrain 2.6123 | fval 3.3039 | fgap +0.6915 | epoch 5
+[nglab] step 1370 | train 2.6502 | val 3.3120 | gap +0.6618 | epoch 5 | lr_m 1.00 | 406s
+[nglab] probe step 1370 | ftrain 2.6073 | fval 3.3120 | fgap +0.7047 | epoch 5
+[nglab] step 1380 | train 2.6575 | val 3.3185 | gap +0.6610 | epoch 5 | lr_m 1.00 | 409s
+[nglab] probe step 1380 | ftrain 2.5994 | fval 3.3185 | fgap +0.7191 | epoch 5
+[nglab] step 1390 | train 2.7119 | val 3.3272 | gap +0.6153 | epoch 5 | lr_m 1.00 | 412s
+[nglab] probe step 1390 | ftrain 2.6021 | fval 3.3272 | fgap +0.7251 | epoch 5
+[nglab] step 1400 | train 2.6364 | val 3.3295 | gap +0.6931 | epoch 5 | lr_m 1.00 | 415s
+[nglab] probe step 1400 | ftrain 2.5950 | fval 3.3295 | fgap +0.7345 | epoch 5
+[nglab] step 1410 | train 2.6359 | val 3.3395 | gap +0.7036 | epoch 5 | lr_m 1.00 | 418s
+[nglab] probe step 1410 | ftrain 2.5870 | fval 3.3395 | fgap +0.7525 | epoch 5
+[nglab] step 1420 | train 2.6477 | val 3.3346 | gap +0.6869 | epoch 5 | lr_m 1.00 | 421s
+[nglab] probe step 1420 | ftrain 2.5858 | fval 3.3346 | fgap +0.7488 | epoch 5
+[nglab] step 1430 | train 2.6750 | val 3.3576 | gap +0.6827 | epoch 5 | lr_m 1.00 | 424s
+[nglab] probe step 1430 | ftrain 2.5847 | fval 3.3576 | fgap +0.7729 | epoch 5
+[nglab] step 1440 | train 2.6778 | val 3.3499 | gap +0.6722 | epoch 5 | lr_m 1.00 | 427s
+[nglab] probe step 1440 | ftrain 2.5774 | fval 3.3499 | fgap +0.7726 | epoch 5
+[nglab] step 1450 | train 2.6350 | val 3.3634 | gap +0.7284 | epoch 5 | lr_m 1.00 | 430s
+[nglab] probe step 1450 | ftrain 2.5742 | fval 3.3634 | fgap +0.7892 | epoch 5
+[nglab] step 1460 | train 2.5625 | val 3.3539 | gap +0.7915 | epoch 5 | lr_m 1.00 | 432s
+[nglab] probe step 1460 | ftrain 2.5698 | fval 3.3539 | fgap +0.7841 | epoch 5
+[nglab] step 1470 | train 2.6587 | val 3.3440 | gap +0.6852 | epoch 5 | lr_m 1.00 | 435s
+[nglab] probe step 1470 | ftrain 2.5628 | fval 3.3440 | fgap +0.7812 | epoch 5
+[nglab] step 1480 | train 2.6417 | val 3.3509 | gap +0.7092 | epoch 5 | lr_m 1.00 | 438s
+[nglab] probe step 1480 | ftrain 2.5636 | fval 3.3509 | fgap +0.7874 | epoch 5
+[nglab] step 1490 | train 2.6267 | val 3.3681 | gap +0.7414 | epoch 5 | lr_m 1.00 | 441s
+[nglab] probe step 1490 | ftrain 2.5582 | fval 3.3681 | fgap +0.8099 | epoch 5
+[nglab] step 1500 | train 2.6679 | val 3.3383 | gap +0.6704 | epoch 5 | lr_m 1.00 | 444s
+[nglab] probe step 1500 | ftrain 2.5573 | fval 3.3383 | fgap +0.7811 | epoch 5
+[nglab] step 1510 | train 2.5413 | val 3.3498 | gap +0.8085 | epoch 5 | lr_m 1.00 | 447s
+[nglab] probe step 1510 | ftrain 2.5528 | fval 3.3498 | fgap +0.7970 | epoch 5
+[nglab] step 1520 | train 2.6617 | val 3.3541 | gap +0.6924 | epoch 5 | lr_m 1.00 | 450s
+[nglab] probe step 1520 | ftrain 2.5483 | fval 3.3541 | fgap +0.8058 | epoch 5
+[nglab] step 1530 | train 2.6525 | val 3.3615 | gap +0.7090 | epoch 5 | lr_m 1.00 | 453s
+[nglab] probe step 1530 | ftrain 2.5498 | fval 3.3615 | fgap +0.8117 | epoch 5
+[nglab] step 1540 | train 2.6537 | val 3.3572 | gap +0.7034 | epoch 5 | lr_m 1.00 | 456s
+[nglab] probe step 1540 | ftrain 2.5372 | fval 3.3572 | fgap +0.8200 | epoch 5
+[nglab] step 1550 | train 2.7245 | val 3.3463 | gap +0.6218 | epoch 5 | lr_m 1.00 | 459s
+[nglab] probe step 1550 | ftrain 2.5365 | fval 3.3463 | fgap +0.8098 | epoch 5
+[nglab] step 1560 | train 2.6405 | val 3.3657 | gap +0.7252 | epoch 5 | lr_m 1.00 | 462s
+[nglab] probe step 1560 | ftrain 2.5270 | fval 3.3657 | fgap +0.8387 | epoch 5
+[nglab] step 1570 | train 2.6097 | val 3.3475 | gap +0.7378 | epoch 5 | lr_m 1.00 | 465s
+[nglab] probe step 1570 | ftrain 2.5276 | fval 3.3475 | fgap +0.8199 | epoch 5
+[nglab] step 1580 | train 2.6315 | val 3.3586 | gap +0.7271 | epoch 5 | lr_m 1.00 | 468s
+[nglab] probe step 1580 | ftrain 2.5257 | fval 3.3586 | fgap +0.8329 | epoch 5
+[nglab] step 1590 | train 2.7087 | val 3.3632 | gap +0.6545 | epoch 5 | lr_m 1.00 | 471s
+[nglab] probe step 1590 | ftrain 2.5171 | fval 3.3632 | fgap +0.8461 | epoch 5
+[nglab] step 1600 | train 2.6137 | val 3.3587 | gap +0.7450 | epoch 5 | lr_m 1.00 | 474s
+[nglab] probe step 1600 | ftrain 2.5120 | fval 3.3587 | fgap +0.8467 | epoch 5
+[nglab] step 1610 | train 2.5949 | val 3.3770 | gap +0.7820 | epoch 5 | lr_m 1.00 | 477s
+[nglab] probe step 1610 | ftrain 2.5078 | fval 3.3770 | fgap +0.8692 | epoch 5
+[nglab] step 1620 | train 2.6230 | val 3.3715 | gap +0.7485 | epoch 5 | lr_m 1.00 | 480s
+[nglab] probe step 1620 | ftrain 2.5080 | fval 3.3715 | fgap +0.8635 | epoch 5
+[nglab] step 1630 | train 2.5747 | val 3.3581 | gap +0.7834 | epoch 5 | lr_m 1.00 | 483s
+[nglab] probe step 1630 | ftrain 2.5031 | fval 3.3581 | fgap +0.8550 | epoch 5
+[nglab] step 1640 | train 2.6251 | val 3.3790 | gap +0.7539 | epoch 5 | lr_m 1.00 | 486s
+[nglab] probe step 1640 | ftrain 2.4988 | fval 3.3790 | fgap +0.8802 | epoch 5
+[nglab] step 1650 | train 2.6461 | val 3.3679 | gap +0.7218 | epoch 5 | lr_m 1.00 | 489s
+[nglab] probe step 1650 | ftrain 2.4909 | fval 3.3679 | fgap +0.8771 | epoch 5
+[nglab] step 1660 | train 2.6296 | val 3.3731 | gap +0.7435 | epoch 5 | lr_m 1.00 | 492s
+[nglab] probe step 1660 | ftrain 2.4890 | fval 3.3731 | fgap +0.8841 | epoch 5
+[nglab] step 1665 | train 2.5896 | val 3.3751 | gap +0.7855 | epoch 5 | lr_m 1.00 | 493s
+[nglab] probe step 1665 | ftrain 2.4935 | fval 3.3751 | fgap +0.8815 | epoch 5
+[nglab] saved final_model.pt (869.9M params)
+[nglab] saved probe_tokens.npz (fixed train probe chunk (4, 72, 2049), sha=34d5fe7785b9bd11)
+[nglab] DONE. final gap = +0.7855
+[nglab] output: /data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925/data/runs_fixed/ptlr_id_trainable_q4_s42_fixed

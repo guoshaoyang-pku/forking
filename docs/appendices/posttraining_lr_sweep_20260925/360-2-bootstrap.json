@@ -1,6 +1,8 @@
 {
   "pid": 191092,
   "root": "/data/shared/guoshaoyang/ngram-gap-lab/posttraining_lr_20260925",
-  "state": "waiting_for_idle_H200",
-  "code_verified": true
+  "state": "complete",
+  "code_verified": true,
+  "formal_runs": 24,
+  "qc_pass": 24
 }

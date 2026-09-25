@@ -1,0 +1,292 @@
+{
+  "complete": true,
+  "runs": [
+    {
+      "run_id": "ptlr_id_trainable_q4_s42_fixed",
+      "probe_sha256": "34d5fe7785b9bd11",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169
+    },
+    {
+      "run_id": "ptlr_id_trainable_q10_s42_fixed",
+      "probe_sha256": "34d5fe7785b9bd11",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169
+    },
+    {
+      "run_id": "ptlr_id_frozen_q4_s42_fixed",
+      "probe_sha256": "34d5fe7785b9bd11",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169,
+      "table_bitwise_equal_to_initial": true,
+      "backbone_changed": true,
+      "table_keys": [
+        "trigram_ves.1.0.weight"
+      ]
+    },
+    {
+      "run_id": "ptlr_id_frozen_q10_s42_fixed",
+      "probe_sha256": "34d5fe7785b9bd11",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169,
+      "table_bitwise_equal_to_initial": true,
+      "backbone_changed": true,
+      "table_keys": [
+        "trigram_ves.1.0.weight"
+      ]
+    },
+    {
+      "run_id": "ptlr_id_nogram_q4_s42_fixed",
+      "probe_sha256": "34d5fe7785b9bd11",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 258313247
+    },
+    {
+      "run_id": "ptlr_id_nogram_q10_s42_fixed",
+      "probe_sha256": "34d5fe7785b9bd11",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 258313247
+    },
+    {
+      "run_id": "ptlr_magicoder_trainable_q4_s42_fixed",
+      "probe_sha256": "f99b58fc7387a4a8",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169
+    },
+    {
+      "run_id": "ptlr_magicoder_trainable_q10_s42_fixed",
+      "probe_sha256": "f99b58fc7387a4a8",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169
+    },
+    {
+      "run_id": "ptlr_magicoder_frozen_q4_s42_fixed",
+      "probe_sha256": "f99b58fc7387a4a8",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169,
+      "table_bitwise_equal_to_initial": true,
+      "backbone_changed": true,
+      "table_keys": [
+        "trigram_ves.1.0.weight"
+      ]
+    },
+    {
+      "run_id": "ptlr_magicoder_frozen_q10_s42_fixed",
+      "probe_sha256": "f99b58fc7387a4a8",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169,
+      "table_bitwise_equal_to_initial": true,
+      "backbone_changed": true,
+      "table_keys": [
+        "trigram_ves.1.0.weight"
+      ]
+    },
+    {
+      "run_id": "ptlr_magicoder_nogram_q4_s42_fixed",
+      "probe_sha256": "f99b58fc7387a4a8",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 258313247
+    },
+    {
+      "run_id": "ptlr_magicoder_nogram_q10_s42_fixed",
+      "probe_sha256": "f99b58fc7387a4a8",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 258313247
+    },
+    {
+      "run_id": "ptlr_openr1_trainable_q4_s42_fixed",
+      "probe_sha256": "7729c9a80ff730fb",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169
+    },
+    {
+      "run_id": "ptlr_openr1_trainable_q10_s42_fixed",
+      "probe_sha256": "7729c9a80ff730fb",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169
+    },
+    {
+      "run_id": "ptlr_openr1_frozen_q4_s42_fixed",
+      "probe_sha256": "7729c9a80ff730fb",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169,
+      "table_bitwise_equal_to_initial": true,
+      "backbone_changed": true,
+      "table_keys": [
+        "trigram_ves.1.0.weight"
+      ]
+    },
+    {
+      "run_id": "ptlr_openr1_frozen_q10_s42_fixed",
+      "probe_sha256": "7729c9a80ff730fb",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169,
+      "table_bitwise_equal_to_initial": true,
+      "backbone_changed": true,
+      "table_keys": [
+        "trigram_ves.1.0.weight"
+      ]
+    },
+    {
+      "run_id": "ptlr_openr1_nogram_q4_s42_fixed",
+      "probe_sha256": "7729c9a80ff730fb",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 258313247
+    },
+    {
+      "run_id": "ptlr_openr1_nogram_q10_s42_fixed",
+      "probe_sha256": "7729c9a80ff730fb",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 258313247
+    },
+    {
+      "run_id": "ptlr_rlvr_trainable_q4_s42_fixed",
+      "probe_sha256": "8b5601db6724c89c",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169
+    },
+    {
+      "run_id": "ptlr_rlvr_trainable_q10_s42_fixed",
+      "probe_sha256": "8b5601db6724c89c",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169
+    },
+    {
+      "run_id": "ptlr_rlvr_frozen_q4_s42_fixed",
+      "probe_sha256": "8b5601db6724c89c",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169,
+      "table_bitwise_equal_to_initial": true,
+      "backbone_changed": true,
+      "table_keys": [
+        "trigram_ves.1.0.weight"
+      ]
+    },
+    {
+      "run_id": "ptlr_rlvr_frozen_q10_s42_fixed",
+      "probe_sha256": "8b5601db6724c89c",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 3479539169,
+      "table_bitwise_equal_to_initial": true,
+      "backbone_changed": true,
+      "table_keys": [
+        "trigram_ves.1.0.weight"
+      ]
+    },
+    {
+      "run_id": "ptlr_rlvr_nogram_q4_s42_fixed",
+      "probe_sha256": "8b5601db6724c89c",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 258313247
+    },
+    {
+      "run_id": "ptlr_rlvr_nogram_q10_s42_fixed",
+      "probe_sha256": "8b5601db6724c89c",
+      "probe_shape": [
+        4,
+        72,
+        2049
+      ],
+      "checkpoint_bytes": 258313247
+    }
+  ],
+  "source_probe_hashes": {
+    "id": "34d5fe7785b9bd11",
+    "magicoder": "f99b58fc7387a4a8",
+    "openr1": "7729c9a80ff730fb",
+    "rlvr": "8b5601db6724c89c"
+  },
+  "script_sha256": "073fcdc6070d6f5cef1192d59a422fbf24515fea7cdf94983a84e0f9f510b875"
+}
