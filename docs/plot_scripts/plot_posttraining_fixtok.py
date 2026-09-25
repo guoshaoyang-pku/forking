@@ -19,7 +19,7 @@ from v5_style import apply_style
 
 SRC = ROOT / 'docs/appendices/posttraining_fixtok_20260925'
 OUT = ROOT / 'docs/figs/posttraining_fixtok_20260925'
-SOURCES = [('id', 'ID'), ('magicoder', 'Magicoder'), ('openr1_10shards', 'OpenR1'), ('rlvr_math', 'RLVR-MATH (static)')]
+SOURCES = [('id', 'ID'), ('magicoder', 'Magicoder'), ('openr1_10shards', 'OpenR1'), ('rlvr_math', 'RLVR-MATH')]
 ARMS = [('trainable', 'Table trainable', '#2d6f9f'), ('frozen', 'Table frozen', '#c58a0b'), ('nogram', 'No-gram', '#686d73')]
 SOURCE_COLORS = ['#2d6f9f', '#c4493d', '#c58a0b', '#7b4fa6']
 EXPECTED = list(range(10, 1661, 10)) + [1665]
@@ -110,14 +110,23 @@ def save(fig, name, pdf=True):
             path.write_text('\n'.join(line.rstrip() for line in path.read_text().splitlines()) + '\n')
 
 
-def overview(data, sources, name, title, arms=ARMS, pdf=True):
+def overview(data, sources, name, title, arms=ARMS, pdf=True, publication=False):
     single = len(sources) == 1
-    fig,ax=plt.subplots(2,len(sources),figsize=(4.6 if single else 2.25*len(sources)+.5,5.1 if single else 4.45),squeeze=False,sharex='col',gridspec_kw={'height_ratios':[1,.85]})
-    fig.subplots_adjust(left=.17 if single else .09,right=.975,bottom=.17 if single else .14,top=.74 if single else .79,hspace=.22,wspace=.30)
-    fig.suptitle(title,fontsize=12,y=.995)
+    if publication:
+        # ICLR single-column width: keep the labels legible after
+        # includegraphics[width=\linewidth] scaling.
+        figsize = (5.5, 2.70)
+        margins = dict(left=.080,right=.995,bottom=.185,top=.80,hspace=.14,wspace=.22)
+    else:
+        figsize = (4.6 if single else 2.25*len(sources)+.5,5.1 if single else 4.45)
+        margins = dict(left=.17 if single else .09,right=.975,bottom=.17 if single else .14,top=.74 if single else .79,hspace=.22,wspace=.30)
+    fig,ax=plt.subplots(2,len(sources),figsize=figsize,squeeze=False,sharex='col',gridspec_kw={'height_ratios':[1,.85]})
+    fig.subplots_adjust(**margins)
+    if title and not publication:
+        fig.suptitle(title,fontsize=12,y=.995)
     handles=[Line2D([],[],color=c,lw=1.6,label=n) for _,n,c in arms]
     handles += [Line2D([],[],color='#222',ls='-',label='Online train'),Line2D([],[],color='#222',ls='--',label='Fixed validation')]
-    fig.legend(handles=handles,loc='upper center',bbox_to_anchor=(.5,.935),ncol=5 if len(sources)>1 else 2,fontsize=8.5,columnspacing=1.3)
+    fig.legend(handles=handles,loc='upper center',bbox_to_anchor=(.5,.985 if publication else .935),ncol=4 if publication else (5 if len(sources)>1 else 2),fontsize=7.2 if publication else 8.5,columnspacing=1.1 if publication else 1.3,handlelength=2.0)
     for j,(source,label) in enumerate(sources):
         for arm,_,color in arms:
             a=data[source][arm];x=a['step'][0]/333
@@ -125,11 +134,16 @@ def overview(data, sources, name, title, arms=ARMS, pdf=True):
             draw(ax[0,j],x,a['val_loss'],color,'--')
             draw(ax[1,j],x,a['gap'],color)
         for i in range(2):axes_style(ax[i,j],i==1)
-        ax[0,j].set_title(label+(' (n=1)' if source=='id' else ' (n=3)'),fontsize=10)
-        ax[1,j].set_xlabel('Replay pass')
-    ax[0,0].set_ylabel('Loss (nats/token)');ax[1,0].set_ylabel('Online gap (nats/token)')
-    note = 'Raw logged points; mean ±1 sample SD. No smoothing.' if single else 'Raw logged points; mean and ±1 sample SD across downstream seeds. No smoothing.'
-    fig.text(.5,.015,note,ha='center',fontsize=8)
+        ax[0,j].set_title(label,fontsize=8.2 if publication else 10)
+        ax[1,j].set_xlabel('epoch' if publication else 'Replay pass',fontsize=8.0 if publication else None,labelpad=2 if publication else None)
+        if publication:
+            for axis in (ax[0,j],ax[1,j]):
+                axis.tick_params(axis='both',labelsize=7.0,pad=1.5)
+    ax[0,0].set_ylabel('loss (nats)',fontsize=8.0 if publication else None,labelpad=2)
+    ax[1,0].set_ylabel('gap (nats)',fontsize=8.0 if publication else None,labelpad=2)
+    if not publication:
+        note = 'Raw logged points; mean ±1 sample SD. No smoothing.' if single else 'Raw logged points; mean and ±1 sample SD across downstream seeds. No smoothing.'
+        fig.text(.5,.015,note,ha='center',fontsize=8)
     save(fig,name,pdf);plt.close(fig)
 
 
@@ -225,10 +239,10 @@ def main():
     # the two n-gram table policies.  The no-gram arm remains available in
     # the explicitly named diagnostic output below and is not part of this
     # SFT/RL comparison.
-    overview(data,SOURCES,'fig_sft_rl_combined','Continued-LM and static-RLVR replay',arms=ARMS[:2])
+    overview(data,SOURCES,'fig_sft_rl_combined',None,arms=ARMS[:2],publication=True)
     # Preserve the historical basename as an alias with the same contents so
     # existing figure references cannot silently pick up the old no-gram panel.
-    overview(data,SOURCES,'fig_posttraining_combined','Continued-LM and static-RLVR replay',arms=ARMS[:2])
+    overview(data,SOURCES,'fig_posttraining_combined',None,arms=ARMS[:2],publication=True)
     overview(data,SOURCES[:3],'fig_sft_unified','SFT-source continued-LM stress tests')
     overview(data,SOURCES[3:],'fig_rlvr_unified','Static RLVR-MATH replay proxy')
     overview(data,SOURCES,'fig_nogram_audit','No-gram baseline: train, validation and gap',arms=ARMS[2:],pdf=False)
