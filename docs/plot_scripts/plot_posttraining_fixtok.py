@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Unified SFT-source/static-RLVR curves from frozen corrected-tokenizer logs."""
 from pathlib import Path
+import argparse
 import csv
 import hashlib
 import json
@@ -19,7 +20,7 @@ from v5_style import apply_style
 
 SRC = ROOT / 'docs/appendices/posttraining_fixtok_20260925'
 OUT = ROOT / 'docs/figs/posttraining_fixtok_20260925'
-SOURCES = [('id', 'ID'), ('magicoder', 'Magicoder'), ('openr1_10shards', 'OpenR1'), ('rlvr_math', 'RLVR-MATH')]
+SOURCES = [('id', 'ID'), ('magicoder', 'Magicoder'), ('openr1_10shards', 'OpenR1'), ('rlvr_math', 'RLVR-MATH (static)')]
 ARMS = [('trainable', 'Table trainable', '#2d6f9f'), ('frozen', 'Table frozen', '#c58a0b'), ('nogram', 'No-gram', '#686d73')]
 SOURCE_COLORS = ['#2d6f9f', '#c4493d', '#c58a0b', '#7b4fa6']
 EXPECTED = list(range(10, 1661, 10)) + [1665]
@@ -134,13 +135,14 @@ def overview(data, sources, name, title, arms=ARMS, pdf=True, publication=False)
             draw(ax[0,j],x,a['val_loss'],color,'--')
             draw(ax[1,j],x,a['gap'],color)
         for i in range(2):axes_style(ax[i,j],i==1)
-        ax[0,j].set_title(label,fontsize=8.2 if publication else 10)
+        panel_title = label.replace(' (static)', '') if publication else label+(' (n=1)' if source=='id' else ' (n=3)')
+        ax[0,j].set_title(panel_title,fontsize=8.2 if publication else 10)
         ax[1,j].set_xlabel('epoch' if publication else 'Replay pass',fontsize=8.0 if publication else None,labelpad=2 if publication else None)
         if publication:
             for axis in (ax[0,j],ax[1,j]):
                 axis.tick_params(axis='both',labelsize=7.0,pad=1.5)
-    ax[0,0].set_ylabel('loss (nats)',fontsize=8.0 if publication else None,labelpad=2)
-    ax[1,0].set_ylabel('gap (nats)',fontsize=8.0 if publication else None,labelpad=2)
+    ax[0,0].set_ylabel('loss (nats)' if publication else 'Loss (nats/token)',fontsize=8.0 if publication else None,labelpad=2 if publication else None)
+    ax[1,0].set_ylabel('gap (nats)' if publication else 'Online gap (nats/token)',fontsize=8.0 if publication else None,labelpad=2 if publication else None)
     if not publication:
         note = 'Raw logged points; mean ±1 sample SD. No smoothing.' if single else 'Raw logged points; mean and ±1 sample SD across downstream seeds. No smoothing.'
         fig.text(.5,.015,note,ha='center',fontsize=8)
@@ -234,6 +236,9 @@ def diagnostic_figures(data):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--publication-only', action='store_true', help='Generate only the two aliases of the manuscript figure.')
+    args = parser.parse_args()
     OUT.mkdir(parents=True,exist_ok=True);apply_style();data=load()
     # Publication overview: keep the four source columns, but compare only
     # the two n-gram table policies.  The no-gram arm remains available in
@@ -243,6 +248,9 @@ def main():
     # Preserve the historical basename as an alias with the same contents so
     # existing figure references cannot silently pick up the old no-gram panel.
     overview(data,SOURCES,'fig_posttraining_combined',None,arms=ARMS[:2],publication=True)
+    if args.publication_only:
+        print(OUT)
+        return
     overview(data,SOURCES[:3],'fig_sft_unified','SFT-source continued-LM stress tests')
     overview(data,SOURCES[3:],'fig_rlvr_unified','Static RLVR-MATH replay proxy')
     overview(data,SOURCES,'fig_nogram_audit','No-gram baseline: train, validation and gap',arms=ARMS[2:],pdf=False)
