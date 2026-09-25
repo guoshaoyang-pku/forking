@@ -1,0 +1,59 @@
+[
+  {
+    "source": "magicoder",
+    "raw_files": [
+      "/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/magicoder_oss_instruct.jsonl"
+    ],
+    "raw_available_records": 75197,
+    "records_consumed": 67350,
+    "train_contributing_records": 66549,
+    "val_contributing_records": 802,
+    "train_val_boundary_spanning_records_0based": [
+      66548
+    ],
+    "train_stored_tokens": 49126824,
+    "val_stored_tokens": 590112,
+    "reencoded_sha256": [
+      "87ea324930aa0ec8c564079ca4a6e38ebefa6583aef5562a8fb355fd70d6f20e",
+      "339396d6bb64c3858f83116681a89d7a1c3ef4b6b83b2c3eb484826855beefaf"
+    ],
+    "actual_sha256": [
+      "87ea324930aa0ec8c564079ca4a6e38ebefa6583aef5562a8fb355fd70d6f20e",
+      "339396d6bb64c3858f83116681a89d7a1c3ef4b6b83b2c3eb484826855beefaf"
+    ],
+    "byte_exact_match": true
+  },
+  {
+    "source": "openr1",
+    "raw_files": [
+      "/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/openr1_default10/default-00000-of-00010.parquet",
+      "/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/openr1_default10/default-00001-of-00010.parquet",
+      "/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/openr1_default10/default-00002-of-00010.parquet",
+      "/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/openr1_default10/default-00003-of-00010.parquet",
+      "/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/openr1_default10/default-00004-of-00010.parquet",
+      "/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/openr1_default10/default-00005-of-00010.parquet",
+      "/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/openr1_default10/default-00006-of-00010.parquet",
+      "/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/openr1_default10/default-00007-of-00010.parquet",
+      "/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/openr1_default10/default-00008-of-00010.parquet",
+      "/data4/guoshaoyang/ngram-gap-lab/data/ood_raw/openr1_default10/default-00009-of-00010.parquet"
+    ],
+    "raw_available_records": 93733,
+    "records_consumed": 84967,
+    "train_contributing_records": 83978,
+    "val_contributing_records": 990,
+    "train_val_boundary_spanning_records_0based": [
+      83977
+    ],
+    "train_stored_tokens": 49126824,
+    "val_stored_tokens": 590112,
+    "reencoded_sha256": [
+      "249ee14a241e0405feba09a6c48314725d7cb324b019f41095dc28992ee6a8b3",
+      "fd72b98c9452e39781b9ef15ef598d3dd606913d80ef2619eb99f8267e9bb9c2"
+    ],
+    "actual_sha256": [
+      "249ee14a241e0405feba09a6c48314725d7cb324b019f41095dc28992ee6a8b3",
+      "fd72b98c9452e39781b9ef15ef598d3dd606913d80ef2619eb99f8267e9bb9c2"
+    ],
+    "byte_exact_match": true
+  }
+]
