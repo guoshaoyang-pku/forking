@@ -34,6 +34,7 @@ def main():
             completed.append({'run_id': rid, 'status': json.loads(status.read_text())})
         else:
             pending.append((source, arm, lr, rid,))
+    attempts = {}
     allowed = set(map(int, a.gpus.split(',')))
     while pending or running:
         for gpu, (proc, log, rid) in list(running.items()):
@@ -41,7 +42,11 @@ def main():
                 log.close()
                 status_path = a.out_root / rid / 'status.json'
                 status = json.loads(status_path.read_text()) if status_path.exists() else {'returncode': proc.returncode, 'qc': 'launcher_failed'}
-                completed.append({'run_id': rid, 'status': status})
+                if status['qc'] == 'launcher_failed' and not (a.out_root / rid).exists() and attempts.get(rid, 0) < 10:
+                    _, source, arm, lr, _, _ = rid.split('_')
+                    pending.insert(0, (source, arm, lr, rid))
+                else:
+                    completed.append({'run_id': rid, 'status': status})
                 print('FINISHED', rid, json.dumps(status), flush=True)
                 del running[gpu]
         memory = subprocess.check_output(['nvidia-smi', '--query-gpu=index,memory.used', '--format=csv,noheader,nounits'], text=True)
@@ -54,7 +59,8 @@ def main():
                    '--root', str(a.root), '--data-root', str(a.data_root),
                    '--out-root', str(a.out_root), '--source', source, '--arm', arm,
                    '--lr-tag', lr, '--gpu', str(gpu)]
-            log = (a.queue_dir / (rid + '.launcher.log')).open('x')
+            attempts[rid] = attempts.get(rid, 0) + 1
+            log = (a.queue_dir / (rid + '.attempt' + str(attempts[rid]) + '.launcher.log')).open('x')
             proc = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT,
                                     env=dict(os.environ, OMP_NUM_THREADS='4', MKL_NUM_THREADS='4', OPENBLAS_NUM_THREADS='4'))
             running[gpu] = proc, log, rid
