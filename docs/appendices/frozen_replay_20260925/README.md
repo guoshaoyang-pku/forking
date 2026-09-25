@@ -1,6 +1,6 @@
 # Frozen-table post-training: replay-intensity grid
 
-Registered 2026-09-25 by Codex after the user clarified that table freeze must substantially exceed no-gram. Status planned. Previous trainable-table success does not meet this requirement.
+Registered 2026-09-25 by Codex after the user clarified that table freeze must substantially exceed no-gram. Status done: all eight runs reached1680 updates with QC pass by20:32 Beijing. All four frozen tables are bitwise identical to initialization and their backbones changed. None of the four pairs meets the frozen-excess criterion. See [final results](results.md). Previous trainable-table success does not meet this requirement.
 
 ## Scientific question and scope
 
@@ -32,3 +32,11 @@ Acceptance: process success, correct config/steps/cadence/epoch counts, finite m
 ## External practice check
 
 Official Engram README and linked paper (Conditional Memory via Scalable Lookup: A New Axis of Sparsity for Large Language Models) inspected 2026-09-25: https://github.com/deepseek-ai/Engram and https://github.com/deepseek-ai/Engram/blob/main/Engram_paper.pdf . The README reports pretraining and long-context training; the searchable33-page paper did not state a post-training table-freeze protocol in the searched freeze/frozen/post-training/fine-tuning terms. This does not verify any DeepSeek-V4.1 production freeze choice. Frozen feature extractors and PEFT are common in other settings, but freezing table is distinct from freezing the entire backbone.
+
+## Interpretation audit during execution
+
+The pretraining freeze reference was re-read from remote raw logs, not inferred from old plots: causalv5c_freeze_table_e1_128x{,_s43,_s44}_fixed freeze at step338 after joint training of table and backbone on the replay pool, and all three have fixed_train_probe_batches=0 with no final_fixed_gap measurement. Their final online gaps at1000 are3.452124/3.425178/3.427931. The raw small files and SHA256 manifest are in prior_pretraining/ and prior_pretraining_manifest.json. This is distinct from frozen-before-first-downstream-update training.
+
+The current input route has no gates. For gated v/y/engram routes, train.py --freeze_table also freezes gate weights; a future table-only freeze experiment must specify separately whether readout/fusion parameters remain trainable. Existing multi-layer bases are on360-2 at blocks1,4 (zero-based), not blocks0,4; do not silently reinterpret their layer IDs. Two live SSH attempts returned connection closed during this audit, so those checkpoints were not used or transferred for this batch.
+
+LoRA is a separate conventional freeze strategy: the Hugging Face PEFT guide says original pretrained weights are frozen while adapter matrices are trained (https://huggingface.co/docs/peft/main/en/conceptual_guides/lora). This does not establish that n-gram tables are frozen in all full-parameter SFT/RL or a particular DeepSeek release. The official Engram source check and exact PDF hash are in official_engram_source_check.json.

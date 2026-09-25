@@ -1,0 +1,14 @@
+{
+  "url": "https://github.com/deepseek-ai/Engram/blob/main/Engram_paper.pdf",
+  "retrieved_date": "2026-09-25",
+  "pdf_sha256": "1e8ae53dc527d4db264b40a7996780b0044914443c0ce5fd54f898c405cab94f",
+  "text_chars": 122380,
+  "training_quote": "For optimization, the embedding parameters are updated using Adam (Kingma, 2014) with a learning rate scaled by 5× and no weight decay",
+  "scope": "Large-scale pretraining, not a verified production post-training freeze protocol",
+  "terms_without_matches": [
+    "freeze",
+    "frozen",
+    "post-training",
+    "fine-tuning"
+  ]
+}

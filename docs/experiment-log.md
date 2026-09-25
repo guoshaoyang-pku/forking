@@ -4685,17 +4685,21 @@ The table-disabled fixed gaps are 0.045766 (unseen) / 0.039048 (seen). Trainable
 
 All ten curves, absolute losses, freeze-specific contrasts and claim limits are in docs/appendices/posttraining_samecheckpoint_20260925/results.md, with endpoints.csv/comparisons.csv/curves.csv. Figures: docs/figs/posttraining_samecheckpoint_20260925/fig_{primary_excess,freeze_excess,memory_removal_control}.{png,pdf,svg}; generators: docs/plot_scripts/{collect_posttraining_samecheckpoint,plot_posttraining_excess}.py. The source logs, smoke and equivalence evidence are committed as small files with manifests. External SSD became unmounted during final collection; local data/ symlink preserved, packet checked directly against remote runs_fixed hashes. No independent-replication significance claim.
 
-## §71 · Frozen-table post-training replay-intensity grid (2026-09-25, planned)
+## §71 · Frozen-table post-training replay-intensity grid (2026-09-25, done; hypothesis not reproduced)
 
 User explicitly requires table frozen from the first downstream step to substantially exceed no-gram; trainable-table results in §69 do not meet that goal. Owner Codex. Full contract, deviations, hypothesis, controls, commands, source hashes and fixed endpoint: docs/appendices/frozen_replay_20260925/README.md. Two same-domain unseen nested prefix sizes42/84 updates/pass × backboneLR6e-4/1.5e-4 × frozen0/nogram;1680updates,40/20passes,seed42,A10018×4,initial+uniform288probe+fixed288val,dense10+boundaries. Independent no-gram base retained; no trainable warmup of table. Bounded exploratory grid, all outcomes retained, not independent-seed significance. Final bitwise freeze audit required.
 
 | run_id | host:GPU | status |
 |---|---|---|
-| ptfr_u42_frozen0_base_mb18_s42_fixed | a100_perm:0 | planned |
-| ptfr_u42_nogram_base_mb18_s42_fixed | a100_perm:1 | planned |
-| ptfr_u42_frozen0_q4_mb18_s42_fixed | a100_perm:2 | planned |
-| ptfr_u42_nogram_q4_mb18_s42_fixed | a100_perm:3 | planned |
-| ptfr_u84_frozen0_base_mb18_s42_fixed | a100_perm:4 | planned |
-| ptfr_u84_nogram_base_mb18_s42_fixed | a100_perm:5 | planned |
-| ptfr_u84_frozen0_q4_mb18_s42_fixed | a100_perm:6 | planned |
-| ptfr_u84_nogram_q4_mb18_s42_fixed | a100_perm:7 | planned |
+| ptfr_u42_frozen0_base_mb18_s42_fixed | a100_perm:0 | done; QC pass @1680; train 0.864777; val 6.596623; online gap 5.731846; fixed gap 5.558050 |
+| ptfr_u42_nogram_base_mb18_s42_fixed | a100_perm:1 | done; QC pass @1680; train 0.387244; val 6.315738; online gap 5.928494; fixed gap 5.832727 |
+| ptfr_u42_frozen0_q4_mb18_s42_fixed | a100_perm:2 | done; QC pass @1680; train 1.861360; val 4.366154; online gap 2.504793; fixed gap 2.526389 |
+| ptfr_u42_nogram_q4_mb18_s42_fixed | a100_perm:3 | done; QC pass @1680; train 0.680627; val 4.674454; online gap 3.993828; fixed gap 3.886105 |
+| ptfr_u84_frozen0_base_mb18_s42_fixed | a100_perm:4 | done; QC pass @1680; train 2.178613; val 4.254051; online gap 2.075438; fixed gap 2.100869 |
+| ptfr_u84_nogram_base_mb18_s42_fixed | a100_perm:5 | done; QC pass @1680; train 1.441649; val 4.106967; online gap 2.665319; fixed gap 2.630579 |
+| ptfr_u84_frozen0_q4_mb18_s42_fixed | a100_perm:6 | done; QC pass @1680; train 2.565260; val 3.640172; online gap 1.074913; fixed gap 1.117987 |
+| ptfr_u84_nogram_q4_mb18_s42_fixed | a100_perm:7 | done; QC pass @1680; train 1.734235; val 3.427195; online gap 1.692961; fixed gap 1.723745 |
+
+**Final readout (2026-09-25 20:32 Beijing):** 8/8 done and QC pass. Frozen0−nogram online excess at1680/seed42:6.19M LR6e-4 −0.196648;6.19M LR1.5e-4 −1.489034;12.39M LR6e-4 −0.589881;12.39M LR1.5e-4 −0.618048. Initial-adjusted fixed-growth excess respectively−0.269245/−1.354283/−0.529526/−0.605574. Thus this bounded replay-intensity/LR grid did NOT reproduce frozen-table excess; large absolute gaps do not meet the user's clarified criterion. No p-value or independent-seed stability claim. Final tables are bitwise unchanged with changed backbones in all4 frozen arms; complete code/data/step/probe/hash/checkpoint QC passed. Full curves, all endpoints and source logs: docs/appendices/frozen_replay_20260925/results.md and docs/figs/frozen_replay_20260925/fig_frozen_replay.{png,pdf,svg}; scripts docs/plot_scripts/{collect_frozen_replay,plot_frozen_replay}.py. Code snapshot b744c0b. No large transfer or previous-run overwrite.
+
+Prior-pretraining audit: causalv5c_freeze_table_e1_128x{,_s43,_s44}_fixed freeze at338 after jointly training on the same replay pool; summaries record fixed_train_probe_batches=0 and NaN final_fixed_gap, so these cannot answer the requested fixed-gap trajectory. Official Engram paper confirms trainable embedding with5× Adam LR during pretraining, not a verified production post-training freeze protocol. Multi-layer bases on360-2 are unavailable in this session (SSH connection closed twice); they use0-based1,4, not0,4. Existing --freeze_table also freezes gates for gated routes; table-only versus whole-module freezing must be separately registered if that line resumes.

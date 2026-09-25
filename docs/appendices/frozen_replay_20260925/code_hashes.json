@@ -1,0 +1,22 @@
+{
+  "code/train.py": {
+    "sha256": "265da7b07618532b1c3a3c26eadb396fbf6267e08e3baab4daf2ef66ca0c8725",
+    "md5": "ef2880957335055a0c772603772bfb04"
+  },
+  "code/ngram_freq.py": {
+    "sha256": "bdfa7b0fe3a105b231b31da036a2a282dde1e185094e6da2f1620c6fa356ba92",
+    "md5": "ac510eb60bc06917119665db9ccc25fd"
+  },
+  "code/diag_worker.py": {
+    "sha256": "14f0aa23ccd4aa4ace8e0e4924bf6706e7d44345a06dd0a9cceb674c19879e69",
+    "md5": "aba3d5c1cd3c4f3b648fef725a7929a8"
+  },
+  "code/cluster/run_frozen_replay.py": {
+    "sha256": "89f902a36b90d697c3d7be883d0d78e75709b48658f3e3bd0e238bb569e7dfc2",
+    "md5": "4634b57684d10864bb4660292392b5d3"
+  },
+  "code/tools/prepare_frozen_replay_pools.py": {
+    "sha256": "212344cbf3c7cc9b4b8fd668a88da864c8a547c11fadbb57f1d7a80200b06ff2",
+    "md5": "834c5cbf1234281876d2b84a5d010476"
+  }
+}

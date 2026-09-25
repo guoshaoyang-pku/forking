@@ -1,0 +1,446 @@
+[
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/launch.json",
+    "sha256": "e58dad1b2d9586085721359ee1f29ee4b1ec3388439679e1aaa69f32e357b322",
+    "bytes": 3501,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/launch.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/initial_probe.json",
+    "sha256": "6461a0548d3e354262188f1be49a1d7af4f0baa28a7d65ff343dfd81a75a34f2",
+    "bytes": 212,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/initial_probe.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/train_log.jsonl",
+    "sha256": "dab4bf6b65e4a37a389e3e8c14a7e348030c07e073c41816a8504e09f484df5c",
+    "bytes": 40075,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/train_log.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/fixed_train_loss.jsonl",
+    "sha256": "72bf74e46db3d0b558b56b32a41c82f1399d64f2b1d415272926d1e6a0f07fb7",
+    "bytes": 36615,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/fixed_train_loss.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/table_norm.jsonl",
+    "sha256": "dba8d759818f7d41d22ae6eff72d9e137447d9db909f9c74a955d7af1e8c0c97",
+    "bytes": 10980,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/table_norm.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/summary.json",
+    "sha256": "4b025d5781bf0b1cc83e5668469242764a07dfbf14239c7b8de3f061840caeb5",
+    "bytes": 8255,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/summary.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/status.json",
+    "sha256": "17117b242a5c9bf0470455b2b228ccebb3c2b5f164752240a869310418939178",
+    "bytes": 370,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/status.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/freeze_audit.json",
+    "sha256": "4c3d6083b60ae2f21f89b6b8ed371ca1398bf8217f5da1a1419664b3aba88ba1",
+    "bytes": 109,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_base_mb18_s42_fixed/freeze_audit.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/launch.json",
+    "sha256": "601edc29b0f4d76cda76bc56b88ce1a34089e52ddc72b2654f24e10c6d20cf16",
+    "bytes": 3498,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/launch.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/initial_probe.json",
+    "sha256": "6461a0548d3e354262188f1be49a1d7af4f0baa28a7d65ff343dfd81a75a34f2",
+    "bytes": 212,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/initial_probe.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/train_log.jsonl",
+    "sha256": "a6a4f41d851bc803619dd0ab3a5a8afdf7fac49fb80292fde1df32cbfaa6d054",
+    "bytes": 40186,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/train_log.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/fixed_train_loss.jsonl",
+    "sha256": "e0eb4b8c14aa8444918ed147797e2f1152bcaf31004bc960d2a5defd2482e25a",
+    "bytes": 36743,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/fixed_train_loss.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/table_norm.jsonl",
+    "sha256": "dba8d759818f7d41d22ae6eff72d9e137447d9db909f9c74a955d7af1e8c0c97",
+    "bytes": 10980,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/table_norm.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/summary.json",
+    "sha256": "20c4a623012a3ac94f59be6638ee6d04e64481b654eb56962635e9551b580c52",
+    "bytes": 8253,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/summary.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/status.json",
+    "sha256": "0b49e4c6d4ba9ef1183e7d85a55229dfb3695a20d42f654aa803ea495543e819",
+    "bytes": 371,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/status.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/freeze_audit.json",
+    "sha256": "4c3d6083b60ae2f21f89b6b8ed371ca1398bf8217f5da1a1419664b3aba88ba1",
+    "bytes": 109,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_frozen0_q4_mb18_s42_fixed/freeze_audit.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/launch.json",
+    "sha256": "784abeefc06c9fba9a7450160eddb0af52d47fabab6a86cbabc67ed9b023f830",
+    "bytes": 3487,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/launch.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/initial_probe.json",
+    "sha256": "175cb8ec85999f25d51b646276ef27e1269babacece80c933b74cacb556f3006",
+    "bytes": 215,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/initial_probe.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/train_log.jsonl",
+    "sha256": "681c0de8085924a7ab40d330d9fd63cf434845679dd14847e625631e62a940cd",
+    "bytes": 40093,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/train_log.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/fixed_train_loss.jsonl",
+    "sha256": "90161b02fb82550dfde727f5f49569cafeef5ac6254bb9b60a9c279cfb05ebb5",
+    "bytes": 36668,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/fixed_train_loss.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/table_norm.jsonl",
+    "sha256": "55ec4b35d7190a6df7c7365e79c4500697dfc02f86ca89b479e07db3c8f38291",
+    "bytes": 2412,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/table_norm.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/summary.json",
+    "sha256": "77fdb4191cea5641ad10212b6ae6a60ca859d1f5d0617cd7fa433ef2ff685d48",
+    "bytes": 8268,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/summary.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/status.json",
+    "sha256": "121048f53611ee5cc767c3070bd8da478bc9e587df7e811589b53ca460e2e384",
+    "bytes": 374,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_base_mb18_s42_fixed/status.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/launch.json",
+    "sha256": "6cee46ee7c90b18efa7bb7d8830d1dea10351e8ba6750dc8eba0b7ed8cb5df2b",
+    "bytes": 3484,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/launch.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/initial_probe.json",
+    "sha256": "175cb8ec85999f25d51b646276ef27e1269babacece80c933b74cacb556f3006",
+    "bytes": 215,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/initial_probe.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/train_log.jsonl",
+    "sha256": "ccaaed3490f6c96f843d61ae6b11195848db6694c3e1b44599440091f5ab92b8",
+    "bytes": 40215,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/train_log.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/fixed_train_loss.jsonl",
+    "sha256": "348118a53e1de7f4226f9d15f60d4aadd5491ae038445bb0ac43af930d73bc02",
+    "bytes": 36755,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/fixed_train_loss.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/table_norm.jsonl",
+    "sha256": "55ec4b35d7190a6df7c7365e79c4500697dfc02f86ca89b479e07db3c8f38291",
+    "bytes": 2412,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/table_norm.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/summary.json",
+    "sha256": "6ee3227f2160a46819c1d0db59d3544fc4a47f9506764e073e47c3f04a57c54f",
+    "bytes": 8261,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/summary.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/status.json",
+    "sha256": "a8b793d3a59cc0824e1a74b3c228b03213edd29a268872e7d73e033fe8ec6732",
+    "bytes": 370,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u42_nogram_q4_mb18_s42_fixed/status.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/launch.json",
+    "sha256": "808ed45eb34b0b9162f9c4d4ee787a57e616aa0a526bda9f21c77bfe82809c29",
+    "bytes": 3345,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/launch.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/initial_probe.json",
+    "sha256": "549c53e76f2c2624d0ae2cfc575dc382b9d9f73df02fd1b7da5209a10e5b5068",
+    "bytes": 212,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/initial_probe.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/train_log.jsonl",
+    "sha256": "e48cb3f27b6d0a6953cb1eafba95c2b5dabca7b2eb414075edf005e1314775d7",
+    "bytes": 34065,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/train_log.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/fixed_train_loss.jsonl",
+    "sha256": "c1c23488bd5ee88b3476418f35d2254f890f746a426f1d9509469ebb7a316719",
+    "bytes": 31158,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/fixed_train_loss.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/table_norm.jsonl",
+    "sha256": "dba8d759818f7d41d22ae6eff72d9e137447d9db909f9c74a955d7af1e8c0c97",
+    "bytes": 10980,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/table_norm.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/summary.json",
+    "sha256": "36ebbe3684a235d7bc158e0a438b7993ed9ac8aacf9e7e7ddbf76007677ebfe6",
+    "bytes": 7513,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/summary.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/status.json",
+    "sha256": "077512ba8ca4b7a90038f1eee021e531c5730c0c3a764677ad5564467b5a526f",
+    "bytes": 372,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/status.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/freeze_audit.json",
+    "sha256": "4c3d6083b60ae2f21f89b6b8ed371ca1398bf8217f5da1a1419664b3aba88ba1",
+    "bytes": 109,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_base_mb18_s42_fixed/freeze_audit.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/launch.json",
+    "sha256": "0605f181f4341262789245435d6824254a5bfe3e6b99613025ec2158f94b6cda",
+    "bytes": 3342,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/launch.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/initial_probe.json",
+    "sha256": "549c53e76f2c2624d0ae2cfc575dc382b9d9f73df02fd1b7da5209a10e5b5068",
+    "bytes": 212,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/initial_probe.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/train_log.jsonl",
+    "sha256": "cbb9b0e1606b182d2e412ef6ac7372d285e23e11531cfc82f8b14bb2f35d15e9",
+    "bytes": 34217,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/train_log.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/fixed_train_loss.jsonl",
+    "sha256": "793b085428d5dd9de5e077a83607dd39ac6b7ee5b53de1b976718ed9f97f80f6",
+    "bytes": 31264,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/fixed_train_loss.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/table_norm.jsonl",
+    "sha256": "dba8d759818f7d41d22ae6eff72d9e137447d9db909f9c74a955d7af1e8c0c97",
+    "bytes": 10980,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/table_norm.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/summary.json",
+    "sha256": "a0447215ca4203c5e91d03d002b4f03e85d21bd59619aa63695aa6bae24c1b32",
+    "bytes": 7511,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/summary.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/status.json",
+    "sha256": "e1b9f0242db69ebb6f8470dd8568cd43146a109f7222d47d72d4a83459f40d7b",
+    "bytes": 373,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/status.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/freeze_audit.json",
+    "sha256": "4c3d6083b60ae2f21f89b6b8ed371ca1398bf8217f5da1a1419664b3aba88ba1",
+    "bytes": 109,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_frozen0_q4_mb18_s42_fixed/freeze_audit.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/launch.json",
+    "sha256": "aecf5e5c75a675eab24a260050873932eb9d9228a27b19489f8dae48b6599f35",
+    "bytes": 3331,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/launch.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/initial_probe.json",
+    "sha256": "4d4982818e2ef55837ab128ddf07aefb77a129c549c2fab52091561b87bb367e",
+    "bytes": 215,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/initial_probe.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/train_log.jsonl",
+    "sha256": "b0d32499716054541f35de1e2c071560e0e5883c0e798e832712d491fc5c3f23",
+    "bytes": 34111,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/train_log.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/fixed_train_loss.jsonl",
+    "sha256": "725ab442708abd73a1f9222beafdad9d1007296fa2da61ca3a7e087226f02541",
+    "bytes": 31165,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/fixed_train_loss.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/table_norm.jsonl",
+    "sha256": "55ec4b35d7190a6df7c7365e79c4500697dfc02f86ca89b479e07db3c8f38291",
+    "bytes": 2412,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/table_norm.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/summary.json",
+    "sha256": "a33a3f5b5691c35dbedaf6eaa78a30eb96694330ac2d94c2a68dd52119ec8056",
+    "bytes": 7522,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/summary.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/status.json",
+    "sha256": "df21ad04e4deccfee06c7090f8e728543f26c79985d965f0b38f2d5cffb5f0fb",
+    "bytes": 372,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_base_mb18_s42_fixed/status.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/launch.json",
+    "sha256": "7d722eef2947b212b7830d3450884d09e1c7114be662abd622cdcd748e72cddc",
+    "bytes": 3328,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/launch.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/initial_probe.json",
+    "sha256": "4d4982818e2ef55837ab128ddf07aefb77a129c549c2fab52091561b87bb367e",
+    "bytes": 215,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/initial_probe.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/train_log.jsonl",
+    "sha256": "9a649875d45a905b4ebf83dee93057324fb979f3a33178b408165043a3610572",
+    "bytes": 34161,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/train_log.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/fixed_train_loss.jsonl",
+    "sha256": "f5bb494798a2c51ab84e0707d018a3c68961ed4015a85619c753d226a1a1ce3e",
+    "bytes": 31242,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/fixed_train_loss.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/table_norm.jsonl",
+    "sha256": "55ec4b35d7190a6df7c7365e79c4500697dfc02f86ca89b479e07db3c8f38291",
+    "bytes": 2412,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/table_norm.jsonl"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/summary.json",
+    "sha256": "fd31fc61c2e2631b76be9cb901d3abc4279fac420cda91ac375d4cc5c6f9c7c7",
+    "bytes": 7521,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/summary.json"
+  },
+  {
+    "path": "data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/status.json",
+    "sha256": "b3a14b570e4cd8848014c3c86fb84e6e82cb1469e04d18a965d60a03dd462dfd",
+    "bytes": 374,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/data/runs_fixed/ptfr_u84_nogram_q4_mb18_s42_fixed/status.json"
+  },
+  {
+    "path": "smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/launch.json",
+    "sha256": "c517e1c84c499069b1f0c42e4cf05f302ee70f6d59cd2a6214c9accba00d28d8",
+    "bytes": 2437,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/launch.json"
+  },
+  {
+    "path": "smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/initial_probe.json",
+    "sha256": "6461a0548d3e354262188f1be49a1d7af4f0baa28a7d65ff343dfd81a75a34f2",
+    "bytes": 212,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/initial_probe.json"
+  },
+  {
+    "path": "smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/train_log.jsonl",
+    "sha256": "ec673085c486f5ba02e8b8922858176a4e5bbb26ce4ed0a6bf1d9b79581acbbd",
+    "bytes": 181,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/train_log.jsonl"
+  },
+  {
+    "path": "smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/fixed_train_loss.jsonl",
+    "sha256": "706957ab2d762b20d5d1e543f5bcaa19fa2ad03583bf97972e09ebf429db9353",
+    "bytes": 170,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/fixed_train_loss.jsonl"
+  },
+  {
+    "path": "smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/table_norm.jsonl",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/table_norm.jsonl"
+  },
+  {
+    "path": "smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/summary.json",
+    "sha256": "dfec25f01cb547450d331a4e948c498d6e60ed9b704f2e9d8a67ae748a4c079d",
+    "bytes": 3327,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/summary.json"
+  },
+  {
+    "path": "smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/status.json",
+    "sha256": "fab920ff331b51d3697f800dd029d7fcfe663bcc52f959a1eeb3ba39a8b3d2f0",
+    "bytes": 378,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed/status.json"
+  },
+  {
+    "path": "smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/launch.json",
+    "sha256": "d78cb7575d84bc32e6673cf9fc856dbfdd269ca1605251c54be87b8f8242ad37",
+    "bytes": 2423,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/launch.json"
+  },
+  {
+    "path": "smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/initial_probe.json",
+    "sha256": "175cb8ec85999f25d51b646276ef27e1269babacece80c933b74cacb556f3006",
+    "bytes": 215,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/initial_probe.json"
+  },
+  {
+    "path": "smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/train_log.jsonl",
+    "sha256": "e6ed42cef2dac7700600ce1a524e7b2eabf29dd1cb14e82c493cb65448e892ae",
+    "bytes": 183,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/train_log.jsonl"
+  },
+  {
+    "path": "smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/fixed_train_loss.jsonl",
+    "sha256": "86fe8cc0f72f4d04c55a1ae51b6ee38327e0846d5fe23828024d3c0212fd7159",
+    "bytes": 169,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/fixed_train_loss.jsonl"
+  },
+  {
+    "path": "smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/table_norm.jsonl",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/table_norm.jsonl"
+  },
+  {
+    "path": "smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/summary.json",
+    "sha256": "8bf0041dc137db9945f446559f3e3a0740b87a0601df2b7112f6cf7c343b9402",
+    "bytes": 3336,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/summary.json"
+  },
+  {
+    "path": "smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/status.json",
+    "sha256": "2ce7f0f19a962f5ae0cc61c1106131ea56bb26a1444554233dd28f841a66c795",
+    "bytes": 378,
+    "remote": "/data/guoshaoyang/ngram-gap-lab/provisioning/frozen_replay_20260925/smoke/ptfr_u42_nogram_base_mb18_s42_smoke2_fixed/status.json"
+  }
+]

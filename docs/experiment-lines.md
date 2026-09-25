@@ -102,6 +102,10 @@ shard 1；二者都使用固定且不重叠的 shard 22 验证集。
 
 完整五臂结果、初始差异校正及同基座关表消融见 §70、docs/appendices/posttraining_samecheckpoint_20260925/；图见 docs/figs/posttraining_samecheckpoint_20260925/。原始八臂来源保留在 docs/appendices/posttraining_overlap_20260925/。
 
+### Frozen from the first downstream update: replay-intensity test (§71)
+
+User clarification: the requested result requires **frozen table** to exceed no-gram; §69 trainable-table success does not meet it. The eight-run ptfr_u{42,84}_{frozen0,nogram}_{base,q4}_mb18_s42_fixed grid is done at1680 updates:6.19M/12.39M same-domain unseen target tokens replayed40/20passes, backboneLR6e-4/1.5e-4, seed42. All four frozen tables remain bitwise unchanged while the backbone updates. **0/4 pairs reproduce positive frozen excess**: online differences−0.197/−1.489/−0.590/−0.618; initial-adjusted fixed-growth differences−0.269/−1.354/−0.530/−0.606 nats/token. Negative finding is local to this grid, not a universal no-fork theorem. Full curves and evidence: docs/appendices/frozen_replay_20260925/results.md, docs/figs/frozen_replay_20260925/fig_frozen_replay.png.
+
 ## Toy / synthetic 线（已退役）
 
 旧的 ngram5_freq_gap/ 受控数据 trainer 与 L1–L6 toy / synthetic 任务不再属于论文证据链，已于 2026-09-13 从当前工作树移除。历史实验日志、图和提交只用于 provenance，不再作为活动入口或新实验依赖。当前模型解释完全由 M2/V5、M8–M10、S1 以及 §48–§53 的自然语料证据承担。

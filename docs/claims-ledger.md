@@ -16,6 +16,7 @@
 | C10 | 在 v5 128× fixed replay 协议内，表内容很早可用，而 net n-gram gap 的后续增长需要 backbone 跨 pass 累积读出能力。 | `SUPPORTED_LOCAL_WITH_CEILING` | `causalv5m3_*` 7-run、seed 42、step 2022：freeze-backbone e1/e2/e3 final gap 1.585/2.505/3.389 < control 5.733；freeze-table e2 为 5.386（control 的 93.95%）。只支持该协议内“backbone 更新是后期增长的必要因素、继续写表不是主要必要因素”；不能推出表已严格收敛、最终平台位置或跨架构普适动力学。 |
 | C11 | 在 §64 三 seed 双表 input replay 协议和 F=1..1000 的18个 native bins 内，online gap 可由直接测得 novelty 的仿射函数近似描述。 | SUPPORTED_LOCAL_WITH_CEILING | §67；steps 670/1000/1340/2000；相对 rms bi 3–8%、tri 3–11%，有系统残差。GT shift 为采样模型下期望比恒等式；经验计数有约10%校准偏差。不得写 corpus-fixed exponent、精确比例、b=实测S、跨配置普适或排除优化器因果替代。 |
 | C12 | 在已测的预训练后 all-token continued-LM 协议中，可训练 input trigram table 在五遍 replay 后的 gap 大幅超过独立预训练 no-gram。 | SUPPORTED_LOCAL_WITH_CEILING | §69–70；ptov_{unseen,seen}_{trainable,nogram}_q4_mb18_s42_fixed，step1665、seed42：online gap 比值3.69×/6.73×；扣初始差异后的 fixed-gap 额外增长+0.658583/+1.003355。同域数据49.10M target tokens/pass，LR1/4、table128×、A100累积。仅单基座/数据实现；不是多独立seed显著、response-only SFT或on-policy RL；冻结表不支持同等强度的额外增长；关表同基座消融的初始loss严重退化，不替代独立预训练no-gram。 |
+| C13 | 当前已测 input-trigram 20× 基座在后训练第一步前冻结表，不能据现有实验宣称其 gap 稳定且明显超过独立预训练 no-gram。 | NOT_REPRODUCED_IN_TESTED_GRID | §69、§71；ptfr_u{42,84}_{frozen0,nogram}_{base,q4}_mb18_s42_fixed，step1680、seed42，6.19M/12.39M同域未用于基座优化的训练池、40/20passes、LR6e-4/1.5e-4：四组online及初始校正fixed-growth excess均为负，table逐位冻结验证通过。这不否定其他架构/基座/数据/预算可能出现；不以相关时间点作独立统计重复。 |
 
 ## 台账冲突
 

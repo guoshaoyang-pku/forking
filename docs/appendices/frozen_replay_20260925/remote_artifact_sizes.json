@@ -1,0 +1,42 @@
+{
+  "ptfr_u42_frozen0_base_mb18_s42_fixed": {
+    "final_model.pt": 3479539169,
+    "probe_tokens.npz": 4721540
+  },
+  "ptfr_u42_frozen0_q4_mb18_s42_fixed": {
+    "final_model.pt": 3479539169,
+    "probe_tokens.npz": 4721540
+  },
+  "ptfr_u42_nogram_base_mb18_s42_fixed": {
+    "final_model.pt": 258313247,
+    "probe_tokens.npz": 4721540
+  },
+  "ptfr_u42_nogram_q4_mb18_s42_fixed": {
+    "final_model.pt": 258313247,
+    "probe_tokens.npz": 4721540
+  },
+  "ptfr_u84_frozen0_base_mb18_s42_fixed": {
+    "final_model.pt": 3479539169,
+    "probe_tokens.npz": 4721540
+  },
+  "ptfr_u84_frozen0_q4_mb18_s42_fixed": {
+    "final_model.pt": 3479539169,
+    "probe_tokens.npz": 4721540
+  },
+  "ptfr_u84_nogram_base_mb18_s42_fixed": {
+    "final_model.pt": 258313247,
+    "probe_tokens.npz": 4721540
+  },
+  "ptfr_u84_nogram_q4_mb18_s42_fixed": {
+    "final_model.pt": 258313247,
+    "probe_tokens.npz": 4721540
+  },
+  "ptfr_u42_frozen0_base_mb18_s42_smoke2_fixed": {
+    "final_model.pt": null,
+    "probe_tokens.npz": null
+  },
+  "ptfr_u42_nogram_base_mb18_s42_smoke2_fixed": {
+    "final_model.pt": null,
+    "probe_tokens.npz": null
+  }
+}
