@@ -1,0 +1,10 @@
+\subsection{From the frequency law to novel continuations}
+\label{sec:coverage}
+A rare context has had few chances to reveal its possible continuations. Call a validation target \emph{novel} when its context occurs in training but was never followed there by that target, and let $f(F)$ be the fraction of validation positions at context count $F\ge1$ whose continuation is novel. Splitting these positions into novel and seen continuations gives the simple approximation
+\begin{equation}
+\gap_t(F)\approx a_t f(F)+b_t\big[1-f(F)\big],
+\label{eq:coverage-main}
+\end{equation}
+where $a_t$ and $b_t$ summarize their respective validation-loss differences relative to training. Coverage sets the mixture weights; training determines the loss penalties. The exact decomposition allows both differences to depend on $F$ (Appendix~\ref{app:coverage}).
+
+The novel fraction itself decays approximately as $f(F)\propto F^{-\alpha}$. For bigram contexts, fitting the same 18 bins at step 1000 gives exponents $0.25$ for the three-seed mean gap and $0.23$ for measured novelty. When the novel term dominates and its penalty varies slowly, the gap inherits this decay. Good--Turing estimation and conditional continuation tails connect the novel fraction to the statistics of the text; corrections from the seen term and frequency-dependent penalties are developed in Appendix~\ref{app:math}. The frequency law thus points to continuation coverage. It remains to explain why replay harms these continuations.

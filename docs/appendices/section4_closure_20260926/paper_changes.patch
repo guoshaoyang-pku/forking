@@ -1,0 +1,92 @@
+diff --git a/sections/03_empirical.tex b/sections/03_empirical.tex
+index 5b1f42e..0fb1e68 100644
+--- a/sections/03_empirical.tex
++++ b/sections/03_empirical.tex
+@@ -10 +10 @@ All experiments below use input injection and, where tables are enabled, a table
+-Enabling both tables ($2^{20}$ rows each) and measuring online gaps at step 1000, grouped by the context count $F$ in the unrepeated corpus, shows that the gap falls with $F$ in an approximate power law (Figure~\ref{fig:frequency}; markers are native-bin means). Section~\ref{sec:coverage} connects this trend to the fraction of novel continuations, whose scaled and shifted values give the dashed curves.
++Enabling both tables ($2^{20}$ rows each) and grouping the step-1000 gap by context count $F$ in the unrepeated corpus reveals a striking regularity: the bigram gap follows an approximate power law over three decades of frequency (Figure~\ref{fig:frequency}). The trigram gap also falls with frequency, with larger departures from a power law. Section~\ref{sec:coverage} connects this pattern to the fraction of novel continuations.
+@@ -49 +49 @@ We count context frequencies in the unrepeated training corpus and mask the $n$-
+-\caption{Gap scaling with (a) context frequency, (b) table capacity, and (c) corpus size. Panel (a): three-seed means and standard deviations; dashed curves are scaled and shifted novel fractions.}
++\caption{Gap scaling with (a) context frequency, (b) table capacity, and (c) corpus size. Panel (a) shows the mean online gap across seeds 42, 43 and 44 at step 1000, on log--log axes. Markers represent 18 frequency bins with $1\le F\le1000$; dashed lines are equal-bin log--log fits, with exponents $0.25$ (bigram) and $0.47$ (trigram). Appendix~\ref{app:coverage-tests} compares these with measured novelty. Panels (b,c) use seed 42 and the settings described in the text.}
+diff --git a/sections/04_mechanism.tex b/sections/04_mechanism.tex
+index aa17c0a..3485084 100644
+--- a/sections/04_mechanism.tex
++++ b/sections/04_mechanism.tex
+@@ -8 +8 @@ The approximate power law in Figure~\ref{fig:frequency} is our first clue: why s
+-A rare context has had few chances to reveal its possible continuations. Call a validation target \emph{novel} when its context occurs in training but was never followed there by that target, and let $f(F)$ be the fraction of validation positions at context count $F\ge1$ whose continuation is novel. This fraction closely tracks the frequency dependence of the gap: the dashed curves in Figure~\ref{fig:frequency} are the directly measured $f$, rescaled and shifted,
++A rare context has had few chances to reveal its possible continuations. Call a validation target \emph{novel} when its context occurs in training but was never followed there by that target, and let $f(F)$ be the fraction of validation positions at context count $F\ge1$ whose continuation is novel. Splitting these positions into novel and seen continuations gives the simple approximation
+@@ -10 +10 @@ A rare context has had few chances to reveal its possible continuations. Call a
+-\gap_t(F)\approx a_t f(F)+b_t,
++\gap_t(F)\approx a_t f(F)+b_t\big[1-f(F)\big],
+@@ -13 +13,3 @@ A rare context has had few chances to reveal its possible continuations. Call a
+-with one scale and one offset per branch at training step $t$. Good--Turing estimation connects this novel fraction to singleton counts in the corpus; heavy-tailed conditional distributions provide a reason for its slow, approximately power-law decay. The detailed derivation and the terms beyond simple proportionality are in Appendix~\ref{app:math}. Thus the frequency trend points to a property of the text: rare contexts leave more plausible continuations unseen. It remains to explain why those continuations are harmed by replay.
++where $a_t$ and $b_t$ are effective loss differences for novel and seen continuations, each relative to the training loss in the same frequency bin. Coverage sets the mixture weights; training determines the loss penalties. The exact decomposition allows both differences to depend on $F$ (Appendix~\ref{app:coverage}).
++
++The novel fraction itself decays approximately as $f(F)\propto F^{-\alpha}$. For bigram contexts, fitting the same 18 frequency bins as Figure~\ref{fig:frequency} at step 1000 gives exponents $0.25$ for the three-seed mean gap and $0.23$ for measured novelty. When the novel term dominates and its penalty varies slowly, the gap inherits this decay. Good--Turing estimation and conditional continuation tails connect the novel fraction to the statistics of the text; the trigram comparison and corrections from the seen term and frequency-dependent penalties are developed in Appendix~\ref{app:coverage-tests}. The frequency law thus points to continuation coverage. It remains to explain why replay harms these continuations.
+@@ -17 +19 @@ with one scale and one offset per branch at training step $t$. Good--Turing esti
+-A finite corpus does not fully represent the continuation distribution of each context: a context whose population distribution assigns equal probability to $C$ and $D$ may appear three times with $C$ and once with $D$ in training, so fitting the sample underpredicts $D$ on fresh data. The replay trajectory adds a further clue. After one complete epoch, the corpus and its novel fraction are fixed, yet the gap continues to grow, by comparable amounts over the first few epochs (Figure~\ref{fig:staircase}; Appendix~\ref{app:replay-clue}). The missing coverage alone does not specify this continuing damage. We hypothesize that each repetition reinforces the seen continuations and progressively suppresses the alternatives.
++A finite corpus can underrepresent a continuation: a context whose population distribution assigns equal probability to $C$ and $D$ may appear three times with $C$ and once with $D$, so fitting the sample underpredicts $D$ on fresh data. But after the first epoch the same corpus is replayed. Its novel fraction is unchanged, while the gap continues to grow by comparable amounts over the early epochs (Figure~\ref{fig:staircase}; Appendix~\ref{app:replay-clue}). Coverage locates the vulnerable positions but does not account for this time dependence. We therefore hypothesize that each repetition reinforces seen continuations and progressively suppresses alternatives in the context-specific subspace.
+diff --git a/sections/appendix_e_theory.tex b/sections/appendix_e_theory.tex
+index 3e00c7a..de6ac3e 100644
+--- a/sections/appendix_e_theory.tex
++++ b/sections/appendix_e_theory.tex
+@@ -46 +46 @@ z(t+1)=z(t)\exp\!\left[\eta\left(1-p_C^{(t)}+p_u^{(t)}\right)\right]>z(t),
+-and nothing saturates while $p_C<1$. When $\mathcal{S}$ is a single token, the training loss is $-\ln p_C$ and each pass transfers mass from $\mathcal{V}$ and the rest onto $C$; the validation loss on $\mathcal{V}$ rises relative to the training loss, since $\ell_u-\ell_C=\ln z$ for every $u\in\mathcal{V}$. Section~\ref{sec:sharpening} uses $\ln z$, averaged over $\mathcal{V}$, as an idealized model of the depth $D_t$ of Equation~\eqref{eq:gap-decomp}.
++and nothing saturates while $p_C<1$. When $\mathcal{S}$ is a single token, the training loss is $-\ln p_C$ and each epoch transfers mass from $\mathcal{V}$ and the rest onto $C$; the validation loss on $\mathcal{V}$ rises relative to the training loss, since $\ell_u-\ell_C=\ln z$ for every $u\in\mathcal{V}$. Section~\ref{sec:sharpening} uses $\ln z$, averaged over $\mathcal{V}$, as an idealized model of the depth $D_t$ of Equation~\eqref{eq:gap-decomp}.
+@@ -60 +60 @@ S_t(F)=\ell^{\mathrm{val}}_{\mathrm{seen},t}(F)-\ell^{\mathrm{tr}}_t(F).
+-Here $D_t$ is the depth of novel continuations below the training loss (the novel-continuation penalty of Section~\ref{sec:sharpening}) and $S_t$ is the corresponding seen term; both compare a validation loss with the same online training loss. All three losses are bin means at the same logged step and are not matched context by context. Coverage sets the mixture weights, and the model determines the two loss differences.
++Here $D_t$ is the excess loss of novel continuations over the training loss (the novel-continuation penalty of Section~\ref{sec:sharpening}) and $S_t$ is the corresponding seen term; both compare a validation loss with the same online training loss. All three losses are bin means at the same logged step and are not matched context by context. Coverage sets the mixture weights, and the model determines the two loss differences.
+@@ -64 +64 @@ If both differences vary little with $F$, the decomposition is approximately aff
+-\gap_t(F)\approx a_t f(F)+b_t.
++\gap_t(F)\approx A_t f(F)+B_t.
+@@ -67 +67 @@ If both differences vary little with $F$, the decomposition is approximately aff
+-When the seen term is also negligible, it reduces to $\gap_t(F)\approx D_t f(F)$: the gap is the fraction of positions exposed to crowding-out times their loss penalty. The affine relation describes the measured bins well (Figure~\ref{fig:coverage}b,c). Its intercept $b_t$ need not equal the seen term, because frequency-dependent components can also produce a close fit (Appendix~\ref{app:coverage-tests}).
++In the constant-penalty approximation of Equation~\eqref{eq:coverage-main}, $A_t=a_t-b_t$ and $B_t=b_t$. When the seen term is also negligible, it reduces to $\gap_t(F)\approx D_t f(F)$: the gap is the fraction of positions exposed to crowding-out times their loss penalty. The affine relation describes the measured bins well (Figure~\ref{fig:coverage}b,c). Its intercept $B_t$ need not equal the seen term, because frequency-dependent components can also produce a close fit (Appendix~\ref{app:coverage-tests}).
+@@ -141 +141,18 @@ The online-gap tests use the both-table model and the no-gram control with seeds
+-We use all 18 frequency bins with $1\le F\le1000$; each has at least 300 training and validation tokens at the reported steps, and bins with negative gaps are kept. The bins are $1,2,3,4,5,6$--$8,9$--$12,13$--$20,21$--$30,31$--$50,51$--$75,76$--$100,101$--$150,151$--$200,201$--$300,301$--$500,501$--$750,751$--$1000$. Steps 670, 1000, 1340 and 2000 lie near the ends of passes 2, 3, 4 and 6. We fit the three-seed mean gap by least squares with equal weight per bin; the same held-out pool supplies $f$ for all seeds. Figure~\ref{fig:coverage} uses linear axes throughout and shows the no-gram comparison at step 1000.
++We use all 18 frequency bins with $1\le F\le1000$; each has at least 300 training and validation tokens at the reported steps, and bins with negative gaps are kept. The bins are $1,2,3,4,5,6$--$8,9$--$12,13$--$20,21$--$30,31$--$50,51$--$75,76$--$100,101$--$150,151$--$200,201$--$300,301$--$500,501$--$750,751$--$1000$. Steps 670, 1000, 1340 and 2000 lie near the ends of epochs 2, 3, 4 and 6. We fit the three-seed mean gap by least squares with equal weight per bin; the same held-out pool supplies $f$ for all seeds. Figure~\ref{fig:coverage} uses linear axes throughout and shows the no-gram comparison at step 1000.
++
++\paragraph{Power-law comparison.}
++To compare the frequency dependence of gap and novelty, we fit $\log y=\log c-\gamma\log F$ with equal weight on the same 18 bins, representing each bin by the geometric mean of its endpoints. At step 1000 all three-seed mean gaps are positive, so no bins are removed for the log fit. Table~\ref{tab:coverage-exponents} reports both branches. The bigram exponents are close, $0.251$ versus $0.229$, whereas the trigram gap decays more steeply and departs more from a power law. These are finite-range descriptive fits, not universal corpus exponents; the conditional-tail argument in Equation~\eqref{eq:occupancy} does not by itself fix the exponent of a cross-context fit.
++
++\begin{table}[!htbp]
++\centering\small
++\caption{Matched power-law fits at step 1000. Gap uses the three-seed mean; novelty is measured directly on the shared fixed validation pool. Both use the same frequency bins and equal-bin log--log regression.}
++\label{tab:coverage-exponents}
++\begin{tabular}{lrrrr}
++\toprule
++Context & Gap exponent $\beta$ & $R^2_{\log}$ & Novelty exponent $\alpha$ & $R^2_{\log}$\\
++\midrule
++Bigram & 0.251 & 0.997 & 0.229 & 0.981\\
++Trigram & 0.466 & 0.843 & 0.212 & 0.985\\
++\bottomrule
++\end{tabular}
++\end{table}
+@@ -144 +161 @@ We use all 18 frequency bins with $1\le F\le1000$; each has at least 300 trainin
+-For fits to the three-seed mean at the four reported steps, relative rms residuals are 3--8\% for bigram and 3--11\% for trigram contexts (Table~\ref{tab:affine}). The intercept matters: at step 2000 the bigram fit has $b_t=1.89$ nats, and forcing the line through zero increases the rms error from 0.20 to 0.76 nats. The proportional form $\gap_t\approx D_tf$ therefore fits the later gap much less well than the affine form.
++For fits to the three-seed mean at the four reported steps, relative rms residuals are 3--8\% for bigram and 3--11\% for trigram contexts (Table~\ref{tab:affine}). The intercept matters: at step 2000 the bigram fit has $B_t=1.89$ nats, and forcing the line through zero increases the rms error from 0.20 to 0.76 nats. The proportional form $\gap_t\approx D_tf$ therefore fits the later gap much less well than the affine form.
+@@ -148 +165 @@ For fits to the three-seed mean at the four reported steps, relative rms residua
+-\caption{Online gap fit $a_tf(F)+b_t$ to the three-seed mean over 18 bins with $1\le F\le1000$. Coefficients and rms errors are in nats; relative rms divides by the mean absolute bin gap. The holdout column fits alternating frequency bins and evaluates on the others.}
++\caption{Online gap fit $A_tf(F)+B_t$ to the three-seed mean over 18 bins with $1\le F\le1000$. Coefficients and rms errors are in nats; relative rms divides by the mean absolute bin gap. The holdout column fits alternating frequency bins and evaluates on the others.}
+@@ -152 +169 @@ For fits to the three-seed mean at the four reported steps, relative rms residua
+-Context & Step & $a$ & $b$ & rms & Relative & Holdout\\
++Context & Step & $A$ & $B$ & rms & Relative & Holdout\\
+@@ -170,0 +188,9 @@ Fixed-probe losses of the seed-42 both-table model at step 1000 allow a comparis
++\paragraph{Corrections to the leading power law.}
++Writing $D_t(F)=a_t+\delta D_t(F)$ and $S_t(F)=b_t+\delta S_t(F)$ in the exact decomposition gives
++\begin{equation}
++\gap_t(F)=(a_t-b_t)f(F)+b_t
+++f(F)\delta D_t(F)+[1-f(F)]\delta S_t(F).
++\label{eq:coverage-corrections}
++\end{equation}
++If $f(F)\approx cF^{-\alpha}$, the first term is a power law. The seen-term offset and the frequency-dependent remainder need not share its exponent or be small. These terms allow coverage to track the gap even when their fitted exponents differ.
++
+@@ -172 +198 @@ Fixed-probe losses of the seed-42 both-table model at step 1000 allow a comparis
+-If $f(F)=cF^{-\alpha}$ exactly and $\gap=af+b$ with $a$ and $b$ fixed across $F$, the local exponent of a positive gap is
++If $f(F)=cF^{-\alpha}$ exactly and $\gap=Af+B$ with $A$ and $B$ fixed across $F$, the local exponent of a positive gap is
+@@ -175 +201 @@ If $f(F)=cF^{-\alpha}$ exactly and $\gap=af+b$ with $a$ and $b$ fixed across $F$
+-=\alpha\,\frac{af(F)}{af(F)+b}.
++=\alpha\,\frac{Af(F)}{Af(F)+B}.
+@@ -178 +204 @@ If $f(F)=cF^{-\alpha}$ exactly and $\gap=af+b$ with $a$ and $b$ fixed across $F$
+-It equals $\alpha$ only when the intercept is negligible; a positive intercept flattens the gap and a negative one steepens it. Because $a_t$ and $b_t$ change with training step (Table~\ref{tab:affine}) and with table capacity, the observed gap exponent can change while the corpus stays fixed. These tests cover one corpus, optimizer and injection path, and within that setting support coverage as a contributor to the frequency dependence of the gap.
++It equals $\alpha$ only when the intercept is negligible; a positive intercept flattens the gap and a negative one steepens it. Because $A_t$ and $B_t$ change with training step (Table~\ref{tab:affine}) and with table capacity, the observed gap exponent can change while the corpus stays fixed. These tests cover one corpus, optimizer and injection path, and within that setting support coverage as a contributor to the frequency dependence of the gap.

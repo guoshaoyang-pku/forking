@@ -1,0 +1,15 @@
+```latex
+\subsection{From the frequency law to novel continuations}
+\label{sec:novel-continuations}
+
+We call a validation target \emph{novel} if its context occurs in training but was never followed by that target there. The word itself may be familiar; novelty is a property of the context--target pair. Let $f(F)$ denote the fraction of validation positions in context-count bin $F \ge 1$ whose targets are novel.
+
+Splitting the gap by novelty gives the approximation
+\begin{equation}
+\mathrm{gap}_t(F) \;\approx\; a_t\, f(F) + b_t\,[1 - f(F)],
+\label{eq:coverage-main}
+\end{equation}
+where $a_t$ and $b_t$ are the typical loss differences for novel and seen targets. The exact $F$-dependent decomposition and correction terms appear in Appendix~\ref{app:math}.
+
+Empirically, $f(F)$ declines roughly as $F^{-\alpha}$, a corpus statistic that conditional heavy tails and Good--Turing estimation help explain. When the novel term dominates and the component differences vary slowly, the gap inherits approximately the same decay, though the exponents need not match exactly. Figure~\ref{fig:frequency} overlays the three-seed mean online gap with an affine fit to the measured $f(F)$; the fitted coefficients are effective values rather than literal component means (fitting details in Appendix~\ref{app:math}). Coverage thus explains the frequency law, but not why replay harms these novel continuations---the question we turn to next.
+```

@@ -1,0 +1,10 @@
+Draft a concise, readable English revision of the opening of Section 4 of an ICLR paper. Preserve the technical story and LaTeX notation. The author wants the discovery order: first an approximate frequency power law in Figure~\\ref{fig:frequency}; then ask why frequency organizes the gap; then define a novel continuation as a validation target whose exact context occurred in training but was never followed by that target; then introduce the simple concept equation
+\\begin{equation}
+\\gap_t(F)\\approx a_t f(F)+b_t(1-f(F)),
+\\label{eq:coverage-main}
+\\end{equation}
+where f(F) is the novel-continuation fraction, a_t is the typical penalty on novel continuations, and b_t is the typical seen-continuation term. Explain in plain language that this is a bookkeeping model, not an exact identity at the level of constant coefficients. Say that direct measured novelty has the same slow decline with F and that Good--Turing/heavy-tailed conditional continuation statistics explain why an approximate power law is a natural hook; defer exact decomposition and estimator/indexing to Appendix~\\ref{app:math}. Mention that the plotted dashed curves are measured f rescaled/shifted for each branch and step, not a training-only prediction. End with suspense: coverage explains where the vulnerability is, but not why replay keeps increasing the gap after the corpus and f(F) are fixed.
+
+Then draft a short opening for subsection 4.2 “Crowding-out under replay”: initially a finite sample can underrepresent a continuation; but after one epoch the same data are replayed and the novel fraction is unchanged while the gap continues to grow. This suggests each replay reinforces seen continuations and suppresses alternatives in the context-specific subspace. Preserve the existing next paragraph beginning “This would make forking...” as much as possible.
+
+Constraints: 180-230 words total; no claims that gap exponent is universal or exactly equal to the novel exponent; no new numbers; no citations; retain existing \\gap macro and terms.

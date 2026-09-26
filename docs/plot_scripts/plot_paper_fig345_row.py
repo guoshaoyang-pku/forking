@@ -1,54 +1,21 @@
 #!/usr/bin/env python3
-"""Paper Sec.3 scaling-law row: (a) frequency, (b) capacity, (c) corpus dose.
+"""Paper scaling row: frequency, capacity, and corpus size.
 
-Three panels designed to sit side by side as subfigures (a)/(b)/(c) of one
-LaTeX figure in overleaf-paper (2026-09-21 user decisions; panel (a) caliber
-history: fixed-probe until 2026-09-25, then the ONLINE three-seed coverage
-caliber, final; 2026-09-26: panel (a) restyled to the shared row canvas and
-fonts, linear-regression fit kept, error bars dropped):
-  (a) bigram+trigram ONLINE gap at step 1000, three-seed means (42/43/44)
-      per native frequency bin, NO error bars (seed SD <= 0.07 nats);
-      dashed lines = equal-bin OLS LINEAR regression of the gap on the
-      measured novel fraction f (the caption's "scaled and shifted novel
-      fractions"), drawn against F.  Data from the coverage audit packet
-      docs/appendices/coverage_takeover_20260925/online_points.csv; the fit
-      is cross-checked against online_fits.csv (mean_3, equal_bin).
-      No legend (panel (b) carries the shared bigram/trigram legend).
-      The historical FIXED-probe panel remains available as
-      fig03a_frequency.* (draw_frequency) for reference only.
-  (b) capacity drawn LOG-LOG (user: "fig4还是得画双对数"), no fit line
-      (user: "不用强行拟合"); non-positive gaps omitted from log display;
-      carries the bigram/trigram legend shared with (a).
-  (c) corpus dose with LINEAR y (user: "fig5需要y轴非对数") and x = training
-      corpus tokens in millions (user: "横轴展示token的数量，单位是M").
+Panel (a): online gap, both tables (2^20 rows), input injection, table LR
+128x, step 1000, seeds 42/43/44. Read coverage_takeover_20260925/online_points.csv;
+plot all 18 native bins with 1 <= F <= 1000 using geometric midpoints and
+three-seed arithmetic means. Dashed power laws use equal-bin log-log OLS.
+The directly measured novel fractions use the identical fit protocol.
+Panel (b): single-table capacity sweep, seed 42, online gap at step 1000,
+log-log axes without a fitted line; carries the shared branch legend.
+Panel (c): trigram-only corpus sweep, seed 42, online epoch-2/3 endpoints,
+log x in millions of prediction tokens, linear y.
 
-Data (seed 42; input injection; table LR 128x backbone where a table exists):
-  (a) docs/appendices/s1_scaling_three_axis/s1_frequency_exact_points.csv
-      both tables enabled (2^20 rows each), fixed-probe gap at step 1000
-      (run data/runs_scaling/s1v5_128_frequency_main_fixed; layers with
-      >= MIN_CONTEXTS shared contexts and positive gap).
-  (b) docs/appendices/s1_scaling_three_axis/s1_table_size_points.csv
-      bigram-only / trigram-only final gap at step 1000, R = 1 .. 2.347e6
-      (runs data/runs_scaling/s1v5_128_tbl_*_fixed).
-  (c) docs/appendices/s1_scaling_three_axis/s1_dose_epoch_endpoints.csv
-      trigram-only (2^20 rows), 20 corpus doses 0.125x..20x D1, gaps at the
-      ends of epochs 2 and 3; x = epoch_batches * 72 * 2048 tokens / 1e6.
-
-The online freq-bin record (s1_frequency_online_freqbin.jsonl, rerun 2026-09-22)
-is kept for reference; --online redraws (a) in that caliber to
-fig03a_frequency_online.* without touching the paper panel.
-
-Outputs (docs/figs/paper/):
-  fig03a_frequency.pdf/.png/.svg        (legacy fixed-probe reference)
-  fig03b_capacity.pdf/.png
-  fig03b_capacity.svg
-  fig03c_corpus.pdf/.png
-  fig03c_corpus.svg
-  fig345_row_preview.png        (side-by-side montage, review only)
-Outputs (docs/figs/coverage_20260925/, the paper panel (a)):
-  fig03a_frequency_coverage.pdf/.png/.svg
-Copy the three paper PDFs (coverage fig03a + fig03b + fig03c) to
-overleaf-paper/figures/ with the same names.
+Current panel (a) is docs/figs/coverage_20260925/fig03a_frequency_coverage.*;
+(b,c) and the review montage are in docs/figs/paper/.
+--frequency-only regenerates only the current panel (a).
+--online retains an older single-seed online reference; draw_frequency is
+an unused historical fixed-probe renderer, not a source for the paper.
 """
 from __future__ import annotations
 
@@ -88,8 +55,8 @@ TRIGRAM_COLOR = "#7A3EAA"
 EPOCH2_COLOR = "#2A9D8F"
 EPOCH3_COLOR = "#D1493F"
 
-# Fixed-probe canonical fits (paper text Sec. 4.1, Eq. gap-fits); drawn as the
-# dashed lines of panel (a).
+# Historical hard-coded curves, retained only for the unused legacy renderer.
+# They are not recomputed fits and must not be cited as current results.
 CANON_FIT = {"bigram": (7.206, -0.233), "trigram": (3.759, -0.318)}
 MIN_CONTEXTS = 32
 N_BINS = 12
@@ -120,7 +87,9 @@ def _save_panel(fig, name, outdir=OUT):
     outdir.mkdir(parents=True, exist_ok=True)
     # fixed canvas (no bbox_inches) so the three panels share exact dimensions
     fig.savefig(outdir / f"{name}.pdf")
-    fig.savefig(outdir / f"{name}.svg")
+    svg = outdir / f"{name}.svg"
+    fig.savefig(svg)
+    svg.write_text("\n".join(line.rstrip() for line in svg.read_text().splitlines()) + "\n")
     fig.savefig(outdir / f"{name}.png", dpi=300)
     plt.close(fig)
     print((outdir / f"{name}.pdf").relative_to(ROOT))
@@ -299,26 +268,43 @@ def coverage_frequency_rows(branch):
     return rows
 
 
+def powerlaw_fit(x, y):
+    """Equal-bin OLS of log(y) on log(x); all supplied bins must be positive."""
+    x, y = np.asarray(x), np.asarray(y)
+    assert np.all(x > 0) and np.all(y > 0)
+    lx, ly = np.log(x), np.log(y)
+    slope, intercept = np.polyfit(lx, ly, 1)
+    residual = ly - (slope * lx + intercept)
+    r2 = 1.0 - np.sum(residual ** 2) / np.sum((ly - ly.mean()) ** 2)
+    return float(np.exp(intercept)), float(-slope), float(r2)
+
+
 def draw_frequency_coverage(ax):
-    """Paper Fig 5(a): three-seed mean online gaps, equal-bin OLS LINEAR
-    regression gap = a*f + b on the measured novel fraction (dashed, drawn
-    against F), no error bars, no legend (panel (b) carries the legend)."""
+    """Current Fig 5(a): mean online gaps and equal-bin log-log fits.
+
+    Both branches keep all 18 bins. No error bars; panel (b) carries the legend.
+    The affine gap-versus-novelty fits remain in the appendix coverage plot.
+    """
     for branch, marker in (("bigram", "o"), ("trigram", "^")):
         rows = coverage_frequency_rows(branch)
-        F = np.array([r[0] for r in rows])
-        f = np.array([r[1] for r in rows])
-        g = np.array([r[2] for r in rows])
-        slope, intercept = np.polyfit(f, g, 1)
+        F, f, g = np.array(rows).T
+        assert len(rows) == 18 and F.min() == 1 and F.max() <= 1000
+        amp, beta, r2 = powerlaw_fit(F, g)
+        _, alpha, _ = powerlaw_fit(F, f)
         color = BIGRAM_COLOR if branch == "bigram" else TRIGRAM_COLOR
         ax.plot(F, g, marker=marker, ls="none", ms=3.8, color=color,
                 zorder=3, label=branch)
-        ax.plot(F, slope * f + intercept, ls="--", lw=1.1, color=color,
-                zorder=4)
-        print(f"[fig03a-coverage] {branch}: gap = {slope:.3f}*f {intercept:+.3f} "
-              f"(equal-bin OLS, {len(rows)} bins, 3-seed means)")
+        x = np.geomspace(F.min(), F.max(), 100)
+        ax.plot(x, amp * x ** (-beta), ls="--", lw=1.1, color=color,
+                zorder=2)
+        print(f"[fig03a-powerlaw] {branch}: gap = {amp:.6f} F^-{beta:.6f}; "
+              f"R2_log={r2:.6f}; novelty alpha={alpha:.6f}; "
+              f"{len(rows)} bins, 3-seed means")
     ax.set_xscale("log")
+    ax.set_yscale("log")
     ax.set_xlim(0.8, 1200)
-    ax.set_ylim(-0.4, 7.8)
+    ax.set_ylim(0.035, 10)
+    ax.yaxis.set_major_formatter(FuncFormatter(plain_fmt))
     ax.set_xlabel("context frequency $F$")
     ax.set_ylabel("online gap (nats)")
 
@@ -381,7 +367,9 @@ def make_preview():
     fig.tight_layout(pad=0.5)
     OUT.mkdir(parents=True, exist_ok=True)
     fig.savefig(OUT / "fig345_row_preview.png", dpi=300)
-    fig.savefig(OUT / "fig345_row_preview.svg")
+    svg = OUT / "fig345_row_preview.svg"
+    fig.savefig(svg)
+    svg.write_text("\n".join(line.rstrip() for line in svg.read_text().splitlines()) + "\n")
     plt.close(fig)
     print((OUT / "fig345_row_preview.png").relative_to(ROOT))
 
@@ -392,7 +380,8 @@ def main():
         make_panel(draw_frequency_online, "fig03a_frequency_online")
         return
     make_panel(draw_frequency_coverage, "fig03a_frequency_coverage", COV_OUT)
-    make_panel(draw_frequency, "fig03a_frequency")
+    if "--frequency-only" in sys.argv:
+        return
     make_panel(draw_capacity, "fig03b_capacity")
     make_panel(draw_corpus, "fig03c_corpus")
     make_preview()
