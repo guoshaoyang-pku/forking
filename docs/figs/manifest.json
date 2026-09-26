@@ -140,6 +140,48 @@
       "width": 2100,
       "height": 787,
       "png_sha256": "c9ce010384505f45c106d9a63dacdf1754a98568fd4483cf9343e68adab4371c"
+    },
+    {
+      "id": "sharpening-evidence",
+      "source": "docs/figs/paper/fig_mechanism_three_panel.pdf",
+      "source_revision": "013a92d3282df48c40f2416c3a3c8b4b6a1a16a3",
+      "source_sha256": "67a0c66e10bd1cca6f71cc7fcc145aadbc9e2b04c4c7a595cc05daf35c45599b",
+      "pdf": "docs/figs/sharpening-evidence.pdf",
+      "png": "docs/figs/sharpening-evidence.png",
+      "evidence_status": "measured-diagnostic-asset",
+      "provenance_reference": "paper/sections/04_mechanism.tex; paper/sections/appendix_f_mechanism.tex",
+      "scope": "Seed 42 intervention and aggregate diagnostic: train-seen mass, context gap contribution, and seen-versus-novel validation cross-entropy. It is not a per-context monotone trajectory or a standalone causal proof.",
+      "width": 1650,
+      "height": 660,
+      "png_sha256": "c0f589ff908a4150f7385b289f39e07620647ac9a8ad9d9eb5574f34efabdf7f"
+    },
+    {
+      "id": "sharpening-vs-ce",
+      "source": "ngram-gap-lab/docs/figs/main/fig_ls20ep_sharpening_vs_ce.png",
+      "source_revision": "383fdf6",
+      "source_sha256": "7f87d55667d5763fd0489d48bf94f3fc551a06f896595e75d70b89b5d42cb6e4",
+      "pdf": null,
+      "png": "docs/figs/sharpening-vs-ce.png",
+      "evidence_status": "derived-data-traced",
+      "provenance_reference": "ngram-gap-lab/docs/plot_scripts/analyze_ls20ep_logit_sharpening.py; evidence/sharpening/manifest.json",
+      "scope": "20 replay epochs, seed 42, 128x table learning-rate scale; shape metrics and validation CE are plotted on separate axes.",
+      "width": 2850,
+      "height": 1140,
+      "png_sha256": "7f87d55667d5763fd0489d48bf94f3fc551a06f896595e75d70b89b5d42cb6e4"
+    },
+    {
+      "id": "sharpening-exemplars",
+      "source": "ngram-gap-lab/docs/figs/main/fig_ls20ep_exemplar_evolution.png",
+      "source_revision": "383fdf6",
+      "source_sha256": "2147335950ee71401c46e87206ac0dc54b36cca4a5f2864c8435d650929122ee",
+      "pdf": null,
+      "png": "docs/figs/sharpening-exemplars.png",
+      "evidence_status": "derived-data-traced",
+      "provenance_reference": "ngram-gap-lab/docs/plot_scripts/analyze_ls20ep_logit_sharpening.py; evidence/sharpening/manifest.json",
+      "scope": "Selected high-frequency, low-frequency, and novel context top-20 probability endpoints across replay epochs.",
+      "width": 2340,
+      "height": 600,
+      "png_sha256": "2147335950ee71401c46e87206ac0dc54b36cca4a5f2864c8435d650929122ee"
     }
   ]
 }

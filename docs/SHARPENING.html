@@ -1,0 +1,63 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Replay sharpening: evidence and scope · Forking</title><meta name="description" content="Replay sharpening: evidence and scope">
+<meta name="theme-color" content="#152c42"><meta property="og:title" content="Forking: Sudden Overfitting Under Replay">
+<meta property="og:description" content="When the same text returns, fitting and generalization can take different paths.">
+<meta property="og:type" content="website"><meta property="og:image" content="https://guoshaoyang-pku.github.io/forking/site-assets/share-card.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://guoshaoyang-pku.github.io/forking/site-assets/share-card.png">
+<link rel="icon" href="site-assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="site-assets/site.css"></head><body>
+<a class="skip" href="#main">Skip to content</a><header class="topbar"><nav class="wrap nav" aria-label="Main navigation">
+<a class="brand" href="index.html"><svg class="mark" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25L12 16L26 4" fill="none" stroke="#196693" stroke-width="3"/><path d="M12 16L26 22" fill="none" stroke="#c65b2e" stroke-width="3"/></svg>Forking</a>
+<div class="nav-links"><a href="index.html#findings">Findings</a><a href="REVIEW_GUIDE.html" class="optional">Review</a><a href="index.html#reproduce">Reproduce</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release">GitHub ↗</a></div></nav></header><main id="main" class="wrap document"><h1 id="replay-sharpening-evidence-and-scope">Replay sharpening: evidence and scope</h1>
+<p>This packet records the prediction-level diagnostic used in the release page. It is a finite-budget measurement of a vanilla NanoGPT run, not a schematic and not a claim that every memory system behaves the same way.</p>
+<h2 id="coordinates">Coordinates</h2>
+<ul>
+<li>input route with clean bigram and trigram tables, 128× table learning-rate scale;</li>
+<li>matched no-gram control, same backbone setting and data order;</li>
+<li>seed 42, fixed shard-1 replay, 20 passes (337 updates per pass, 6,740 updates);</li>
+<li>BF16 diagnostic forward, probe every 10 updates, with epoch-boundary rows retained;</li>
+<li>validation diagnostics use the fixed validation batches.</li>
+</ul>
+<p>The aggregate packet contains one row per run, branch, epoch, corpus-frequency bucket, and seen/novel group. mean_entropy and mean_margin are distribution-shape metrics. mean_ptrue and the separate CE packet depend on the true next token and therefore measure correctness or damage. The plot keeps these axes separate.</p>
+<h2 id="files">Files</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="figs/sharpening-vs-ce.png">sharpening-vs-ce.png</a></td>
+<td>Aggregate 20-pass diagnostic used on the homepage and README</td>
+</tr>
+<tr>
+<td><a href="figs/sharpening-exemplars.png">sharpening-exemplars.png</a></td>
+<td>Selected high-frequency, low-frequency, and novel context top-20 probabilities</td>
+</tr>
+<tr>
+<td><a href="https://github.com/guoshaoyang-pku/forking/blob/release/evidence/sharpening/agg_epoch_boundary.csv">aggregate CSV</a></td>
+<td>Entropy, margin, and true-token probability at epoch boundaries</td>
+</tr>
+<tr>
+<td><a href="https://github.com/guoshaoyang-pku/forking/blob/release/evidence/sharpening/freqbin_val_ce_epoch_boundary.csv">frequency CE CSV</a></td>
+<td>Validation CE by native frequency bin</td>
+</tr>
+<tr>
+<td><a href="https://github.com/guoshaoyang-pku/forking/blob/release/evidence/sharpening/exemplars_selected.csv">exemplar CSV</a></td>
+<td>The three selected exemplar trajectories</td>
+</tr>
+<tr>
+<td><a href="https://github.com/guoshaoyang-pku/forking/blob/release/evidence/sharpening/manifest.json">manifest</a></td>
+<td>Source hashes and exact metric conventions</td>
+</tr>
+</tbody>
+</table>
+<p>The CSV packet is a compact export of the measured diagnostics. It does not contain model checkpoints or the full-vocabulary logits needed to regenerate every selected ranking from scratch.</p>
+<h2 id="how-to-read-the-result">How to read the result</h2>
+<p>In the local-memory run, entropy decreases and the probability margin grows across replay. At the same time, validation CE for novel continuations rises. The no-gram control also sharpens with optimization, but its novel-continuation CE follows a different trajectory. Thus “sharpening” describes output concentration; it does not by itself mean the prediction is correct. The context-level panel is illustrative of selected endpoints and should not be read as a monotonic trajectory for every context.</p>
+<p>The result supports a scoped statement: under this fixed replay protocol, local memory can concentrate probability on training-compatible continuations while held-out novel continuations receive increasing loss. It does not establish independent context subspaces, a universal law, or equivalence to learned sparse routing.</p>
+<h2 id="provenance">Provenance</h2>
+<p>The source aggregation was generated by docs/plot_scripts/analyze_ls20ep_logit_sharpening.py in the companion research workspace. The release copies the resulting CSVs and rendered figures without modifying the trainer. Source run IDs are ls20ep_input_v5_128x_fd and ls20ep_nogram_v5_128x_fd; both use seed 42 and the same fixed replay protocol. Hashes and the complete metric definitions are recorded in the manifest.</p></main><footer class="wrap footer"><div>Forking · Sudden Overfitting Under Replay</div><div><a href="EVIDENCE.html">Evidence notes</a><a href="AVAILABILITY.html">Materials</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release">Code ↗</a></div></footer></body></html>

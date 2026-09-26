@@ -1,0 +1,49 @@
+{
+  "format_version": 1,
+  "title": "Replay sharpening and cross-entropy diagnostic",
+  "source_workspace": "ngram-gap-lab",
+  "source_script": "docs/plot_scripts/analyze_ls20ep_logit_sharpening.py",
+  "source_revision": "383fdf6",
+  "runs": {
+    "input": "ls20ep_input_v5_128x_fd",
+    "nogram": "ls20ep_nogram_v5_128x_fd"
+  },
+  "setting": {
+    "seed": 42,
+    "table_lr_scale": 128.0,
+    "epoch_updates": 337,
+    "epochs": 20,
+    "final_step": 6740,
+    "replay": "fixed shard 1",
+    "diagnostic_cadence_steps": 10
+  },
+  "metrics": {
+    "mean_entropy": "mean full-vocabulary softmax entropy in nats",
+    "mean_margin": "mean p(top1) - p(top2), probability scale",
+    "mean_ptrue": "mean probability assigned to the observed next token",
+    "val_ce": "mean validation cross-entropy for the true next token, in nats"
+  },
+  "interpretation": "Shape metrics and true-token CE are separate axes. The diagnostic is finite-budget evidence within the listed setting; it does not establish universal or indefinite sharpening.",
+  "files": {
+    "figure_sharpening_vs_ce": {
+      "path": "docs/figs/sharpening-vs-ce.png",
+      "sha256": "7f87d55667d5763fd0489d48bf94f3fc551a06f896595e75d70b89b5d42cb6e4"
+    },
+    "figure_exemplars": {
+      "path": "docs/figs/sharpening-exemplars.png",
+      "sha256": "2147335950ee71401c46e87206ac0dc54b36cca4a5f2864c8435d650929122ee"
+    },
+    "aggregate": {
+      "path": "evidence/sharpening/agg_epoch_boundary.csv",
+      "sha256": "2fbd2b892b89dd37494b847230a32eec2ec3a13b5eecdcc567e18019b162fd2b"
+    },
+    "frequency_ce": {
+      "path": "evidence/sharpening/freqbin_val_ce_epoch_boundary.csv",
+      "sha256": "7832f4d734afa970945b194d73a95308f96afda310deb4c6f67810d0ea32bded"
+    },
+    "exemplars": {
+      "path": "evidence/sharpening/exemplars_selected.csv",
+      "sha256": "f766c458fc2d6ba7a7bb2768ac1683184b5936ae3571fbbb12520e5bcc82a0b9"
+    }
+  }
+}

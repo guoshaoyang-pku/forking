@@ -35,8 +35,10 @@ def footer():
 
 def figure(slug, title, caption, alt, hero=False):
     f = FIGURES[slug]
-    return f'''<figure class="{'hero-figure' if hero else 'panel'}" id="figure-{slug}"><a class="image-link" href="figs/{slug}.pdf" aria-label="Open {html.escape(title)} as vector PDF"><img src="figs/{slug}.png" width="{f['width']}" height="{f['height']}" {'fetchpriority="high"' if hero else 'loading="lazy"'} alt="{html.escape(alt)}"></a>
-<figcaption><strong>{title}</strong> {caption}</figcaption><div class="source-line"><a href="figs/{slug}.pdf">Vector PDF ↗</a><a href="FIGURES.html#{slug}">Source &amp; scope ↗</a></div></figure>'''
+    image_href = f"figs/{slug}.pdf" if f.get("pdf") else f"figs/{slug}.png"
+    image_label = "Vector PDF ↗" if f.get("pdf") else "PNG ↗"
+    return f'''<figure class="{'hero-figure' if hero else 'panel'}" id="figure-{slug}"><a class="image-link" href="{image_href}" aria-label="Open {html.escape(title)}"><img src="figs/{slug}.png" width="{f['width']}" height="{f['height']}" {'fetchpriority="high"' if hero else 'loading="lazy"'} alt="{html.escape(alt)}"></a>
+<figcaption><strong>{title}</strong> {caption}</figcaption><div class="source-line"><a href="{image_href}">{image_label}</a><a href="FIGURES.html#{slug}">Source &amp; scope ↗</a></div></figure>'''
 
 
 def build_home():
@@ -53,7 +55,9 @@ def build_home():
     page += figure("replay", "Replay trajectories.", "Finite-budget measurements with a no-gram control. Online gap is fixed-validation CE after the update minus current-batch training CE before the same logged update; losses are in nats.", "Gap trajectories over 2000 updates and 20 passes.")
     page += """</section><section id="continuations" class="section"><h2>2. Inspect the next-token predictions</h2><p>These context probes show how probability changes between the first and fifth pass, comparing the no-gram and local-memory models.</p>"""
     page += figure("context-examples", "Three contexts, two models.", "Open points: epoch 1. Filled points: epoch 5. Higher means more probable. Colors describe corpus membership. Seed 42; steps 337 and 1685. Lines connect endpoints and do not imply monotone intermediate change.", "Measured log probabilities for three context probes at epochs one and five.")
-    page += """<p class="reading-note">The input is BOS plus exactly three context tokens. “Others” is a separately reranked top-20 mean probability. See <a href="EVIDENCE.html">measurement details</a> and the <a href="FIGURES.html#continuations">aggregate continuation diagnostic</a>.</p></section>
+    page += """<p class="reading-note">The input is BOS plus exactly three context tokens. “Others” is a separately reranked top-20 mean probability. See <a href="EVIDENCE.html">measurement details</a> and the <a href="FIGURES.html#continuations">aggregate continuation diagnostic</a>.</p>
+<h3>Sharpening and recovery</h3><p>The mechanism schematic labels the replay effect <strong>Sharpening</strong> and the contrasting recovery path <strong>Only no-gram can do</strong>. Its bar heights are illustrative. The measured companion below separates output shape from true-token damage.</p>
+<div class="two-up"><figure class="panel"><a class="image-link" href="figs/mechanism.pdf"><img src="figs/mechanism.png" alt="Schematic of sharpening and recovery, including Only no-gram can do."></a><figcaption><strong>Mechanism schematic.</strong> Explanatory, not measured bar heights.</figcaption></figure><figure class="panel"><a class="image-link" href="figs/sharpening-vs-ce.png"><img src="figs/sharpening-vs-ce.png" alt="Measured replay sharpening and validation cross-entropy diagnostic."></a><figcaption><strong>Measured companion.</strong> Twenty replay epochs compare entropy, probability margin, and validation cross-entropy for local memory and the matched no-gram control. <a href="SHARPENING.html">Scope and packet</a>.</figcaption></figure></div></section>
 <section class="section"><h2>3. Relate the gap to continuation coverage</h2><p>The fraction of continuations not observed in training provides a useful description of the gap across context-frequency bins.</p>"""
     page += figure("coverage", "An independently reproducible calculation.", "Equal-bin affine fits at steps 670, 1000, 1340, and 2000. Means and sample SD use seeds 42, 43, and 44. This is a descriptive relationship within the measured setting.", "Training-count novelty estimates and measured bigram and trigram coverage-gap relationships.")
     page += """<p class="reading-note">Additional paper figures cover <a href="FIGURES.html#frequency">frequency</a>, <a href="FIGURES.html#capacity">table capacity</a>, <a href="FIGURES.html#corpus">corpus size</a>, and <a href="FIGURES.html#interventions">retrieval masking and freezing</a>. Their sources and scope are recorded individually.</p></section>
@@ -69,7 +73,7 @@ python3 reproduce/verify_contexts.py</code></pre><p>Python 3.10 or newer. No pac
 
 def build_guides():
     sources = {"REPRODUCE": ROOT / "reproduce/README.md"}
-    sources.update({name: DOCS / f"{name}.md" for name in ("REVIEW_GUIDE", "EVIDENCE", "AVAILABILITY", "TRAINING", "ANNOUNCEMENT")})
+    sources.update({name: DOCS / f"{name}.md" for name in ("REVIEW_GUIDE", "EVIDENCE", "AVAILABILITY", "TRAINING", "ANNOUNCEMENT", "SHARPENING")})
     for name, source in sources.items():
         if not source.exists():
             raise SystemExit(f"Missing guide: {source.name}")
@@ -94,7 +98,9 @@ def build_guides():
         (DOCS / f"{name}.html").write_text(head(title, title) + '<main id="main" class="wrap document">' + body + '</main>' + footer())
     body = '<main id="main" class="wrap document"><p class="eyebrow">Paper figures</p><h1>Figures, sources, and scope</h1><p>Exact vector assets from the manuscript, with individually pinned hashes. The context examples are measured endpoints; the mechanism illustration is schematic.</p>'
     for slug, f in FIGURES.items():
-        body += f'<section id="{slug}"><h2>{html.escape(slug.replace("-", " ").title())}</h2><p>{html.escape(f["scope"])}</p><p><a href="figs/{slug}.pdf">Vector PDF</a> · <a href="figs/{slug}.png">PNG image</a></p><p>Source: <code>{html.escape(f["source"])}</code><br>SHA-256: <code>{f["source_sha256"]}</code></p></section>'
+        asset_links = (f'<a href="figs/{slug}.pdf">Vector PDF</a> · ' if f.get("pdf") else '') + f'<a href="figs/{slug}.png">PNG image</a>'
+        source_hash = f.get("source_sha256", "not applicable; packaged PNG is pinned below")
+        body += f'<section id="{slug}"><h2>{html.escape(slug.replace("-", " ").title())}</h2><p>{html.escape(f["scope"])}</p><p>{asset_links}</p><p>Source: <code>{html.escape(f["source"])}</code><br>Source SHA-256: <code>{source_hash}</code><br>Packaged PNG SHA-256: <code>{f["png_sha256"]}</code></p></section>'
     body += '<p>Machine-readable provenance: <a href="figs/manifest.json">figure manifest</a>.</p></main>'
     (DOCS / "FIGURES.html").write_text(head("Figures and provenance", "Original manuscript figures and source identities") + body + footer())
 
@@ -102,4 +108,4 @@ def build_guides():
 if __name__ == "__main__":
     build_home()
     build_guides()
-    print("Built project page and seven concise reader guides")
+    print("Built project page and eight concise reader guides")

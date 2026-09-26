@@ -10,7 +10,7 @@
 <a class="skip" href="#main">Skip to content</a><header class="topbar"><nav class="wrap nav" aria-label="Main navigation">
 <a class="brand" href="index.html"><svg class="mark" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25L12 16L26 4" fill="none" stroke="#196693" stroke-width="3"/><path d="M12 16L26 22" fill="none" stroke="#c65b2e" stroke-width="3"/></svg>Forking</a>
 <div class="nav-links"><a href="index.html#findings">Findings</a><a href="REVIEW_GUIDE.html" class="optional">Review</a><a href="index.html#reproduce">Reproduce</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release">GitHub ↗</a></div></nav></header><main id="main" class="wrap document"><h1 id="materials-and-availability">Materials and availability</h1>
-<p>The release branch contains the core implementation, baseline configurations, compact numerical evidence, and project page. Development records and history remain on the existing development branch. The release branch can be cloned independently:</p>
+<p>The public <code>release</code> branch contains the core implementation, baseline configurations, compact numerical evidence, sharpening diagnostics, and project page. Development records and history remain on the existing development branch. The release branch can be cloned independently:</p>
 <pre><code class="language-sh">git clone --branch release --single-branch https://github.com/guoshaoyang-pku/forking.git
 </code></pre>
 <table>
@@ -35,7 +35,11 @@
 </tr>
 <tr>
 <td>Paper figures</td>
-<td>Ten pinned vector PDFs, web renders, and provenance notes</td>
+<td>Eleven pinned vector PDFs, web renders, and provenance notes</td>
+</tr>
+<tr>
+<td>Replay sharpening packet</td>
+<td>Aggregate and exemplar PNGs, CSV exports, and a source manifest</td>
 </tr>
 <tr>
 <td>Training inputs</td>
@@ -68,4 +72,4 @@
 </tbody>
 </table>
 <p>The figure files were copied from paper revision 83f17dbc441e61d6a73b7cc0952801f6fc4f3999's working tree and pinned individually by SHA-256. Concurrent manuscript edits are not represented as a clean final source revision. An older compiled PDF is deliberately not presented as the final manuscript.</p>
-<p>Before promoting this branch to the final release, attach the approved final paper/citation and license, publish the precise data/tokenizer acquisition instructions, and validate the training command on those assets. The included workflow is configured to run the CPU analysis checks and launcher tests when hosted runners are available.</p></main><footer class="wrap footer"><div>Forking · Sudden Overfitting Under Replay</div><div><a href="EVIDENCE.html">Evidence notes</a><a href="AVAILABILITY.html">Materials</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release">Code ↗</a></div></footer></body></html>
+<p>Before treating this candidate as the final archival release, attach the approved final paper/citation and license, publish the precise data/tokenizer acquisition instructions, and validate the training command on those assets. The included workflow is configured to run the CPU analysis checks and launcher tests when hosted runners are available.</p></main><footer class="wrap footer"><div>Forking · Sudden Overfitting Under Replay</div><div><a href="EVIDENCE.html">Evidence notes</a><a href="AVAILABILITY.html">Materials</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release">Code ↗</a></div></footer></body></html>

@@ -72,6 +72,8 @@ def main():
     figures = json.loads((DOCS / "figs/manifest.json").read_text())["figures"]
     for f in figures:
         for key, hashkey in (("pdf", "source_sha256"), ("png", "png_sha256")):
+            if not f.get(key):
+                continue
             if hashlib.sha256((ROOT / f[key]).read_bytes()).hexdigest() != f[hashkey]:
                 errors.append("Figure hash mismatch: " + f[key])
         size = struct.unpack(">II", (ROOT / f["png"]).read_bytes()[16:24])

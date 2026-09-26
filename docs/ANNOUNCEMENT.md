@@ -24,7 +24,10 @@ The practical message: evaluate memory-augmented models across repeated passes, 
 
 - [Share card, 1200 × 630](site-assets/share-card.png): title and a clearly labeled conceptual illustration.
 - [Context examples](figs/context-examples.pdf): measured epoch-1/epoch-5 endpoints; seed 42.
+- [Replay sharpening](figs/sharpening-vs-ce.png): a finite 20-pass diagnostic that keeps distribution shape separate from true-token cross-entropy.
+- [Selected exemplars](figs/sharpening-exemplars.png): three context-level top-20 probability trajectories, explicitly labeled as selected examples.
 - [Coverage relationship](figs/coverage.pdf): three-seed measurements with executable numerical checks.
 - [Figure source manifest](figs/manifest.json): source identities and scope for every displayed paper figure.
+- [Sharpening evidence packet](SHARPENING.md): CSVs, metric definitions, run coordinates, and limitations.
 
 Publication copy should attach the approved final paper URL and author citation. The [release branch](https://github.com/guoshaoyang-pku/forking/tree/release) contains the curated materials; the [availability record](AVAILABILITY.md) identifies what remains before the final release.

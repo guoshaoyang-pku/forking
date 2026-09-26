@@ -28,6 +28,8 @@ The Good–Turing panels are training-count estimates. Agreement in this setting
 
 The overview mixes a schematic representation diagram with empirical curves. Its first-pass panel is the initial segment of a replay experiment. The local sharpening / cross-context recovery illustration is entirely schematic; its heights are not measured probabilities.
 
+The sharpening illustration contains the phrase “Only no-gram can do”. Read this as the proposed contrast between a local table pathway and shared-parameter recovery, not as a standalone causal measurement. The accompanying three-panel figure is measured: it combines context masking, gap contribution, and seen/novel validation CE under the stated seed-42 protocols. It does not imply that every individual context follows the aggregate direction.
+
 The replay, table-size, corpus-size, aggregate continuation, and intervention panels are included as paper assets. The minimal numerical packet does not reproduce all of their underlying training runs. The aggregate continuation panel is fixed-validation cross-entropy, whereas the coverage and replay panels use a train–validation gap. Consult each manifest entry before comparing their axes or seed scope.
 
 The same fixed addressing rule applies to training and validation contexts. Learned table values and shared model parameters evolve during replay. Intervention results support the importance of the local-memory pathway within the tested settings; they do not by themselves establish independent context subspaces or equivalence to learned MoE routing.
