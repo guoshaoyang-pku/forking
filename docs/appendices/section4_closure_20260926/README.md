@@ -40,5 +40,7 @@ paper text. The adjacent section4_close directory supplied the adopted draft,
 which was subsequently fact-checked and aligned to the restored power-law plot.
 
 Validation: all 18 bins positive in both branches; no log-fit deletions;
-independent numerical and notation review passed; latexmk produced 40 pages;
+independent numerical and notation review passed; the initial build had 40 pages;
+after merging the collaborators' Section 2 and figure updates, latexmk produced
+39 pages at paper f7f2d7e (verified equal to Overleaf main after push);
 no undefined citations/references or overfull boxes in final main.log.
