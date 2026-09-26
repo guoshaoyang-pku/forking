@@ -1,0 +1,64 @@
+\section{Mechanism of Forking}
+\label{sec:mechanism}
+
+The approximate power law in Figure~\ref{fig:frequency} is our first clue: why should context frequency organize the gap so simply?
+
+\subsection{From the frequency law to novel continuations}
+\label{sec:coverage}
+A rare context has had few chances to reveal its possible continuations. Call a validation target \emph{novel} when its context occurs in training but was never followed there by that target, and let $f(F)$ be the fraction of validation positions at context count $F\ge1$ whose continuation is novel. This fraction closely tracks the frequency dependence of the gap: the dashed curves in Figure~\ref{fig:frequency} are the directly measured $f$, rescaled and shifted,
+\begin{equation}
+\gap_t(F)\approx a_t f(F)+b_t,
+\label{eq:coverage-main}
+\end{equation}
+with one scale and one offset per branch at training step $t$. Good--Turing estimation connects this novel fraction to singleton counts in the corpus; heavy-tailed conditional distributions provide a reason for its slow, approximately power-law decay. The detailed derivation and the terms beyond simple proportionality are in Appendix~\ref{app:math}. Thus the frequency trend points to a property of the text: rare contexts leave more plausible continuations unseen. It remains to explain why those continuations are harmed by replay.
+
+\subsection{Crowding-out under replay}
+\label{sec:sharpening}
+A finite corpus does not fully represent the continuation distribution of each context: a context whose population distribution assigns equal probability to $C$ and $D$ may appear three times with $C$ and once with $D$ in training, so fitting the sample underpredicts $D$ on fresh data. The replay trajectory adds a further clue. After one complete epoch, the corpus and its novel fraction are fixed, yet the gap continues to grow, by comparable amounts over the first few epochs (Figure~\ref{fig:staircase}; Appendix~\ref{app:replay-clue}). The missing coverage alone does not specify this continuing damage. We hypothesize that each repetition reinforces the seen continuations and progressively suppresses the alternatives.
+
+This would make forking ordinary overfitting confined to very small problems. For a context $c_i$, call the next-token logits computed from it its \emph{context subspace}, and split the vocabulary into the continuations of $c_i$ seen in training, those that appear only in validation, and the rest (Appendix~\ref{app:crowding-derivation}). If training shows a single continuation $C$, the loss in that subspace is $-\ln p_C$; an idealized step directly in logit coordinates raises the logit of $C$ by $\eta(1-p_C)$ and, through the softmax, lowers every other logit by $\eta p_v$. Mass flows from the unseen continuations onto the seen one, so the seen-to-unseen odds grow by a factor above one at every epoch with nothing to stop them while $p_C<1$ (Appendix Equation~\eqref{eq:zt}). We call this \emph{crowding-out}; it provides an idealized account of the growth in the novel-continuation penalty with replay.
+
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=\linewidth]{figures/fig_replay_transfer_schematic.pdf}
+\caption{Local sharpening and cross-context recovery, illustrated schematically. Dashed marks show prior heights; darker extensions show gains. \emph{Others} denotes the mean probability of the top 20 remaining tokens. Measured distributions for \emph{there is a} appear in Figure~\ref{fig:actual-logits-examples}(e,f).}
+\label{fig:replay-transfer}
+\end{figure}
+
+Figure~\ref{fig:replay-transfer} illustrates the proposed mechanism: replay sharpens a local distribution, while updates from related contexts can support alternative continuations. Its heights are illustrative. Appendix~\ref{app:sharpening} presents the measured context distributions, including \emph{petting your}, together with aggregate seen/novel losses and predictive entropy (Figure~\ref{fig:subspace-ce}). The aggregate measurements show worsening novel-continuation accuracy in the both-table model while the no-gram control improves; individual contexts need not sharpen monotonically. Crowding-out also offers an explanation for continued forking after the tables are frozen (Section~\ref{sec:interventions}): the context-specific representation remains available, and backbone updates can continue to favor the observed continuations.
+
+This leaves one question: why does the same replay improve the no-gram model on novel continuations, while the $n$-gram model grows less accurate? The next experiment shows that the table lets sharpening proceed independently within each context.
+
+\FloatBarrier
+\subsection{Context subspaces are independent}
+\label{sec:context-locality}
+Section~\ref{sec:sharpening} treats each context subspace as evolving on its own. We test this by ablation: from the start of epoch 2 or 3, we exclude the next-token loss at a random 2\% of training trigram contexts, keeping their inputs and all parameters trainable, while a disjoint 2\% serve as unmasked peers (Appendix~\ref{app:context-locality}). Once the mask starts, the masked cohort's mean gap stops growing (Figure~\ref{fig:subspace-gap}), whereas the peers' and normal training's jump again at every replay boundary. In paired one-epoch runs, masking reduces the epoch-2 gap increase of the selected contexts from $1.018$ to $0.007$ nats, while the peers' increase stays at $0.997$--$0.998$. Gap growth is generated inside each context's own subspace, not imported from the other 98\% of contexts that keep training.
+
+\begin{figure}[!t]
+\centering
+\begin{subfigure}[b]{0.36\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/fig_mechanism_a.pdf}
+\caption{}
+\label{fig:subspace-mass}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.34\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/fig_mechanism_b.pdf}
+\caption{}
+\label{fig:subspace-gap}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.28\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/fig_mechanism_c.pdf}
+\caption{}
+\label{fig:subspace-ce}
+\end{subfigure}
+\caption{Context-subspace evidence for replay-driven sharpening (seed 42). (a) Mean probability mass on train-seen continuations (top) and on validation-only continuations (bottom) over four epochs, for masked and unmasked context cohorts in the $n$-gram and no-gram models. (b) Mean fixed-probe gap of the masked cohort, of its unmasked peers, and of normal training; dotted lines mark epoch boundaries. (c) Validation cross-entropy at the five epoch-end checkpoints for train-seen bigram contexts, split by whether the true continuation appeared in training.}
+\label{fig:subspace-evidence}
+\end{figure}
+
+The mass on train-seen continuations shows the same partition (Figure~\ref{fig:subspace-mass}). In the $n$-gram model, unmasked contexts raise it from $0.43$ to $0.69$ by epoch 4, while masked contexts end at $0.40$. Without the $n$-gram module, masked contexts still gain mass ($0.22\to0.39$, versus $0.41$ unmasked), and replay also raises the validation-only mass ($0.013\to0.06$). The table therefore partitions optimization into weakly interacting context subspaces, inside which replay-driven sharpening proceeds unchecked by other contexts. The shared backbone still moves individual masked contexts, but it shifts their training and validation losses together and leaves their average gap flat.
+
+\FloatBarrier
