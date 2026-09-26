@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Forking — Sudden Overfitting Under Replay</title>
+  <meta name="description" content="When the same text returns, fitting and generalization can take different paths. A study of replay, local memory, and continuation coverage.">
+  <meta name="theme-color" content="#fafaf8">
+  <meta property="og:title" content="Forking: Sudden Overfitting Under Replay">
+  <meta property="og:description" content="When the same text returns, fitting and generalization can take different paths.">
+  <meta property="og:image" content="https://guoshaoyang-pku.github.io/forking/site-assets/share-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://guoshaoyang-pku.github.io/forking/">
+  <link rel="icon" href="site-assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="site-assets/site.css">
+</head>
+<body>
+<svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+  <symbol id="icon-paper" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M8 12h8M8 16h6"/></symbol>
+  <symbol id="icon-code" viewBox="0 0 24 24"><path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18"/></symbol>
+  <symbol id="icon-cite" viewBox="0 0 24 24"><path d="M10 5H4v7h6v7H4m16-14h-6v7h6v7h-6"/></symbol>
+  <symbol id="icon-license" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 4-4 7-8 9-4-2-8-5-8-9V6zM8 12l3 3 5-6"/></symbol>
+  <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+</defs></svg>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar"><nav class="container nav" aria-label="Main navigation">
+  <a href="#" class="brand"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M4 24 13 14 24 3" stroke="#226487"/><path d="m13 14 11 8" stroke="#c66739"/></svg>Forking</a>
+  <div class="nav-links"><a href="#findings">Findings</a><a href="#reproduce">Reproduce</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release">GitHub ↗</a></div>
+</nav></header>
+<main id="main">
+<section class="hero container" aria-labelledby="title">
+  <p class="eyebrow">Language models · Memory · Generalization</p>
+  <h1 id="title">Forking<span>Sudden Overfitting Under Replay</span></h1>
+  <p class="tagline">The same text. Better fitting.<br>A different path for generalization.</p>
+  <div class="actions" aria-label="Project resources">
+    <a class="button muted" href="#paper"><svg class="icon"><use href="#icon-paper"/></svg>Paper <span class="soon">soon</span></a>
+    <a class="button primary" href="https://github.com/guoshaoyang-pku/forking/tree/release"><svg class="icon"><use href="#icon-code"/></svg>Code</a>
+    <a class="button" href="#citation"><svg class="icon"><use href="#icon-cite"/></svg>Cite</a>
+    <a class="button" href="LICENSE"><svg class="icon"><use href="#icon-license"/></svg>MIT License</a>
+  </div>
+  <p class="intro">Local n-gram memory can improve training fit while held-out predictions deteriorate under replay. We connect this split to repeated exposure, continuation coverage, and the local-memory pathway.</p>
+  <figure class="figure overview"><a href="figs/overview.pdf" aria-label="Open the overview as a PDF"><img src="figs/overview.png" width="2100" height="1078" fetchpriority="high" alt="Local memory and diverging training and validation loss under replay."></a><figcaption><span class="figure-label">The phenomenon</span> Fitting and generalization separate as the corpus is replayed. The representation diagram is schematic; the first-pass panel is the initial segment of replay training.</figcaption></figure>
+</section>
+<section id="findings" class="container section">
+  <div class="section-heading"><p class="eyebrow">The findings</p><h2>What changes when the text returns?</h2></div>
+  <div class="findings">
+    <article><span class="number">01</span><h3>Replay exposes the split.</h3><p>Training loss falls while held-out loss rises across repeated passes.</p><a href="figs/replay.pdf">Replay trajectories <span aria-hidden="true">↗</span></a></article>
+    <article><span class="number">02</span><h3>A seen context is not enough.</h3><p>Its plausible continuations may still be missing from the training corpus.</p><a href="figs/context-examples.pdf">Measured predictions <span aria-hidden="true">↗</span></a></article>
+    <article><span class="number">03</span><h3>Coverage organizes the gap.</h3><p>Frequency-bin measurements across three seeds support a descriptive relationship.</p><a href="figs/coverage.pdf">Coverage analysis <span aria-hidden="true">↗</span></a></article>
+  </div>
+</section>
+<section id="continuations" class="container section">
+  <div class="section-heading"><p class="eyebrow">A closer look</p><h2>Inspect the next-token predictions</h2></div>
+  <figure class="figure"><a href="figs/mechanism.pdf" aria-label="Open Figure 8 as a PDF"><img src="figs/mechanism.png" width="2100" height="787" loading="lazy" alt="Figure 8. Before replay, sharpening, and recovery, with the annotation Only no-gram can do."></a><figcaption><span class="figure-label">Figure 8</span> Local sharpening and cross-context recovery, illustrated schematically. Dashed marks show prior heights; darker extensions show gains. <em>Others</em> denotes the mean probability of the top 20 remaining tokens. Measured distributions for <em>there is a</em> appear in Figure 21(e,f).</figcaption></figure>
+  <div class="resource-links"><a href="figs/context-examples.pdf">Measured distributions ↗</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release/results">All experimental results ↗</a></div>
+</section>
+<section id="reproduce" class="container section reproduction">
+  <div><p class="eyebrow">Start with the results</p><h2>A small, executable<br>reproduction.</h2><p>Recompute eight coverage fits across three seeds and check 72 context endpoints. Python 3.10+; no GPU needed for these checks.</p><a class="text-link" href="https://github.com/guoshaoyang-pku/forking/blob/release/reproduce/README.md">Reproduction instructions <svg class="icon"><use href="#icon-arrow"/></svg></a></div>
+  <div class="code-panel"><div class="code-title"><span>Terminal</span><button id="copy-commands" type="button" aria-label="Copy reproduction commands">Copy</button></div><pre><code id="commands">git clone --branch release --single-branch \
+  https://github.com/guoshaoyang-pku/forking.git
+cd forking
+python3 reproduce/verify_coverage.py
+python3 reproduce/verify_contexts.py</code></pre><p class="code-note">Analysis of bundled observations. <a href="https://github.com/guoshaoyang-pku/forking/blob/release/reproduce/TRAINING.md">GPU training</a> requires external data and a frequency index.</p></div>
+</section>
+<section class="container section publication" aria-label="Publication and citation">
+  <div id="paper"><p class="eyebrow">Publication</p><h2>Paper</h2><p><em>Forking: Sudden Overfitting Under Replay</em></p><p class="quiet">Paper link coming soon.</p></div>
+  <div id="citation"><p class="eyebrow">Reference this work</p><h2>Citation</h2><div class="citation-placeholder"><svg class="icon"><use href="#icon-cite"/></svg><p>BibTeX will be added<br>with the paper.</p><span class="status">Forthcoming</span></div></div>
+</section>
+</main>
+<footer class="container footer"><a class="brand" href="#">Forking</a><p>Sudden Overfitting Under Replay</p><div><a href="https://github.com/guoshaoyang-pku/forking/tree/release">Code</a><a href="LICENSE">MIT License</a></div></footer>
+<script>
+document.querySelector('#copy-commands').addEventListener('click', async function () {
+  try {
+    await navigator.clipboard.writeText(document.querySelector('#commands').textContent);
+    this.textContent = 'Copied';
+  } catch (_) {
+    this.textContent = 'Select to copy';
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector('#commands'));
+    const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
+  }
+});
+</script>
+</body>
+</html>
