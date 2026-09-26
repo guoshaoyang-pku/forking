@@ -154,14 +154,12 @@ def main():
                     v=ds(branch,arm,ep,i+1,[0,1,2,3])
                     if v:decomp.append(dict(branch=branch,arm=arm,epoch=ep,F_lo=lo,F_hi=e[i+1]-1,**v))
     write_csv('diagnostic_decomposition.csv',decomp)
-    # Replacement Fig3a: online means, all seed error bars, no exponent fit.
-    fig,a=plt.subplots(figsize=(3.1,2.4))
-    for br,mk in [('bigram','o'),('trigram','^')]:
-        x,y,sd,w,F=array(br,1000);s=fit(x,y);c=style.BRANCH_COLORS[br]
-        a.errorbar(F,y,yerr=sd,fmt=mk,ms=3,color=c,lw=.6,capsize=1.5,label=br)
-        a.plot(F,s['a']*x+s['b'],'--',color=c,lw=1)
-    a.set_xscale('log');a.set_xlabel('Context frequency $F$');a.set_ylabel('Online gap (nats)');a.legend()
-    save(fig,'fig03a_frequency_coverage')
+    # Paper Fig3a/Fig5(a) is no longer drawn here: it lives in
+    # docs/plot_scripts/plot_paper_fig345_row.py (draw_frequency_coverage),
+    # which renders the same online three-seed means and equal-bin OLS linear
+    # fit on the shared row canvas without error bars, so panels (a)-(c) of
+    # the LaTeX figure share one text size.  See the packet README.
+
     # Reader-facing triptych: three linear comparisons, without audit panels.
     fig,axes=plt.subplots(1,3,figsize=(7.3,2.5),gridspec_kw={'wspace':.35})
     a=axes[0]
