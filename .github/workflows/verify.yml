@@ -1,0 +1,28 @@
+name: Verify reproduction materials
+
+on:
+  push:
+    branches: [release, main]
+  pull_request:
+    branches: [release, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  numerical-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify file identity and website links
+        run: python tools/check_release.py
+      - name: Recompute coverage fits and check context endpoints
+        run: |
+          python reproduce/verify_coverage.py
+          python reproduce/verify_contexts.py
+      - name: Check portable launcher behavior
+        run: python -B -m unittest discover -s tests -p test_release_launcher.py -v

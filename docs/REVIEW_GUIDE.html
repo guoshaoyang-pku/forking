@@ -1,0 +1,82 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A short route through the evidence · Forking</title><meta name="description" content="A short route through the evidence">
+<meta name="theme-color" content="#152c42"><meta property="og:title" content="Forking: Sudden Overfitting Under Replay">
+<meta property="og:description" content="When the same text returns, fitting and generalization can take different paths.">
+<meta property="og:type" content="website"><meta property="og:image" content="https://guoshaoyang-pku.github.io/forking/site-assets/share-card.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://guoshaoyang-pku.github.io/forking/site-assets/share-card.png">
+<link rel="icon" href="site-assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="site-assets/site.css"></head><body>
+<a class="skip" href="#main">Skip to content</a><header class="topbar"><nav class="wrap nav" aria-label="Main navigation">
+<a class="brand" href="index.html"><svg class="mark" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25L12 16L26 4" fill="none" stroke="#196693" stroke-width="3"/><path d="M12 16L26 22" fill="none" stroke="#c65b2e" stroke-width="3"/></svg>Forking</a>
+<div class="nav-links"><a href="index.html#findings">Findings</a><a href="REVIEW_GUIDE.html" class="optional">Review</a><a href="index.html#reproduce">Reproduce</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release">GitHub ↗</a></div></nav></header><main id="main" class="wrap document"><h1 id="a-short-route-through-the-evidence">A short route through the evidence</h1>
+<p>This repository is organized around three questions. Each has an observable result, an implementation path, and a check that can be run independently.</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Start with</th>
+<th>Then inspect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Does replay separate fitting from generalization?</td>
+<td><a href="figs/replay.pdf">Replay trajectories</a></td>
+<td>Fixed replay iteration, train-loss logging, and fixed-validation batches in <a href="https://github.com/guoshaoyang-pku/forking/blob/release/code/train.py">train.py</a></td>
+</tr>
+<tr>
+<td>What changes for individual predictions?</td>
+<td><a href="figs/context-examples.pdf">Context endpoint figure</a></td>
+<td><a href="https://github.com/guoshaoyang-pku/forking/blob/release/evidence/context-examples/context_examples_plotted_values.csv">Endpoint CSV</a> and <a href="https://github.com/guoshaoyang-pku/forking/blob/release/evidence/context-examples/context_examples_manifest.json">checkpoint manifest</a></td>
+</tr>
+<tr>
+<td>How does the gap relate to missing continuation coverage?</td>
+<td><a href="figs/coverage.pdf">Coverage figure</a></td>
+<td><a href="https://github.com/guoshaoyang-pku/forking/blob/release/reproduce/verify_coverage.py">Independent fit calculation</a> and <a href="https://github.com/guoshaoyang-pku/forking/blob/release/evidence/coverage/online_points.csv">observations</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="run-the-small-checks-first">Run the small checks first</h2>
+<pre><code class="language-sh">python3 reproduce/verify_coverage.py
+python3 reproduce/verify_contexts.py
+python3 tools/check_release.py
+</code></pre>
+<p>The first two commands require no third-party packages. They reproduce derived-data analysis and validate export consistency. The third checks release file identity and local website integrity. For selected model-measurement behavior, install requirements-test.txt and run python3 -m pytest -q.</p>
+<h2 id="code-map">Code map</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/guoshaoyang-pku/forking/blob/release/code/train.py">code/train.py</a></td>
+<td>Model, n-gram addressing/injection, replay iterator, optimizer construction, training and fixed evaluation</td>
+</tr>
+<tr>
+<td><a href="https://github.com/guoshaoyang-pku/forking/blob/release/code/ngram_freq.py">code/ngram_freq.py</a></td>
+<td>Context keys, global frequency lookup, and exact-frequency loss aggregation</td>
+</tr>
+<tr>
+<td><a href="https://github.com/guoshaoyang-pku/forking/blob/release/code/diag_worker.py">code/diag_worker.py</a></td>
+<td>Asynchronous CPU aggregation of diagnostic observations</td>
+</tr>
+<tr>
+<td><a href="https://github.com/guoshaoyang-pku/forking/blob/release/code/table_occupancy.py">code/table_occupancy.py</a></td>
+<td>Table occupancy diagnostics</td>
+</tr>
+<tr>
+<td><a href="https://github.com/guoshaoyang-pku/forking/blob/release/scripts/run_training.py">scripts/run_training.py</a></td>
+<td>Explicit baseline settings and input validation before a training run</td>
+</tr>
+</tbody>
+</table>
+<h2 id="definitions-that-affect-interpretation">Definitions that affect interpretation</h2>
+<p><strong>Online gap</strong> is fixed-validation CE after the update minus current-batch training CE before that update, at the same logged step. A fixed training probe is a different measurement. Subtracting the no-gram control produces a net gap; neither should be silently substituted for raw online gap.</p>
+<p><strong>Novel continuation</strong> means a next token absent after a context in training; the context itself can be seen. A completely unseen context has no training-side loss. Token membership categories in the example figure describe the corpus, not separate model inputs or a train/validation switch.</p>
+<p><strong>Local memory</strong> uses fixed context-to-row addressing with learned table vectors. Same-context examples share the addressing rule. A finite hash table can have collisions; table size alone is not a proof of injectivity.</p>
+<p><strong>Evidence scope:</strong> three-seed descriptive coverage fits, single-seed context illustrations, and manuscript intervention panels support different kinds of inference. See <a href="EVIDENCE.html">EVIDENCE.md</a> for exact boundaries and <a href="AVAILABILITY.html">AVAILABILITY.md</a> for training assets that remain to be supplied.</p>
+<p>The trainer is an exact source copy. An older comment above fixed_val_batches mentions a moving validation window; the implementation immediately below captures and reuses fixed batches. The separate probe dataset also preserves the training iterator. Read those operations as the implemented behavior.</p></main><footer class="wrap footer"><div>Forking · Sudden Overfitting Under Replay</div><div><a href="EVIDENCE.html">Evidence notes</a><a href="AVAILABILITY.html">Materials</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release">Code ↗</a></div></footer></body></html>

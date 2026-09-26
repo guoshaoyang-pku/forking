@@ -1,0 +1,51 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evidence and figure provenance · Forking</title><meta name="description" content="Evidence and figure provenance">
+<meta name="theme-color" content="#152c42"><meta property="og:title" content="Forking: Sudden Overfitting Under Replay">
+<meta property="og:description" content="When the same text returns, fitting and generalization can take different paths.">
+<meta property="og:type" content="website"><meta property="og:image" content="https://guoshaoyang-pku.github.io/forking/site-assets/share-card.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://guoshaoyang-pku.github.io/forking/site-assets/share-card.png">
+<link rel="icon" href="site-assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="site-assets/site.css"></head><body>
+<a class="skip" href="#main">Skip to content</a><header class="topbar"><nav class="wrap nav" aria-label="Main navigation">
+<a class="brand" href="index.html"><svg class="mark" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25L12 16L26 4" fill="none" stroke="#196693" stroke-width="3"/><path d="M12 16L26 22" fill="none" stroke="#c65b2e" stroke-width="3"/></svg>Forking</a>
+<div class="nav-links"><a href="index.html#findings">Findings</a><a href="REVIEW_GUIDE.html" class="optional">Review</a><a href="index.html#reproduce">Reproduce</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release">GitHub ↗</a></div></nav></header><main id="main" class="wrap document"><h1 id="evidence-and-figure-provenance">Evidence and figure provenance</h1>
+<p>The release bundles two compact numerical packets and ten paper figure PDFs. The <a href="figs/manifest.json">figure manifest</a> records exact source filenames, revision coordinates, content hashes, rendering dimensions, and scope. A file hash establishes identity with the packaged asset; it does not establish the validity of the experiment behind it.</p>
+<table>
+<thead>
+<tr>
+<th>Material</th>
+<th>What is included</th>
+<th>Independently executable check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coverage</td>
+<td>1,512 derived observations; corpus-bin summaries; recorded fits; seeds 42/43/44</td>
+<td>verify_coverage.py recomputes eight selected fits from 432 observations</td>
+</tr>
+<tr>
+<td>Context examples</td>
+<td>72 endpoint values; 15 token-class rows; four checkpoint identities</td>
+<td>verify_contexts.py checks the export's internal consistency</td>
+</tr>
+<tr>
+<td>Other paper figures</td>
+<td>Exact vector PDF copies and web PNG renders</td>
+<td>tools/check_release.py verifies packaged file and figure hashes</td>
+</tr>
+</tbody>
+</table>
+<h2 id="reading-the-context-examples">Reading the context examples</h2>
+<p>The input is BOS plus exactly three context tokens. The visible phrases are “petting your”, “introducing your”, and “there is a”; a tokenizer's token count is not the displayed word count. Inference was exported in float32 on CPU from ep5ckpt_v5_{nogram,both}_s42_fixed.</p>
+<p>Open points show epoch 1 / step 337; filled points show epoch 5 / step 1685. The vertical axis is natural log probability. Higher values mean greater probability. Lines connect two measured endpoints and imply no monotonicity between them.</p>
+<p>Blue tokens occur in training (either both corpora or training only); orange tokens occur only in the held-out corpus; gray tokens occur in neither. These are corpus-membership categories, not separate predictions for training and validation inputs. Counts refer to exact context–token occurrences at valid within-chunk positions, using training shard 1 and held-out shards 2–4.</p>
+<p>“Others” is the log of the mean probability of the top 20 remaining tokens, reranked separately for each distribution. It is neither the sum of all remaining probability nor a fixed token set. The package includes the derived statistic, not the complete logits needed to independently reconstruct that ranking.</p>
+<h2 id="reading-the-coverage-relationship">Reading the coverage relationship</h2>
+<p>The packaged fit uses directly measured novel-continuation fractions and the online gap. Novel continuations of a training-seen context differ from contexts unseen in training. The latter do not have a defined training-side gap. Error bars are sample standard deviations over three training seeds, not confidence intervals over independent corpora.</p>
+<p>The Good–Turing panels are training-count estimates. Agreement in this setting does not establish a universal exponent, universal calibration, or a unique causal explanation of the gap. The affine fit includes an intercept; the verifier also reports the through-origin residual for comparison.</p>
+<h2 id="other-figures-and-interpretation">Other figures and interpretation</h2>
+<p>The overview mixes a schematic representation diagram with empirical curves. Its first-pass panel is the initial segment of a replay experiment. The local sharpening / cross-context recovery illustration is entirely schematic; its heights are not measured probabilities.</p>
+<p>The replay, table-size, corpus-size, aggregate continuation, and intervention panels are included as paper assets. The minimal numerical packet does not reproduce all of their underlying training runs. The aggregate continuation panel is fixed-validation cross-entropy, whereas the coverage and replay panels use a train–validation gap. Consult each manifest entry before comparing their axes or seed scope.</p>
+<p>The same fixed addressing rule applies to training and validation contexts. Learned table values and shared model parameters evolve during replay. Intervention results support the importance of the local-memory pathway within the tested settings; they do not by themselves establish independent context subspaces or equivalence to learned MoE routing.</p></main><footer class="wrap footer"><div>Forking · Sudden Overfitting Under Replay</div><div><a href="EVIDENCE.html">Evidence notes</a><a href="AVAILABILITY.html">Materials</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release">Code ↗</a></div></footer></body></html>

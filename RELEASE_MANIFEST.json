@@ -1,0 +1,387 @@
+{
+  "format_version": 1,
+  "prepared": "2026-09-26",
+  "title": "Forking: Sudden Overfitting Under Replay",
+  "scope": "Curated release branch. The manifest excludes itself, local caches, and generated training outputs.",
+  "public_source_revision": "3262ddd4fc0af1e9702725bc9aaabed68b824abc",
+  "paper_figure_revision": "83f17dbc441e61d6a73b7cc0952801f6fc4f3999",
+  "file_count": 75,
+  "total_bytes": 2573061,
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 178,
+      "sha256": "e0456e10f126e30afdd64d021dc7cee45b10be97653170776d35cf774201ba17"
+    },
+    {
+      "path": ".github/workflows/verify.yml",
+      "bytes": 761,
+      "sha256": "cb4a95f6df6ded5e7d9ceb8090858cded281d43c0c9bf97e7b4921df9b1d9dfe"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 71,
+      "sha256": "dba99a65bc7a00d749329f7d17c4689054eba3d257c4492172eb2fe8e4e9178d"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 915,
+      "sha256": "f4fd27879fe028efc0a05c9b14e44d7f4f2ba920da518f39a3a155866f3586db"
+    },
+    {
+      "path": "CODE_PROVENANCE.json",
+      "bytes": 1399,
+      "sha256": "c3d374b752783f8318d4f9707916070b21e3b174b57875fe31648179584ef633"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4404,
+      "sha256": "f402dd0e0545cbc8ec08b88db2be7d6bfe3ff05700af0231e6035a1ef1268754"
+    },
+    {
+      "path": "code/diag_worker.py",
+      "bytes": 13677,
+      "sha256": "14f0aa23ccd4aa4ace8e0e4924bf6706e7d44345a06dd0a9cceb674c19879e69"
+    },
+    {
+      "path": "code/ngram_freq.py",
+      "bytes": 30286,
+      "sha256": "bdfa7b0fe3a105b231b31da036a2a282dde1e185094e6da2f1620c6fa356ba92"
+    },
+    {
+      "path": "code/table_occupancy.py",
+      "bytes": 11325,
+      "sha256": "952326aa1498be713f26d082d2048eca8fba00b4e90cf291a5d04a6c4fbf4bf8"
+    },
+    {
+      "path": "code/train.py",
+      "bytes": 129197,
+      "sha256": "488b954ac69f5abd6454e2febe3f39eb6543e21786122ac7b6c1dd2dff341744"
+    },
+    {
+      "path": "configs/baseline.json",
+      "bytes": 2161,
+      "sha256": "e910d9b633e5988d4c3822b1a94042c017c104867d37067ad2b0a070d35e8f49"
+    },
+    {
+      "path": "configs/data_manifest.json",
+      "bytes": 3075,
+      "sha256": "bebede966c07533afe0130776ed0335c689405faaf0ae15e358ed70b60d051e5"
+    },
+    {
+      "path": "configs/nogram.json",
+      "bytes": 2120,
+      "sha256": "3286c953487a596ba0bcf8db71cd0a9f413d0313aaa40a9d51bf3d96c4d6d961"
+    },
+    {
+      "path": "docs/.nojekyll",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/ANNOUNCEMENT.html",
+      "bytes": 4754,
+      "sha256": "e0221625794f22190e63d83eb6cbfe43262be3a690f9e4a9780f3a62503e50dd"
+    },
+    {
+      "path": "docs/ANNOUNCEMENT.md",
+      "bytes": 2493,
+      "sha256": "18fc976378e538eaba4a8c0bf1e33e6280c6d688bca323560603ac8dd5ac0b7f"
+    },
+    {
+      "path": "docs/AVAILABILITY.html",
+      "bytes": 4324,
+      "sha256": "feaf1c519b00e4fc51a6d57a0c499ae4660293a8936ae383c70c2882658352f7"
+    },
+    {
+      "path": "docs/AVAILABILITY.md",
+      "bytes": 1976,
+      "sha256": "4bd39785e0688f1b6108f11994fa38ec75439277dc6f1b81771daab5627c81b6"
+    },
+    {
+      "path": "docs/EVIDENCE.html",
+      "bytes": 6327,
+      "sha256": "34322f8ebef7a14b9f2f343b55d318a32409f4e9f3d9f5261ee25d7c78195ae4"
+    },
+    {
+      "path": "docs/EVIDENCE.md",
+      "bytes": 3938,
+      "sha256": "48ebb63ef67bd8433a1b03d69f281a759e084f72db0ee22e78c87b850e186644"
+    },
+    {
+      "path": "docs/FIGURES.html",
+      "bytes": 6762,
+      "sha256": "24cdcc6d070226f734e0b876301dd2be9dc7c5833805bf9b16d09e4299386528"
+    },
+    {
+      "path": "docs/REPRODUCE.html",
+      "bytes": 5691,
+      "sha256": "a3fda1ceab398726292e1ca1568025209f83955e106f724be8f07f0b27fe8615"
+    },
+    {
+      "path": "docs/REVIEW_GUIDE.html",
+      "bytes": 6816,
+      "sha256": "948a2efd7f9872c7840e50b6a2c2bf45daadadc6ddc3807ef82a55a2c3a751de"
+    },
+    {
+      "path": "docs/REVIEW_GUIDE.md",
+      "bytes": 3506,
+      "sha256": "94d333f56aa391695b36658024869820f5c78dff5cd4e51867d98a851d2af39d"
+    },
+    {
+      "path": "docs/TRAINING.html",
+      "bytes": 8777,
+      "sha256": "461ee06ace2242d53f83ffe6ba0fbd8826fcac8818091a93e25c435d5139a444"
+    },
+    {
+      "path": "docs/TRAINING.md",
+      "bytes": 5771,
+      "sha256": "3fc898947bb2ded33621c56dce17ebdedee698ab101cb77d5687eb08e5b238d9"
+    },
+    {
+      "path": "docs/figs/capacity.pdf",
+      "bytes": 16398,
+      "sha256": "ebc0e0bda2ad12cd7428efb0f0b39cbccef60d56d2aff3ed0031e2b548713433"
+    },
+    {
+      "path": "docs/figs/capacity.png",
+      "bytes": 124587,
+      "sha256": "271e093ebebaca52750d323a2c00ab4454cb2ebb8c4fb52b2ffc165788b8fff7"
+    },
+    {
+      "path": "docs/figs/context-examples.pdf",
+      "bytes": 35230,
+      "sha256": "af5a18187b21a43e5c2313829cb012a459d3da98673f592ea16b4bf57154d3ae"
+    },
+    {
+      "path": "docs/figs/context-examples.png",
+      "bytes": 225595,
+      "sha256": "0aad4c87a3acdbf0d56ecf7fa4688bc2fbaedd778d1d2ca780dbb41731185f3c"
+    },
+    {
+      "path": "docs/figs/continuations.pdf",
+      "bytes": 25697,
+      "sha256": "d62d7544440a7fc07c2652f87353892d9870bf77bca32c5860e5d8f794cb17ba"
+    },
+    {
+      "path": "docs/figs/continuations.png",
+      "bytes": 160283,
+      "sha256": "01e3e9693ea603720e83212f4899ac88580f4a72d235f407b5b3ade1a8bf2153"
+    },
+    {
+      "path": "docs/figs/corpus.pdf",
+      "bytes": 16143,
+      "sha256": "8aa30d3855576659fd9f4423e958053f94da67c9b189e3339c5ffdb5b86df964"
+    },
+    {
+      "path": "docs/figs/corpus.png",
+      "bytes": 155257,
+      "sha256": "929cac8e6359309883cf2e44d6f6adc6b9d940bb89d10b75d74c365c78fd4341"
+    },
+    {
+      "path": "docs/figs/coverage.pdf",
+      "bytes": 56480,
+      "sha256": "63d255a7202ac91601957b89c6dec4d415b75135c7d00165cbb7d45e99d939e0"
+    },
+    {
+      "path": "docs/figs/coverage.png",
+      "bytes": 195685,
+      "sha256": "067bc59fbd21e72e2dd7bdc36e59ffab8d37b55e89ee525fe8c3ff940b62d309"
+    },
+    {
+      "path": "docs/figs/frequency.pdf",
+      "bytes": 21577,
+      "sha256": "febf523271b545247b5ba5189bbe07f5c151200e80fcb0069e1725c2b114cf31"
+    },
+    {
+      "path": "docs/figs/frequency.png",
+      "bytes": 128153,
+      "sha256": "5abe8445fdd2e678d77705badc7df891a38ba23283cb97a4b1205beea6488205"
+    },
+    {
+      "path": "docs/figs/interventions.pdf",
+      "bytes": 46152,
+      "sha256": "af31a55745a475e52489ba9ce57d1e9e7413bf191f200c7de47c225bffd70aff"
+    },
+    {
+      "path": "docs/figs/interventions.png",
+      "bytes": 144360,
+      "sha256": "2ab17ccf2b2bdc4a84ce309eef5bb1ec22ace1ccd99521af0187e11e0ec6c3cd"
+    },
+    {
+      "path": "docs/figs/manifest.json",
+      "bytes": 7494,
+      "sha256": "46ad4b7637c5424e5395d9aed0a4b6242fc1fd0818f7a1d904cc9d23a87ce3d1"
+    },
+    {
+      "path": "docs/figs/mechanism.pdf",
+      "bytes": 21460,
+      "sha256": "7807ca64031be63f73cfd67158757028d5c93cb29337fa84686a4b4ab2ca5a0e"
+    },
+    {
+      "path": "docs/figs/mechanism.png",
+      "bytes": 95904,
+      "sha256": "c9ce010384505f45c106d9a63dacdf1754a98568fd4483cf9343e68adab4371c"
+    },
+    {
+      "path": "docs/figs/overview.pdf",
+      "bytes": 110131,
+      "sha256": "5aab888d8d0232e15102e9b708b8cef1e0e0f855760ade701b1a5ef7a0e224e9"
+    },
+    {
+      "path": "docs/figs/overview.png",
+      "bytes": 265263,
+      "sha256": "357984f056a87209e986678e31b9f51f2987c14a31d066320ff0a150c21bb29e"
+    },
+    {
+      "path": "docs/figs/replay.pdf",
+      "bytes": 30404,
+      "sha256": "44ab36a3c7ca966f50f407dc0ac8bb62c9cc4fd5fc680fe109b39a292bf61832"
+    },
+    {
+      "path": "docs/figs/replay.png",
+      "bytes": 107503,
+      "sha256": "9a80121f54809218e78af5f3ec21a435ce87eed691b3c59a3c2c9d02de4bd197"
+    },
+    {
+      "path": "docs/index.html",
+      "bytes": 8628,
+      "sha256": "0e71407993a63d30a47b95303ad9d7407948cb079515c9dbf5d79c9ee5b6a1a6"
+    },
+    {
+      "path": "docs/site-assets/favicon.svg",
+      "bytes": 309,
+      "sha256": "68e178897d5d066f93e3b8f12c93efce66211deedc21fc53a53ca9f506068e6d"
+    },
+    {
+      "path": "docs/site-assets/share-card.png",
+      "bytes": 57161,
+      "sha256": "d993d4fb08c68932e9197f1e112b5c76d9a0f1a9b84ed98be4098c18755126f3"
+    },
+    {
+      "path": "docs/site-assets/site.css",
+      "bytes": 4181,
+      "sha256": "226ac17968b04a062b1f9632fbf996cb3b6233485d79321061d3d9113250412d"
+    },
+    {
+      "path": "evidence/context-examples/context_examples_manifest.json",
+      "bytes": 2972,
+      "sha256": "56d9d3c4b629698e1c9826fbe4ffc30787c262736753a445455ca61812e5baf7"
+    },
+    {
+      "path": "evidence/context-examples/context_examples_plotted_values.csv",
+      "bytes": 8054,
+      "sha256": "e10fef1e921ca539d298e2f77452045af03aaffcbe3f0336a5ed092182f5f44d"
+    },
+    {
+      "path": "evidence/context-examples/context_examples_token_classes.csv",
+      "bytes": 578,
+      "sha256": "ff5f929e4e781e954637f863a4912c9c38c84573a54659aea68225f2f15620ea"
+    },
+    {
+      "path": "evidence/coverage/corpus_bins.csv",
+      "bytes": 4188,
+      "sha256": "058e4ee9eb70ef8c40ba43f2d03b2fbcda98eaa3d5c1e9b9b31aff100b2a90c4"
+    },
+    {
+      "path": "evidence/coverage/online_fits.csv",
+      "bytes": 11193,
+      "sha256": "e85482c0ed58930e657e63cc6d22faaa6abdc7583dcd5de073ef749efc7061bc"
+    },
+    {
+      "path": "evidence/coverage/online_points.csv",
+      "bytes": 155946,
+      "sha256": "e2dd6931ca3f5822bf8e23877b83addaec7e8008dbd255a1030d456ad7b9dfe4"
+    },
+    {
+      "path": "evidence/coverage/snapshot.json",
+      "bytes": 989,
+      "sha256": "cf6cfe0e6c3922df1f122ddfe4d829be7b57d68bcd4e9f61f802fc74e25675e7"
+    },
+    {
+      "path": "pytest.ini",
+      "bytes": 27,
+      "sha256": "c809c969ec7e11b9ff37784e9c6fcc0b7c5148d168e18b05aed797e03fbd6ead"
+    },
+    {
+      "path": "reproduce/README.md",
+      "bytes": 2704,
+      "sha256": "ac83e6765540188c5c8398d754a4be08765b5af0cb019a087ac89c0fddaf1d8f"
+    },
+    {
+      "path": "reproduce/plot_coverage.py",
+      "bytes": 2708,
+      "sha256": "3d61d277dbb66056a342289b3ae07e44d7d7cb504619ecb30f2de62c930cf2c5"
+    },
+    {
+      "path": "reproduce/verify_contexts.py",
+      "bytes": 3473,
+      "sha256": "bba2c95e3cba6d4d5920accc764d2e1c828812a3230f6af36921367457cf596a"
+    },
+    {
+      "path": "reproduce/verify_coverage.py",
+      "bytes": 6710,
+      "sha256": "05b5eefab0b9d1a43dcb835d3759642b615c022979c6ae150befddf69e799773"
+    },
+    {
+      "path": "requirements-figures.txt",
+      "bytes": 19,
+      "sha256": "48ee9dbf164ec7438470efa7b3847688dc1010a88d020a7777ace4934c1fcace"
+    },
+    {
+      "path": "requirements-site.txt",
+      "bytes": 33,
+      "sha256": "c7ae27143341b6959d2c9ebacce25e2257a12c604586f4729c5f9b2be33b14e8"
+    },
+    {
+      "path": "requirements-test.txt",
+      "bytes": 41,
+      "sha256": "11e5b16fbc3f8eb9e3309ed9af66f780ca5fa26a3da5938f415c31d2e75469bf"
+    },
+    {
+      "path": "scripts/run_training.py",
+      "bytes": 7628,
+      "sha256": "081da6c36c420fe77cea982ff80b3919a9230987dcb6ea7681cc7476c595d9ac"
+    },
+    {
+      "path": "scripts/validate_data.py",
+      "bytes": 2051,
+      "sha256": "e89848ca495b56ce9b6cc292a3fa3427cc69666af6ea8ba1310496c7927c4ee7"
+    },
+    {
+      "path": "tests/test_release_launcher.py",
+      "bytes": 4021,
+      "sha256": "9e962518a1e0376a170b9ee815f318dea2c448d4a1bdf77bd9e35a18514decfd"
+    },
+    {
+      "path": "tests/test_scaling_measurement.py",
+      "bytes": 17575,
+      "sha256": "930745705093679f4a3d1e2b9b394097842457de8415ff9814e387f7cdb4578d"
+    },
+    {
+      "path": "tools/build_site.py",
+      "bytes": 10864,
+      "sha256": "e2d5fcc886e31b9ddf736f5b2fa87f2e4045abb9440714cda495b17dd35ce96b"
+    },
+    {
+      "path": "tools/check_release.py",
+      "bytes": 4399,
+      "sha256": "ab43f4e731b2c31c1cd3d460e64b27342806cb94ad3325edfaa8ea9936220dee"
+    },
+    {
+      "path": "tools/package_release.py",
+      "bytes": 2938,
+      "sha256": "16a9cd2431f38e7bf7ce985234fbf564c97e9c54045b535e0371cf6458b7021d"
+    },
+    {
+      "path": "tools/render_assets.py",
+      "bytes": 1168,
+      "sha256": "8b33e79e5d0abf6dba474f55e8bdf2eae731a71d64d9e3cd7a55dcd322776018"
+    },
+    {
+      "path": "tools/share-card.html",
+      "bytes": 2043,
+      "sha256": "486a49828fd7a3d730bc3bd463953cbfb931091c5ac8a920c2b3f893cd5cf816"
+    }
+  ]
+}

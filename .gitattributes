@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.png binary
+*.pdf binary
+# Preserve the exact research source bytes recorded in CODE_PROVENANCE.json.
+code/*.py -text
+tests/test_scaling_measurement.py -text

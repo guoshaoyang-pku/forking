@@ -1,0 +1,79 @@
+{
+  "source": "docs/appendices/context_examples_20260925/logits.json",
+  "source_sha256": "2ab83ec0ac08725e1fda463c49c301f4bbc814bc6b67c9780e020b15297bb065",
+  "counts_sha256": "162e41934390c6e4831b06a301c6a78a1655e32ed8ea96dc82258dfc4ebbfb64",
+  "script": "docs/plot_scripts/plot_context_examples_points.py",
+  "input_reader": "docs/plot_scripts/plot_context_examples_logp.py",
+  "metric": "natural log probability",
+  "max_abs_logp_difference_from_export": 1.5016857535243844e-06,
+  "epochs": [
+    1,
+    5
+  ],
+  "steps": [
+    337,
+    1685
+  ],
+  "seed": 42,
+  "shape": [
+    3,
+    2
+  ],
+  "shared_ylim": [
+    -16,
+    0
+  ],
+  "encoding": "open epoch1 and filled epoch5 points joined; higher means more probable",
+  "color": "blue train-seen (both/train-only); orange val-only; grey neither; charcoal others",
+  "counts": "exact context-token occurrences: Train shard1; Val shards2,3,4; valid within-chunk positions",
+  "token_classes": "corpus membership, not separate model predictions for train and val",
+  "trajectory": "two endpoints only; connecting line does not imply monotone intermediate changes",
+  "others": "log of mean top20 probability excluding named tokens; reselected per distribution",
+  "checkpoints": [
+    {
+      "run_id": "ep5ckpt_v5_nogram_s42_fixed",
+      "checkpoint": "epoch1_model.pt",
+      "checkpoint_sha256": "48236ea8610b437200d6241b32ff80eb51c1f593546dc357a594d20da973067c",
+      "summary_sha256": "78ab77423447594ea6e0d3519836cbf96675c056e83c9863e0eb32aac4533d51",
+      "step": 337
+    },
+    {
+      "run_id": "ep5ckpt_v5_nogram_s42_fixed",
+      "checkpoint": "final_model.pt",
+      "checkpoint_sha256": "cd63a146197dd2a4afb7c26cc1fe67c60f27c326ef0685e97adaaf8a8d0269e3",
+      "summary_sha256": "78ab77423447594ea6e0d3519836cbf96675c056e83c9863e0eb32aac4533d51",
+      "step": 1685
+    },
+    {
+      "run_id": "ep5ckpt_v5_both_s42_fixed",
+      "checkpoint": "epoch1_model.pt",
+      "checkpoint_sha256": "770028f5bc227b975391ae93768481cda0b8d123cbd9118835afec73bfcc529b",
+      "summary_sha256": "7af0e623e9ad00a8ddc90a1ad22258de29108b32daf376e56c8425c282507508",
+      "step": 337
+    },
+    {
+      "run_id": "ep5ckpt_v5_both_s42_fixed",
+      "checkpoint": "final_model.pt",
+      "checkpoint_sha256": "8b02f1d3e62f4e87bde62cc0e8b363e884ec5b71aa910746f873e4e6f4a303f9",
+      "summary_sha256": "7af0e623e9ad00a8ddc90a1ad22258de29108b32daf376e56c8425c282507508",
+      "step": 1685
+    }
+  ],
+  "export_dtype": "float32",
+  "export_device": "cpu",
+  "input": "BOS + exactly three context tokens",
+  "preserved_macro_figure": {
+    "file": "figures/fig09_crowd_ce_seen_novel.pdf",
+    "sha256": "d62d7544440a7fc07c2652f87353892d9870bf77bca32c5860e5d8f794cb17ba",
+    "aggregation_id": "fig6_global_seen_novel_20260922_s42_fixed",
+    "steps": [
+      337,
+      674,
+      1011,
+      1348,
+      1685
+    ],
+    "seed": 42
+  },
+  "release_export_transform": "CSV line endings normalized to LF; values unchanged."
+}

@@ -1,0 +1,62 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reproduce the packaged results · Forking</title><meta name="description" content="Reproduce the packaged results">
+<meta name="theme-color" content="#152c42"><meta property="og:title" content="Forking: Sudden Overfitting Under Replay">
+<meta property="og:description" content="When the same text returns, fitting and generalization can take different paths.">
+<meta property="og:type" content="website"><meta property="og:image" content="https://guoshaoyang-pku.github.io/forking/site-assets/share-card.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://guoshaoyang-pku.github.io/forking/site-assets/share-card.png">
+<link rel="icon" href="site-assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="site-assets/site.css"></head><body>
+<a class="skip" href="#main">Skip to content</a><header class="topbar"><nav class="wrap nav" aria-label="Main navigation">
+<a class="brand" href="index.html"><svg class="mark" viewBox="0 0 30 30" aria-hidden="true"><path d="M3 25L12 16L26 4" fill="none" stroke="#196693" stroke-width="3"/><path d="M12 16L26 22" fill="none" stroke="#c65b2e" stroke-width="3"/></svg>Forking</a>
+<div class="nav-links"><a href="index.html#findings">Findings</a><a href="REVIEW_GUIDE.html" class="optional">Review</a><a href="index.html#reproduce">Reproduce</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release">GitHub ↗</a></div></nav></header><main id="main" class="wrap document"><h1 id="reproduce-the-packaged-results">Reproduce the packaged results</h1>
+<p>Start from the repository root with Python 3.10 or newer:</p>
+<pre><code class="language-sh">python3 reproduce/verify_coverage.py
+python3 reproduce/verify_contexts.py
+</code></pre>
+<p>These commands are read-only and use the Python standard library. Expected output: PASS, eight coverage fits, and 72 context endpoints respectively. They can also be called by absolute path from another directory.</p>
+<h2 id="coverage-analysis">Coverage analysis</h2>
+<p>The <a href="https://github.com/guoshaoyang-pku/forking/blob/release/evidence/coverage/snapshot.json">coverage packet</a> pins three CSV files by SHA-256. The checker reads 1,512 observations and selects 432 observations from fig1v5_rp_both_s{42,43,44}_fixed at steps 670, 1000, 1340, and 2000. Each of 18 bins receives equal weight; frequencies range from 1 to 1,000, with at least 300 positions per side per seed.</p>
+<p>For each branch and step it recomputes:</p>
+<pre><code class="language-text">mean online gap = slope × measured novel-continuation fraction + intercept
+</code></pre>
+<p>It checks slope, intercept, RMSE, relative RMSE, R², through-origin RMSE, alternating-bin holdout RMSE, and maximum sample standard deviation across seeds against the recorded results. Alternating-bin holdout trains on bins 1, 3, …, 17 and evaluates bins 2, 4, …, 18; it is not a held-out corpus or run.</p>
+<table>
+<thead>
+<tr>
+<th>Context</th>
+<th style="text-align: right;">Step</th>
+<th style="text-align: right;">Slope</th>
+<th style="text-align: right;">Intercept</th>
+<th style="text-align: right;">RMSE</th>
+<th style="text-align: right;">R²</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bigram</td>
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">10.902815</td>
+<td style="text-align: right;">1.889015</td>
+<td style="text-align: right;">0.202266</td>
+<td style="text-align: right;">0.990261</td>
+</tr>
+<tr>
+<td>Trigram</td>
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">10.417929</td>
+<td style="text-align: right;">−0.786639</td>
+<td style="text-align: right;">0.129244</td>
+<td style="text-align: right;">0.995368</td>
+</tr>
+</tbody>
+</table>
+<p>The fit is descriptive within the measured setting. Online gap uses post-update fixed-validation CE minus pre-update current-batch training CE at the same logged step. A context absent from training has no training-side loss and is excluded from this fit.</p>
+<h2 id="context-endpoints">Context endpoints</h2>
+<p>The <a href="https://github.com/guoshaoyang-pku/forking/blob/release/evidence/context-examples/context_examples_manifest.json">context packet</a> records seed 42, checkpoint SHA-256 values, the input convention, and export semantics. The checker verifies log-probability conversion, corpus-membership classes, unique and complete epoch-1/epoch-5 pairs, and run/step coordinates. It does not recompute checkpoint inference, corpus counts, or the reranked “others” statistic from full-vocabulary logits.</p>
+<h2 id="redraw-and-rerun">Redraw and rerun</h2>
+<pre><code class="language-sh">python3 -m pip install -r requirements-figures.txt
+python3 reproduce/plot_coverage.py --output outputs/coverage.png
+</code></pre>
+<p>This produces an independent visualization of the eight fits, with mean ± sample SD across seeds. The paper's original vector PDFs are preserved separately in <a href="figs/manifest.json">docs/figs</a>.</p>
+<p>For GPU training prerequisites and the two baseline commands, see <a href="TRAINING.html">TRAINING.md</a>. Missing raw data and tokenizer assets are stated in <a href="AVAILABILITY.html">AVAILABILITY.md</a>.</p></main><footer class="wrap footer"><div>Forking · Sudden Overfitting Under Replay</div><div><a href="EVIDENCE.html">Evidence notes</a><a href="AVAILABILITY.html">Materials</a><a href="https://github.com/guoshaoyang-pku/forking/tree/release">Code ↗</a></div></footer></body></html>

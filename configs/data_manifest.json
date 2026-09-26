@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "description": "Byte identities copied from the baseline input inventory verified on 2026-09-25.",
+  "provenance": {
+    "inventory_date": "2026-09-25",
+    "source_inventory": "a100-onboarding-20260925/data.sha256"
+  },
+  "availability": "Raw token shards, tokenizer and frequency index are external inputs and are not bundled in this repository. A public retrieval location and tokenizer provenance are not yet included.",
+  "format": {
+    "tokens": "uint16",
+    "byte_order": "little-endian",
+    "row_tokens": 2049,
+    "sequence_length": 2048,
+    "vocabulary_size": 8192,
+    "packing": "BOS-aligned rows"
+  },
+  "split": {
+    "train": [
+      1
+    ],
+    "validation": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      6542
+    ]
+  },
+  "files": [
+    {
+      "name": "shard_00001.bin",
+      "role": "tokenized_shard",
+      "bytes": 99433872,
+      "sha256": "e8dfa753beed211885b60b4a71e79a40c9a7249c465dcf405d4a4aefc9764911"
+    },
+    {
+      "name": "shard_00002.bin",
+      "role": "tokenized_shard",
+      "bytes": 98253648,
+      "sha256": "818f72cf97875ec11118f6332240f5431ed84485c4c95072c944b0fefe13f2c0"
+    },
+    {
+      "name": "shard_00003.bin",
+      "role": "tokenized_shard",
+      "bytes": 97368480,
+      "sha256": "aad2b3b48d4a682f5d9d4f8db2487e864a04fae66ff72a1d1a64e8cfa44416e2"
+    },
+    {
+      "name": "shard_00004.bin",
+      "role": "tokenized_shard",
+      "bytes": 97368480,
+      "sha256": "f13aa5abb8658db0658d06d7fa2e4bde22d650ff4e64945d6f6ae4b629462925"
+    },
+    {
+      "name": "shard_00005.bin",
+      "role": "tokenized_shard",
+      "bytes": 98548704,
+      "sha256": "d8c0d4927614f84a3d8f1a562ecb1933ad141eb14d8f482d69f0d7cff06302a3"
+    },
+    {
+      "name": "shard_00006.bin",
+      "role": "tokenized_shard",
+      "bytes": 97368480,
+      "sha256": "40a12412e20ea5c04db8e9365ed720cfa961c9cf64a007dfed8c861d966003d2"
+    },
+    {
+      "name": "shard_00007.bin",
+      "role": "tokenized_shard",
+      "bytes": 97073424,
+      "sha256": "9b3e94f4e6803166dc0209a7ce6d298f92ab135eee8ff8b0278c1b3dad9846c1"
+    },
+    {
+      "name": "shard_00008.bin",
+      "role": "tokenized_shard",
+      "bytes": 97368480,
+      "sha256": "275dfd571305315ff7e17438f9aefa451cff4366d07e48b9c42732fff474d423"
+    },
+    {
+      "name": "shard_00009.bin",
+      "role": "tokenized_shard",
+      "bytes": 98548704,
+      "sha256": "ab1f1646d447162ac543c583007674f25b995ac698625ebb2d6193bb4f5ccbe8"
+    },
+    {
+      "name": "shard_00010.bin",
+      "role": "tokenized_shard",
+      "bytes": 98548704,
+      "sha256": "560d480abdeb672dc728955d2968eb95f1f328608a07f49791529a0e1693ca2a"
+    },
+    {
+      "name": "shard_06542.bin",
+      "role": "tokenized_shard",
+      "bytes": 98253648,
+      "sha256": "55336fdf6dee4bc8958694e335ee02daa3ebf05d2a4ea6fc739e4c237a2b1564"
+    },
+    {
+      "name": "freq_index.npz",
+      "role": "frequency_index",
+      "bytes": 270828578,
+      "sha256": "763a5548f75a7e326370610112fa58f61bcaa37d5a558c33caa3c7482007673d"
+    }
+  ]
+}

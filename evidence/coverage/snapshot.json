@@ -1,0 +1,17 @@
+{
+  "description": "Derived observations for the three-seed coverage analysis",
+  "source_lab_revision": "eb466551337395f6df970c6aad4476a62658e7f4",
+  "data_hashes": {
+    "online_fits.csv": "e85482c0ed58930e657e63cc6d22faaa6abdc7583dcd5de073ef749efc7061bc",
+    "corpus_bins.csv": "058e4ee9eb70ef8c40ba43f2d03b2fbcda98eaa3d5c1e9b9b31aff100b2a90c4",
+    "online_points.csv": "e2dd6931ca3f5822bf8e23877b83addaec7e8008dbd255a1030d456ad7b9dfe4"
+  },
+  "runs": "fig1v5_rp_{both,nogram}_s{42,43,44}_fixed",
+  "scope": "Derived observations only; raw corpus and model checkpoints are not bundled.",
+  "source_data_hashes": {
+    "online_fits.csv": "06f9859338d295b37bb49aa3a87c0a1b8abd7efecd79761fd92b30dbe8ec06a5",
+    "corpus_bins.csv": "e5c756d34fed7cc55d9ebe92608dfdb07cd8fd71080242bf0de1bb7ed8697ec9",
+    "online_points.csv": "b8fe75f4ee4b225fa9edf379ac15dcd70a8478b2aa3ae7f37f6a14e3ae46dd2c"
+  },
+  "export_transform": "CRLF to LF line endings only; CSV values and ordering unchanged."
+}
