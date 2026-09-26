@@ -11,7 +11,7 @@ These commands are read-only and use the Python standard library. Expected outpu
 
 ## Coverage analysis
 
-The [coverage packet](../evidence/coverage/snapshot.json) pins three CSV files by SHA-256. The checker reads 1,512 observations and selects 432 observations from fig1v5_rp_both_s{42,43,44}_fixed at steps 670, 1000, 1340, and 2000. Each of 18 bins receives equal weight; frequencies range from 1 to 1,000, with at least 300 positions per side per seed.
+The [coverage packet](../results/coverage/snapshot.json) pins three CSV files by SHA-256. The checker reads 1,512 observations and selects 432 observations from fig1v5_rp_both_s{42,43,44}_fixed at steps 670, 1000, 1340, and 2000. Each of 18 bins receives equal weight; frequencies range from 1 to 1,000, with at least 300 positions per side per seed.
 
 For each branch and step it recomputes:
 
@@ -30,15 +30,15 @@ The fit is descriptive within the measured setting. Online gap uses post-update 
 
 ## Context endpoints
 
-The [context packet](../evidence/context-examples/context_examples_manifest.json) records seed 42, checkpoint SHA-256 values, the input convention, and export semantics. The checker verifies log-probability conversion, corpus-membership classes, unique and complete epoch-1/epoch-5 pairs, and run/step coordinates. It does not recompute checkpoint inference, corpus counts, or the reranked “others” statistic from full-vocabulary logits.
+The [context packet](../results/context-examples/context_examples_manifest.json) records seed 42, checkpoint SHA-256 values, the input convention, and export semantics. The checker verifies log-probability conversion, corpus-membership classes, unique and complete epoch-1/epoch-5 pairs, and run/step coordinates. It does not recompute checkpoint inference, corpus counts, or the reranked “others” statistic from full-vocabulary logits.
 
 ## Redraw and rerun
 
 ~~~sh
-python3 -m pip install -r requirements-figures.txt
+python3 -m pip install matplotlib
 python3 reproduce/plot_coverage.py --output outputs/coverage.png
 ~~~
 
-This produces an independent visualization of the eight fits, with mean ± sample SD across seeds. The paper's original vector PDFs are preserved separately in [docs/figs](../docs/figs/manifest.json).
+This produces an independent visualization of the eight fits, with mean ± sample SD across seeds. The paper's original vector PDFs are preserved separately in [results/figures](../results/figures/manifest.json).
 
-For GPU training prerequisites and the two baseline commands, see [TRAINING.md](../docs/TRAINING.md). Missing raw data and tokenizer assets are stated in [AVAILABILITY.md](../docs/AVAILABILITY.md).
+For GPU training prerequisites and the two baseline commands, see [TRAINING.md](TRAINING.md). Missing raw data and tokenizer assets are stated in the root README.

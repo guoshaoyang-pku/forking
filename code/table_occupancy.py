@@ -1,4 +1,4 @@
-"""ngram-gap-lab · code/table_occupancy.py
+"""Table occupancy diagnostics for hashed n-gram memories.
 
 Table occupancy / collision diagnostics for the table-size scaling line.
 
@@ -161,7 +161,7 @@ def compute_occupancy(data_dir: str, shard_ids: list, vocab_size: int,
     train prefix (nested-prefix control).  If epoch_batches == 0, uses all
     chunks (full epoch).
 
-    *_clean_table > 0: clean 单表 mode (SSOT clean-table-rework.md) --
+    *_clean_table > 0: clean single-table mode --
     branch = single layer, single hash, R = its clean-table row count.
     """
     chunk_size = sequence_len + 1

@@ -1,4 +1,4 @@
-"""ngram-gap-lab · code/ngram_freq.py
+"""Frequency indexing and loss aggregation for context diagnostics.
 
 Clean per-frequency-bin loss statistics for n-gram gap analysis.
 

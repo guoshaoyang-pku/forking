@@ -1,4 +1,4 @@
-"""ngram-gap-lab · code/train.py
+"""NanoGPT-style trainer with optional hashed n-gram memory.
 
 Minimal clean reproduction of n-gram-value-memory-induced replay-specific
 train/val gap on vanilla nanoGPT.
@@ -27,7 +27,7 @@ Outputs JSONL logs under data/runs_fixed/<run_id>/:
 Usage:
   python train.py --run_id myrun --injection_position input --steps 1000 \
       --bigram_clean_table <R_bigram> --trigram_clean_table <R_trigram>
-  (for the main-line command, see cluster/run_baseline.sh)
+  (for the packaged command, see scripts/run_training.py)
 """
 
 from __future__ import annotations
@@ -82,8 +82,8 @@ class Config:
     table_lr_scale: float = 2.0       # multiplier on the n-gram table LR
     table_betas: tuple = (0.0, 0.99)  # (beta1, beta2) for adamw; beta1 = momentum for sgd
     table_mult: int = 64              # legacy multi-layer/two-hash path only
-    bigram_clean_table: int = 0       # clean single-table rows R (0=off); SSOT: clean-table-rework.md
-    trigram_clean_table: int = 0      # clean single-table rows R for trigram (0=off); same SSOT
+    bigram_clean_table: int = 0       # clean single-table rows R (0=off)
+    trigram_clean_table: int = 0      # clean single-table rows R for trigram (0=off)
     bigram_table_dim: int = 0         # clean-table row width d (0=n_embd); frozen zero-pad projection back to n_embd
     trigram_table_dim: int = 0        # same rule for the trigram branch
     bigram_perfect_map: str = ""      # npz with packed-bigram->row map: collision-free table (rows = n_distinct+1)
@@ -382,17 +382,16 @@ class NanoGPT(nn.Module):
             # +1 row: OOV/UNK bucket for contexts absent from the train scan.
             self.bigram_table_size = int(_pack["n_distinct"]) + 1
             if config.bigram_clean_table:
-                # clean 单表 perfect anchor (SSOT): single layer, K=1 full-width.
+                # Clean table: one full-width embedding layer and one hash.
                 self.bigram_ve_layers = {ngram_layers[0]}
                 self.bigram_K = 1
             else:
-                # legacy 4-layer framework: single layer keeps the fp32 table
-                # within one H200 (4 layers x N x 768 x 12B would not fit).
+                # The legacy path uses a single layer to bound table memory.
                 self.bigram_ve_layers = {ngram_layers[0]}
                 self.bigram_K = 2
         elif config.enable_nanogpt_ngram_ve and config.enable_bigram_ve:
             if config.bigram_clean_table:
-                # clean 单表 (SSOT): one nn.Embedding(R, n_embd), single layer,
+                # Clean table: one nn.Embedding(R, n_embd), single layer,
                 # single hash, R freely set (no vocab*mult lock-in).
                 self.bigram_table_size = config.bigram_clean_table
                 self.bigram_ve_layers = {ngram_layers[0]}
@@ -434,7 +433,7 @@ class NanoGPT(nn.Module):
                 ])
             self.bigram_hash_primes_per_layer[li] = _bp[j]
         if config.enable_nanogpt_ngram_ve and config.enable_trigram_ve and config.trigram_clean_table:
-            # clean 单表 trigram (SSOT): single layer, K=1 full-width, R freely set
+            # Clean trigram table: one full-width layer with configurable R.
             self.trigram_ve_layers = {ngram_layers[0]}
             self.trigram_table_size = config.trigram_clean_table
             self.trigram_K = 1
@@ -669,7 +668,7 @@ class NanoGPT(nn.Module):
         if self._context_set_keys is None:  # row mode
             prev = torch.cat([idx[:, :1], idx[:, :-1]], dim=1)
             prev2 = torch.cat([idx[:, :2], idx[:, :-2]], dim=1)
-            # Clean-table trigram row hash at the single injection layer
+            # Trigram row hash at the single injection layer.
             # (K=1): (prev2*p0 ^ prev*p1 ^ idx*p2) % R with the base primes.
             # Computed directly (not via _trigram_row_indices) so arms without
             # a trigram table (nogram) select the identical rows.
@@ -1421,7 +1420,7 @@ def _autocast_ctx(dtype: str):
 
     fp32  -> nullcontext (no autocast)
     bf16  -> torch.autocast bfloat16
-    fp8   -> torch.autocast float8_e4m3fn (H200/TensorRT capable)
+    fp8   -> torch.autocast float8_e4m3fn when supported by the installed stack
     """
     if dtype == "bf16":
         return torch.autocast(device_type="cuda", dtype=torch.bfloat16)
@@ -1690,7 +1689,7 @@ def main():
                         choices=["rmsprop", "adamw", "sgd"],
                         help="optimizer for n-gram table params (default rmsprop)")
     parser.add_argument("--table_lr_scale", type=float, default=2.0,
-                        help="multiplier on the n-gram table LR (default 2.0; the SSOT standard)")
+                        help="multiplier on the n-gram table learning rate")
     parser.add_argument("--table_betas", default=None,
                         help="beta1,beta2 for table (adamw: both; sgd: beta1=momentum); default 0.0,0.99")
     parser.add_argument("--table_mult", type=int, default=64,
@@ -1698,11 +1697,10 @@ def main():
     parser.add_argument("--bigram_clean_table", type=int, default=0,
                         help="clean single-table rows R (0=off): one nn.Embedding(R, n_embd), "
                              "single layer, single hash, R freely set; required for a new main-line "
-                             "bigram run. SSOT: "
-                             "docs/notes/method/clean-table-rework.md")
+                             "bigram run. Use one embedding table with one hash and R rows.")
     parser.add_argument("--trigram_clean_table", type=int, default=0,
                         help="clean single-table rows R for the trigram branch (0=off); required "
-                             "for a new main-line trigram run; same SSOT as --bigram_clean_table")
+                             "for a new trigram run; use one embedding table with one hash and R rows")
     parser.add_argument("--bigram_table_dim", type=int, default=0,
                         help="X2: clean-table row width d (0=n_embd); rows are read through a "
                              "frozen zero-pad projection back to n_embd; only valid with "

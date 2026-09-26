@@ -1,11 +1,7 @@
 {
   "schema_version": 1,
-  "description": "Byte identities copied from the baseline input inventory verified on 2026-09-25.",
-  "provenance": {
-    "inventory_date": "2026-09-25",
-    "source_inventory": "a100-onboarding-20260925/data.sha256"
-  },
-  "availability": "Raw token shards, tokenizer and frequency index are external inputs and are not bundled in this repository. A public retrieval location and tokenizer provenance are not yet included.",
+  "description": "Expected file identities and split for the fixed-replay baseline.",
+    "availability": "Raw token shards, tokenizer and frequency index are external inputs and are not bundled in this repository.",
   "format": {
     "tokens": "uint16",
     "byte_order": "little-endian",

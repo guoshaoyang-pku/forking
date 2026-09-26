@@ -18,7 +18,7 @@ import statistics
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_PACKET = ROOT / "evidence/coverage"
+DEFAULT_PACKET = ROOT / "results/coverage"
 EDGES = (1, 2, 3, 4, 5, 6, 9, 13, 21, 31, 51, 76, 101, 151, 201, 301, 501, 751, 1001)
 BINS = tuple((lo, hi - 1) for lo, hi in zip(EDGES, EDGES[1:]))
 STEPS = (670, 1000, 1340, 2000)

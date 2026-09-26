@@ -20,10 +20,10 @@ it is not a from-scratch data preparation pipeline.
 - These input files total **1,348,963,202 bytes**. The repository does not
   contain the raw corpus, token shards, tokenizer, frequency index, or weights.
   A public input download location and complete tokenizer/preparation
-  provenance have not yet been packaged. The checksums identify the baseline
+  provenance must be supplied separately. The checksums identify the baseline
   inputs; they do not replace that provenance or grant redistribution rights.
 - The canonical batch is 72 sequences of length 2048, or 147,456 tokens per
-  optimizer step. It was used on H200 GPUs in the research workflow. A full
+  optimizer step. It requires a CUDA-capable GPU with BF16 support. A full
   run of this exported launcher has not yet been validated. A smaller GPU may
   require a separately documented batch/accumulation adaptation; changing
   the batch silently is not an exact reproduction.

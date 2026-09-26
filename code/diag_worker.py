@@ -257,7 +257,7 @@ def make_logit_payloads(batches, model, amp_dtype, vocab_size, freq_index, branc
     exact-freq / freq-bin pipeline byte-identical when --logit_stats is off.
     When --logit_stats is on, the caller invokes this on the same val batches
     used by the standard diag block; the extra cost is ~4 bf16 forwards per
-    eval block (~0.3-0.5s on H200).
+    evaluation block.
     """
     import torch
     import torch.nn.functional as F

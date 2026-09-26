@@ -1,9 +1,6 @@
 {
-  "source": "docs/appendices/context_examples_20260925/logits.json",
   "source_sha256": "2ab83ec0ac08725e1fda463c49c301f4bbc814bc6b67c9780e020b15297bb065",
   "counts_sha256": "162e41934390c6e4831b06a301c6a78a1655e32ed8ea96dc82258dfc4ebbfb64",
-  "script": "docs/plot_scripts/plot_context_examples_points.py",
-  "input_reader": "docs/plot_scripts/plot_context_examples_logp.py",
   "metric": "natural log probability",
   "max_abs_logp_difference_from_export": 1.5016857535243844e-06,
   "epochs": [
@@ -63,7 +60,7 @@
   "export_device": "cpu",
   "input": "BOS + exactly three context tokens",
   "preserved_macro_figure": {
-    "file": "figures/fig09_crowd_ce_seen_novel.pdf",
+    "file": "results/figures/continuations.pdf",
     "sha256": "d62d7544440a7fc07c2652f87353892d9870bf77bca32c5860e5d8f794cb17ba",
     "aggregation_id": "fig6_global_seen_novel_20260922_s42_fixed",
     "steps": [

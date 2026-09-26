@@ -1,0 +1,146 @@
+{
+  "format_version": 1,
+  "figures": [
+    {
+      "id": "overview",
+      "pdf": "results/figures/overview.pdf",
+      "png": "results/figures/overview.png",
+      "png_sha256": "357984f056a87209e986678e31b9f51f2987c14a31d066320ff0a150c21bb29e",
+      "width": 2100,
+      "height": 1078,
+      "scope": "Local-memory representation schematic and replay loss curves. The first-pass panel is an initial segment of replay training.",
+      "pdf_sha256": "5aab888d8d0232e15102e9b708b8cef1e0e0f855760ade701b1a5ef7a0e224e9",
+      "kind": "schematic-and-measurement"
+    },
+    {
+      "id": "frequency",
+      "pdf": "results/figures/frequency.pdf",
+      "png": "results/figures/frequency.png",
+      "png_sha256": "5abe8445fdd2e678d77705badc7df891a38ba23283cb97a4b1205beea6488205",
+      "width": 2100,
+      "height": 1744,
+      "scope": "fig1v5_rp_both_s{42,43,44}_fixed; step 1000; mean and sample SD; online gap; F=1..1000, >=300 tokens per side.",
+      "pdf_sha256": "febf523271b545247b5ba5189bbe07f5c151200e80fcb0069e1725c2b114cf31",
+      "kind": "measurement"
+    },
+    {
+      "id": "coverage",
+      "pdf": "results/figures/coverage.pdf",
+      "png": "results/figures/coverage.png",
+      "png_sha256": "067bc59fbd21e72e2dd7bdc36e59ffab8d37b55e89ee525fe8c3ff940b62d309",
+      "width": 2100,
+      "height": 914,
+      "scope": "fig1v5_rp_{both,nogram}_s{42,43,44}_fixed; steps 670/1000/1340/2000; equal-bin descriptive affine fits; GT estimate is uncalibrated.",
+      "pdf_sha256": "63d255a7202ac91601957b89c6dec4d415b75135c7d00165cbb7d45e99d939e0",
+      "kind": "measurement"
+    },
+    {
+      "id": "continuations",
+      "pdf": "results/figures/continuations.pdf",
+      "png": "results/figures/continuations.png",
+      "png_sha256": "01e3e9693ea603720e83212f4899ac88580f4a72d235f407b5b3ade1a8bf2153",
+      "width": 2100,
+      "height": 2533,
+      "scope": "Seed 42; five-pass fixed-validation CE; aggregation fig6_global_seen_novel_20260922_s42_fixed, steps 337/674/1011/1348/1685. Checkpoint metadata accompanies context examples; full aggregate observations are not bundled.",
+      "pdf_sha256": "d62d7544440a7fc07c2652f87353892d9870bf77bca32c5860e5d8f794cb17ba",
+      "kind": "measurement"
+    },
+    {
+      "id": "capacity",
+      "pdf": "results/figures/capacity.pdf",
+      "png": "results/figures/capacity.png",
+      "png_sha256": "271e093ebebaca52750d323a2c00ab4454cb2ebb8c4fb52b2ffc165788b8fff7",
+      "width": 2100,
+      "height": 1862,
+      "scope": "s1v5_128_tbl_*_fixed; seed 42; step 1000; single-branch table-size sweep; online gap.",
+      "pdf_sha256": "ebc0e0bda2ad12cd7428efb0f0b39cbccef60d56d2aff3ed0031e2b548713433",
+      "kind": "measurement"
+    },
+    {
+      "id": "corpus",
+      "pdf": "results/figures/corpus.pdf",
+      "png": "results/figures/corpus.png",
+      "png_sha256": "929cac8e6359309883cf2e44d6f6adc6b9d940bb89d10b75d74c365c78fd4341",
+      "width": 2100,
+      "height": 1862,
+      "scope": "Trigram-only corpus-size sweep, seed 42; epoch 2/3 endpoints; online gap.",
+      "pdf_sha256": "8aa30d3855576659fd9f4423e958053f94da67c9b189e3339c5ffdb5b86df964",
+      "kind": "measurement"
+    },
+    {
+      "id": "replay",
+      "pdf": "results/figures/replay.pdf",
+      "png": "results/figures/replay.png",
+      "png_sha256": "9a80121f54809218e78af5f3ec21a435ce87eed691b3c59a3c2c9d02de4bd197",
+      "width": 2100,
+      "height": 840,
+      "scope": "Replay loss trajectories: 2000-step traces and 20-pass endpoints. Included as a figure; underlying training logs are not bundled.",
+      "pdf_sha256": "44ab36a3c7ca966f50f407dc0ac8bb62c9cc4fd5fc680fe109b39a292bf61832",
+      "kind": "measurement"
+    },
+    {
+      "id": "interventions",
+      "pdf": "results/figures/interventions.pdf",
+      "png": "results/figures/interventions.png",
+      "png_sha256": "2ab17ccf2b2bdc4a84ce309eef5bb1ec22ace1ccd99521af0187e11e0ec6c3cd",
+      "width": 2100,
+      "height": 974,
+      "scope": "Seed 42; 1000 updates; retrieval masking / table freezing after the first pass with independent controls. Included as a figure; underlying training logs are not bundled.",
+      "pdf_sha256": "af31a55745a475e52489ba9ce57d1e9e7413bf191f200c7de47c225bffd70aff",
+      "kind": "measurement"
+    },
+    {
+      "id": "context-examples",
+      "pdf": "results/figures/context-examples.pdf",
+      "png": "results/figures/context-examples.png",
+      "scope": "Seed 42; epochs 1 and 5 (steps 337 and 1685); BOS plus three context tokens; natural log probability. Packaged endpoint CSV and checkpoint identities; two endpoints do not establish a monotone trajectory.",
+      "width": 2100,
+      "height": 2223,
+      "png_sha256": "0aad4c87a3acdbf0d56ecf7fa4688bc2fbaedd778d1d2ca780dbb41731185f3c",
+      "pdf_sha256": "af5a18187b21a43e5c2313829cb012a459d3da98673f592ea16b4bf57154d3ae",
+      "kind": "measurement"
+    },
+    {
+      "id": "mechanism",
+      "pdf": "results/figures/mechanism.pdf",
+      "png": "results/figures/mechanism.png",
+      "scope": "Illustrative schematic of local sharpening and cross-context recovery; bar heights are not measurements.",
+      "width": 2100,
+      "height": 787,
+      "png_sha256": "c9ce010384505f45c106d9a63dacdf1754a98568fd4483cf9343e68adab4371c",
+      "pdf_sha256": "7807ca64031be63f73cfd67158757028d5c93cb29337fa84686a4b4ab2ca5a0e",
+      "kind": "schematic"
+    },
+    {
+      "id": "sharpening-evidence",
+      "pdf": "results/figures/sharpening-evidence.pdf",
+      "png": "results/figures/sharpening-evidence.png",
+      "scope": "Seed 42 intervention and aggregate diagnostic: train-seen mass, context gap contribution, and seen-versus-novel validation cross-entropy. It is not a per-context monotone trajectory or a standalone causal proof.",
+      "width": 1650,
+      "height": 660,
+      "png_sha256": "c0f589ff908a4150f7385b289f39e07620647ac9a8ad9d9eb5574f34efabdf7f",
+      "pdf_sha256": "67a0c66e10bd1cca6f71cc7fcc145aadbc9e2b04c4c7a595cc05daf35c45599b",
+      "kind": "measurement"
+    },
+    {
+      "id": "sharpening-vs-ce",
+      "pdf": null,
+      "png": "results/figures/sharpening-vs-ce.png",
+      "scope": "20 replay epochs, seed 42, 128x table learning-rate scale; shape metrics and validation CE are plotted on separate axes.",
+      "width": 2850,
+      "height": 1140,
+      "png_sha256": "7f87d55667d5763fd0489d48bf94f3fc551a06f896595e75d70b89b5d42cb6e4",
+      "kind": "measurement"
+    },
+    {
+      "id": "sharpening-exemplars",
+      "pdf": null,
+      "png": "results/figures/sharpening-exemplars.png",
+      "scope": "Selected high-frequency, low-frequency, and novel context top-20 probability endpoints across replay epochs.",
+      "width": 2340,
+      "height": 600,
+      "png_sha256": "2147335950ee71401c46e87206ac0dc54b36cca4a5f2864c8435d650929122ee",
+      "kind": "measurement"
+    }
+  ]
+}

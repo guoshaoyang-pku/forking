@@ -10,7 +10,7 @@ from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKET = ROOT / "evidence/context-examples"
+PACKET = ROOT / "results/context-examples"
 
 
 def require(condition, message):
