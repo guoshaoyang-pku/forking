@@ -84,6 +84,7 @@ log 图只使用 train 和 validation 都有 token 且 gap 为正的 bucket。
 | `summarize_good_turing_kernel.py` | 从已提交的 missing-mass 与 exact-frequency 统计复算 Good–Turing 核指数、bigram 单幅度拟合和样本外检验；显式标记 trigram 的窗口/权重不对齐 |
 | `plot_v5_beta_by_R.py` | 用 62 条 formal single-branch table-size run 的 exact-frequency 日志重算 `β(R)`，输出完整 CSV，并显式降级 low-gap / low-R² 不可辨识点 |
 | `plot_l6_residual_response.py` | 读取两个 L6 exact-enumeration run 的 `metrics.csv` / `summary.json`，生成 count-table 渐近与 residual-response 矩对照图 |
+| `plot_appendix_c_parameter_selection.py` | 从归档的参数选择 `claims.json` 和 manifest 生成附录 C 四面板 PDF/PNG/SVG；图在 `docs/figs/appendix_c_parameter_selection/` |
 
 ## 生成流程
 

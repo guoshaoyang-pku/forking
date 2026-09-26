@@ -19,7 +19,8 @@ Finalized 2026-09-25 for the controlled vanilla nanoGPT setting. This evidence p
 - `evidence.json`: complete parsed configurations, loss rows, and per-source hashes.
 - `claims.json`: exact run/seed/step/value mapping for tables, prose readouts and three-seed mean/sample SD.
 - `parameter_selection_manifest.json`: anonymous source supplement with claim mapping, configurations and hashes; personal paths removed.
-- `parameter_selection_{initial,locked,scale}.tex`: complete generated tabular environments used by the paper. The four `*_rows.tex` files also retain bare row fragments, including the warmup check summarized in prose.
+- `parameter_selection_{initial,locked,scale}.tex`: complete generated tabular environments retained for audit. The four `*_rows.tex` files also retain bare row fragments, including the warmup check summarized in prose.
+- `docs/plot_scripts/plot_appendix_c_parameter_selection.py`: regenerates the four-panel parameter-selection figure from this packet's claims and manifest; PDF, PNG and SVG outputs are in `docs/figs/appendix_c_parameter_selection/`.
 - `overleaf_patch/`: frozen final manuscript section, B/C integration files, tables and anonymous manifest.
 - `integration.json`: upstream and final Overleaf commit IDs, compiled artifact hashes and checks.
 
