@@ -26,8 +26,9 @@ Reproduce from repo root:
     # copy the resulting PDF to paper/figures/ with the same filename
     .venv/bin/python docs/plot_scripts/audit_section4_powerlaw.py --update-paper-manifest
 
-The audit is the frequency-specific overlay after any regeneration by
-build_appendix_c_manifest.py. It leaves all other panel entries unchanged.
+The audit updates only the frequency entry. build_appendix_c_manifest.py now
+retains the current power-law protocol from the paper fit manifest when it
+regenerates the crosswalk; all other panel definitions are preserved.
 Final numbers, source SHA-256 hashes, per-bin values, Fable usage and the
 independent review are in ../section4_close_20260926/.
 
