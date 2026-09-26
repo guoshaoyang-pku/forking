@@ -105,7 +105,7 @@ def plot_locked(ax, claims, manifest):
     xs, raw, net = xs[order], raw[order], net[order]
     ax.plot(xs, raw, "-o", color=RAW, label="raw gap", zorder=3)
     ax.plot(xs, net, "--o", color=NET, label="net gap", zorder=3)
-    selected_line(ax, 6e-4, r"$6\times10^{-4}$")
+    selected_line(ax, 6e-4)
     ax.set_xscale("log")
     ax.set_xticks([6e-5, 3e-4, 6e-4, 2e-3, 4e-3])
     ax.set_xticklabels([r"$6\cdot10^{-5}$", r"$3\cdot10^{-4}$", r"$6\cdot10^{-4}$", r"$2\cdot10^{-3}$", r"$4\cdot10^{-3}$"], rotation=25, ha="right")
