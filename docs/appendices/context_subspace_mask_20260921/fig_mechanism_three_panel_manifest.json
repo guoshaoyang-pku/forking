@@ -1,0 +1,135 @@
+{
+  "scope": "Section 4.3 three-panel mechanism figure for ICLR main text",
+  "figure": {
+    "pdf": "docs/figs/paper/fig_mechanism_three_panel.pdf",
+    "png": "docs/figs/paper/fig_mechanism_three_panel.png",
+    "sha256_pdf": "67a0c66e10bd1cca6f71cc7fcc145aadbc9e2b04c4c7a595cc05daf35c45599b",
+    "size_pt": {
+      "width": 396.0,
+      "height": 158.4
+    },
+    "target_display_width_pt": 396,
+    "base_font_pt": 6.5
+  },
+  "script": "docs/plot_scripts/plot_paper_fig_mechanism_three_panel.py",
+  "panel_a_continuation_mass": {
+    "train_seen_source": {
+      "path": "docs/appendices/context_subspace_mask_20260921/appendix_f_mask_plotted_values.json",
+      "sha256": "aaf0e959b41b92ef2ddecbd6fc321bbdbe6b1d40995b7fb703e34cce44394ab7",
+      "key": "seen_mass_panel.values"
+    },
+    "val_only_source": {
+      "path": "docs/appendices/context_subspace_mask_20260921/context_kl/kl_restricted_split_e1_l4.json",
+      "sha256": "efc15c509ec1d872495f761c4e32bbd92c94768317d1024f4dc09f341c76791f",
+      "keys": "z_valn_ref_mean (epoch 1), z_valn_new_mean (epochs 2-4)"
+    },
+    "source_runs": [
+      "s1v5_128_marm_both_ctxmask_e1_l4_fixed",
+      "s1v5_128_marm_nogram_ctxmask_e1_l4_fixed"
+    ],
+    "metric": "mean full-vocabulary probability mass on train-seen continuations (left axis) and validation-only continuations (right axis) at fixed validation positions",
+    "epochs": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "plotted_values": {
+      "train_seen": {
+        "both_masked": [
+          0.43511663717273724,
+          0.41501737125556054,
+          0.4071606648800539,
+          0.4037871706045301
+        ],
+        "both_unmasked": [
+          0.43194919285836325,
+          0.5505281016391969,
+          0.641052355089291,
+          0.6871628936059679
+        ],
+        "nogram_masked": [
+          0.21840270308520696,
+          0.31776974110216644,
+          0.36271361699911775,
+          0.38582125109786625
+        ],
+        "nogram_unmasked": [
+          0.21725709193539466,
+          0.3262640634805582,
+          0.3819959448316916,
+          0.40903706592091976
+        ]
+      },
+      "val_only": {
+        "both_masked": [
+          0.01225586982025372,
+          0.014741391324202685,
+          0.018108774719410716,
+          0.01901349850741505
+        ],
+        "both_unmasked": [
+          0.012793068724599631,
+          0.013682462355973833,
+          0.013643248898130768,
+          0.012968922132676943
+        ],
+        "nogram_masked": [
+          0.013916937024470956,
+          0.03070168242976079,
+          0.05190706260636185,
+          0.06120944361120646
+        ],
+        "nogram_unmasked": [
+          0.013410620451451688,
+          0.028211498666100714,
+          0.05139598982734611,
+          0.05857814271070646
+        ]
+      }
+    }
+  },
+  "panel_b_gap_dynamics": {
+    "source_runs": {
+      "ctrl": "s1v5_128_marm_both_ctxmask_ctrl_l4_fixed",
+      "e1": "s1v5_128_marm_both_ctxmask_e1_l4_fixed",
+      "e2": "s1v5_128_marm_both_ctxmask_e2_l4_fixed"
+    },
+    "source_files": [
+      {
+        "path": "docs/appendices/context_subspace_mask_20260921/runs_scaling/s1v5_128_marm_both_ctxmask_ctrl_l4_fixed/context_gap.jsonl",
+        "sha256": "828189300c6bc7537ce56a51ffb71152c649a1cc2eda541b29653888f34ff303"
+      },
+      {
+        "path": "docs/appendices/context_subspace_mask_20260921/runs_scaling/s1v5_128_marm_both_ctxmask_e1_l4_fixed/context_gap.jsonl",
+        "sha256": "d9d8e16d9f7323110592f7b378c4d9f24704c8d20f409f88f67ba7ea8d1d2f9b"
+      },
+      {
+        "path": "docs/appendices/context_subspace_mask_20260921/runs_scaling/s1v5_128_marm_both_ctxmask_e2_l4_fixed/context_gap.jsonl",
+        "sha256": "c15b6a354918d756d9ecb1972bcc409ba85269728ccadfb6d3ba668e6dec64bc"
+      }
+    ],
+    "metric": "fixed-probe gap contribution C_S = sum_i q_i [l_val,i - l_tr,i] (nats)",
+    "series": [
+      "normal training (C_A ctrl)",
+      "unmasked peers (C_B ctrl)",
+      "mask at epoch 2 (C_A e1)",
+      "mask at epoch 3 (C_A e2)"
+    ]
+  },
+  "panel_c_seen_vs_novel_ce": {
+    "source": {
+      "extracted_csv": "docs/appendices/fig09_crowd_ce_extracted_20260926/fig09_crowd_ce_seen_novel_extracted.csv",
+      "original_pdf": "paper/figures/fig09_crowd_ce_seen_novel.pdf",
+      "original_pdf_sha256": "d62d7544440a7fc07c2652f87353892d9870bf77bca32c5860e5d8f794cb17ba",
+      "extraction_method": "pypdf content-stream parsing, calibrated against axis ticks"
+    },
+    "metric": "position-weighted validation cross-entropy (nats) for train-seen bigram contexts split by continuation type",
+    "checkpoints": "steps 337, 674, 1011, 1348, 1685 (epochs 1-5, seed 42)",
+    "position_counts": {
+      "seen_continuation": 405058,
+      "novel_continuation": 158790,
+      "excluded_unseen_context": 25400
+    }
+  }
+}

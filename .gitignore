@@ -33,3 +33,10 @@ runs/
 # Plots (keep svg/html in docs/figs, ignore raw data dumps)
 *.npz
 .tmp_data/
+
+# paper/ is a self-contained git clone of the Overleaf project
+# (git.overleaf.com/6a9b071075d832e243e895a2); its git history is the
+# versioning source. Lab-side paper tooling lives in scripts/ and
+# docs/notes/method/paper-mirror.md (git cannot track files inside a
+# nested repo). See docs/notes/method/paper-mirror.md.
+paper/
