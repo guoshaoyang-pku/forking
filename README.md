@@ -4,7 +4,9 @@
 
 Forking studies a sharp, replay-aligned increase in the training–validation loss gap in language models with local n-gram memory. Controlled experiments connect this behavior to continuation coverage, memory capacity, and repeated exposure to a finite corpus.
 
-[Project page](https://guoshaoyang-pku.github.io/forking/) · [Reproduce the analysis](reproduce/README.md) · [Training protocol](docs/TRAINING.md) · [Evidence guide](docs/REVIEW_GUIDE.md) · [Availability](docs/AVAILABILITY.md)
+[Website](https://guoshaoyang-pku.github.io/forking/) · [Paper (to be added)](#paper) · [License (to be selected)](#license)
+
+[Reproduce the analysis](reproduce/README.md) · [Training protocol](docs/TRAINING.md) · [Evidence guide](docs/REVIEW_GUIDE.md) · [Availability](docs/AVAILABILITY.md)
 
 ![Local memory and diverging training and validation trajectories.](docs/figs/overview.png)
 
@@ -30,6 +32,16 @@ These commands reproduce analysis of bundled observations. Training requires the
 | When does generalization separate from fitting? | Replay-aligned trajectories and repeated-pass controls | [Replay figure](docs/figs/replay.pdf) and fixed replay iteration in [train.py](code/train.py) |
 | Which predictions are hurt? | Seen contexts with novel continuations; concrete context-level probes | [Measured endpoints](docs/figs/context-examples.pdf), [CSV](evidence/context-examples/context_examples_plotted_values.csv), [checkpoint metadata](evidence/context-examples/context_examples_manifest.json) |
 | Can coverage organize the gap? | Three-seed frequency-bin observations and affine fits | [Coverage figure](docs/figs/coverage.pdf), [observations](evidence/coverage/online_points.csv), [independent calculation](reproduce/verify_coverage.py) |
+
+## Inspect the next-token predictions
+
+These context probes show how probability changes between the first and fifth pass, comparing the no-gram and local-memory models. A context can occur in training while some plausible continuations remain unseen.
+
+[![Measured next-token log probabilities for three contexts, comparing no-gram and local-memory models at epochs 1 and 5.](docs/figs/context-examples.png)](docs/figs/context-examples.pdf)
+
+**Open points: epoch 1. Filled points: epoch 5. Higher means more probable.** Colors describe corpus membership. The measurements use seed 42 at steps 337 and 1685; connecting lines show two endpoints, not a monotone intermediate trajectory.
+
+The input is BOS plus exactly three context tokens. “Others” is the log of the mean probability of the top 20 remaining tokens, reranked separately for each distribution. See the [measurement details](docs/EVIDENCE.md), [endpoint values](evidence/context-examples/context_examples_plotted_values.csv), and [checkpoint metadata](evidence/context-examples/context_examples_manifest.json).
 
 ## Why it matters
 
@@ -67,3 +79,11 @@ python3 -m pytest -q
 The numerical check, implementation tests, and GPU training have distinct scopes. [Availability](docs/AVAILABILITY.md) records what is included and what is still needed for a complete training rerun, final paper link, and licensed public release.
 
 To preview the project page locally, run python3 -m http.server 8000 --directory docs and open http://localhost:8000. No website build is needed to view the included HTML.
+
+## Paper
+
+**Forking: Sudden Overfitting Under Replay** — paper link and citation to be added.
+
+## License
+
+License to be selected. A formal LICENSE file will be added here once the license is confirmed.

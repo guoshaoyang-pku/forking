@@ -6,7 +6,7 @@
   "public_source_revision": "3262ddd4fc0af1e9702725bc9aaabed68b824abc",
   "paper_figure_revision": "83f17dbc441e61d6a73b7cc0952801f6fc4f3999",
   "file_count": 75,
-  "total_bytes": 2573717,
+  "total_bytes": 2575066,
   "files": [
     {
       "path": ".gitattributes",
@@ -35,8 +35,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 4404,
-      "sha256": "f402dd0e0545cbc8ec08b88db2be7d6bfe3ff05700af0231e6035a1ef1268754"
+      "bytes": 5753,
+      "sha256": "5b358e7a4c5c735e55ff4e07fdb729839e1ce5e78acfa33d62c600ab60c4e91a"
     },
     {
       "path": "code/diag_worker.py",
