@@ -337,8 +337,8 @@ def draw_corpus(ax):
                  for r in rows)
     x = [p[0] for p in pts]
     for idx, (color, marker, label) in enumerate((
-            (EPOCH2_COLOR, "s", "end of epoch 2 (trigram only)"),
-            (EPOCH3_COLOR, "^", "end of epoch 3 (trigram only)"))):
+            (EPOCH2_COLOR, "s", "epoch 2"),
+            (EPOCH3_COLOR, "^", "epoch 3"))):
         ax.plot(x, [p[idx + 1] for p in pts], marker=marker, ms=3.6,
                 lw=0.9, color=color, label=label)
     ax.set_xscale("log")
