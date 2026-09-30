@@ -247,7 +247,7 @@ def main():
 
     # Native widths match the LaTeX subfigure fractions of \linewidth
     # (396 pt): (a) 0.36, (b) 0.34, (c) 0.28, so no rescaling is needed.
-    H = 1.70
+    H = 1.50
     sizes = {"a": (0.36 * 396 / 72.0, H),
              "b": (0.34 * 396 / 72.0, H),
              "c": (0.28 * 396 / 72.0, H)}
@@ -259,7 +259,7 @@ def main():
     gs = fig.add_gridspec(2, 1, height_ratios=[1.0, 0.92], hspace=0.62)
     ax_t = fig.add_subplot(gs[0, 0])
     ax_b = fig.add_subplot(gs[1, 0], sharex=ax_t)
-    fig.subplots_adjust(left=0.185, right=0.985, top=0.755, bottom=0.19)
+    fig.subplots_adjust(left=0.185, right=0.985, top=0.755, bottom=0.23)
     draw_panel_a(ax_t, ax_b, epochs_a, train_seen, val_only)
     made["a"] = OUT / "fig_mechanism_a.pdf"
     fig.savefig(made["a"]); fig.savefig(made["a"].with_suffix(".png"), dpi=300)
