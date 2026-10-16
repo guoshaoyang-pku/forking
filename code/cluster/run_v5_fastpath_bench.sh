@@ -20,11 +20,12 @@ GPU_ID=${GPU_ID:-0}
 STEPS=${STEPS:-300}
 DATA_DIR=${NGLAB_DATA_DIR:-data/tokenized}
 OUT_DIR=${NGLAB_OUT_DIR:-data/runs_fixed}
-CODE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+CODE_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$CODE_DIR"
 
 echo "== md5 (must match the committed versions before launch) =="
-md5 train.py ngram_freq.py precompute_row_index.py 2>/dev/null || md5sum train.py ngram_freq.py precompute_row_index.py
+md5 code/train.py code/ngram_freq.py code/precompute_row_index.py 2>/dev/null \
+  || md5sum code/train.py code/ngram_freq.py code/precompute_row_index.py
 
 echo "== GPU check =="
 nvidia-smi --query-gpu=index,name,memory.used,memory.total,utilization.gpu --format=csv
@@ -53,32 +54,35 @@ COMMON_ARGS=(
 )
 
 echo "== offline row index for shard 1 (skipped if present) =="
-if [ ! -f "$DATA_DIR/shard_00001.brows.u32.bin" ]; then
-  CUDA_VISIBLE_DEVICES=$GPU_ID python3 precompute_row_index.py \
+# rows live OUTSIDE data/tokenized: on ophis that dir symlinks into the
+# quota-dead home; data/rows is a real /data1 directory.
+ROWS_DIR=data/rows
+if [ ! -f "$ROWS_DIR/shard_00001.brows.u32.bin" ]; then
+  CUDA_VISIBLE_DEVICES=$GPU_ID python3 code/precompute_row_index.py \
     --data_dir "$DATA_DIR" --shards 1 \
     --vocab_size 8192 \
     --bigram_clean_table 1048576 \
     --trigram_clean_table 1048576 \
-    --sequence_len 2048 --token_dtype u16
+    --sequence_len 2048 --token_dtype u16 --out_dir "$ROWS_DIR"
 else
-  echo "rows already present: $DATA_DIR/shard_00001.{b,t}rows.u32.bin"
+  echo "rows already present: $ROWS_DIR/shard_00001.{b,t}rows.u32.bin"
 fi
 
 echo "== arm A: eager base =="
-CUDA_VISIBLE_DEVICES=$GPU_ID python3 train.py \
+CUDA_VISIBLE_DEVICES=$GPU_ID python3 code/train.py \
   --run_id fastpath_eager_base_s42 "${COMMON_ARGS[@]}"
 
 echo "== arm B: eager + precomputed rows =="
-CUDA_VISIBLE_DEVICES=$GPU_ID python3 train.py \
-  --run_id fastpath_eager_pc_s42 "${COMMON_ARGS[@]}" --row_index
+CUDA_VISIBLE_DEVICES=$GPU_ID python3 code/train.py \
+  --run_id fastpath_eager_pc_s42 "${COMMON_ARGS[@]}" --row_index --row_index_dir "$ROWS_DIR"
 
 echo "== arm C: compile + precomputed rows =="
-CUDA_VISIBLE_DEVICES=$GPU_ID python3 train.py \
-  --run_id fastpath_compile_pc_s42 "${COMMON_ARGS[@]}" --row_index --compile
+CUDA_VISIBLE_DEVICES=$GPU_ID python3 code/train.py \
+  --run_id fastpath_compile_pc_s42 "${COMMON_ARGS[@]}" --row_index --row_index_dir "$ROWS_DIR" --compile
 
 echo "== arm D: compile + precomputed rows + fp8 backbone =="
-CUDA_VISIBLE_DEVICES=$GPU_ID python3 train.py \
-  --run_id fastpath_compile_pc_fp8_s42 "${COMMON_ARGS[@]}" --row_index --compile --fp8_torchao
+CUDA_VISIBLE_DEVICES=$GPU_ID python3 code/train.py \
+  --run_id fastpath_compile_pc_fp8_s42 "${COMMON_ARGS[@]}" --row_index --row_index_dir "$ROWS_DIR" --compile --fp8_torchao
 
 echo "== bench summary =="
 python3 - "$OUT_DIR" "$STEPS" <<'EOF'

@@ -119,6 +119,11 @@ def main() -> None:
     ap.add_argument("--trigram_clean_table", type=int, default=0)
     ap.add_argument("--sequence_len", type=int, default=2048)
     ap.add_argument("--token_dtype", default="u16", choices=["u16", "u32"])
+    ap.add_argument("--out_dir", default="",
+                    help="where to write rows/mask streams + rows_meta.json "
+                         "(default: data_dir). Use a WRITABLE local volume — on "
+                         "ophis-gpu data/tokenized symlinks into the quota-dead "
+                         "home; pass --out_dir data/rows there")
     ap.add_argument("--freq_index", default="",
                     help="freq_index.npz (GlobalFrequencyIndex); enables the static "
                          "low-frequency validity bits when --min_count > 0")
@@ -147,6 +152,9 @@ def main() -> None:
     chunk = args.sequence_len + 1
     np_dtype = np.uint32 if args.token_dtype == "u32" else np.uint16
     shard_ids = [int(x) for x in args.shards.split(",") if x.strip()]
+    out_dir = args.out_dir or args.data_dir
+    if out_dir != args.data_dir:
+        os.makedirs(out_dir, exist_ok=True)
 
     freq_index = None
     if args.min_count > 0:
@@ -159,10 +167,10 @@ def main() -> None:
             raise FileNotFoundError(f"Missing shard: {tok_path}")
         tok = np.memmap(tok_path, dtype=np_dtype, mode="r")
         n_rows = len(tok) // chunk
-        b_path = os.path.join(args.data_dir, f"shard_{sid:05d}.brows.u32.bin")
-        t_path = os.path.join(args.data_dir, f"shard_{sid:05d}.trows.u32.bin")
-        bm_path = os.path.join(args.data_dir, f"shard_{sid:05d}.bmask.u8.bin")
-        tm_path = os.path.join(args.data_dir, f"shard_{sid:05d}.tmask.u8.bin")
+        b_path = os.path.join(out_dir, f"shard_{sid:05d}.brows.u32.bin")
+        t_path = os.path.join(out_dir, f"shard_{sid:05d}.trows.u32.bin")
+        bm_path = os.path.join(out_dir, f"shard_{sid:05d}.bmask.u8.bin")
+        tm_path = os.path.join(out_dir, f"shard_{sid:05d}.tmask.u8.bin")
         written = 0
         want_masks = freq_index is not None
         with open(b_path, "wb") as fb, open(t_path, "wb") as ft:
@@ -226,7 +234,7 @@ def main() -> None:
                      "pos1 prev2 = current token)",
         "source": "code/precompute_row_index.py",
     }
-    meta_path = os.path.join(args.data_dir, "rows_meta.json")
+    meta_path = os.path.join(out_dir, "rows_meta.json")
     with open(meta_path, "w") as f:
         json.dump(meta, f, indent=2)
         f.write("\n")

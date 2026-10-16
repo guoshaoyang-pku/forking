@@ -75,8 +75,47 @@ H200 bf16 吞吐以 `run_v5_fastpath_bench.sh` 实测为准。
 ## 6. Bench 协议（`code/cluster/run_v5_fastpath_bench.sh`）
 
 单卡四臂（eager / eager+pc / compile+pc / compile+pc+fp8），v5 标准 setting，
-300 步（工程 QC，非科学 run）。验收：C ≥ 1.5× A（预期）；B final gap 与 A 差
-< 1e-6（快路径逐位性的运行时证据）；D 单独走 §4 配对协议。
+300 步（工程 QC，非科学 run）。
+
+### 6.1 ophis-gpu 实测（2026-10-17，GPU 7 / H200，300 steps，seed 42，v5 setting）
+
+run_id（`data/runs_fixed/` @ ophis-gpu /data1 工作区）：
+`fastpath_eager_base2_s42` · `fastpath_eager_pc2_s42` ·
+`fastpath_compile_pc_s42_v2` · `fastpath_compile_pc_fp8_s42_v2`
+（首轮 `fastpath_eager_{base,pc}_s42` 等为 rows 传输优化前的数据，保留作 provenance。）
+
+| arm | steps/s | speedup | final gap |
+|---|---:|---:|---:|
+| A eager base | 3.71 | 1.00× | −0.0445 |
+| B eager + pc | 3.70 | 1.00× | −0.0426 |
+| C compile + pc | 4.35 | **1.17×** | −0.0433 |
+| D compile + pc + fp8 | 3.72 | 1.00× | −0.0436（32 个 backbone Linear 转 fp8） |
+
+**验收结论**：
+
+1. **§18 修复确认**：compile 从 3.5× 反慢变为 1.17× 加速。1.5× 预期未达到——
+   8L/768D @ 147k tokens 是 GEMM 主导，动态 hash 本就不是主要开销；pc 的价值
+   在于让 compile 可用（graph break 消除）而非 eager 提速。
+2. **B 轨迹干净**：同臂重跑噪声 |A−A2| = 3.6e-3 > 快路径信号 |B2−A2| = 1.9e-3
+   （flash-SDPA 原子归约的 run-to-run 非确定性）。逐位性由 CPU T2 位级测试 +
+   启动行号逐位验证承担；原 <1e-6 判据对非确定性 GPU 训练不适用，改为噪声界。
+3. **FP8 在 0.1B/8k-vocab 规模不提速**（cast 开销吃掉 GEMM 收益），运行稳定、
+   gap 同分布。按 §4 协议不进主线；到 1B / d=1536 目标规模再复评。
+
+### 6.2 ophis-gpu 环境备注（后续实验前必读）
+
+- 工作区 `/data1/guoshaoyang/ngram-gap-lab`；`data/tokenized` 与
+  `data/freq_index.npz` 是指向 /data3 home 的**软链**。home（/data3）与
+  root fs（含 /tmp）的用户配额 grace 已过期 → **写入会被拒**。
+- 对策：行索引/编译缓存/临时文件一律放 /data1——`--out_dir data/rows`、
+  `TMPDIR=/data1/guoshaoyang/tmp`、`TRITON_CACHE_DIR=/data1/guoshaoyang/triton_cache`、
+  `TORCHINDUCTOR_CACHE_DIR=/data1/guoshaoyang/inductor_cache`。否则 triton
+  launcher 的 gcc 以 `Disk quota exceeded` 失败（表现为 InductorError，
+  首轮 bench arm C/D 即此因）。
+- Python：`/data/home/guoshaoyang/ngram-gap-lab/.venv/bin/python`（torch
+  2.9.1+cu128，只读可用）；torchao 0.13.0 在 `/data1/guoshaoyang/pylibs`
+  （PYTHONPATH；0.18 需 torch≥2.11 不兼容）。
+- rows 文件：`data/rows/shard_00001.{b,t}rows.u32.bin`（各 199MB，/data1 本地）。
 
 ## 7. 本次实现附带的两个鲁棒性修复
 
