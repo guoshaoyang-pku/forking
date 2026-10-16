@@ -4791,3 +4791,40 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 **队列**:50 条活动臂追加进 360-2 运行中队列(82 行 v22/v23 之后),总 ~127 臂 ≈ +3.2h;per-token dump 自动生效。
 
 **判读问题**:①gap-pool 包络的拐点 epoch 数是否随模型变大右移(大模型每参数见更少 unique tokens → 预期更早/更重 forking,即同 pool 下大模型 gap 更高)?②tri 与 n25 的差距是否随模型规模变化(joint 表的碰撞压力 × 模型容量交互)?③固定 295M tokens 下,ladder 两端的 final gap 比值给出模型大小→forking 敏感度的首个 scaling 指数(8k 词表口径)。
+
+
+## §76 · v2 order sweep：n=2..8 单独与 2–5 联合，R=2^20 标准臂，gap-vs-F 幂律（2026-10-17，done；碰撞负载混淆已标注）
+
+**来源**：用户 2026-10-17 指令：用 ophis-gpu / 360 / A100 空闲卡快速跑 v2 scaling，先跑不同 n 的 2–8 单独与 2–5 同时的 gap-freq 关系；其余方案先出方案再咨询。
+
+**代码**（分支 `v2_main`）：`2b15d86`（`--ngram_orders`、通用 n≥4 clean 单表、`MultiOrderFrequencyIndex`、diag 池）+ `29de8b7`（diag 同 pair 去重；drain-before-join 修复——原 join 先于 drain 会让每个 worker 空等 300 s 超时并可能丢最后几行）。`code/tools/test_ngram_orders_cpu.py` T1–T7 全过；`test_fastpath_cpu.py` 全过。launcher `run_v2_order_sweep.sh`，队列 `queue_v2_order_sweep.sh`。
+
+**设置**：V5 标准（input 注入；每个 over-encoded order 一张 clean 单表 R=2^20；backbone 6e-4 warmup_constant(100)；表 RMSProp(0,0.99)×128；bf16 无 compile；freq/diag 每 10 步；2000 步；seed 42/43/44；train shard 1；val 2–10+6542）。唯一变量：over-encoded order 集合。频率索引 `freq_index_orders2to8_s1.npz`（chunk 语义，n=2..8；两台 360 md5 一致）。
+
+**运行**：仅 360-1（gpu 1,2,4,5,6 健康）。ophis-gpu 8 卡中 5 卡 100% 占用，A100 两台 ~24 GB/80–90% 占用，360-2 被其他任务占用，均未动用。
+- gpu0 uncorrected ECC = 32、gpu3 启动即失败、gpu7 uncorrected = 1。gpu0 上的四臂（n5 s42、n7 s43、n7 s44、nogram s42）隔离到 `logs/suspect_gpu0_ecc/`（360-1，未删除）后在健康卡重跑。同 seed 原值 vs 重跑 Δfinal-gap：0.012 / 0.032 / 0.134 / 0.004，与 §47 的跨卡 FP 噪声同量级，表中取重跑值。
+- 全部 27 个 (arm, seed) 结束，无 NaN，summary 齐全。
+- 产物：`/data/shared/guoshaoyang/forking-v2/data/runs_fixed/v2ord_*_fixed`（360-1）；汇总 CSV 与说明在 `docs/appendices/v2_order_sweep_20261017/`。
+
+**结果**（final gap @2000，3 seed mean±SD；对角幂律 gap ≈ A·F^−α，F 为 bucket 几何中心，两侧 ≥300 token，gap>0）：
+
+| arm | final gap | 对角 α | R² | val novel 占比 | distinct/R |
+|---|---|---|---|---|---|
+| n2 bigram | 2.607±0.023 | 0.212±0.003 | 0.84 | 0.04 | 3.4 |
+| n3 trigram | 5.542±0.023 | 0.353±0.003 | 0.89 | 0.31 | 18.1 |
+| n4 | 6.324±0.075 | 0.314±0.006 | 0.93 | 0.66 | 33.2 |
+| n5 | 6.557±0.143 | 0.247±0.004 | 0.90 | 0.85 | 41.0 |
+| n6 | 6.583±0.220 | 0.118±0.006 | 0.76 | 0.94 | 44.2 |
+| n7 | 6.425±0.128 | 0.065±0.002 | 0.43 | 0.97 | 45.5 |
+| n8 | 6.287±0.160 | −0.060±0.012 | 0.29 | 0.98 | 46.2 |
+| n2-3-4-5 联合 | 8.228±0.024 | bigram 0.027 / trigram 0.032 / 4gram 0.094 / 5gram 0.194 | — | — | — |
+| nogram | 0.235±0.012 | — | — | — | — |
+
+**判读**：
+1. n≤5 对角 gap 随 F 有干净幂律（R²≥0.84）。
+2. **混淆**：R 固定 2^20，α 与碰撞负载单调相关（3.4→18→33→41→46 对应 α 0.21→0.35→0.31→0.25→0）。本批无法区分“order n”与“每行承载的上下文数”，**不能**据此写 n 的结论。碰撞控制见 §73（no-collision top-K 词典）与 §74（R 扫描）。
+3. n≥5：val novel 占比 85–98%，对角 bin 覆盖的位置很少（n=8 仅 4 个有效 bin）。
+4. **n≥5 的 val loss 10.3–10.6，超过均匀分布的 ln 8192 ≈ 9.01**：未见上下文上高度自信地出错；gap 主要来自 novel 上的过度锐化而非 seen 上的记忆。待用 logit margin/entropy 直接验证（与 §53 同方向）。
+5. 联合臂 2–5 的 bigram α 仅 0.03（单独 bigram 臂 0.21）：联合训练改变了低阶的 gap-freq 形状。
+
+**已知限制**：v2 索引（chunk 语义）与标准 `freq_index.npz`（拼接计数）在 bigram 上有 20,027 个 key 计数不同（跨 chunk 边界对），n=2 的 bin 与标准索引不能逐位比较。
