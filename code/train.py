@@ -1457,9 +1457,23 @@ class MixedOptimizer:
         # beta2 for RMSProp EMA comes from table_betas.
         b2 = self.table_betas[1]
         exp_avg_sq = self.rms_exp_avg_sq[name]
+        bias2 = 1 - b2 ** step
+        # Large tables (>= 2 GiB fp32, e.g. 5+ orders x R=3M on H200) are
+        # updated in row-slices: elementwise math is identical, but the
+        # square/denom temporaries are bounded to one slice instead of three
+        # full-table copies (~28 GiB peak at 3M x 768).
+        if p.numel() * p.element_size() > (2 << 30):
+            for i in range(0, p.shape[0], 1 << 18):
+                sl = slice(i, min(i + (1 << 18), p.shape[0]))
+                es = exp_avg_sq[sl]
+                gs = g[sl]
+                es.lerp_(gs.square(), 1 - b2)
+                denom = (es / bias2).sqrt_().add_(1e-10)
+                p[sl].add_(gs / denom, alpha=-lr_t)
+                self._record_table_diag(p[sl], gs, denom)
+            return
         # no weight decay on n-gram tables
         exp_avg_sq.lerp_(g.square(), 1 - b2)
-        bias2 = 1 - b2 ** step
         denom = (exp_avg_sq / bias2).sqrt() + 1e-10
         p.add_(g / denom, alpha=-lr_t)
         self._record_table_diag(p, g, denom)
