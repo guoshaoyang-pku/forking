@@ -303,6 +303,171 @@ class GlobalFrequencyIndex:
 
 
 # ---------------------------------------------------------------------------
+# 1b. Multi-order frequency index (v2: n = 2..8)
+# ---------------------------------------------------------------------------
+
+_MIX_C1 = np.uint64(0xBF58476D1CE4E5B9)
+_MIX_C2 = np.uint64(0x94D049BB133111EB)
+_MIX_SEED = np.uint64(0x9E3779B97F4A7C15)
+
+
+def _mix64(z: np.ndarray) -> np.ndarray:
+    """splitmix64 finalizer (bijective on uint64; wrapping arithmetic)."""
+    z = z ^ (z >> np.uint64(30))
+    z = z * _MIX_C1
+    z = z ^ (z >> np.uint64(27))
+    z = z * _MIX_C2
+    return z ^ (z >> np.uint64(31))
+
+
+def order_branch_name(n: int) -> str:
+    """Branch label of an n-gram order: legacy names for 2/3, '<n>gram' above."""
+    return {2: "bigram", 3: "trigram"}.get(int(n), f"{int(n)}gram")
+
+
+def context_keys_np(tokens: np.ndarray, n: int, vocab_size: int) -> np.ndarray:
+    """(B,T) token ids -> (B,T) int64 key of the n-gram ending at each position.
+
+    The n-gram is (x_{t-n+1}, ..., x_t) with the model's in-chunk shift rule:
+    shift_k(x)[:, t] = x[:, t-k] for t >= k and x[:, t] for t < k (identical to
+    torch.cat([x[:, :k], x[:, :-k]], dim=1) in train.py).
+    vocab^n <= 2^63: exact packing sum_k shift_k * vocab^k (n=2/3 equal
+    compute_context_keys bit for bit).  Larger n: chained splitmix64 hash
+    (expected collisions ~ pairs / 2^64, i.e. none at corpus scale).
+    """
+    x = np.asarray(tokens, dtype=np.int64)
+    if x.ndim == 1:
+        x = x[None, :]
+    T = x.shape[1]
+
+    def shift(k):
+        if k == 0:
+            return x
+        if k >= T:
+            return x.copy()
+        return np.concatenate([x[:, :k], x[:, :T - k]], axis=1)
+
+    if vocab_size ** n <= 2 ** 63:
+        key = np.zeros_like(x)
+        for k in range(n):
+            key += shift(k) * (vocab_size ** k)
+        return key
+    h = np.full(x.shape, _MIX_SEED ^ np.uint64(n), dtype=np.uint64)
+    for k in range(n - 1, -1, -1):
+        h = _mix64(h ^ shift(k).astype(np.uint64))
+    return h.view(np.int64)
+
+
+class MultiOrderFrequencyIndex:
+    """Per-order n-gram train counts for n in `orders` (v2 n-sweep).
+
+    Same lookup interface as GlobalFrequencyIndex (hit_count_numpy /
+    hit_count_tensor / sorted legacy arrays for n=2,3) but without the Python
+    dicts, which do not fit at n>=5.  Built with chunk semantics: every full
+    (sequence_len+1)-token chunk of the train shards, contexts never cross a
+    chunk boundary — exactly the contexts the model sees in one epoch.
+
+    npz layout: orders (int64), vocab_size, chunk_size, shard_ids,
+    keys_<n> (int64, sorted), counts_<n> (int32).
+    """
+
+    is_multi_order = True
+
+    def __init__(self, orders, keys_sorted: dict, counts_sorted: dict,
+                 vocab_size: int, meta: Optional[dict] = None):
+        self.orders = [int(n) for n in orders]
+        self.vocab_size = int(vocab_size)
+        self.meta = dict(meta or {})
+        self._keys = {int(n): keys_sorted[int(n)] for n in self.orders}
+        self._counts = {int(n): counts_sorted[int(n)] for n in self.orders}
+        self.branch_orders = {order_branch_name(n): n for n in self.orders}
+        self.branches = tuple(order_branch_name(n) for n in self.orders)
+        # legacy attribute names (interventions / context sets read these)
+        self._bigram_keys_sorted = self._keys.get(2)
+        self._bigram_counts_sorted = self._counts.get(2)
+        self._trigram_keys_sorted = self._keys.get(3)
+        self._trigram_counts_sorted = self._counts.get(3)
+
+    def _ensure_sorted(self):
+        return None
+
+    def keys_for(self, branch: str, tokens: np.ndarray) -> np.ndarray:
+        return context_keys_np(tokens, self.branch_orders[branch], self.vocab_size).ravel()
+
+    def n_distinct(self, branch: str) -> int:
+        return int(self._keys[self.branch_orders[branch]].size)
+
+    def hit_count_numpy(self, branch: str, key_np: np.ndarray) -> np.ndarray:
+        """Exact-match train count per key (novel -> 0).  Needles are sorted
+        first so searchsorted walks the (up to ~50M) key array cache-friendly."""
+        n = self.branch_orders[branch]
+        keys_sorted, counts_sorted = self._keys[n], self._counts[n]
+        k = np.ascontiguousarray(key_np, dtype=np.int64).ravel()
+        order = np.argsort(k, kind="stable")
+        ks = k[order]
+        pos = np.searchsorted(keys_sorted, ks)
+        np.clip(pos, 0, len(keys_sorted) - 1, out=pos)
+        out = np.empty(len(k), dtype=np.int64)
+        out[order] = np.where(keys_sorted[pos] == ks, counts_sorted[pos], 0)
+        return out
+
+    def hit_count_tensor(self, branch: str, keys: torch.Tensor) -> torch.Tensor:
+        counts = self.hit_count_numpy(branch, keys.detach().cpu().numpy())
+        return torch.from_numpy(counts.astype(np.int32).reshape(keys.shape)).to(keys.device)
+
+    @classmethod
+    def build_from_chunks(cls, data_dir: str, shard_ids: list, vocab_size: int,
+                          orders, chunk_size: int, token_dtype: str = "u16",
+                          log=print) -> "MultiOrderFrequencyIndex":
+        np_dtype = np.uint32 if token_dtype == "u32" else np.uint16
+        T = chunk_size - 1
+        tokens = []
+        for sid in shard_ids:
+            path = os.path.join(data_dir, f"shard_{sid:05d}.bin")
+            if not os.path.exists(path):
+                raise FileNotFoundError(f"Missing shard: {path}")
+            buf = np.memmap(path, dtype=np_dtype, mode="r")
+            m = len(buf) // chunk_size
+            tokens.append(np.array(buf[:m * chunk_size]).reshape(m, chunk_size)[:, :T])
+        x = np.concatenate(tokens, axis=0)
+        keys_sorted, counts_sorted = {}, {}
+        for n in orders:
+            uk, uc = np.unique(context_keys_np(x, int(n), vocab_size).ravel(),
+                               return_counts=True)
+            keys_sorted[int(n)] = uk.astype(np.int64)
+            counts_sorted[int(n)] = uc.astype(np.int32)
+            log(f"[ngram_freq] n={n}: {uk.size:,} distinct over {x.size:,} positions")
+        meta = {"chunk_size": int(chunk_size), "shard_ids": [int(s) for s in shard_ids],
+                "positions": int(x.size), "token_dtype": token_dtype}
+        return cls(orders, keys_sorted, counts_sorted, vocab_size, meta)
+
+    def save(self, path: str):
+        arrays = {"orders": np.array(self.orders, dtype=np.int64),
+                  "vocab_size": np.array([self.vocab_size]),
+                  "meta_json": np.array(json.dumps(self.meta))}
+        for n in self.orders:
+            arrays[f"keys_{n}"] = self._keys[n]
+            arrays[f"counts_{n}"] = self._counts[n]
+        np.savez(path, **arrays)
+
+    @classmethod
+    def load(cls, path: str) -> "MultiOrderFrequencyIndex":
+        d = np.load(path)
+        orders = [int(n) for n in d["orders"]]
+        meta = json.loads(str(d["meta_json"])) if "meta_json" in d.files else {}
+        return cls(orders, {n: np.asarray(d[f"keys_{n}"], dtype=np.int64) for n in orders},
+                   {n: np.asarray(d[f"counts_{n}"], dtype=np.int32) for n in orders},
+                   int(d["vocab_size"][0]), meta)
+
+
+def load_frequency_index(path: str):
+    """GlobalFrequencyIndex for legacy npz, MultiOrderFrequencyIndex for v2 npz."""
+    with np.load(path) as d:
+        multi = "orders" in d.files
+    return MultiOrderFrequencyIndex.load(path) if multi else GlobalFrequencyIndex.load(path)
+
+
+# ---------------------------------------------------------------------------
 # 2. Per-frequency-bin loss accumulator (online, during eval)
 # ---------------------------------------------------------------------------
 
@@ -694,8 +859,20 @@ if __name__ == "__main__":
     parser.add_argument("--token_dtype", default="u16", choices=["u16", "u32"],
                         help="token shard dtype (u32 for vocab > 65535)")
     parser.add_argument("--out", required=True, help="output npz path")
+    parser.add_argument("--orders", default="",
+                        help="v2 multi-order index, e.g. '2,3,4,5,6,7,8' (chunk semantics; "
+                             "needs --sequence_len); empty = legacy bigram/trigram index")
+    parser.add_argument("--sequence_len", type=int, default=2048)
     args = parser.parse_args()
     shard_ids = [int(x) for x in args.train_shards.split(",") if x.strip()]
+    if args.orders.strip():
+        orders = sorted({int(x) for x in args.orders.split(",") if x.strip()})
+        idx = MultiOrderFrequencyIndex.build_from_chunks(
+            args.data_dir, shard_ids, args.vocab_size, orders,
+            chunk_size=args.sequence_len + 1, token_dtype=args.token_dtype)
+        idx.save(args.out)
+        print(f"[ngram_freq] saved multi-order index to {args.out}")
+        raise SystemExit(0)
     idx = GlobalFrequencyIndex.build_from_shards(args.data_dir, shard_ids,
                                                  args.vocab_size,
                                                  token_dtype=args.token_dtype)

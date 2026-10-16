@@ -88,6 +88,8 @@ class Config:
     trigram_table_dim: int = 0        # same rule for the trigram branch
     bigram_perfect_map: str = ""      # npz with packed-bigram->row map: collision-free table (rows = n_distinct+1)
     bigram_single_layer: bool = False # restrict bigram table to the first ngram layer only
+    ngram_extra_orders: tuple = ()    # v2: generic clean single tables for orders n >= 4 (input only)
+    ngram_clean_table: int = 0        # rows R of every generic order-n table
     intervention: str = "none"        # none | freeze_table | freeze_backbone | freeze_both | hash_reseed | mask_low_freq | mask_high_freq | random_context_loss_mask
     intervention_epoch: int = 1       # fire when 0-indexed epoch reaches this value (1 = start of epoch 2)
     intervention_epochs: tuple = ()   # extra 0-indexed due epochs for multi-fire interventions (e.g. (1, 2))
@@ -197,6 +199,16 @@ def expand_bigram_hash_primes(base, count):
              _next_odd_hash_constant((b + 0xC2B2AE35) ^ salts[3], used)),
         ])
     return expanded
+
+
+def ngram_hash_constants(n: int) -> tuple:
+    """Per-position odd 32-bit multipliers of the generic order-n table hash
+    rows = XOR_k (shift_k(idx) * c_k) % R (v2, n >= 4)."""
+    used = set()
+    return tuple(
+        _next_odd_hash_constant((n * 0x9E3779B1) ^ ((k + 1) * 0x85EBCA77), used)
+        for k in range(n)
+    )
 
 
 class LayerNorm(nn.Module):
@@ -477,6 +489,23 @@ class NanoGPT(nn.Module):
                     nn.Embedding(self.trigram_table_size, config.n_embd - half_dim),
                 ])
             self.trigram_hash_primes_per_layer[li] = _tp[j]
+        # v2: generic higher-order tables (n >= 4), one clean single table per
+        # order, single hash, input over-encoding only.  Registered after the
+        # bigram/trigram tables so legacy init order is untouched.
+        self.ngram_extra_orders = tuple(int(n) for n in config.ngram_extra_orders)
+        if self.ngram_extra_orders:
+            if config.nanogpt_ngram_injection_position != "input":
+                raise ValueError("--ngram_orders >= 4 supports input injection only")
+            if min(self.ngram_extra_orders) < 4 or config.ngram_clean_table <= 0:
+                raise ValueError("generic n-gram tables need orders >= 4 and ngram_clean_table > 0")
+        # _weight=empty: no default init, so constructing these tables does not
+        # advance the global RNG (init_weights fills them uniformly last)
+        self.ngram_ves = nn.ModuleDict({
+            str(n): nn.Embedding(config.ngram_clean_table, config.n_embd,
+                                 _weight=torch.empty(config.ngram_clean_table, config.n_embd))
+            for n in self.ngram_extra_orders
+        })
+        self.ngram_hash_constants = {n: ngram_hash_constants(n) for n in self.ngram_extra_orders}
         self._freq_mask_index = None
         self._freq_mask_mode = "none"
         self._freq_mask_threshold = 0
@@ -491,7 +520,13 @@ class NanoGPT(nn.Module):
 
     @torch.no_grad()
     def init_weights(self):
+        # generic order tables are re-initialized uniformly below; skipping
+        # their normal_ keeps the RNG stream (and thus bigram/trigram init)
+        # identical to a run without them
+        generic = {id(m) for m in self.ngram_ves.values()}
         for m in self.modules():
+            if id(m) in generic:
+                continue
             if isinstance(m, nn.Linear):
                 torch.nn.init.normal_(m.weight, mean=0.0, std=0.02)
                 if m.bias is not None:
@@ -514,6 +549,8 @@ class NanoGPT(nn.Module):
         for lvs in self.trigram_ves.values():
             for tve in lvs:
                 torch.nn.init.uniform_(tve.weight, -s, s)
+        for nve in self.ngram_ves.values():
+            torch.nn.init.uniform_(nve.weight, -s, s)
         for blk in self.transformer.h:
             for gname in ("ve_gate", "bigram_gate", "trigram_gate"):
                 g = getattr(blk.attn, gname, None)
@@ -781,14 +818,14 @@ class NanoGPT(nn.Module):
         return event
 
     def _ngram_params(self):
-        markers = ("value_embeds", "bigram_ves", "trigram_ves",
+        markers = ("value_embeds", "bigram_ves", "trigram_ves", "ngram_ves",
                    "ve_gate", "bigram_gate", "trigram_gate")
         for name, p in self.named_parameters():
             if any(m in name for m in markers):
                 yield p
 
     def _backbone_params(self):
-        markers = ("value_embeds", "bigram_ves", "trigram_ves",
+        markers = ("value_embeds", "bigram_ves", "trigram_ves", "ngram_ves",
                    "ve_gate", "bigram_gate", "trigram_gate")
         for name, p in self.named_parameters():
             if not any(m in name for m in markers):
@@ -824,6 +861,16 @@ class NanoGPT(nn.Module):
             for k in range(self.trigram_K)
         ]
 
+    def _ngram_row_indices(self, n, idx):
+        """Rows of the generic order-n table: XOR_k (shift_k(idx) * c_k) % R,
+        shift_k as in the bigram/trigram branches (in-chunk, no wrap)."""
+        rows = None
+        for k, c in enumerate(self.ngram_hash_constants[n]):
+            tok = idx if k == 0 else torch.cat([idx[:, :k], idx[:, :-k]], dim=1)
+            term = tok.long() * c
+            rows = term if rows is None else rows ^ term
+        return rows % self.config.ngram_clean_table
+
     def _check_pre_rows_supported(self):
         """Precomputed rows are only valid for the clean single-table mainline.
 
@@ -837,6 +884,8 @@ class NanoGPT(nn.Module):
             raise SystemExit("--row_index is incompatible with --bigram_perfect_map")
         if self._hash_reseed_count != 0:
             raise SystemExit("--row_index is incompatible with hash reseed")
+        if self.ngram_extra_orders:
+            raise SystemExit("--row_index does not cover generic orders >= 4")
         if self.config.enable_bigram_ve:
             if self.bigram_K != 1 or len(self.bigram_ve_layers) != 1:
                 raise SystemExit(
@@ -916,6 +965,9 @@ class NanoGPT(nn.Module):
                 if mask is not None:
                     tgve = tgve.masked_fill(mask.unsqueeze(-1), 0)
                 residual = tgve if residual is None else residual + tgve
+        for n in self.ngram_extra_orders:
+            nve = self.ngram_ves[str(n)](self._ngram_row_indices(n, idx))
+            residual = nve if residual is None else residual + nve
         if residual is None:
             residual = torch.zeros(idx.size(0), T, self.config.n_embd,
                                    device=idx.device, dtype=self.transformer.wte.weight.dtype)
@@ -1182,7 +1234,7 @@ class MixedOptimizer:
         self.rms_exp_avg_sq = {}
         self.table_exp_avg = {}  # adamw first moment / sgd momentum buffer
         self._diag = None        # per-step table-update diagnostics (opt-in)
-        ngram_markers = ("value_embeds", "bigram_ves", "trigram_ves",
+        ngram_markers = ("value_embeds", "bigram_ves", "trigram_ves", "ngram_ves",
                          "ve_gate", "bigram_gate", "trigram_gate")
         self.ngram_params = []
         self.adam_params = []
@@ -1668,6 +1720,9 @@ def table_param_rms(model: NanoGPT) -> dict:
         lvs = model.trigram_ves[str(li)]
         rms = lvs[0].weight.detach().float().pow(2).mean().sqrt().item()
         out[f"trigram.layer_{li:02d}.table_0.rms"] = rms
+    for n in model.ngram_extra_orders:
+        rms = model.ngram_ves[str(n)].weight.detach().float().pow(2).mean().sqrt().item()
+        out[f"{n}gram.table_0.rms"] = rms
     return out
 
 
@@ -2024,6 +2079,16 @@ def main():
                         help="A/B selection space for random_context_loss_mask: "
                              "'type' = distinct trigram types (default), "
                              "'row' = trigram table rows (collision-private subspaces)")
+    parser.add_argument("--ngram_orders", default="",
+                        help="v2: comma n-gram orders to over-encode, e.g. '5' or '2,3,4,5'. "
+                             "Overrides --enable_bigram/--enable_trigram (2/3 keep their legacy "
+                             "branches and --*_clean_table); orders >= 4 get generic clean single "
+                             "tables of --ngram_clean_table rows. Empty = legacy flags")
+    parser.add_argument("--ngram_clean_table", type=int, default=0,
+                        help="rows R of each generic order >= 4 table (required with such orders)")
+    parser.add_argument("--diag_workers", type=int, default=1,
+                        help="background diag worker processes (v2 multi-order index: >1 keeps "
+                             "up with 7 orders; rows may land out of step order)")
     parser.add_argument("--enable_unigram", type=int, default=0)
     parser.add_argument("--enable_bigram", type=int, default=1)
     parser.add_argument("--enable_trigram", type=int, default=1)
@@ -2162,6 +2227,20 @@ def main():
     if args.row_index and args.intervention == "hash_reseed":
         parser.error("--row_index is incompatible with --intervention hash_reseed "
                      "(reseed changes the hash after the offline index was built)")
+    ngram_orders = sorted({int(x) for x in args.ngram_orders.split(",") if x.strip()})
+    extra_orders = tuple(n for n in ngram_orders if n >= 4)
+    if ngram_orders:
+        if min(ngram_orders) < 2 or max(ngram_orders) > 16:
+            parser.error("--ngram_orders must lie in [2, 16]")
+        args.enable_bigram = int(2 in ngram_orders)
+        args.enable_trigram = int(3 in ngram_orders)
+    if extra_orders and args.ngram_clean_table <= 0:
+        parser.error("--ngram_orders >= 4 requires --ngram_clean_table > 0")
+    if extra_orders and args.injection_position != "input":
+        parser.error("--ngram_orders >= 4 supports --injection_position input only")
+    if extra_orders and args.intervention in {"mask_low_freq", "mask_high_freq",
+                                              "readout_last_epoch", "hash_reseed"}:
+        parser.error(f"--intervention {args.intervention} does not cover orders >= 4")
 
     cfg = Config(
         vocab_size=args.vocab_size,
@@ -2198,6 +2277,8 @@ def main():
         trigram_table_dim=args.trigram_table_dim,
         bigram_perfect_map=args.bigram_perfect_map,
         bigram_single_layer=bool(args.bigram_single_layer),
+        ngram_extra_orders=extra_orders,
+        ngram_clean_table=args.ngram_clean_table if extra_orders else 0,
         intervention=args.intervention,
         intervention_epoch=args.intervention_epoch,
         intervention_epochs=tuple(
@@ -2344,6 +2425,7 @@ def main():
         disabled = 0
         for name, p in model.named_parameters():
             if any(marker in name for marker in ("value_embeds", "bigram_ves", "trigram_ves",
+                                                 "ngram_ves",
                                                  "ve_gate", "bigram_gate", "trigram_gate")):
                 with torch.no_grad():
                     p.zero_()
@@ -2354,6 +2436,7 @@ def main():
         frozen = 0
         for name, p in model.named_parameters():
             if any(marker in name for marker in ("value_embeds", "bigram_ves", "trigram_ves",
+                                                 "ngram_ves",
                                                  "ve_gate", "bigram_gate", "trigram_gate")):
                 p.requires_grad_(False)
                 frozen += p.numel()
@@ -2361,7 +2444,8 @@ def main():
     if args.freeze_embeddings_only:
         frozen = 0
         for name, p in model.named_parameters():
-            if any(marker in name for marker in ("value_embeds", "bigram_ves", "trigram_ves")):
+            if any(marker in name for marker in ("value_embeds", "bigram_ves", "trigram_ves",
+                                                 "ngram_ves")):
                 p.requires_grad_(False)
                 frozen += p.numel()
         print(f"[nglab] freeze_embeddings_only enabled: {frozen:,} parameters frozen; gates trainable")
@@ -2488,7 +2572,7 @@ def main():
         except ImportError as e:
             raise SystemExit(f"--fp8_torchao requires torchao (pip install torchao): {e!r}")
         import inspect as _inspect
-        _ngram_markers = ("value_embeds", "bigram_ves", "trigram_ves",
+        _ngram_markers = ("value_embeds", "bigram_ves", "trigram_ves", "ngram_ves",
                           "ve_gate", "bigram_gate", "trigram_gate")
 
         def _fp8_filter(module, name):
@@ -2537,9 +2621,20 @@ def main():
     freq_index_obj = None
     diag_amp_dtype = None
     diag_pool = None
+    multi_order_index = False
     if args.freq_index and os.path.exists(args.freq_index):
-        from ngram_freq import GlobalFrequencyIndex
-        freq_index_obj = GlobalFrequencyIndex.load(args.freq_index)
+        from ngram_freq import load_frequency_index
+        freq_index_obj = load_frequency_index(args.freq_index)
+        multi_order_index = bool(getattr(freq_index_obj, "is_multi_order", False))
+        if multi_order_index:
+            if args.logit_stats:
+                raise SystemExit("--logit_stats is not supported with a multi-order freq index")
+            if fixed_train_probe:
+                raise SystemExit("fixed-train freq bins are not supported with a multi-order "
+                                 "freq index (use --fixed_train_probe 0)")
+            if freq_index_obj.vocab_size != cfg.vocab_size:
+                raise SystemExit("multi-order freq index vocab_size != --vocab_size")
+            print(f"[nglab] multi-order freq index: branches={freq_index_obj.branches}")
         freq_bin_log = open(os.path.join(cfg.out_dir, "freq_bin_loss.jsonl"), "w")
         if fixed_train_probe:
             fixed_train_freq_log = open(
@@ -2575,8 +2670,9 @@ def main():
                 import diag_worker as dw
                 dw.GLOBAL_INDEX = freq_index_obj
                 diag_pool = dw.DiagPool(args.freq_index, cfg.vocab_size,
-                                        inherited_index=freq_index_obj)
-                print("[nglab] async diag worker started "
+                                        inherited_index=freq_index_obj,
+                                        n_workers=args.diag_workers)
+                print(f"[nglab] async diag worker(s) started: {max(1, args.diag_workers)} "
                       f"(diagnostic forwards: {args.dtype})")
             except Exception as e:
                 print(f"[nglab] async diag unavailable ({e!r}); using sync path")
@@ -2908,13 +3004,18 @@ def main():
         if diag_due and (exact_freq_log is not None or freq_bin_log is not None):
             import diag_worker as diag_worker_mod
             train_pairs = diag_worker_mod.make_pair_payloads(
-                exact_freq_train_batches, model, diag_amp_dtype, cfg.vocab_size)
+                exact_freq_train_batches, model, diag_amp_dtype, cfg.vocab_size,
+                token_payload=multi_order_index)
             val_pairs_all = diag_worker_mod.make_pair_payloads(
-                fixed_val_batches, model, diag_amp_dtype, cfg.vocab_size)
+                fixed_val_batches, model, diag_amp_dtype, cfg.vocab_size,
+                token_payload=multi_order_index)
             val_exact_pairs = val_pairs_all[:cfg.val_batches]
             val_fb_pairs = val_pairs_all[:args.freq_eval_batches]
             cur_pair = None
-            if freq_bin_log is not None and cur_inp is not None:
+            if freq_bin_log is not None and cur_inp is not None and multi_order_index:
+                cur_pair = (cur_inp.cpu().numpy(),
+                            cur_ptl.detach().float().cpu().numpy().ravel())
+            elif freq_bin_log is not None and cur_inp is not None:
                 from ngram_freq import compute_context_keys
                 cb_keys, ct_keys = compute_context_keys(cur_inp, cfg.vocab_size)
                 cur_pair = (cb_keys.cpu().numpy().ravel(),
@@ -3088,6 +3189,10 @@ def main():
         ),
         "logit_stats_exemplars": len(logit_exemplar_ids) if logit_stats_log is not None else 0,
         "freq_index": args.freq_index if args.freq_index else None,
+        "freq_index_branches": (list(freq_index_obj.branches)
+                                if multi_order_index else None),
+        "ngram_orders": ngram_orders or None,
+        "diag_workers": args.diag_workers,
         "freq_index_sha256": (
             file_sha256(args.freq_index)
             if args.freq_index and os.path.isfile(args.freq_index) else None

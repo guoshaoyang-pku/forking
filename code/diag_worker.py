@@ -11,6 +11,8 @@ Protocol (all messages are tuples):
        train_pairs,   # list of (b_keys_np, t_keys_np, ptl_np) — fixed train-diag batches
        val_pairs,     # same shape — fixed val batches
        cur_pair)      # (b_keys_np, t_keys_np, ptl_np) or None — current training batch
+  v2 multi-order index: every pair is (tokens_np (B,T), ptl_np) instead and the
+  worker derives the context keys of each order itself (ngram_freq.context_keys_np).
   ("logit_job", step, epoch, branch, pairs, exemplar_pairs)
        pairs: list of (keys_np, hits_np, entropy_np, margin_np, ptrue_np)
        exemplar_pairs: list of (exemplar_id, keys_np, hits_np, top20_ids_np, top20_probs_np)
@@ -30,8 +32,8 @@ import numpy as np
 def _resolve_index(freq_index_path, inherited):
     if inherited is not None:
         return inherited
-    from ngram_freq import GlobalFrequencyIndex
-    return GlobalFrequencyIndex.load(freq_index_path)
+    from ngram_freq import load_frequency_index
+    return load_frequency_index(freq_index_path)
 
 
 def process_job(index, vocab_size, train_pairs, val_exact_pairs, val_fb_pairs, cur_pair):
@@ -48,19 +50,25 @@ def process_job(index, vocab_size, train_pairs, val_exact_pairs, val_fb_pairs, c
     """
     from ngram_freq import ExactFreqLossAccumulator, FreqBinLossAccumulator, compute_shared_from_keys
 
+    def pair_keys(pair, branch):
+        # legacy (b_keys, t_keys, ptl) or v2 (tokens, ptl) payload
+        if len(pair) == 2:
+            return index.keys_for(branch, pair[0])
+        return np.asarray(pair[0] if branch == "bigram" else pair[1])
+
     exact = {"train": {}, "val": {}, "shared": {}}
     fb = {"train": {}, "val": {}}
-    for branch, ki in (("bigram", 0), ("trigram", 1)):
+    for branch in getattr(index, "branches", ("bigram", "trigram")):
         acc_tr = ExactFreqLossAccumulator(index, vocab_size, branch)
         tr_concat_k, tr_concat_l = [], []
         for pair in train_pairs:
-            k = np.asarray(pair[ki]); l = np.asarray(pair[2], dtype=np.float64)
+            k = pair_keys(pair, branch); l = np.asarray(pair[-1], dtype=np.float64)
             acc_tr.update_numpy(k, l)
             tr_concat_k.append(k); tr_concat_l.append(l)
         acc_va = ExactFreqLossAccumulator(index, vocab_size, branch)
         va_concat_k, va_concat_l = [], []
         for pair in val_exact_pairs:
-            k = np.asarray(pair[ki]); l = np.asarray(pair[2], dtype=np.float64)
+            k = pair_keys(pair, branch); l = np.asarray(pair[-1], dtype=np.float64)
             acc_va.update_numpy(k, l)
             va_concat_k.append(k); va_concat_l.append(l)
         exact["train"][branch] = acc_tr.summary()
@@ -75,21 +83,24 @@ def process_job(index, vocab_size, train_pairs, val_exact_pairs, val_fb_pairs, c
 
         acc_fb_va = FreqBinLossAccumulator(index, vocab_size, branch)
         for pair in val_fb_pairs:
-            hits = index.hit_count_numpy(branch, np.asarray(pair[ki]))
-            acc_fb_va.update_numpy(hits, pair[2])
+            hits = index.hit_count_numpy(branch, pair_keys(pair, branch))
+            acc_fb_va.update_numpy(hits, pair[-1])
         fb["val"][branch] = acc_fb_va.summary()
 
         if cur_pair is not None:
             acc_fb_tr = FreqBinLossAccumulator(index, vocab_size, branch)
-            hits = index.hit_count_numpy(branch, np.asarray(cur_pair[ki]))
-            acc_fb_tr.update_numpy(hits, cur_pair[2])
+            hits = index.hit_count_numpy(branch, pair_keys(cur_pair, branch))
+            acc_fb_tr.update_numpy(hits, cur_pair[-1])
             fb["train"][branch] = acc_fb_tr.summary()
     return exact, fb
 
 
-def worker_loop(job_q, res_q, freq_index_path=None, inherited_index=None):
+def worker_loop(job_q, res_q, freq_index_path=None, inherited_index=None, vocab_size=None):
     index = None
-    vocab_size = None
+    if vocab_size is not None:
+        # pool mode: workers share one job queue, so each is ready at start
+        # instead of depending on which worker consumes an "init" message
+        index = _resolve_index(freq_index_path, inherited_index)
     try:
         while True:
             msg = job_q.get()
@@ -142,19 +153,33 @@ GLOBAL_INDEX = None  # set by train.py before fork() so the child inherits it
 
 
 class DiagPool:
-    """Main-process handle for the background diagnostics worker."""
+    """Main-process handle for the background diagnostics worker(s).
 
-    def __init__(self, freq_index_path: str, vocab_size: int, inherited_index=None):
+    n_workers > 1 (v2 multi-order index): workers pull eval blocks from one
+    shared queue, so rows may be written out of step order (each row carries
+    its step).  n_workers == 1 keeps the original single-worker protocol.
+    """
+
+    def __init__(self, freq_index_path: str, vocab_size: int, inherited_index=None,
+                 n_workers: int = 1):
         import multiprocessing as mp
         methods = mp.get_all_start_methods()
         ctx = mp.get_context("fork") if "fork" in methods else mp.get_context("spawn")
-        self.job_q = ctx.Queue(maxsize=8)
+        n_workers = max(1, int(n_workers))
+        self.job_q = ctx.Queue(maxsize=8 * n_workers)
         self.res_q = ctx.Queue()
-        self.proc = ctx.Process(target=worker_loop,
-                                args=(self.job_q, self.res_q, freq_index_path, inherited_index),
-                                daemon=True)
-        self.proc.start()
-        self.job_q.put(("init", vocab_size, freq_index_path))
+        pool_vocab = vocab_size if n_workers > 1 else None
+        self.procs = [
+            ctx.Process(target=worker_loop,
+                        args=(self.job_q, self.res_q, freq_index_path, inherited_index,
+                              pool_vocab),
+                        daemon=True)
+            for _ in range(n_workers)
+        ]
+        for proc in self.procs:
+            proc.start()
+        if n_workers == 1:
+            self.job_q.put(("init", vocab_size, freq_index_path))
         self.alive = True
 
     def submit(self, step, epoch, probe_sha, train_pairs, val_exact_pairs, val_fb_pairs, cur_pair):
@@ -199,8 +224,10 @@ class DiagPool:
         """Sentinel, join, then blocking drain of any remaining rows."""
         if self.alive:
             try:
-                self.job_q.put(None)
-                self.proc.join(timeout=300)
+                for _ in self.procs:
+                    self.job_q.put(None)
+                for proc in self.procs:
+                    proc.join(timeout=300)
             except Exception:
                 pass
         while True:
@@ -220,10 +247,13 @@ class DiagPool:
                 return
 
 
-def make_pair_payloads(batches, model, amp_dtype, vocab_size, device_dtype_ctx=None):
+def make_pair_payloads(batches, model, amp_dtype, vocab_size, device_dtype_ctx=None,
+                       token_payload=False):
     """Main-process helper: one forward per batch (bf16 autocast), keys on GPU.
 
-    Returns list of (b_keys_np, t_keys_np, ptl_np) moved to CPU numpy.
+    Returns list of (b_keys_np, t_keys_np, ptl_np) moved to CPU numpy, or
+    (tokens_np, ptl_np) with token_payload=True (v2 multi-order index: the
+    worker derives keys for every order).
     Kept here so sync/async paths share one implementation. Needs torch —
     only called from the training process.
     """
@@ -235,6 +265,9 @@ def make_pair_payloads(batches, model, amp_dtype, vocab_size, device_dtype_ctx=N
     with torch.no_grad():
         for inp, tgt in batches:
             ptl = compute_per_token_loss(model, inp, tgt, amp_dtype=amp_dtype)
+            if token_payload:
+                out.append((inp.cpu().numpy(), ptl.detach().cpu().numpy().ravel()))
+                continue
             b_keys, t_keys = compute_context_keys(inp, vocab_size)
             out.append((b_keys.cpu().numpy().ravel(),
                         t_keys.cpu().numpy().ravel(),
