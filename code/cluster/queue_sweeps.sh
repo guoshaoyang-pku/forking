@@ -50,8 +50,9 @@ gpu_loop() {
     line="$(pop_job)"
     [[ -z "$line" ]] && { echo "[queue] gpu $gpu: no jobs left"; return; }
     echo "[queue] $(date '+%F %T') gpu $gpu start: $line"
+    read -r runner r_args <<< "$line"
     # shellcheck disable=SC2086
-    if bash "$SCRIPT_DIR/$line" "$gpu"; then
+    if bash "$SCRIPT_DIR/$runner" "$gpu" $r_args; then
       echo "[queue] $(date '+%F %T') gpu $gpu done: $line"
     else
       fails=$(fail_count "$line")
