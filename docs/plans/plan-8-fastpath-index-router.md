@@ -30,9 +30,9 @@
 | G1 | 预计算行索引快路径 | `precompute_row_index.py` 离线算好 bigram/trigram 行索引（uint32，与 token 流 1:1 对齐）；`train.py` 训练步纯 embedding gather；input 注入路径消除 per-block 死代码（VE gather + mask searchsorted 在 `input` 位置从不被消费）；载入时首批逐位验证 | ✅ 2026-10-16 完成（T1/T2/T6/T7 全过） |
 | G2 | 129k 词表支撑 | uint32 token loader；chunked checkpoint CE（129,280 词表全量 logits ~38GB 不可行）；diag/probe/eval 走分块安全路径 | ✅ 2026-10-16 完成（T3/T5 过；compile CPU smoke 与 eager 同值） |
 | G3 | 静态低频 mask 预防臂 | 离线按 freq 阈值预算每位置 enabled 位（u8）；快路径 gather 后乘有效性位；novel（f=0）可选保留——§35.8 `mask_low_le0` 证据：仅禁 novel 反而抬 gap（2.945 > 2.724），novel 读出对 val 是净正贡献 | ✅ 2026-10-16 完成（T4 过；e2e smoke 验证位逐位 OK） |
-| G4 | FP8 harness | torchao float8，仅 backbone Linear（排除 lm_head / 全部 n-gram table / gate）；table 与诊断 forward 保持 bf16/fp32；配对验收协议见 §3 | ✅ 代码就绪 2026-10-16（**需 GPU smoke**，未验收不进主线） |
-| G5 | CPU 数值一致性测试 | 离线索引 vs 动态 hash 逐位一致；pre_rows 快路径 loss 逐位一致；chunked CE 等价；u32 loader 往返 | ✅ 2026-10-16 完成（7/7 PASS） |
-| G6 | H200 bench + 文档 + commit | 四臂：eager / eager+pc / compile+pc / compile+pc+fp8；§18（compile 反慢 3.5x）修复的验收 | ✅ 2026-10-16 launcher 就绪（`run_v5_fastpath_bench.sh`），**待 GPU 实测** |
+| G4 | FP8 harness | torchao float8，仅 backbone Linear（排除 lm_head / 全部 n-gram table / gate）；table 与诊断 forward 保持 bf16/fp32；配对验收协议见 §3 | 🔒 2026-10-17 用户拍板**关闭**：全部实验线保留 bf16，fp8 不再复评（H200 实测 0.1B 无收益）；开关保留，线内禁用 |
+| G5 | CPU 数值一致性测试 | 离线索引 vs 动态 hash 逐位一致；pre_rows 快路径 loss 逐位一致；chunked CE 等价；u32 loader 往返 | ✅ 2026-10-16 完成（7/7 PASS，本地 + ophis-gpu 双环境） |
+| G6 | H200 bench + 文档 + commit | 四臂：eager / eager+pc / compile+pc / compile+pc+fp8；§18（compile 反慢 3.5x）修复的验收 | ✅ 2026-10-17 完成：compile+pc **1.17×**（§18 修复确认），eager pc 零开销且轨迹噪声内干净，fp8 0.1B 无收益；run_ids 见 `fastpath-precomputed-rows.md` §6.1 |
 | G7 | 词典表（top-K dictionary table） | 真·continue-BPE 形态：表只含高频 context（离线扫描选出），无 hash 碰撞；禁用 context 不占行。依赖 G1 的扫描/index 管线。**下一步实现** | ⬜ 后续 |
 | G8 | 5gram 多后缀路由 | 设计稿 §4；等 G1–G7 bench 数据后立项 | ⬜ 设计中 |
 

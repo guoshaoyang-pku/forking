@@ -56,13 +56,16 @@ index-first 默认：推理时 hash 查表，禁用 context 直接零贡献。
   （熵/margin/ptrue/top20 逐 chunk 流式，从不物化全量 logits）。
 - 8k 词表主线 auto 不触发，路径逐位不变。
 
-## 4. FP8（`--fp8_torchao`，未验收前不进主线）
+## 4. FP8（`--fp8_torchao`，已按用户决定关闭）
+
+> **2026-10-17 用户拍板：全部实验线保留 bf16，fp8 不再复评。** 下述协议仅作
+> 历史溯源；`--fp8_torchao` 保留为工程开关（H200 实测 0.1B 规模无收益，
+> §6.1 arm D），任何实验线不得使用。
 
 torchao float8，仅 backbone Linear；**lm_head 与全部 n-gram 表/gate 排除**
 （table 路径保持 bf16/fp32；诊断 forward 保持 bf16 `_fd` 管线）。
-torchao 不在位时启动即报错。**采纳协议**：300–500 步 bf16-vs-fp8 配对臂，
-gap 轨迹形状一致才并入主线；fp8 run 加 `_fp8` 后缀，单独口径类。
-预期收益 1.2–1.5×（仅 backbone GEMM 受益；先落 compile+pc 再上 fp8）。
+torchao 不在位时启动即报错。原采纳协议（已作废）：300–500 步 bf16-vs-fp8
+配对臂，gap 轨迹形状一致才并入主线。
 
 ## 5. torch.compile
 
