@@ -7,6 +7,8 @@
 #
 #   queue_v21_dict_lines.sh <job_file> <gpu,gpu,...>
 #   job line:  "dict 2,3,4,5 42"  |  "hash 5 42"  |  "nogram nogram 42"
+#              optional 4th field = device batch (A100 arms with >=2 tables
+#              need 12; unset = NGLAB_DEVICE_BATCH or 72)
 set -uo pipefail
 
 JOBS="${1:?job file}"
@@ -43,7 +45,7 @@ gpu_loop() {
       echo "[queue] $(date '+%F %T') gpu $gpu done: $line"
     elif (( SECONDS - t0 < 180 )); then
       # launch-time failure = unhealthy GPU: hand the job back, retire the GPU
-      read -r j_mode j_orders j_seed j_steps <<< "$line"
+      read -r j_mode j_orders j_seed j_steps j_mb <<< "$line"
       if [[ "$j_mode" == "nogram" || "$j_orders" == "nogram" ]]; then
         j_tag="nogram"
       else

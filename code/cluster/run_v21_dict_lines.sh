@@ -8,11 +8,14 @@
 # backbone LR 6e-4 warmup_constant(100), table RMSProp (0,0.99) x128, bf16,
 # no compile, val/diag every 10 steps, multi-order freq index.
 #
-#   run_v21_dict_lines.sh <gpu> <mode:dict|hash|nogram> <orders|nogram> <seed> [steps]
+#   run_v21_dict_lines.sh <gpu> <mode:dict|hash|nogram> <orders|nogram> <seed> [steps] [device_batch]
 #   orders: "5" | "2,3,4,5" | ...
 #
 # A100-40GB: export NGLAB_DEVICE_BATCH=18 (accum auto-compensates; mb18x4 is
-# the verified A100 precedent).  H200: leave unset (72).
+# the verified A100 precedent).  Arms with >= 2 tables need device_batch 12
+# (4 tables x (param + RMSProp state) + optimizer transients overflow 40GB at
+# mb18).  H200: leave unset (72).  Total batch is ALWAYS 147,456 tokens: the
+# microbatch size only splits the same optimizer step (identical gradients).
 set -euo pipefail
 
 GPU="${1:?gpu id}"
@@ -20,6 +23,7 @@ MODE="${2:?mode: dict | hash | nogram}"
 ORDERS="${3:?orders, e.g. 5 or 2,3,4,5 or nogram}"
 SEED="${4:?seed}"
 STEPS="${5:-2000}"
+DEVICE_BATCH="${6:-${NGLAB_DEVICE_BATCH:-72}}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="${NGLAB_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
@@ -28,7 +32,6 @@ DATA_DIR="${NGLAB_DATA_DIR:-$ROOT/data/tokenized}"
 OUT_DIR="${NGLAB_OUT_DIR:-$ROOT/data/runs_fixed}"
 FREQ_INDEX="${NGLAB_FREQ_INDEX:-$ROOT/data/freq_index_orders2to8_s1.npz}"
 R=1048576
-DEVICE_BATCH="${NGLAB_DEVICE_BATCH:-72}"
 
 if [[ "$MODE" == "nogram" || "$ORDERS" == "nogram" ]]; then
   TAG="nogram"
