@@ -4774,7 +4774,7 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 
 **infra**:commit 3d284db + e75f8d6;launcher `run_v22_rscan.sh` / `run_v23_dataenv.sh` / `queue_sweeps.sh`(flock 队列,<2GiB 准入,MAX_FAILS=2 行级重试——防 config-OOM 无限重排)。首启 bug:整行当路径 → bash: No such file(e75f8d6 修复),秒败耗尽重试,jobs 文件重写后重 launch,无 GPU 污染。
 
-**部署状态**:360-2 ✅ 8×H200 全排(02:13 起,n2 R-scan 前 8 臂 50-57GB 96-100% util,82 臂排队,预计 ~2.5 天);360-1 ❌ /data 99% 满(7.8T/7.9T,无 sudo,无法建 index)——待清理后按同一流程同步+排队;ophis-gpu ❌ 用户配额满(1.1T used)——同待。smoke:v22 30 步 + v23 30 步(p10m)全过后清理。
+**部署状态**:360-2 ✅ 8×H200 全排(02:13 起,n2 R-scan 前 8 臂 50-57GB 96-100% util,82 臂排队)。实测速度:mb72 单 microbatch,H200 上 ~5.6 min/1000 步 → 单臂 ~11 min,**90 臂全队列 ~3 小时**(非 2.5 天,初估按 A100 经验错估)。首日物理信号(step~1000):R=1 gap +0.02(表退化为常数,无 forking),R=1M gap +0.90(train 3.67/val 4.57,强 forking)——R 单调调制 forking 幅度,R-scan 直接可读。360-1 ❌ /data 99% 满(7.8T/7.9T,无 sudo,无法建 index)——待清理后按同一流程同步+排队;ophis-gpu ❌ 用户配额满(1.1T used)——同待。smoke:v22 30 步 + v23 30 步(p10m)全过后清理。
 
 **blocker(1B pool)**:raw parquet 语料在 ophis `/home/user/.cache/autoresearch/data/` 无读权限;shard_60-66 已证实为逐行复制品(作废)。>52M 的 v2.3 点与 v2.2 线不冲突,待语料方案定后补 tokenize;1B 单点训练 ~15 天(2000 步版仅 ~4h,但 1B 点应为「满 epoch 量」语义,步数待用户拍板)。
 
