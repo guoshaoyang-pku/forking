@@ -5,8 +5,8 @@
 
 <p align="center">
   <a href="https://guoshaoyang-pku.github.io/forking/"><img src="https://img.shields.io/badge/Website-Project_page-245D80?style=flat-square" alt="Website"></a>
-  <a href="#paper"><img src="https://img.shields.io/badge/Paper-Coming_soon-64748B?style=flat-square" alt="Paper coming soon"></a>
-  <a href="#citation"><img src="https://img.shields.io/badge/Cite-BibTeX_soon-64748B?style=flat-square" alt="Citation coming soon"></a>
+  <a href="https://arxiv.org/abs/2610.00394"><img src="https://img.shields.io/badge/Paper-arXiv:2610.00394-B31B1B?style=flat-square" alt="Paper arXiv:2610.00394"></a>
+  <a href="#citation"><img src="https://img.shields.io/badge/Cite-BibTeX-2F7565?style=flat-square" alt="Citation BibTeX"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-2F7565?style=flat-square" alt="MIT License"></a>
 </p>
 
@@ -41,11 +41,21 @@ Training requires external tokenized inputs and a frequency index; data, tokeniz
 
 ## Paper
 
-*Forking: Sudden Overfitting Under Replay* — paper link to be added.
+*Forking: Sudden Overfitting Under Replay* — [arXiv:2610.00394](https://arxiv.org/abs/2610.00394) · [PDF](https://arxiv.org/pdf/2610.00394) · [HTML](https://arxiv.org/html/2610.00394v1) · [Project page](https://guoshaoyang-pku.github.io/forking/).
 
 ## Citation
 
-BibTeX will be added with the paper.
+~~~bibtex
+@misc{yu2026forkingsuddenoverfittingreplay,
+      title={Forking: Sudden Overfitting Under Replay},
+      author={Shanbin Yu and Shaoyang Guo and Haoran Zhao and Danni Yu and Ziming Liu},
+      year={2026},
+      eprint={2610.00394},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2610.00394},
+}
+~~~
 
 ## License
 
