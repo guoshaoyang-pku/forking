@@ -253,6 +253,10 @@ def make_logit_payloads(batches, model, amp_dtype, vocab_size, freq_index, branc
     All arrays are CPU numpy, flattened to 1-D (keys/hits/entropy/margin/ptrue)
     or 2-D (top20: shape (N, 20)).
 
+    Models exposing `projection_stats(idx, tgt)` (train.py NanoGPT, plan-8)
+    route through it so large-vocab runs never materialize full logits; the
+    per-token stats are row-local and identical to the full-logit computation.
+
     This is a SEPARATE forward from make_pair_payloads to keep the existing
     exact-freq / freq-bin pipeline byte-identical when --logit_stats is off.
     When --logit_stats is on, the caller invokes this on the same val batches
@@ -262,11 +266,34 @@ def make_logit_payloads(batches, model, amp_dtype, vocab_size, freq_index, branc
     import torch
     import torch.nn.functional as F
     from ngram_freq import compute_context_keys
+    raw = getattr(model, "_orig_mod", model)
+    use_chunked = hasattr(raw, "projection_stats")
     out = []
     was_training = model.training
     model.eval()
     with torch.no_grad():
         for inp, tgt in batches:
+            if use_chunked:
+                if amp_dtype is not None and inp.is_cuda:
+                    with torch.autocast("cuda", dtype=amp_dtype):
+                        entropy, margin, ptrue, top20_ids, top20_probs = \
+                            raw.projection_stats(inp, tgt)
+                else:
+                    entropy, margin, ptrue, top20_ids, top20_probs = \
+                        raw.projection_stats(inp, tgt)
+                b_keys, t_keys = compute_context_keys(inp, vocab_size)
+                keys = b_keys if branch == "bigram" else t_keys
+                hits = freq_index.hit_count_tensor(branch, keys)
+                out.append((
+                    keys.cpu().numpy().ravel(),
+                    hits.cpu().numpy().ravel(),
+                    entropy.numpy().ravel(),
+                    margin.numpy().ravel(),
+                    ptrue.numpy().ravel(),
+                    top20_ids.numpy().reshape(-1, top20_ids.shape[-1]),
+                    top20_probs.numpy().reshape(-1, top20_probs.shape[-1]),
+                ))
+                continue
             if amp_dtype is not None and inp.is_cuda:
                 with torch.autocast("cuda", dtype=amp_dtype):
                     logits = model(inp)

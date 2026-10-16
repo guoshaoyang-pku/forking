@@ -164,21 +164,24 @@ class GlobalFrequencyIndex:
         return cls(bigram, trigram, vocab_size)
 
     @classmethod
-    def build_from_shards(cls, data_dir: str, shard_ids: list, vocab_size: int) -> "GlobalFrequencyIndex":
+    def build_from_shards(cls, data_dir: str, shard_ids: list, vocab_size: int,
+                          token_dtype: str = "u16") -> "GlobalFrequencyIndex":
         """Concatenate all train shards and build the index."""
+        np_dtype = np.uint32 if token_dtype == "u32" else np.uint16
         chunks = []
         for sid in shard_ids:
             path = os.path.join(data_dir, f"shard_{sid:05d}.bin")
             if not os.path.exists(path):
                 raise FileNotFoundError(f"Missing shard: {path}")
-            buf = np.memmap(path, dtype=np.uint16, mode="r")
+            buf = np.memmap(path, dtype=np_dtype, mode="r")
             chunks.append(np.array(buf))
         all_tokens = np.concatenate(chunks)
         return cls.build(all_tokens, vocab_size)
 
     @classmethod
     def build_from_chunks(cls, data_dir: str, shard_ids: list, vocab_size: int,
-                          n_chunks: int, chunk_size: int) -> "GlobalFrequencyIndex":
+                          n_chunks: int, chunk_size: int,
+                          token_dtype: str = "u16") -> "GlobalFrequencyIndex":
         """Build the index from the FIRST `n_chunks` training chunks.
 
         Each chunk is processed independently with the model's exact context
@@ -199,13 +202,14 @@ class GlobalFrequencyIndex:
         v2 = vocab_size * vocab_size
         seen = 0
         T = chunk_size - 1
+        np_dtype = np.uint32 if token_dtype == "u32" else np.uint16
         for sid in shard_ids:
             if seen >= n_chunks:
                 break
             path = os.path.join(data_dir, f"shard_{sid:05d}.bin")
             if not os.path.exists(path):
                 raise FileNotFoundError(f"Missing shard: {path}")
-            buf = np.memmap(path, dtype=np.uint16, mode="r")
+            buf = np.memmap(path, dtype=np_dtype, mode="r")
             n = len(buf) // chunk_size
             take = min(n, n_chunks - seen)
             tokens = np.array(buf[:take * chunk_size], dtype=np.int64).reshape(take, chunk_size)
@@ -553,7 +557,18 @@ def compute_per_token_loss(model, inp: torch.Tensor, tgt: torch.Tensor,
     amp_dtype: optional autocast dtype (e.g. torch.bfloat16) for the model
     forward — matches evaluate_val's numerics. The cross-entropy itself always
     runs in fp32 on upcast logits, so the returned loss is fp32 either way.
+
+    Models exposing `per_token_losses(idx, tgt)` (train.py NanoGPT, plan-8)
+    route through it so large-vocab runs never materialize full logits;
+    per-token CE is row-local, so values are identical to the full-logit path.
     """
+    if hasattr(model, "per_token_losses") or hasattr(getattr(model, "_orig_mod", model),
+                                                     "per_token_losses"):
+        raw = getattr(model, "_orig_mod", model)
+        if amp_dtype is not None and inp.is_cuda:
+            with torch.autocast("cuda", dtype=amp_dtype):
+                return raw.per_token_losses(inp, tgt)
+        return raw.per_token_losses(inp, tgt)
     if amp_dtype is not None and inp.is_cuda:
         with torch.autocast("cuda", dtype=amp_dtype):
             logits = model(inp)
@@ -676,10 +691,14 @@ if __name__ == "__main__":
     parser.add_argument("--data_dir", required=True)
     parser.add_argument("--train_shards", required=True, help="comma-separated shard ids")
     parser.add_argument("--vocab_size", type=int, default=32768)
+    parser.add_argument("--token_dtype", default="u16", choices=["u16", "u32"],
+                        help="token shard dtype (u32 for vocab > 65535)")
     parser.add_argument("--out", required=True, help="output npz path")
     args = parser.parse_args()
     shard_ids = [int(x) for x in args.train_shards.split(",") if x.strip()]
-    idx = GlobalFrequencyIndex.build_from_shards(args.data_dir, shard_ids, args.vocab_size)
+    idx = GlobalFrequencyIndex.build_from_shards(args.data_dir, shard_ids,
+                                                 args.vocab_size,
+                                                 token_dtype=args.token_dtype)
     idx.save(args.out)
     print(f"[ngram_freq] saved index to {args.out}")
     print(f"[ngram_freq] bigram unique rows: {len(idx.bigram)}")

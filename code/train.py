@@ -123,6 +123,15 @@ class Config:
                                 # (nested-prefix length control); 0 = use full shard length
     replay_mix_passes: int = 0  # >0: one globally chunk-shuffled stream of N passes
                                 # (shuffle experiment mixed arm); overrides epoch replay
+    # infra: precomputed n-gram row index / large vocab / precision (plan-8)
+    row_index: bool = False     # consume offline row indices (pure-gather fast path)
+    row_index_dir: str = ""     # where shard_<id>.{b,t}rows.u32.bin live (default data_dir)
+    token_dtype: str = "u16"    # u16 | u32 (u32 required for vocab > 65535)
+    ce_chunk_positions: int = 0  # chunked CE: 0=auto, -1=off, >0=positions per chunk
+    static_low_mask: int = 0    # >0: apply precomputed validity bits (f >= t) from the
+                                # offline index (prevention arm; plan-8 G3; needs --row_index)
+    static_low_mask_keep_novel: bool = True  # novel (f==0) stays enabled in the static mask
+    fp8_torchao: bool = False   # torchao float8 on backbone Linears only (table untouched)
     # output
     out_dir: str = ""
 
@@ -815,9 +824,64 @@ class NanoGPT(nn.Module):
             for k in range(self.trigram_K)
         ]
 
-    def _compute_input_ngram_residual(self, idx):
-        """Over-encoding: sum all enabled layers' n-gram values, no gate."""
+    def _check_pre_rows_supported(self):
+        """Precomputed rows are only valid for the clean single-table mainline.
+
+        Conditions: input injection, K=1, exactly one table layer per enabled
+        branch, first hash family, no hash reseed, no perfect map.  Anything
+        else must refuse loudly (the offline rows would silently fork).
+        """
+        if self.config.nanogpt_ngram_injection_position != "input":
+            raise SystemExit("--row_index requires --injection_position input")
+        if self.bigram_perfect:
+            raise SystemExit("--row_index is incompatible with --bigram_perfect_map")
+        if self._hash_reseed_count != 0:
+            raise SystemExit("--row_index is incompatible with hash reseed")
+        if self.config.enable_bigram_ve:
+            if self.bigram_K != 1 or len(self.bigram_ve_layers) != 1:
+                raise SystemExit(
+                    "--row_index requires the clean single-table bigram branch "
+                    "(K=1, one layer); legacy multi-hash paths are unsupported")
+        if self.config.enable_trigram_ve:
+            if self.trigram_K != 1 or len(self.trigram_ve_layers) != 1:
+                raise SystemExit(
+                    "--row_index requires the clean single-table trigram branch "
+                    "(K=1, one layer); legacy multi-hash paths are unsupported")
+
+    def _compute_input_ngram_residual(self, idx, pre_rows=None):
+        """Over-encoding: sum all enabled layers' n-gram values, no gate.
+
+        pre_rows (plan-8 fast path): (b_rows, t_rows, b_valid, t_valid) with
+        (B,T) int64 row indices and (B,T) bool validity (None where the branch
+        has no offline stream).  When given, the hash arithmetic is skipped and
+        the caller-supplied rows are gathered directly; validity False zeroes
+        the branch contribution (static low-frequency mask semantics, identical
+        to masked_fill).  Bit-identity with the dynamic path is enforced at
+        startup by the first-batch verification in main().
+        """
         _B, T = idx.size()
+        if pre_rows is not None:
+            self._check_pre_rows_supported()
+            b_rows, t_rows, b_valid, t_valid = pre_rows
+            residual = None
+            if self.config.enable_bigram_ve:
+                li = sorted(self.bigram_ve_layers)[0]
+                lvs = self.bigram_ves[str(li)]
+                bgve = self._pad_to_embd(lvs[0](b_rows), self.bigram_table_dim)
+                if b_valid is not None:
+                    bgve = bgve * b_valid.unsqueeze(-1).to(bgve.dtype)
+                residual = bgve
+            if self.config.enable_trigram_ve:
+                li = sorted(self.trigram_ve_layers)[0]
+                lvs = self.trigram_ves[str(li)]
+                tgve = self._pad_to_embd(lvs[0](t_rows), self.trigram_table_dim)
+                if t_valid is not None:
+                    tgve = tgve * t_valid.unsqueeze(-1).to(tgve.dtype)
+                residual = tgve if residual is None else residual + tgve
+            if residual is None:
+                residual = torch.zeros(idx.size(0), T, self.config.n_embd,
+                                       device=idx.device, dtype=self.transformer.wte.weight.dtype)
+            return residual
         residual = None
         prev_idx = torch.cat([idx[:, :1], idx[:, :-1]], dim=1)
         prev2_idx = torch.cat([idx[:, :2], idx[:, :-2]], dim=1)
@@ -857,123 +921,233 @@ class NanoGPT(nn.Module):
                                    device=idx.device, dtype=self.transformer.wte.weight.dtype)
         return residual
 
-    def forward(self, idx, targets=None, return_token_losses=False,
-                return_injection_stats=False):
+    def _trunk(self, idx, pre_rows=None):
+        """Everything from embeddings through ln_f. Returns (h, ngram_residual).
+
+        ngram_residual is the input-injection over-encoding sum (None unless
+        injection_position == "input").
+        """
         B, T = idx.size()
         pos = torch.arange(0, T, dtype=torch.long, device=idx.device).unsqueeze(0)
         x = self.transformer.wte(idx)
         x = x + self.transformer.wpe(pos)
+        ngram_residual = None
+        input_pos = self.config.nanogpt_ngram_injection_position == "input"
+        if input_pos:
+            ngram_residual = self._compute_input_ngram_residual(idx, pre_rows=pre_rows)
+            x = x + ngram_residual
+        x = self.transformer.drop(x)
+        # Per-block VE (unigram/bigram/trigram gathers + freq-mask searchsorted)
+        # is consumed only by the v / y / engram injection routes.  For input
+        # injection it is dead compute: CausalSelfAttention ignores these
+        # residuals.  Skipping it is numerically identical, removes ~4 gather +
+        # 2 searchsorted passes per microbatch, and is a prerequisite for a
+        # graph-break-free torch.compile (plan-8 G1; experiment-log §18).
+        compute_block_ve = not input_pos
+        bigram_indices = {}
+        trigram_indices = {}
+        prev_idx = prev2_idx = None
+        if compute_block_ve and self.config.enable_bigram_ve:
+            prev_idx = torch.cat([idx[:, :1], idx[:, :-1]], dim=1)
+            prev2_idx = torch.cat([idx[:, :2], idx[:, :-2]], dim=1)
+            for li in self.bigram_ve_layers:
+                bigram_indices[li] = self._bigram_row_indices(li, prev_idx, idx)
+        if compute_block_ve and self.config.enable_trigram_ve:
+            if prev_idx is None:
+                prev_idx = torch.cat([idx[:, :1], idx[:, :-1]], dim=1)
+                prev2_idx = torch.cat([idx[:, :2], idx[:, :-2]], dim=1)
+            for li in self.trigram_ve_layers:
+                trigram_indices[li] = self._trigram_row_indices(li, prev2_idx, prev_idx, idx)
+        for i, block in enumerate(self.transformer.h):
+            ve = bgve = tgve = None
+            if compute_block_ve:
+                ve = (self.value_embeds[str(i)](idx)
+                      if self.config.enable_unigram_ve and str(i) in self.value_embeds else None)
+                if self.config.enable_bigram_ve and i in self.bigram_ve_layers:
+                    lvs = self.bigram_ves[str(i)]
+                    bi = bigram_indices[i]
+                    bgve = self._pad_to_embd(
+                        torch.cat([lvs[k](bi[k]) for k in range(self.bigram_K)], dim=-1),
+                        self.bigram_table_dim,
+                    )
+                    bmask = self._frequency_mask(
+                        "bigram",
+                        prev_idx.long() * self.config.vocab_size + idx.long(),
+                    )
+                    if bmask is not None:
+                        bgve = bgve.masked_fill(bmask.unsqueeze(-1), 0)
+                if self.config.enable_trigram_ve and i in self.trigram_ve_layers:
+                    ti = trigram_indices[i]
+                    lvs = self.trigram_ves[str(i)]
+                    tgve = self._pad_to_embd(
+                        torch.cat([lvs[k](ti[k]) for k in range(self.trigram_K)], dim=-1),
+                        self.trigram_table_dim,
+                    )
+                    tmask = self._frequency_mask(
+                        "trigram",
+                        prev2_idx.long() * (self.config.vocab_size * self.config.vocab_size)
+                        + prev_idx.long() * self.config.vocab_size + idx.long(),
+                    )
+                    if tmask is not None:
+                        tgve = tgve.masked_fill(tmask.unsqueeze(-1), 0)
+            x = block(x, ve=ve, bigram_ve=bgve, trigram_ve=tgve)
+        x = self.transformer.ln_f(x)
+        return x, ngram_residual
+
+    def _input_injection_stats(self, idx, ngram_residual):
+        """Branch RMS stats for the input route (eval-only; recomputes gathers)."""
         injection_stats = {
             "bigram_rms": {"sequence_rms": [], "batch_rms": 0.0},
             "trigram_rms": {"sequence_rms": [], "batch_rms": 0.0},
             "total_rms": {"sequence_rms": [], "batch_rms": 0.0},
             "fourgram_rms": {"sequence_rms": [], "batch_rms": 0.0},
         }
-        branch_residuals = {
-            "bigram": [],
-            "trigram": [],
-        }
+        if ngram_residual is None:
+            return injection_stats
         prev_idx = torch.cat([idx[:, :1], idx[:, :-1]], dim=1)
         prev2_idx = torch.cat([idx[:, :2], idx[:, :-2]], dim=1)
-        if self.config.nanogpt_ngram_injection_position == "input":
-            ngram_residual = self._compute_input_ngram_residual(idx)
-            x = x + ngram_residual
-            if return_injection_stats:
-                branch_residuals["bigram"] = []
-                branch_residuals["trigram"] = []
-                for li in sorted(self.bigram_ve_layers):
-                    lvs = self.bigram_ves[str(li)]
-                    bi = self._bigram_row_indices(li, prev_idx, idx)
-                    branch_residuals["bigram"].append(
-                        self._pad_to_embd(
-                            torch.cat([lvs[k](bi[k]) for k in range(self.bigram_K)], dim=-1),
-                            self.bigram_table_dim,
-                        )
-                    )
-                for li in sorted(self.trigram_ve_layers):
-                    lvs = self.trigram_ves[str(li)]
-                    ti = self._trigram_row_indices(li, prev2_idx, prev_idx, idx)
-                    branch_residuals["trigram"].append(
-                        self._pad_to_embd(
-                            torch.cat([lvs[k](ti[k]) for k in range(self.trigram_K)], dim=-1),
-                            self.trigram_table_dim,
-                        )
-                    )
-                for branch, residuals in branch_residuals.items():
-                    if residuals:
-                        branch_residual = torch.stack(residuals).sum(dim=0)
-                        branch_rms = torch.sqrt(torch.mean(branch_residual.float() ** 2, dim=-1))
-                        injection_stats[f"{branch}_rms"] = {
-                            "sequence_rms": branch_rms.mean(dim=0).detach().cpu().tolist(),
-                            "batch_rms": float(branch_rms.mean()),
-                        }
-                total_rms = torch.sqrt(torch.mean(ngram_residual.float() ** 2, dim=-1))
-                injection_stats["total_rms"] = {
-                    "sequence_rms": total_rms.mean(dim=0).detach().cpu().tolist(),
-                    "batch_rms": float(total_rms.mean()),
+        branch_residuals: dict = {}
+        branch_residuals["bigram"] = [
+            self._pad_to_embd(
+                torch.cat([self.bigram_ves[str(li)][k](bi[k])
+                           for k in range(self.bigram_K)], dim=-1),
+                self.bigram_table_dim,
+            )
+            for li in sorted(self.bigram_ve_layers)
+            for bi in [self._bigram_row_indices(li, prev_idx, idx)]
+        ]
+        branch_residuals["trigram"] = [
+            self._pad_to_embd(
+                torch.cat([self.trigram_ves[str(li)][k](ti[k])
+                           for k in range(self.trigram_K)], dim=-1),
+                self.trigram_table_dim,
+            )
+            for li in sorted(self.trigram_ve_layers)
+            for ti in [self._trigram_row_indices(li, prev2_idx, prev_idx, idx)]
+        ]
+        for branch, residuals in branch_residuals.items():
+            if residuals:
+                branch_residual = torch.stack(residuals).sum(dim=0)
+                branch_rms = torch.sqrt(torch.mean(branch_residual.float() ** 2, dim=-1))
+                injection_stats[f"{branch}_rms"] = {
+                    "sequence_rms": branch_rms.mean(dim=0).detach().cpu().tolist(),
+                    "batch_rms": float(branch_rms.mean()),
                 }
-        x = self.transformer.drop(x)
-        bigram_indices = {}
-        if self.config.enable_bigram_ve:
-            for li in self.bigram_ve_layers:
-                bigram_indices[li] = self._bigram_row_indices(li, prev_idx, idx)
-        trigram_indices = {}
-        if self.config.enable_trigram_ve:
-            for li in self.trigram_ve_layers:
-                trigram_indices[li] = self._trigram_row_indices(li, prev2_idx, prev_idx, idx)
-        for i, block in enumerate(self.transformer.h):
-            ve = (self.value_embeds[str(i)](idx)
-                  if self.config.enable_unigram_ve and str(i) in self.value_embeds else None)
-            bgve = None
-            if self.config.enable_bigram_ve and i in self.bigram_ve_layers:
-                lvs = self.bigram_ves[str(i)]
-                bi = bigram_indices[i]
-                bgve = self._pad_to_embd(
-                    torch.cat([lvs[k](bi[k]) for k in range(self.bigram_K)], dim=-1),
-                    self.bigram_table_dim,
-                )
-                bmask = self._frequency_mask(
-                    "bigram",
-                    prev_idx.long() * self.config.vocab_size + idx.long(),
-                )
-                if bmask is not None:
-                    bgve = bgve.masked_fill(bmask.unsqueeze(-1), 0)
-            tgve = None
-            if self.config.enable_trigram_ve and i in self.trigram_ve_layers:
-                ti = trigram_indices[i]
-                lvs = self.trigram_ves[str(i)]
-                tgve = self._pad_to_embd(
-                    torch.cat([lvs[k](ti[k]) for k in range(self.trigram_K)], dim=-1),
-                    self.trigram_table_dim,
-                )
-                tmask = self._frequency_mask(
-                    "trigram",
-                    prev2_idx.long() * (self.config.vocab_size * self.config.vocab_size)
-                    + prev_idx.long() * self.config.vocab_size + idx.long(),
-                )
-                if tmask is not None:
-                    tgve = tgve.masked_fill(tmask.unsqueeze(-1), 0)
-            x = block(x, ve=ve, bigram_ve=bgve, trigram_ve=tgve)
-        x = self.transformer.ln_f(x)
-        logits = self.lm_head(x)
-        if targets is not None:
+        total_rms = torch.sqrt(torch.mean(ngram_residual.float() ** 2, dim=-1))
+        injection_stats["total_rms"] = {
+            "sequence_rms": total_rms.mean(dim=0).detach().cpu().tolist(),
+            "batch_rms": float(total_rms.mean()),
+        }
+        return injection_stats
+
+    def _resolve_ce_chunk(self, n_positions: int) -> int:
+        """Chunk size for the checkpointed CE; 0 = full-logit path.
+
+        auto (0): enable only when full bf16 logits would exceed 4 GiB, then
+        size chunks to ~2 GiB of bf16 logits.  -1 forces off; >0 forces the
+        given chunk size.  8k-vocab mainline runs never trigger auto.
+        """
+        c = self.config.ce_chunk_positions
+        V = self.config.vocab_size
+        if c == -1:
+            return 0
+        if c > 0:
+            return min(c, n_positions)
+        if n_positions * V * 2 <= (4 << 30):
+            return 0
+        return max(1, min(n_positions, (2 << 30) // max(1, 2 * V)))
+
+    def _ce_token_losses(self, h, targets):
+        """Per-token CE from final hidden states h (B,T,C).
+
+        Memory-safe at large vocab: with chunking active, lm_head GEMM + CE
+        run under torch.utils.checkpoint per chunk so full logits are never
+        materialized (129k-vocab logits would be ~38GB bf16 / ~76GB fp32).
+        Per-token CE is row-local, so chunking does not change per-token
+        values; the masked mean runs on the concatenated vector exactly like
+        the unchunked path.
+        """
+        chunk = self._resolve_ce_chunk(h.shape[0] * h.shape[1])
+        if chunk == 0:
+            logits = self.lm_head(h)
             token_losses = F.cross_entropy(
                 logits.float().view(-1, logits.size(-1)),
-                targets.view(-1), ignore_index=-1, reduction="none"
+                targets.reshape(-1), ignore_index=-1, reduction="none"
             ).view_as(targets)
-            loss = token_losses[targets.ne(-1)].mean()
-            if return_token_losses and return_injection_stats:
-                return loss, token_losses, injection_stats
+            return token_losses
+        from torch.utils.checkpoint import checkpoint
+
+        flat_h = h.reshape(-1, h.size(-1))
+        flat_t = targets.reshape(-1)
+        lm_w = self.lm_head.weight
+        outs = []
+        for s in range(0, flat_h.size(0), chunk):
+            h_c = flat_h[s:s + chunk]
+            t_c = flat_t[s:s + chunk]
+            outs.append(checkpoint(
+                lambda hc, tc, w=lm_w: F.cross_entropy(
+                    F.linear(hc, w).float(), tc,
+                    ignore_index=-1, reduction="none"),
+                h_c, t_c, use_reentrant=False))
+        token_losses = torch.cat(outs) if len(outs) > 1 else outs[0]
+        return token_losses.view_as(targets)
+
+    def per_token_losses(self, idx, targets):
+        """(B, T) fp32 per-token CE without materializing full logits.
+
+        Memory-safe entry point for diagnostics at large vocab
+        (ngram_freq.compute_per_token_loss routes here when present).
+        """
+        h, _ = self._trunk(idx)
+        return self._ce_token_losses(h, targets).float()
+
+    @torch.no_grad()
+    def projection_stats(self, idx, targets, topk: int = 20):
+        """Chunked softmax stats for the logit probe (entropy/margin/ptrue/top-k).
+
+        Never materializes full logits: per chunk of positions, lm_head GEMM ->
+        fp32 softmax stats -> discard.  Values are row-local and identical to
+        the full-logit computation.  Returns CPU tensors flattened to (N,).
+        """
+        h, _ = self._trunk(idx)
+        flat_h = h.reshape(-1, h.size(-1))
+        flat_t = targets.reshape(-1).clamp(min=0)
+        chunk = self._resolve_ce_chunk(flat_h.size(0)) or flat_h.size(0)
+        ents, margins, ptrues, tk_ids, tk_probs = [], [], [], [], []
+        for s in range(0, flat_h.size(0), chunk):
+            logits = self.lm_head(flat_h[s:s + chunk]).float()
+            probs = F.softmax(logits, dim=-1)
+            log_probs = F.log_softmax(logits, dim=-1)
+            ents.append(-(probs * log_probs).sum(dim=-1))
+            top2 = torch.topk(probs, k=2, dim=-1).values
+            margins.append(top2[:, 0] - top2[:, 1])
+            ptrues.append(probs.gather(-1, flat_t[s:s + chunk, None]).squeeze(-1))
+            topk_out = torch.topk(probs, k=min(topk, probs.size(-1)), dim=-1)
+            tk_ids.append(topk_out.indices)
+            tk_probs.append(topk_out.values)
+        cat = torch.cat
+        return (cat(ents).cpu(), cat(margins).cpu(), cat(ptrues).cpu(),
+                cat(tk_ids).cpu(), cat(tk_probs).cpu())
+
+    def forward(self, idx, targets=None, return_token_losses=False,
+                return_injection_stats=False, pre_rows=None):
+        h, ngram_residual = self._trunk(idx, pre_rows=pre_rows)
+        if targets is None:
             if return_token_losses:
-                return loss, token_losses
+                raise ValueError("return_token_losses requires targets")
+            logits = self.lm_head(h)
             if return_injection_stats:
-                return loss, injection_stats
-            return loss
+                return logits.float(), self._input_injection_stats(idx, ngram_residual)
+            return logits.float()
+        token_losses = self._ce_token_losses(h, targets)
+        loss = token_losses[targets.ne(-1)].mean()
+        if return_token_losses and return_injection_stats:
+            return loss, token_losses, self._input_injection_stats(idx, ngram_residual)
         if return_token_losses:
-            raise ValueError("return_token_losses requires targets")
+            return loss, token_losses
         if return_injection_stats:
-            return logits.float(), injection_stats
-        return logits.float()
+            return loss, self._input_injection_stats(idx, ngram_residual)
+        return loss
 
 
 # ---------------------------------------------------------------------------
@@ -1243,7 +1417,9 @@ class TokenizedShardDataset:
 
     def __init__(self, data_dir: str, shard_ids: list, sequence_len: int,
                  device_batch_size: int, seed: int = 42, epoch_batches: int = 0,
-                 replay_mix_passes: int = 0):
+                 replay_mix_passes: int = 0, token_dtype: str = "u16",
+                 row_index_dir: str = "", static_low_mask: int = 0,
+                 rows_requested: bool = False):
         self.data_dir = data_dir
         self.shard_ids = list(shard_ids)
         self.sequence_len = sequence_len
@@ -1256,6 +1432,12 @@ class TokenizedShardDataset:
         self._buffers = {}
         self._epoch = 0
         self._batch_in_epoch = 0
+        # plan-8 infra: token dtype + offline row/validity streams (train fast path)
+        self.token_np_dtype = np.uint32 if token_dtype == "u32" else np.uint16
+        self.row_index_dir = row_index_dir
+        self.static_low_mask = static_low_mask
+        self.rows_requested = rows_requested
+        self._row_buffers = {}
         # total tokens per shard (lazy)
         self._shard_lens = {}
         # yielded batches per full epoch (drop_last per shard), for epoch-anchored LR
@@ -1267,15 +1449,47 @@ class TokenizedShardDataset:
         else:
             self._batches_per_epoch = sum(
                 self.shard_chunks(sid) // self.device_batch_size for sid in self.shard_ids)
+        if self._batches_per_epoch == 0:
+            raise SystemExit(
+                f"shards {self.shard_ids} contain fewer than one device batch of "
+                f"complete chunks (chunk_size={self.chunk_size}); the fixed replay "
+                "iterator would spin forever — check --sequence_len and shard sizes")
 
     def _load_shard(self, sid):
         if sid not in self._buffers:
             path = os.path.join(self.data_dir, f"shard_{sid:05d}.bin")
             if not os.path.exists(path):
                 raise FileNotFoundError(f"Missing shard: {path}")
-            buf = np.memmap(path, dtype=np.uint16, mode="r")
+            buf = np.memmap(path, dtype=self.token_np_dtype, mode="r")
             self._buffers[sid] = buf
         return self._buffers[sid]
+
+    def _load_rows(self, sid: int):
+        """(brows_memmap|None, trows_memmap|None, bmask|None, tmask|None)."""
+        if not self.rows_requested and self.static_low_mask == 0:
+            return (None, None, None, None)
+        n_tok = len(self._load_shard(sid))
+        streams = []
+        for suffix, dt in (("brows.u32.bin", np.uint32), ("trows.u32.bin", np.uint32),
+                           ("bmask.u8.bin", np.uint8), ("tmask.u8.bin", np.uint8)):
+            path = os.path.join(self.row_index_dir or self.data_dir,
+                                f"shard_{sid:05d}.{suffix}")
+            if not os.path.exists(path):
+                streams.append(None)
+                continue
+            stream = np.memmap(path, dtype=dt, mode="r")
+            if len(stream) != n_tok:
+                raise SystemExit(
+                    f"row-index stream length mismatch for shard {sid}: "
+                    f"{suffix} has {len(stream):,} entries, token stream has {n_tok:,}")
+            self._row_buffers[(sid, suffix)] = stream
+            streams.append(stream)
+        brows, trows, bmask, tmask = streams
+        if self.static_low_mask > 0 and (bmask is None or tmask is None):
+            raise SystemExit(
+                f"--static_low_mask requires bmask/tmask streams for shard {sid} "
+                "(re-run precompute_row_index.py with --freq_index --min_count)")
+        return (brows, trows, bmask, tmask)
 
     def shard_chunks(self, sid):
         buf = self._load_shard(sid)
@@ -1284,8 +1498,13 @@ class TokenizedShardDataset:
     def total_chunks(self):
         return sum(self.shard_chunks(s) for s in self.shard_ids)
 
-    def _iter_chunks(self):
+    def _iter_chunks(self, with_rows: bool = False):
         """Yield (input, target) tensors for each chunk in fixed order.
+
+        With with_rows=True, yield (input, target, b_rows, t_rows, b_valid,
+        t_valid) where the row/validity tensors are (B,)-shaped flat int64 /
+        bool tensors from the offline index (plan-8 fast path); branches
+        without an offline stream yield None in that slot.
 
         With epoch_batches > 0, only the first `epoch_batches * device_batch_size`
         chunks of the train prefix are yielded each epoch (nested-prefix control).
@@ -1306,13 +1525,16 @@ class TokenizedShardDataset:
                 self._mix_order = rng.permutation(n_stream)
             for g in self._mix_order:
                 _, local = divmod(int(g), per_pass)
-                yield self.get_chunk(local)
+                yield self.get_chunk(local, with_rows=with_rows)
             return
         budget = self.epoch_batches * self.device_batch_size if self.epoch_batches > 0 else None
         emitted = 0
         for sid in self.shard_ids:
             buf = self._load_shard(sid)
             n = self.shard_chunks(sid)
+            brows = trows = bmask = tmask = None
+            if with_rows:
+                brows, trows, bmask, tmask = self._load_rows(sid)
             for i in range(n):
                 if budget is not None and emitted >= budget:
                     return
@@ -1320,8 +1542,23 @@ class TokenizedShardDataset:
                 chunk = np.array(buf[start:start + self.chunk_size], dtype=np.int64)
                 inp = torch.from_numpy(chunk[:-1])
                 tgt = torch.from_numpy(chunk[1:])
+                if with_rows:
+                    T = self.chunk_size - 1
+
+                    def _slice(stream, dt):
+                        if stream is None:
+                            return None
+                        return torch.from_numpy(
+                            np.array(stream[start:start + T], dtype=dt))
+
+                    bi = _slice(brows, np.int64)
+                    ti = _slice(trows, np.int64)
+                    bv = _slice(bmask, np.int64).to(torch.bool) if bmask is not None else None
+                    tv = _slice(tmask, np.int64).to(torch.bool) if tmask is not None else None
+                    yield inp, tgt, bi, ti, bv, tv
+                else:
+                    yield inp, tgt
                 emitted += 1
-                yield inp, tgt
 
     def chunk_offsets(self) -> list:
         """Global chunk offset of each shard (cumulative over shard_chunks).
@@ -1337,12 +1574,15 @@ class TokenizedShardDataset:
             acc += self.shard_chunks(sid)
         return offs
 
-    def get_chunk(self, global_idx: int):
+    def get_chunk(self, global_idx: int, with_rows: bool = False):
         """Return (input, target) tensors for the g-th chunk of the full stream.
 
         Uniform train probe uses this to grab batches spread across the whole
         train set (independent of the training iterator, which is what the
         head-only `first` probe cannot do).
+
+        with_rows=True appends the offline (b_rows, t_rows, b_valid, t_valid)
+        tensors the same way _iter_chunks does (plan-8 fast path).
         """
         for sid, off in self.chunk_offsets():
             n = self.shard_chunks(sid)
@@ -1353,24 +1593,59 @@ class TokenizedShardDataset:
                 chunk = np.array(buf[start:start + self.chunk_size], dtype=np.int64)
                 inp = torch.from_numpy(chunk[:-1])
                 tgt = torch.from_numpy(chunk[1:])
-                return inp, tgt
+                if not with_rows:
+                    return inp, tgt
+                brows, trows, bmask, tmask = self._load_rows(sid)
+                T = self.chunk_size - 1
+
+                def _slice(stream, dt):
+                    if stream is None:
+                        return None
+                    return torch.from_numpy(np.array(stream[start:start + T], dtype=dt))
+
+                bi = _slice(brows, np.int64)
+                ti = _slice(trows, np.int64)
+                bv = _slice(bmask, np.int64).to(torch.bool) if bmask is not None else None
+                tv = _slice(tmask, np.int64).to(torch.bool) if tmask is not None else None
+                return inp, tgt, bi, ti, bv, tv
         raise IndexError(f"chunk {global_idx} out of range")
 
     def epoch_progress(self) -> float:
         """Fraction of the current epoch completed (0..1 within an epoch)."""
         return self._batch_in_epoch / max(1, self._batches_per_epoch)
 
-    def iter_batches(self, device: torch.device):
-        """Yield (inputs, targets) batches of shape (B, T) in fixed order, looping forever."""
+    def iter_batches(self, device: torch.device, with_rows: bool = False):
+        """Yield (inputs, targets) batches of shape (B, T) in fixed order, looping forever.
+
+        with_rows=True yields (inputs, targets, bi, ti, bv, tv) device batches
+        for the offline-index fast path (plan-8); bi/ti are (B,T) int64 row
+        indices, bv/tv are (B,T) bool validity (None where the offline stream
+        is absent, e.g. a disabled branch). Epoch/batch counters advance
+        identically in both modes.
+        """
         batch_inp, batch_tgt = [], []
+        batch_rows: list = []
         while True:
-            for inp, tgt in self._iter_chunks():
+            for chunk in self._iter_chunks(with_rows=with_rows):
+                if with_rows:
+                    inp, tgt, bi, ti, bv, tv = chunk
+                    batch_rows.append((bi, ti, bv, tv))
+                else:
+                    inp, tgt = chunk
                 batch_inp.append(inp)
                 batch_tgt.append(tgt)
                 if len(batch_inp) == self.device_batch_size:
-                    yield (torch.stack(batch_inp).to(device),
+                    out = (torch.stack(batch_inp).to(device),
                            torch.stack(batch_tgt).to(device))
-                    batch_inp, batch_tgt = [], []
+                    if with_rows:
+                        rows = []
+                        for k in range(4):
+                            parts = [r[k] for r in batch_rows]
+                            rows.append(torch.stack(parts).to(device)
+                                        if parts[0] is not None else None)
+                        out = out + tuple(rows)
+                    yield out
+                    batch_inp, batch_tgt, batch_rows = [], [], []
                     self._batch_in_epoch += 1
             self._epoch += 1
             self._batch_in_epoch = 0
@@ -1820,11 +2095,42 @@ def main():
                         help="freeze n-gram tables and gates after initialization; optimizer state starts empty")
     parser.add_argument("--freeze_embeddings_only", action="store_true",
                         help="freeze lookup embeddings after initialization; gates remain trainable")
+    parser.add_argument("--lora_rank", type=int, default=0,
+                        help="after checkpoint load, freeze backbone weights and train rank-r LoRA on block linear layers")
+    parser.add_argument("--lora_alpha", type=float, default=16.0)
     parser.add_argument("--disable_ngram_tables", action="store_true",
                         help="zero and freeze n-gram table/gate parameters after loading; matched no-gram control")
+    parser.add_argument("--row_index", action="store_true",
+                        help="plan-8 fast path: consume offline precomputed n-gram row "
+                             "indices (pure-gather forward, compile-friendly). Requires "
+                             "code/precompute_row_index.py output next to the shards; "
+                             "input injection + clean single-table branches only; "
+                             "verified bitwise against the dynamic hash at startup")
+    parser.add_argument("--row_index_dir", default="",
+                        help="directory holding shard_<id>.{b,t}rows.u32.bin (default: data_dir)")
+    parser.add_argument("--token_dtype", default="u16", choices=["u16", "u32"],
+                        help="token shard dtype; u32 required for vocab > 65535")
+    parser.add_argument("--ce_chunk_positions", type=int, default=0,
+                        help="chunked checkpoint CE over the flattened (B*T) positions: "
+                             "0=auto (on only when full bf16 logits would exceed 4GiB), "
+                             "-1=off, >0=positions per chunk")
+    parser.add_argument("--static_low_mask", type=int, default=0,
+                        help="plan-8 G3 prevention arm: apply offline validity bits "
+                             "(context f >= t stays enabled) from step 0; requires "
+                             "--row_index and precomputed mask streams. Do NOT combine "
+                             "with the mask_low_freq intervention")
+    parser.add_argument("--static_low_mask_keep_novel", type=int, default=1,
+                        help="1: novel (f==0) contexts stay enabled in the static mask "
+                             "(le0 evidence: novel table readout is net positive for val)")
+    parser.add_argument("--fp8_torchao", action="store_true",
+                        help="torchao float8 training on backbone Linear modules only "
+                             "(lm_head and all n-gram tables/gates stay bf16/fp32); "
+                             "requires torchao; run the bf16 pairing before adopting")
     args = parser.parse_args()
     if args.freeze_embeddings_only and (args.freeze_table or args.disable_ngram_tables):
         parser.error("--freeze_embeddings_only is exclusive with --freeze_table/--disable_ngram_tables")
+    if args.lora_rank < 0 or (args.lora_rank and (not args.init_model or args.lora_alpha <= 0)):
+        parser.error("LoRA requires --init_model, --lora_rank > 0 and --lora_alpha > 0")
     if args.disable_ngram_tables and (not args.init_model or args.injection_position != "input"):
         parser.error("--disable_ngram_tables requires --init_model and input injection")
     if args.warmup_steps < 1:
@@ -1846,6 +2152,16 @@ def main():
                      "an existing --freq_index")
     if args.intervention == "none" and args.intervention_epochs.strip():
         parser.error("--intervention_epochs requires --intervention hash_reseed (or another intervention)")
+    if args.vocab_size > 65535 and args.token_dtype != "u32":
+        parser.error("--vocab_size > 65535 requires --token_dtype u32")
+    if args.static_low_mask > 0 and not args.row_index:
+        parser.error("--static_low_mask requires --row_index (validity bits ride on the offline index)")
+    if args.static_low_mask > 0 and args.intervention in {"mask_low_freq", "mask_high_freq"}:
+        parser.error("--static_low_mask must not be combined with the mask_low/high_freq "
+                     "intervention (prevention vs intervention arms are separate)")
+    if args.row_index and args.intervention == "hash_reseed":
+        parser.error("--row_index is incompatible with --intervention hash_reseed "
+                     "(reseed changes the hash after the offline index was built)")
 
     cfg = Config(
         vocab_size=args.vocab_size,
@@ -1897,6 +2213,13 @@ def main():
         val_shards=[int(x) for x in args.val_shards.split(",") if x.strip()],
         epoch_batches=args.epoch_batches,
         replay_mix_passes=args.replay_mix_passes,
+        row_index=bool(args.row_index),
+        row_index_dir=args.row_index_dir,
+        token_dtype=args.token_dtype,
+        ce_chunk_positions=args.ce_chunk_positions,
+        static_low_mask=args.static_low_mask,
+        static_low_mask_keep_novel=bool(args.static_low_mask_keep_novel),
+        fp8_torchao=bool(args.fp8_torchao),
         out_dir=os.path.join(args.out_dir, args.run_id),
     )
 
@@ -1936,10 +2259,15 @@ def main():
     train_ds = TokenizedShardDataset(cfg.data_dir, cfg.train_shards, cfg.sequence_len,
                                      cfg.device_batch_size, cfg.data_seed,
                                      epoch_batches=cfg.epoch_batches,
-                                     replay_mix_passes=cfg.replay_mix_passes)
+                                     replay_mix_passes=cfg.replay_mix_passes,
+                                     token_dtype=cfg.token_dtype,
+                                     row_index_dir=cfg.row_index_dir,
+                                     static_low_mask=cfg.static_low_mask,
+                                     rows_requested=cfg.row_index)
     val_ds = TokenizedShardDataset(cfg.data_dir, cfg.val_shards, cfg.sequence_len,
-                                   cfg.device_batch_size, cfg.data_seed)
-    train_iter = train_ds.iter_batches(device)
+                                   cfg.device_batch_size, cfg.data_seed,
+                                   token_dtype=cfg.token_dtype)
+    train_iter = train_ds.iter_batches(device, with_rows=cfg.row_index)
     val_iter = val_ds.iter_batches(device)
     # Fixed validation batches: captured once and reused for every val eval, so
     # the val-loss curve always measures the same val data.  The val-side
@@ -2037,6 +2365,149 @@ def main():
                 p.requires_grad_(False)
                 frozen += p.numel()
         print(f"[nglab] freeze_embeddings_only enabled: {frozen:,} parameters frozen; gates trainable")
+    lora_targets = []
+    if args.lora_rank:
+        from lora_adapter import install_lora
+        for p in model._backbone_params():
+            p.requires_grad_(False)
+        lora_targets = install_lora(model, args.lora_rank, args.lora_alpha)
+        print(f"[nglab] LoRA rank={args.lora_rank} alpha={args.lora_alpha} targets={len(lora_targets)}")
+
+    _rows_meta = None
+    fp8_modules = 0
+    if args.row_index:
+        # --- rows_meta.json contract check ---
+        meta_path = os.path.join(cfg.row_index_dir or cfg.data_dir, "rows_meta.json")
+        if not os.path.isfile(meta_path):
+            raise SystemExit(f"--row_index requires {meta_path} "
+                             "(run code/precompute_row_index.py first)")
+        with open(meta_path) as f:
+            _rows_meta = json.load(f)
+        for key, want in (("vocab_size", cfg.vocab_size),
+                          ("sequence_len", cfg.sequence_len),
+                          ("token_dtype", cfg.token_dtype)):
+            if _rows_meta.get(key) != want:
+                raise SystemExit(f"rows_meta.json {key}={_rows_meta.get(key)!r} "
+                                 f"!= run setting {want!r}")
+        for key, want in (("bigram_clean_table", cfg.bigram_clean_table),
+                          ("trigram_clean_table", cfg.trigram_clean_table)):
+            if want and _rows_meta.get(key) != want:
+                raise SystemExit(f"rows_meta.json {key}={_rows_meta.get(key)!r} "
+                                 f"!= run setting {want!r}")
+        mask_meta = _rows_meta.get("static_low_mask", {})
+        if cfg.static_low_mask > 0:
+            if not mask_meta.get("enabled"):
+                raise SystemExit("--static_low_mask set but rows_meta.json has no "
+                                 "static mask streams (re-run precompute_row_index.py "
+                                 "with --freq_index --min_count)")
+            if mask_meta.get("min_count") != cfg.static_low_mask:
+                raise SystemExit(f"rows_meta.json static mask min_count="
+                                 f"{mask_meta.get('min_count')} != "
+                                 f"--static_low_mask {cfg.static_low_mask}")
+            if bool(mask_meta.get("keep_novel")) != cfg.static_low_mask_keep_novel:
+                raise SystemExit("rows_meta.json keep_novel != "
+                                 "--static_low_mask_keep_novel")
+
+        # --- first-batch bitwise verification (separate dataset instance so
+        # the training stream is untouched) ---
+        model._check_pre_rows_supported()
+        ver_ds = TokenizedShardDataset(cfg.data_dir, cfg.train_shards, cfg.sequence_len,
+                                       cfg.device_batch_size, cfg.data_seed,
+                                       epoch_batches=cfg.epoch_batches,
+                                       token_dtype=cfg.token_dtype,
+                                       row_index_dir=cfg.row_index_dir,
+                                       static_low_mask=cfg.static_low_mask,
+                                       rows_requested=True)
+        ver_batch = next(ver_ds.iter_batches(device, with_rows=True))
+        v_inp, _, v_bi, v_ti, v_bv, v_tv = ver_batch
+        with torch.no_grad():
+            v_prev = torch.cat([v_inp[:, :1], v_inp[:, :-1]], dim=1)
+            v_prev2 = torch.cat([v_inp[:, :2], v_inp[:, :-2]], dim=1)
+            if cfg.enable_bigram_ve:
+                if v_bi is None:
+                    raise SystemExit("--row_index: bigram branch enabled but no "
+                                     "brows.u32.bin stream found for the train shards")
+                dyn = model._bigram_row_indices(
+                    sorted(model.bigram_ve_layers)[0], v_prev, v_inp)[0]
+                if not torch.equal(dyn, v_bi):
+                    dflat, oflat = dyn.flatten(), v_bi.flatten()
+                    i = int((dflat != oflat).nonzero()[0])
+                    raise SystemExit(f"--row_index VERIFICATION FAILED (bigram): flat "
+                                     f"position {i}: dynamic={int(dflat[i])} "
+                                     f"offline={int(oflat[i])} — rows_meta/primes/"
+                                     f"R mismatch or stale index; refusing to start")
+                print(f"[nglab] row_index verify: bigram rows bitwise OK ({dyn.numel():,} pos)")
+            if cfg.enable_trigram_ve:
+                if v_ti is None:
+                    raise SystemExit("--row_index: trigram branch enabled but no "
+                                     "trows.u32.bin stream found for the train shards")
+                dyn = model._trigram_row_indices(
+                    sorted(model.trigram_ve_layers)[0], v_prev2, v_prev, v_inp)[0]
+                if not torch.equal(dyn, v_ti):
+                    dflat, oflat = dyn.flatten(), v_ti.flatten()
+                    i = int((dflat != oflat).nonzero()[0])
+                    raise SystemExit(f"--row_index VERIFICATION FAILED (trigram): flat "
+                                     f"position {i}: dynamic={int(dflat[i])} "
+                                     f"offline={int(oflat[i])} — refusing to start")
+                print(f"[nglab] row_index verify: trigram rows bitwise OK ({dyn.numel():,} pos)")
+            if cfg.static_low_mask > 0:
+                if v_bv is None or v_tv is None:
+                    raise SystemExit("--static_low_mask: validity streams missing")
+                if args.freq_index and os.path.isfile(args.freq_index):
+                    from ngram_freq import GlobalFrequencyIndex as _GFI
+                    _fx = _GFI.load(args.freq_index)
+                    from ngram_freq import compute_context_keys as _cck
+                    bk, tk = _cck(v_inp, cfg.vocab_size)
+                    f_b = _fx.hit_count_numpy("bigram", bk.cpu().numpy().ravel())
+                    f_t = _fx.hit_count_numpy("trigram", tk.cpu().numpy().ravel())
+                    exp_b = (f_b >= cfg.static_low_mask) | (
+                        cfg.static_low_mask_keep_novel & (f_b == 0))
+                    exp_t = (f_t >= cfg.static_low_mask) | (
+                        cfg.static_low_mask_keep_novel & (f_t == 0))
+                    ok_b = torch.equal(v_bv.cpu().flatten(),
+                                       torch.from_numpy(exp_b))
+                    ok_t = torch.equal(v_tv.cpu().flatten(),
+                                       torch.from_numpy(exp_t))
+                    if not (ok_b and ok_t):
+                        raise SystemExit("--static_low_mask VERIFICATION FAILED: "
+                                         "validity bits do not match the freq index "
+                                         "(threshold/keep_novel/index mismatch)")
+                    print(f"[nglab] static_low_mask verify: bits bitwise OK "
+                          f"(enabled {int(exp_b.mean()*100)}% bigram / "
+                          f"{int(exp_t.mean()*100)}% trigram, t={cfg.static_low_mask}, "
+                          f"keep_novel={cfg.static_low_mask_keep_novel})")
+                else:
+                    print(f"[nglab] static_low_mask: skipping bit verification "
+                          f"(no --freq_index provided); enabled frac "
+                          f"b={float(v_bv.float().mean()):.4f} "
+                          f"t={float(v_tv.float().mean()):.4f}")
+
+    if args.fp8_torchao:
+        try:
+            from torchao.float8 import convert_to_float8_training
+        except ImportError as e:
+            raise SystemExit(f"--fp8_torchao requires torchao (pip install torchao): {e!r}")
+        import inspect as _inspect
+        _ngram_markers = ("value_embeds", "bigram_ves", "trigram_ves",
+                          "ve_gate", "bigram_gate", "trigram_gate")
+
+        def _fp8_filter(module, name):
+            if not isinstance(module, nn.Linear):
+                return False
+            if name.endswith("lm_head"):
+                return False
+            if any(m in name for m in _ngram_markers):
+                return False
+            return True
+
+        _sig = _inspect.signature(convert_to_float8_training)
+        if "module_filter_fn" in _sig.parameters:
+            convert_to_float8_training(model, module_filter_fn=_fp8_filter)
+        else:
+            convert_to_float8_training(model, filter_fn=_fp8_filter)
+        fp8_modules = sum(1 for m in model.modules() if type(m).__name__ == "Float8Linear")
+        print(f"[nglab] fp8_torchao: {fp8_modules} backbone Linear modules in float8 "
+              f"(lm_head + n-gram tables/gates stay bf16/fp32)")
     if args.compile:
         model = torch.compile(model)
     n_params = sum(p.numel() for p in model.parameters())
@@ -2247,10 +2718,20 @@ def main():
         accum_loss = 0.0
         for micro in range(grad_accum):
             try:
-                inp, tgt = next(train_iter)
+                if cfg.row_index:
+                    inp, tgt, b_rows, t_rows, b_valid, t_valid = next(train_iter)
+                    pre_rows = (b_rows, t_rows, b_valid, t_valid)
+                else:
+                    inp, tgt = next(train_iter)
+                    pre_rows = None
             except StopIteration:
-                train_iter = train_ds.iter_batches(device)
-                inp, tgt = next(train_iter)
+                train_iter = train_ds.iter_batches(device, with_rows=cfg.row_index)
+                if cfg.row_index:
+                    inp, tgt, b_rows, t_rows, b_valid, t_valid = next(train_iter)
+                    pre_rows = (b_rows, t_rows, b_valid, t_valid)
+                else:
+                    inp, tgt = next(train_iter)
+                    pre_rows = None
             if (train_ds._epoch in intervention_due
                     and train_ds._epoch not in intervention_fired_epochs):
                 event = model.apply_intervention(train_ds._epoch, freq_index_obj)
@@ -2261,7 +2742,8 @@ def main():
                       f"epoch={train_ds._epoch + 1}")
             with amp_ctx:
                 if model._context_set_memb is not None or model._context_loss_mask_active:
-                    loss, ptl = model(inp, targets=tgt, return_token_losses=True)
+                    loss, ptl = model(inp, targets=tgt, return_token_losses=True,
+                                      pre_rows=pre_rows)
                     if model._context_loss_mask_active:
                         keep = model._context_loss_keep_mask(inp) & tgt.ne(-1)
                         loss = ptl[keep].mean()
@@ -2274,10 +2756,11 @@ def main():
                     if freq_bin_log is not None and micro == grad_accum - 1:
                         cur_inp, cur_tgt, cur_ptl = inp, tgt, ptl.detach()
                 elif freq_bin_log is not None and micro == grad_accum - 1:
-                    loss, ptl = model(inp, targets=tgt, return_token_losses=True)
+                    loss, ptl = model(inp, targets=tgt, return_token_losses=True,
+                                      pre_rows=pre_rows)
                     cur_inp, cur_tgt, cur_ptl = inp, tgt, ptl.detach()
                 else:
-                    loss = model(inp, targets=tgt)
+                    loss = model(inp, targets=tgt, pre_rows=pre_rows)
                 loss = loss / grad_accum
             # freeze_both freezes every parameter: the graph then has no
             # grad_fn, so backward is skipped entirely (optimizer no-ops).
@@ -2625,7 +3108,18 @@ def main():
         "init_model": os.path.abspath(args.init_model) if args.init_model else None,
         "freeze_table": bool(args.freeze_table),
         "freeze_embeddings_only": bool(args.freeze_embeddings_only),
+        "lora_rank": args.lora_rank,
+        "lora_alpha": args.lora_alpha if args.lora_rank else None,
+        "lora_targets": lora_targets,
         "disable_ngram_tables": bool(args.disable_ngram_tables),
+        "row_index": bool(args.row_index),
+        "rows_meta": _rows_meta,
+        "token_dtype": cfg.token_dtype,
+        "ce_chunk_positions": cfg.ce_chunk_positions,
+        "static_low_mask": cfg.static_low_mask,
+        "static_low_mask_keep_novel": cfg.static_low_mask_keep_novel,
+        "fp8_torchao": bool(args.fp8_torchao),
+        "fp8_converted_modules": fp8_modules,
         "diag_forward_dtype": ("bf16" if diag_amp_dtype is not None else "fp32")
                               if (exact_freq_log is not None or freq_bin_log is not None) else None,
         "diag_async": diag_pool is not None,

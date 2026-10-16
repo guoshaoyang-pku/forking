@@ -43,6 +43,9 @@ def main():
     parser.add_argument("--seq_len", type=int, default=2048)
     parser.add_argument("--batch_size", type=int, default=72,
                         help="device batch size for packing (must match training)")
+    parser.add_argument("--token_dtype", default="u16", choices=["u16", "u32"],
+                        help="shard dtype; u32 required for tokenizer vocab > 65535 "
+                             "(train.py --token_dtype must match)")
     args = parser.parse_args()
 
     os.makedirs(args.out_dir, exist_ok=True)
@@ -66,6 +69,7 @@ def main():
     T = args.seq_len
     B = args.batch_size
     row_capacity = T + 1
+    out_dtype = np.uint32 if args.token_dtype == "u32" else np.uint16
 
     for sid in shard_ids:
         # Write a temporary data_split.json that puts this single shard as "train"
@@ -90,12 +94,12 @@ def main():
                 last_tgt = tgt[:, -1:].squeeze(-1)  # (B,)
                 full = torch.cat([inp, last_tgt.unsqueeze(-1)], dim=-1).cpu()  # (B, T+1)
                 for b in range(B):
-                    all_rows.append(full[b].numpy().astype(np.uint16))
+                    all_rows.append(full[b].numpy().astype(out_dtype))
             arr = np.stack(all_rows)  # (n_rows, T+1)
             out_path = os.path.join(args.out_dir, f"shard_{sid:05d}.bin")
             arr.tofile(out_path)
             print(f"[prepare] shard {sid}: {len(all_rows)} rows -> {out_path} "
-                  f"({os.path.getsize(out_path)/1e6:.1f} MB)")
+                  f"({os.path.getsize(out_path)/1e6:.1f} MB, {args.token_dtype})")
         finally:
             # restore
             with open(data_split_path, "w") as f:
