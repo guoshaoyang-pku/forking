@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>n-gram 表越大，模型越会背训练集：gap 随表容量涨到 9 以上</title>
+<style>
+  :root {
+    --dark: #141413; --light: #faf9f5; --mid: #b0aea5; --soft: #e8e6dc;
+    --muted: #5e5d59; --orange: #d97757; --blue: #6a9bcc; --green: #788c5d;
+    --head: "Poppins", "PingFang SC", "Noto Sans CJK SC", "Hiragino Sans GB", Arial, sans-serif;
+    --body: "Lora", "Noto Serif CJK SC", "Songti SC", Georgia, serif;
+    --mono: "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--light); color: var(--dark); font: 17px/1.8 var(--body); }
+  main { max-width: 760px; margin: 0 auto; padding: 72px 24px 96px; }
+  h1, h2, h3 { font-family: var(--head); font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; }
+  h1 { font-size: 32px; margin: 0 0 16px; }
+  h2 { font-size: 22px; margin: 64px 0 12px; }
+  p { margin: 0 0 16px; }
+  .lede { font-size: 19px; }
+  code, .id { font-family: var(--mono); font-size: 0.86em; background: var(--soft); padding: 1px 5px; border-radius: 4px; }
+  .settings { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; padding: 0; margin: 24px 0 0;
+              font: 14px/1.6 var(--head); color: var(--muted); }
+  .settings li { display: inline-flex; align-items: center; gap: 6px; }
+  .settings svg { width: 15px; height: 15px; stroke: var(--dark); fill: none; stroke-width: 1.6;
+                  stroke-linecap: round; stroke-linejoin: round; }
+  .settings b { color: var(--dark); font-weight: 500; }
+  figure { margin: 28px 0; padding: 20px; background: #fff; border: 1px solid var(--soft); border-radius: 10px; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { margin-top: 12px; font: 14px/1.6 var(--head); color: var(--muted); }
+  .warn { border-left: 3px solid var(--orange); padding: 4px 0 4px 16px; margin: 24px 0; }
+  .warn strong { font-family: var(--head); }
+  details { margin: 16px 0; }
+  summary { cursor: pointer; font: 15px var(--head); color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font: 14px/1.6 var(--head); margin: 16px 0; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--soft); }
+  th { font-weight: 500; color: var(--muted); }
+  footer { margin-top: 80px; font: 13px var(--head); color: var(--mid); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>n-gram 表越大，模型越会背训练集：gap 随表容量涨到 9 以上</h1>
+<p class="lede">138 个实验完成。表行数从 1 千涨到 1 百万，gap（验证集 loss 减训练集 loss，衡量背题 versus 泛化）从约 0.1 涨到 2.5（只用 bigram）再到 8.5（六阶联合）。换成无碰撞词典表，同样配置下 gap 从 6.5 降到 1.2。</p>
+<ul class="settings">
+  <li><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/></svg>模型 <b>vanilla GPT 8L·768d</b></li>
+  <li><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg>词表 <b>8192</b> · 语料 <b>49.7M token</b></li>
+  <li><svg viewBox="0 0 24 24"><path d="M4 19l5-7 4 4 7-10"/></svg>训练 <b>2000 步 · total batch 147k</b></li>
+  <li><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>硬件 <b>8×H200（360-2）</b> · <b>2026-10-17</b></li>
+</ul>
+
+<h2>四条实验线 138 臂完成，只有 2 个大表尾点单卡放不下</h2>
+<p>本轮共四条线：表容量扫描（60 臂）、数据池包络（30 臂）、模型大小扫描（50 臂）、无碰撞词典对照（13 臂，A100）。两个尾点需要 5 或 6 张 300 万行的表，参数、优化器状态、梯度各占一份显存，合计 138–165 GB，超过单张 H200 的 141 GB，任何 batch size 都放不下。</p>
+<details>
+  <summary>各线完成数</summary>
+  <table>
+    <tr><th>实验线</th><th>内容</th><th>完成</th></tr>
+    <tr><td>v2.2 表容量</td><td>6 个阶集合 × 10 个表容量点</td><td>58/60（2 点 infeasible）</td></tr>
+    <tr><td>v2.3 数据池包络</td><td>6 个阶集合 × 5 个池点</td><td>30/30</td></tr>
+    <tr><td>v2.4 模型大小</td><td>5 档模型 × 2 模式 × 5 个池点</td><td>50/50</td></tr>
+    <tr><td>v2.1 词典对照（A100）</td><td>dict/hash × 6 阶集合 + 无表基线</td><td>13/15（2 臂排队中）</td></tr>
+  </table>
+</details>
+
+<h2>表行数超过 1 万后，gap 开始陡增；超过 10 万后进入 1–9 的高原</h2>
+<p>每一阶 n-gram（连续 n 个 token 的组合）查一张 R 行的哈希表。R 小时大量不同的上下文挤进同一行，表记不住任何东西，gap 接近 0。R 超过 1 万后，表开始记住训练集里反复出现的上下文，gap 陡增。阶数越多的集合涨幅越大：六阶联合在 R=30 万时 gap 达到 9.6。</p>
+<figure>
+  <img src="fig_v22_gap_vs_R.png" alt="gap 随表行数 R 变化的六条曲线">
+  <figcaption>六条曲线对应 6 个阶集合（n=2 到 n=2..7），横轴为每阶表行数 R。n=2..6 与 n=2..7 在 R=3M 的点因显存不可行而缺失。</figcaption>
+</figure>
+<div class="warn"><strong>注意：</strong>n≥5 的联合集合在 R=30 万处出现峰值（9.6）后在 1M–3M 回落到 8.0–8.6。表行更多反而 gap 略降，说明碰撞把更新集中到少数行上的放大效应，比总容量更能推高 gap。</div>
+
+<h2>R=100 万时，六阶联合的 gap 达到 8.6：训练集 loss 压到 0.15，验证集停在 8.7</h2>
+<p>大表把训练集的上下文逐条记住。2000 步（2.95 亿 token）后，六阶联合的模型在训练集上 loss 只有 0.15，在没见过的验证数据上 loss 高达 8.7——模型几乎只输出背下来的续接。</p>
+<figure>
+  <img src="fig_v22_final_gap_r1m.png" alt="各阶集合在 R=1M 的最终 gap 柱状图">
+  <figcaption>R=100 万时各阶集合的最终 gap。阶数越多，gap 越高。</figcaption>
+</figure>
+
+<h2>数据池从 10M 扩到 37M，高阶集合的 gap 几乎不动</h2>
+<p>固定 2000 步，把不重复的训练数据池从 1000 万 token 扩到 3700 万（重复次数从约 30 个 epoch 降到约 8 个）。n=2 的 gap 从 10.5 降到 3.7，但四个以上的阶联合时，gap 停在 8.5–10.7 几乎不降。想让高阶集合的 gap 消失，池子要远大于 37M——1B 点需要新语料，待补。</p>
+<figure>
+  <img src="fig_v23_pool_envelope.png" alt="gap 随数据池大小变化的六条曲线">
+  <figcaption>R=100 万固定，横轴为数据池大小。曲线越平，说明重复次数下降对 gap 的缓解越有限。</figcaption>
+</figure>
+
+<h2>模型越大，trigram 的 fork 越重：159M 模型 gap 13.6，17M 模型 10.8</h2>
+<p>固定池 1000 万 token、只挂 trigram 表，把模型从 4 层 512 宽（17M 参数）加到 12 层 1024 宽（159M）。backbone 越大，训练集背得越快（loss 从 1.34 降到 0.62），验证集坏得越多，gap 从 10.8 涨到 13.6。这是模型大小对 forking 敏感度的第一个斜率。</p>
+<figure>
+  <img src="fig_v24_model_tri_envelope.png" alt="五种模型大小下 gap 随数据池的变化，仅 trigram">
+  <figcaption>仅 trigram。每条线一档模型，颜色从浅到深对应参数量从小到大。</figcaption>
+</figure>
+<figure>
+  <img src="fig_v24_ladder_p10m.png" alt="池 10M 时 gap 对 backbone 参数量，trigram 与 n=2..5 联合两条线">
+  <figcaption>池 1000 万 token 下两条线的对照：trigram 的 gap 随模型变大上涨，n=2..5 联合对模型大小不敏感（约 9.3–9.8）。</figcaption>
+</figure>
+
+<h2>n=2..5 联合时，五种模型大小的 gap 都在 9.3 左右</h2>
+<p>换成 n=2..5 四张表联合，模型大小对 gap 的影响消失：五档模型全部落在 9.3–9.8。联合表的碰撞已经把更新集中得很强，backbone 的容量差异不再是主要因素。</p>
+<figure>
+  <img src="fig_v24_model_n25_envelope.png" alt="五种模型大小下 gap 随数据池的变化，n=2..5 联合">
+  <figcaption>n=2..5 联合。五条曲线几乎重合。</figcaption>
+</figure>
+
+<h2>无碰撞词典表把 n=5 的 gap 从 6.5 压到 1.2</h2>
+<p>同一张 100 万行的表，两种放法：hash 表随机映射，4790 万个不同的 5-gram 挤进 100 万行，98% 碰撞；dict 表取训练集里最常见的 100 万个 5-gram，一行一个，零碰撞。零碰撞让 n=5 的 gap 从 6.53 降到 1.18，n=4 从 6.34 降到 1.58。阶数越高，无碰撞的收益越大——高频上下文被完整保留，低频上下文根本不进表（等价于预防式的低频 mask）。</p>
+<figure>
+  <img src="fig_v21_dict_vs_hash.png" alt="dict 无碰撞表与 hash 表的 gap 对照柱状图">
+  <figcaption>A100 上的 v2.1 线。橙柱为 dict 无碰撞表，灰柱为 hash 表，绿色虚线为完全无 n-gram 表的基线（0.30）。</figcaption>
+</figure>
+<figure>
+  <img src="fig_v21_n5_gap_curves.png" alt="n=5 三种配置的 gap 随训练步数变化">
+  <figcaption>n=5 的 gap 曲线：dict 表的 gap 稳定在低位，hash 表持续上升，无表基线几乎为 0。</figcaption>
+</figure>
+
+<details>
+  <summary>口径与复现</summary>
+  <table>
+    <tr><th>项</th><th>值</th></tr>
+    <tr><td>gap 定义</td><td>val loss − online train loss（同 step）</td></tr>
+    <tr><td>setting</td><td>agents.md §1 极简 setting：input 注入、lr 6e-4 warmup_constant(100)、表 RMSProp (0,0.99)×128、bf16 不 compile</td></tr>
+    <tr><td>诊断</td><td>每 10 步 fixed-val + 每 token loss/context dump（token_stats_*.npz）</td></tr>
+    <tr><td>run_id</td><td>v22r_* / v23d_* / v24ms_*（H200, 360-2）；v21_*（A100）</td></tr>
+    <tr><td>日志</td><td>docs/experiment-log.md §73–§75</td></tr>
+  </table>
+</details>
+
+<footer>来源：data/runs_fixed/（360-2 · a100_t1_3），seed 42，2000 步 · 2026-10-17</footer>
+</main>
+</body>
+</html>
