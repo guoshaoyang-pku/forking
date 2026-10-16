@@ -56,20 +56,30 @@ def process_job(index, vocab_size, train_pairs, val_exact_pairs, val_fb_pairs, c
             return index.keys_for(branch, pair[0])
         return np.asarray(pair[0] if branch == "bigram" else pair[1])
 
+    cache = {}
+
+    def keys_hits(pair, branch):
+        # val exact/freq-bin pairs are the same objects: look each up once
+        slot = (id(pair), branch)
+        if slot not in cache:
+            keys = pair_keys(pair, branch)
+            cache[slot] = (keys, index.hit_count_numpy(branch, keys))
+        return cache[slot]
+
     exact = {"train": {}, "val": {}, "shared": {}}
     fb = {"train": {}, "val": {}}
     for branch in getattr(index, "branches", ("bigram", "trigram")):
         acc_tr = ExactFreqLossAccumulator(index, vocab_size, branch)
         tr_concat_k, tr_concat_l = [], []
         for pair in train_pairs:
-            k = pair_keys(pair, branch); l = np.asarray(pair[-1], dtype=np.float64)
-            acc_tr.update_numpy(k, l)
+            k, h = keys_hits(pair, branch); l = np.asarray(pair[-1], dtype=np.float64)
+            acc_tr.update_numpy(k, l, freq_np=h)
             tr_concat_k.append(k); tr_concat_l.append(l)
         acc_va = ExactFreqLossAccumulator(index, vocab_size, branch)
         va_concat_k, va_concat_l = [], []
         for pair in val_exact_pairs:
-            k = pair_keys(pair, branch); l = np.asarray(pair[-1], dtype=np.float64)
-            acc_va.update_numpy(k, l)
+            k, h = keys_hits(pair, branch); l = np.asarray(pair[-1], dtype=np.float64)
+            acc_va.update_numpy(k, l, freq_np=h)
             va_concat_k.append(k); va_concat_l.append(l)
         exact["train"][branch] = acc_tr.summary()
         exact["val"][branch] = acc_va.summary()
@@ -83,14 +93,12 @@ def process_job(index, vocab_size, train_pairs, val_exact_pairs, val_fb_pairs, c
 
         acc_fb_va = FreqBinLossAccumulator(index, vocab_size, branch)
         for pair in val_fb_pairs:
-            hits = index.hit_count_numpy(branch, pair_keys(pair, branch))
-            acc_fb_va.update_numpy(hits, pair[-1])
+            acc_fb_va.update_numpy(keys_hits(pair, branch)[1], pair[-1])
         fb["val"][branch] = acc_fb_va.summary()
 
         if cur_pair is not None:
             acc_fb_tr = FreqBinLossAccumulator(index, vocab_size, branch)
-            hits = index.hit_count_numpy(branch, pair_keys(cur_pair, branch))
-            acc_fb_tr.update_numpy(hits, cur_pair[-1])
+            acc_fb_tr.update_numpy(keys_hits(cur_pair, branch)[1], cur_pair[-1])
             fb["train"][branch] = acc_fb_tr.summary()
     return exact, fb
 
@@ -221,19 +229,29 @@ class DiagPool:
                 return
 
     def close_and_drain(self, on_rows, on_logit_rows=None):
-        """Sentinel, join, then blocking drain of any remaining rows."""
+        """Sentinel, then drain rows while the workers finish, then join.
+
+        Draining before join matters: a worker cannot exit while its last
+        (pipe-buffered) result is unread, so join-then-drain stalls until
+        the join timeout and may drop the final rows.
+        """
+        import time
         if self.alive:
             try:
                 for _ in self.procs:
                     self.job_q.put(None)
-                for proc in self.procs:
-                    proc.join(timeout=300)
             except Exception:
                 pass
+        deadline = time.time() + 3600
         while True:
+            busy = any(p.is_alive() for p in self.procs) and time.time() < deadline
             try:
-                msg = self.res_q.get(timeout=5)
+                msg = self.res_q.get(timeout=1 if busy else 5)
             except Exception:
+                if busy:
+                    continue
+                for proc in self.procs:
+                    proc.join(timeout=5)
                 return
             if msg[0] == "rows":
                 _, step, epoch, sha, exact, fb = msg

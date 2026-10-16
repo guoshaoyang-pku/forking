@@ -591,16 +591,18 @@ class ExactFreqLossAccumulator:
         loss_np = per_token_loss.detach().cpu().numpy().astype(np.float64).ravel()
         self.update_numpy(key_np, loss_np)
 
-    def update_numpy(self, key_np: np.ndarray, loss_np: np.ndarray):
+    def update_numpy(self, key_np: np.ndarray, loss_np: np.ndarray, freq_np=None):
         """Accumulate from precomputed context keys (torch-free, worker path).
 
-        Vectorized accumulation: hit counts via searchsorted, loss sums via
-        np.bincount per exact f; distinct-context counts via a single lexsort
-        over (f, key) — the whole batch is handled in numpy.
+        Vectorized accumulation: hit counts via searchsorted (or the caller's
+        precomputed `freq_np`), loss sums via np.bincount per exact f;
+        distinct-context counts via a single lexsort over (f, key).
         """
         key_np = np.ascontiguousarray(key_np).ravel()
         loss_np = np.asarray(loss_np, dtype=np.float64).ravel()
-        freq_np = self.freq_index.hit_count_numpy(self.branch, key_np)
+        if freq_np is None:
+            freq_np = self.freq_index.hit_count_numpy(self.branch, key_np)
+        freq_np = np.asarray(freq_np, dtype=np.int64).ravel()
         self._total_tokens += len(loss_np)
 
         # distinct (f, key) pairs -> distinct contexts per f
