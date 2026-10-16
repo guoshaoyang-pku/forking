@@ -207,4 +207,30 @@ ax.set_ylim(0, 8)
 ax.legend(loc="upper left")
 save(fig, os.path.join(OUT, "fig_v21_n5_gap_curves"))
 
+# ---- fig 9: gap vs epoch (forking onset), extracted from existing curves ----
+# v22r R=1M arms: pool = full shard 1 = 49,692,672 tok; 147,456 tok/step ->
+# 337.0 steps per epoch.  v23d p10m: pool 9,879,552 tok -> 29.85 epochs.
+fig, ax = plt.subplots(figsize=FIG_WIDE)
+SPE_49M, SPE_10M = 49692672 / 147456, 9879552 / 147456
+for o in ORDER_SETS:
+    d = v22.get((o, "1m"))
+    if not d:
+        continue
+    xs, ys = step_gap_curves(os.path.join(H224, d["dir"], "train_log.jsonl"))
+    if xs:
+        ax.plot([x / SPE_49M for x in xs], ys, color=OKABE_ITO[RCOL[o]],
+                label=f"{SET_LABEL[o]} @R=1M")
+d = v23.get(("2", "10m"))
+if d:
+    xs, ys = step_gap_curves(os.path.join(H224, d["dir"], "train_log.jsonl"))
+    if xs:
+        ax.plot([x / SPE_10M for x in xs], ys, color=C["mid"], lw=1.6, ls="--",
+                label="n=2 @池10M（30 epoch）")
+ax.axvline(3, color=C["orange"], lw=1.2, ls=":")
+ax.set_xlabel("已见 epoch 数（重复遍数）")
+ax.set_ylabel("gap（val − train）")
+ax.set_xlim(0, 30)
+ax.legend(ncol=2, fontsize=8, loc="center right")
+save(fig, os.path.join(OUT, "fig_epoch_forking_curves"))
+
 print("figures written to", OUT)
