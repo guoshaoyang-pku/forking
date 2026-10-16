@@ -4779,3 +4779,15 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 **blocker(1B pool)**:raw parquet 语料在 ophis `/home/user/.cache/autoresearch/data/` 无读权限;shard_60-66 已证实为逐行复制品(作废)。>52M 的 v2.3 点与 v2.2 线不冲突,待语料方案定后补 tokenize;1B 单点训练 ~15 天(2000 步版仅 ~4h,但 1B 点应为「满 epoch 量」语义,步数待用户拍板)。
 
 **判读问题**:①v2.2:gap-R 曲线在哪一级 R 饱和?饱和点是否随 max(order) 右移(R 应正比于 Σ distinct)?②v2.2:大 R 极限是否收敛到 v2ord 全量 hash 基线?③v2.3:gap-pool 包络在 30 epoch → 0.3 epoch 间是否单调下降,拐点 epoch 数与 8k/H200 v5 线是否一致?④per-token dump:R 扫描的 gap-freq 幂律指数是否随 R 收窄高频段而变斜?
+
+## §75 · v2.4 model-size scaling × data envelope: L/H/D ladder, tri & n25, R=1M (2026-10-17, queued)
+
+**来源**:用户 2026-10-17 追加指令:「对于模型大小的scaling，vanilla gpt 层数和宽度同时适当增大和缩小，词表大小不动，保持1M，默认只带 trigram。从现在的大小，n=2~5同时存在，1M词表，都扫描一下关于训练数据的scaling，10M~1B取15个点」。
+
+**设计**:ladder 5 档(head_dim 128 固定,tied embed,vocab 8192,seq 2048):4L/512d(4H) ~17M · 6L/640d(5H) ~35M · 8L/768d(6H) 63M base · 10L/896d(7H) ~104M · 12L/1024d(8H) ~159M(backbone 参数,约为 0.27×/0.55×/1×/1.65×/2.5×)。ngram 两模式:tri(仅 trigram)与 n25(orders 2,3,4,5 joint),每 order 表 R=1M 跨档不变。数据包络与 v2.3 同协议:`--train_max_tokens` 嵌套前缀池,固定 2000 步 = 295M tokens;今晚 5 点 {10,14,19,27,37}M,>52M 10 点待语料。backbone LR 一律 6e-4(P1:模型大小是唯一变量,不做 per-size LR 重调/muP;若趋势平坦再补 LR-matched 对照)。
+
+**run_id**:`v24ms_l{L}h{H}d{D}_{tri|n25}_p{pool}_s42_2000_fd_fixed`。launcher `run_v24_modelscale.sh`(commit 本轮);门控验证:tri 模式 summary orders=[3](bigram 由 --ngram_orders 强制关闭),n_params 870M(62.9M backbone + 768M tri 表)。30 步 smoke(p10m,L8H6d768)EXIT=0 后清理。
+
+**队列**:50 条活动臂追加进 360-2 运行中队列(82 行 v22/v23 之后),总 ~127 臂 ≈ +3.2h;per-token dump 自动生效。
+
+**判读问题**:①gap-pool 包络的拐点 epoch 数是否随模型变大右移(大模型每参数见更少 unique tokens → 预期更早/更重 forking,即同 pool 下大模型 gap 更高)?②tri 与 n25 的差距是否随模型规模变化(joint 表的碰撞压力 × 模型容量交互)?③固定 295M tokens 下,ladder 两端的 final gap 比值给出模型大小→forking 敏感度的首个 scaling 指数(8k 词表口径)。
