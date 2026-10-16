@@ -90,6 +90,7 @@ class Config:
     bigram_single_layer: bool = False # restrict bigram table to the first ngram layer only
     ngram_extra_orders: tuple = ()    # v2: generic clean single tables for orders n >= 4 (input only)
     ngram_clean_table: int = 0        # rows R of every generic order-n table
+    ngram_dict_topk: int = 0          # v2.1: >0 = no-collision dictionary mode (see load_ngram_dictionaries)
     intervention: str = "none"        # none | freeze_table | freeze_backbone | freeze_both | hash_reseed | mask_low_freq | mask_high_freq | random_context_loss_mask
     intervention_epoch: int = 1       # fire when 0-indexed epoch reaches this value (1 = start of epoch 2)
     intervention_epochs: tuple = ()   # extra 0-indexed due epochs for multi-fire interventions (e.g. (1, 2))
@@ -209,6 +210,27 @@ def ngram_hash_constants(n: int) -> tuple:
         _next_odd_hash_constant((n * 0x9E3779B1) ^ ((k + 1) * 0x85EBCA77), used)
         for k in range(n)
     )
+
+
+# splitmix64 finalizer constants as int64 bit patterns (== ngram_freq.py's
+# numpy uint64 version; used by the dictionary-mode key function, whose
+# bit-identity with context_keys_np is covered by test_ngram_dict_cpu.py)
+_MIX_C1_I64 = 0xBF58476D1CE4E5B9 - (1 << 64)
+_MIX_C2_I64 = 0x94D049BB133111EB - (1 << 64)
+_SPLITMIX_SEED_I64 = 0x9E3779B97F4A7C15 - (1 << 64)
+
+
+def _mix64_i64(z: torch.Tensor) -> torch.Tensor:
+    """splitmix64 finalizer on int64 bit patterns.
+
+    torch int64 >> is arithmetic, numpy uint64 >> is logical — mask off the
+    sign-extended top bits to recover the logical shift; multiplies wrap
+    mod 2^64 in both, so results are bit-identical to ngram_freq._mix64."""
+    z = z ^ ((z >> 30) & ((1 << 34) - 1))
+    z = z * _MIX_C1_I64
+    z = z ^ ((z >> 27) & ((1 << 37) - 1))
+    z = z * _MIX_C2_I64
+    return z ^ ((z >> 31) & ((1 << 33) - 1))
 
 
 class LayerNorm(nn.Module):
@@ -495,17 +517,29 @@ class NanoGPT(nn.Module):
         self.ngram_extra_orders = tuple(int(n) for n in config.ngram_extra_orders)
         if self.ngram_extra_orders:
             if config.nanogpt_ngram_injection_position != "input":
-                raise ValueError("--ngram_orders >= 4 supports input injection only")
-            if min(self.ngram_extra_orders) < 4 or config.ngram_clean_table <= 0:
-                raise ValueError("generic n-gram tables need orders >= 4 and ngram_clean_table > 0")
+                raise ValueError("--ngram_orders supports input injection only")
+            if config.ngram_clean_table <= 0:
+                raise ValueError("generic n-gram tables need ngram_clean_table > 0")
+            if min(self.ngram_extra_orders) < 4 and config.ngram_dict_topk <= 0:
+                raise ValueError("generic n-gram tables need orders >= 4 (orders 2/3 use the "
+                                 "legacy branches unless --ngram_dict_topk is set)")
         # _weight=empty: no default init, so constructing these tables does not
         # advance the global RNG (init_weights fills them uniformly last)
+        if config.ngram_dict_topk > 0 and (config.enable_unigram_ve
+                                           or config.enable_bigram_ve
+                                           or config.enable_trigram_ve):
+            raise ValueError("dictionary mode (--ngram_dict_topk) routes every order "
+                             "through the generic path; legacy branches must be off")
         self.ngram_ves = nn.ModuleDict({
             str(n): nn.Embedding(config.ngram_clean_table, config.n_embd,
                                  _weight=torch.empty(config.ngram_clean_table, config.n_embd))
             for n in self.ngram_extra_orders
         })
         self.ngram_hash_constants = {n: ngram_hash_constants(n) for n in self.ngram_extra_orders}
+        # v2.1 dictionary (no-collision) mode: per order, a sorted int64 tensor of
+        # the top-ngram_dict_topk train contexts; rows come from searchsorted and
+        # misses contribute exactly zero (filled by load_ngram_dictionaries)
+        self.ngram_dict_keys: dict = {}
         self._freq_mask_index = None
         self._freq_mask_mode = "none"
         self._freq_mask_threshold = 0
@@ -871,6 +905,77 @@ class NanoGPT(nn.Module):
             rows = term if rows is None else rows ^ term
         return rows % self.config.ngram_clean_table
 
+    def _ngram_context_keys_torch(self, idx, n):
+        """Torch twin of ngram_freq.context_keys_np: exact packing while
+        vocab^n <= 2^63, chained splitmix64 above.  Bit-identical to the numpy
+        uint64 implementation, including logical right shifts (emulated on
+        signed int64 via masks) and wrapping multiplies (int64 wrap = uint64
+        wrap).  The dictionary build and the model MUST agree bit for bit or
+        the dictionary silently misses — checked by test_ngram_dict_cpu.py."""
+        x = idx.long()
+        T = x.shape[1]
+
+        def shift(k):
+            if k == 0:
+                return x
+            if k >= T:
+                return x.clone()
+            return torch.cat([x[:, :k], x[:, :T - k]], dim=1)
+
+        if self.config.vocab_size ** n <= 2 ** 63:
+            key = torch.zeros_like(x)
+            for k in range(n):
+                key = key + shift(k) * (self.config.vocab_size ** k)
+            return key
+        h = torch.full(x.shape, _SPLITMIX_SEED_I64 ^ n, dtype=torch.int64, device=x.device)
+        for k in range(n - 1, -1, -1):
+            h = _mix64_i64(h ^ shift(k))
+        return h
+
+    def _ngram_dict_rows(self, n, idx):
+        """(rows, valid) for the order-n no-collision dictionary: rows =
+        searchsorted position of the context key (clamped), valid = exact
+        match against the sorted dictionary.  Misses are multiplied out in the
+        caller, so the clamped row is inert; members never share a row."""
+        keys = self._ngram_context_keys_torch(idx, n)
+        table = self.ngram_dict_keys[n]
+        pos = torch.searchsorted(table, keys.reshape(-1))
+        pos_c = pos.clamp(max=table.numel() - 1)
+        valid = table[pos_c] == keys.reshape(-1)
+        return pos_c.view_as(keys), valid.view_as(keys)
+
+    def load_ngram_dictionaries(self, freq_index, topk: int, log=print):
+        """Build per-order no-collision dictionaries from a multi-order index.
+
+        Selection: the top-`topk` train contexts by count, ties broken by key
+        ascending (the index stores keys sorted ascending, so a stable argsort
+        on -counts is deterministic).  Row of a member = its position in the
+        key-sorted dictionary; a miss contributes exactly zero via the validity
+        mask.  If an order's distinct count is within topk, EVERY context gets
+        a row (perfect table, zero collision by construction).  For n >= 5 the
+        key space itself is splitmix64-hashed, so two distinct contexts share a
+        key with probability ~pairs/2^64 (none at corpus scale).
+        """
+        for n in self.ngram_extra_orders:
+            keys = freq_index._keys.get(n)
+            counts = freq_index._counts.get(n)
+            if keys is None or counts is None:
+                raise SystemExit(f"multi-order freq index lacks order {n} "
+                                 f"(has {getattr(freq_index, 'orders', '?')}); "
+                                 "rebuild with ngram_freq.py --orders")
+            counts64 = counts.astype(np.int64)
+            if keys.size <= topk:
+                sel = np.arange(keys.size)
+            else:
+                order = np.argsort(-counts64, kind="stable")[:topk]
+                sel = np.sort(order)
+            dkeys = np.ascontiguousarray(keys[sel], dtype=np.int64)
+            device = next(self.parameters()).device
+            self.ngram_dict_keys[n] = torch.from_numpy(dkeys).to(device)
+            coverage = float(counts64[sel].sum()) / max(1, int(counts64.sum()))
+            log(f"[nglab] dict n={n}: {keys.size:,} distinct -> kept {dkeys.size:,} "
+                f"(topk={topk}), position coverage {coverage:.4f}")
+
     def _check_pre_rows_supported(self):
         """Precomputed rows are only valid for the clean single-table mainline.
 
@@ -966,7 +1071,12 @@ class NanoGPT(nn.Module):
                     tgve = tgve.masked_fill(mask.unsqueeze(-1), 0)
                 residual = tgve if residual is None else residual + tgve
         for n in self.ngram_extra_orders:
-            nve = self.ngram_ves[str(n)](self._ngram_row_indices(n, idx))
+            nve_tbl = self.ngram_ves[str(n)]
+            if n in self.ngram_dict_keys:
+                rows, valid = self._ngram_dict_rows(n, idx)
+                nve = nve_tbl(rows) * valid.unsqueeze(-1).to(nve_tbl.weight.dtype)
+            else:
+                nve = nve_tbl(self._ngram_row_indices(n, idx))
             residual = nve if residual is None else residual + nve
         if residual is None:
             residual = torch.zeros(idx.size(0), T, self.config.n_embd,
@@ -1543,6 +1653,22 @@ class TokenizedShardDataset:
                 "(re-run precompute_row_index.py with --freq_index --min_count)")
         return (brows, trows, bmask, tmask)
 
+    def _row_stream_tensor(self, sid: int, suffix: str):
+        """Cached zero-copy torch view (uint32/uint8) of an offline stream.
+
+        from_numpy on the memmap shares pages (no copy); chunk slicing yields
+        views, so per-step host work is just the batch stack + one H2D
+        transfer; dtype conversion happens on the GPU.
+        """
+        key = (sid, suffix, "torch")
+        if key not in self._row_buffers:
+            stream = self._row_buffers.get((sid, suffix))
+            if stream is None:
+                self._load_rows(sid)
+                stream = self._row_buffers.get((sid, suffix))
+            self._row_buffers[key] = torch.from_numpy(stream)
+        return self._row_buffers[key]
+
     def shard_chunks(self, sid):
         buf = self._load_shard(sid)
         return len(buf) // self.chunk_size
@@ -1584,9 +1710,9 @@ class TokenizedShardDataset:
         for sid in self.shard_ids:
             buf = self._load_shard(sid)
             n = self.shard_chunks(sid)
-            brows = trows = bmask = tmask = None
-            if with_rows:
-                brows, trows, bmask, tmask = self._load_rows(sid)
+            have_rows = with_rows and (self.rows_requested or self.static_low_mask > 0)
+            if have_rows:
+                self._load_rows(sid)
             for i in range(n):
                 if budget is not None and emitted >= budget:
                     return
@@ -1594,20 +1720,30 @@ class TokenizedShardDataset:
                 chunk = np.array(buf[start:start + self.chunk_size], dtype=np.int64)
                 inp = torch.from_numpy(chunk[:-1])
                 tgt = torch.from_numpy(chunk[1:])
-                if with_rows:
+                if have_rows:
                     T = self.chunk_size - 1
 
-                    def _slice(stream, dt):
-                        if stream is None:
-                            return None
-                        return torch.from_numpy(
-                            np.array(stream[start:start + T], dtype=dt))
+                    def _stream_view(suffix, dt):
+                        # Canonical per-chunk dtypes for the offline streams:
+                        # rows int64, validity bool (see get_chunk/_slice).
+                        # Raw streams are uint32/uint8 memmaps; converting here
+                        # keeps every consumer (model, verification, tests) on
+                        # one dtype contract.
+                        key = (sid, suffix, dt)
+                        t = self._row_buffers.get(key)
+                        if t is None:
+                            stream = self._row_buffers.get((sid, suffix))
+                            if stream is None:
+                                return None
+                            t = torch.from_numpy(np.ascontiguousarray(stream))
+                            t = t.to(dt)
+                            self._row_buffers[key] = t
+                        return t[start:start + T]
 
-                    bi = _slice(brows, np.int64)
-                    ti = _slice(trows, np.int64)
-                    bv = _slice(bmask, np.int64).to(torch.bool) if bmask is not None else None
-                    tv = _slice(tmask, np.int64).to(torch.bool) if tmask is not None else None
-                    yield inp, tgt, bi, ti, bv, tv
+                    yield inp, tgt, _stream_view("brows.u32.bin", torch.int64), \
+                        _stream_view("trows.u32.bin", torch.int64), \
+                        _stream_view("bmask.u8.bin", torch.bool), \
+                        _stream_view("tmask.u8.bin", torch.bool)
                 else:
                     yield inp, tgt
                 emitted += 1
@@ -1693,8 +1829,11 @@ class TokenizedShardDataset:
                         rows = []
                         for k in range(4):
                             parts = [r[k] for r in batch_rows]
-                            rows.append(torch.stack(parts).to(device)
-                                        if parts[0] is not None else None)
+                            if parts[0] is None:
+                                rows.append(None)
+                                continue
+                            t = torch.stack(parts).to(device)
+                            rows.append(t.to(torch.int64) if k < 2 else t.to(torch.bool))
                         out = out + tuple(rows)
                     yield out
                     batch_inp, batch_tgt, batch_rows = [], [], []
@@ -2086,6 +2225,11 @@ def main():
                              "tables of --ngram_clean_table rows. Empty = legacy flags")
     parser.add_argument("--ngram_clean_table", type=int, default=0,
                         help="rows R of each generic order >= 4 table (required with such orders)")
+    parser.add_argument("--ngram_dict_topk", type=int, default=0,
+                        help="v2.1 no-collision dictionary mode: per order in --ngram_orders "
+                             "(2/3 included, routed through the generic path), keep the top-K "
+                             "train contexts by count as unique rows (miss contributes zero). "
+                             "Requires --freq_index with those orders; K <= --ngram_clean_table")
     parser.add_argument("--diag_workers", type=int, default=1,
                         help="background diag worker processes (v2 multi-order index: >1 keeps "
                              "up with 7 orders; rows may land out of step order)")
@@ -2228,16 +2372,33 @@ def main():
         parser.error("--row_index is incompatible with --intervention hash_reseed "
                      "(reseed changes the hash after the offline index was built)")
     ngram_orders = sorted({int(x) for x in args.ngram_orders.split(",") if x.strip()})
-    extra_orders = tuple(n for n in ngram_orders if n >= 4)
+    if args.ngram_dict_topk > 0:
+        if not ngram_orders:
+            parser.error("--ngram_dict_topk requires --ngram_orders")
+        if not args.freq_index:
+            parser.error("--ngram_dict_topk requires --freq_index (dictionaries are built from it)")
+        if args.row_index:
+            parser.error("--ngram_dict_topk is incompatible with --row_index")
+        if args.ngram_dict_topk > args.ngram_clean_table > 0 or \
+                (args.ngram_dict_topk > 0 and args.ngram_clean_table <= 0):
+            parser.error("--ngram_dict_topk must be <= --ngram_clean_table (and R > 0)")
     if ngram_orders:
         if min(ngram_orders) < 2 or max(ngram_orders) > 16:
             parser.error("--ngram_orders must lie in [2, 16]")
-        args.enable_bigram = int(2 in ngram_orders)
-        args.enable_trigram = int(3 in ngram_orders)
+        if args.ngram_dict_topk > 0:
+            extra_orders = tuple(ngram_orders)      # 2/3 also take the generic path
+            args.enable_bigram = 0
+            args.enable_trigram = 0
+        else:
+            extra_orders = tuple(n for n in ngram_orders if n >= 4)
+            args.enable_bigram = int(2 in ngram_orders)
+            args.enable_trigram = int(3 in ngram_orders)
+    else:
+        extra_orders = ()
     if extra_orders and args.ngram_clean_table <= 0:
-        parser.error("--ngram_orders >= 4 requires --ngram_clean_table > 0")
+        parser.error("--ngram_orders requires --ngram_clean_table > 0")
     if extra_orders and args.injection_position != "input":
-        parser.error("--ngram_orders >= 4 supports --injection_position input only")
+        parser.error("--ngram_orders supports --injection_position input only")
     if extra_orders and args.intervention in {"mask_low_freq", "mask_high_freq",
                                               "readout_last_epoch", "hash_reseed"}:
         parser.error(f"--intervention {args.intervention} does not cover orders >= 4")
@@ -2279,6 +2440,7 @@ def main():
         bigram_single_layer=bool(args.bigram_single_layer),
         ngram_extra_orders=extra_orders,
         ngram_clean_table=args.ngram_clean_table if extra_orders else 0,
+        ngram_dict_topk=args.ngram_dict_topk if extra_orders else 0,
         intervention=args.intervention,
         intervention_epoch=args.intervention_epoch,
         intervention_epochs=tuple(
@@ -2635,6 +2797,16 @@ def main():
             if freq_index_obj.vocab_size != cfg.vocab_size:
                 raise SystemExit("multi-order freq index vocab_size != --vocab_size")
             print(f"[nglab] multi-order freq index: branches={freq_index_obj.branches}")
+            if cfg.ngram_dict_topk > 0:
+                if not multi_order_index:
+                    raise SystemExit("--ngram_dict_topk needs a multi-order freq index "
+                                     "(rebuild with ngram_freq.py --orders)")
+                model.load_ngram_dictionaries(freq_index_obj, cfg.ngram_dict_topk)
+                dict_npz = os.path.join(cfg.out_dir, f"ngram_dicts_top{cfg.ngram_dict_topk}.npz")
+                np.savez_compressed(dict_npz, **{
+                    f"keys_{n}": model.ngram_dict_keys[n].cpu().numpy()
+                    for n in cfg.ngram_extra_orders})
+                print(f"[nglab] dictionaries saved: {dict_npz}")
         freq_bin_log = open(os.path.join(cfg.out_dir, "freq_bin_loss.jsonl"), "w")
         if fixed_train_probe:
             fixed_train_freq_log = open(
@@ -3218,6 +3390,8 @@ def main():
         "lora_targets": lora_targets,
         "disable_ngram_tables": bool(args.disable_ngram_tables),
         "row_index": bool(args.row_index),
+        "ngram_dict_topk": int(args.ngram_dict_topk),
+        "ngram_orders": sorted(ngram_orders),
         "rows_meta": _rows_meta,
         "token_dtype": cfg.token_dtype,
         "ce_chunk_positions": cfg.ce_chunk_positions,

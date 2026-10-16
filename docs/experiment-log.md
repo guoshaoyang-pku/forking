@@ -4728,3 +4728,34 @@ Target360-2, isolated output /data/shared/guoshaoyang/ngram-gap-lab/multilayer_p
 §72 preparation update (2026-09-25 23:04 Beijing): final math pool v2 is9140/115 source problems,49102848/589824 target tokens, sampled after scanning all93733 default records and independent hash ordering. Exact normalized problem and UUID train/val intersections are empty; both splits span all10rawfiles. Selected R1 response prefixes show lexical concentration (top10 first8word prefixes4629/9255=50.02%). Old RLVR fixed four-example prefix contributes approximately87.175% of token mass. Old OpenR1 reads reference solutions. These audits correct data semantics but are not causal gap evidence. Full provenance: math_manifest_v2.json/math_examples_v2.json in the packet.
 
 CPU semantic check on the actual13GB checkpoint passes strict load, four tables/four gates at1,4, lookup gradients absent and gate/backbone gradients present. Full-batch GPU smoke not yet run: all360-2GPUs are occupied by other work. Original idle queue stopped before any admission to improve source-order balance. Replacement root is /data/shared/guoshaoyang/ngram-gap-lab/multilayer_posttraining_20260925_r2, dispatcherPID251300, eight pending, zero active/done/failed at23:04. Idle-only admission expires8h after launch. Source331a9d0/0a6b266; no scientific result. Original staged79-item diff preserved. No push.
+
+
+## §73 · v2.1 no-collision dictionary line: 1M-slot top-K tables, n=2..5 separate & joint (2026-10-17, planned)
+
+Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每个 ngram 留 1M slot，n=2~5，同时和分别都测，看效果。用 A100 上面的卡。标准 setting，可加优化但 setting 和发论文主 setting 一致。」
+
+**设计**：dict 模式 = 每个 order 的表仍开 R=2^20 行(slot 与 hash 线完全一致)，但行不再由 hash 决定：离线从 multi-order freq index 取该 order train 计数 top-1M 的 context，按 key 排序放入唯一行(searchsorted 定位，miss 贡献恰好为零)。与 hash R=2^20 基线唯一差异 = 行分配方式(隔离碰撞因子)。novel(f=0) 与低频未入选 context 的 OE = 0(预防式)，等价于 continue-BPE「只留高频」形态的表实现。词表/模型/数据/优化器/口径全部 = v5 标准(§1)。`_fd` 诊断管线。工程基础 = plan-8 G7(本轮实现):`--ngram_orders 2,3,4,5 --ngram_dict_topk 1048576`，dict build/搜索 splitmix64 键与 numpy index 逐位一致(T1-T3b CPU 测试，`code/tools/test_ngram_dict_cpu.py`)。
+
+**对照**：同 order-set 的 hash R=2^20 臂在 A100 同机重跑(硬件配对干净；H200 上的 v2ord_* 结果另作跨硬件核验点)。nogram 对照。
+
+**执行**：目标 a100_t1_3(用户指定「_2」,6 卡)。夜间 RL 任务占用时自动让行(<2GiB 准入)，`queue_v21_dict_lines.sh` flock 队列。A100 显存:NGLAB_DEVICE_BATCH=18(accum 自动补足,total 147,456 tok 不变;mb18×4 为 ptfr_* 验证先例)。先 build multi-order index(orders 2-8,shard 1)。
+
+| run_id | mode | orders | status |
+|---|---|---|---|
+| v21_nogram_s42_2000_fd | nogram | — | planned |
+| v21_dict_n2-3-4-5_s42_2000_fd | dict | 2,3,4,5 | planned |
+| v21_hash_n2-3-4-5_s42_2000_fd | hash | 2,3,4,5 | planned |
+| v21_dict_n2_s42_2000_fd | dict | 2 | planned |
+| v21_dict_n3_s42_2000_fd | dict | 3 | planned |
+| v21_dict_n4_s42_2000_fd | dict | 4 | planned |
+| v21_dict_n5_s42_2000_fd | dict | 5 | planned |
+| v21_hash_n2_s42_2000_fd | hash | 2 | planned |
+| v21_hash_n3_s42_2000_fd | hash | 3 | planned |
+| v21_hash_n4_s42_2000_fd | hash | 4 | planned |
+| v21_hash_n5_s42_2000_fd | hash | 5 | planned |
+| v21_dict_n2-3_s42_2000_fd | dict | 2,3 | planned |
+| v21_dict_n2-3-4_s42_2000_fd | dict | 2,3,4 | planned |
+| v21_hash_n2-3_s42_2000_fd | hash | 2,3 | planned |
+| v21_hash_n2-3-4_s42_2000_fd | hash | 2,3,4 | planned |
+
+**验收/产物**：每 run summary.json(final gap) + exact_freq_loss.jsonl(per-f gap)。图:`docs/plot_scripts/gen_v21_dict_line_figs.py` → `docs/figs/epoch_scale/fig_v21_dict_{gap_curves,final_gap,freq_bins}.svg`(gap 曲线 dict vs hash、final-gap 柱状、per-order exact-f gap)。判读问题:①dict 是否降低同 order-set 的 final gap(碰撞隔离效应);②joint 2,3,4,5 下 dict 与 hash 的差距是否大于单 order(联合表碰撞更重 → dict 收益应更大);③per-f gap 的频率结构(dict 应削低频段 gap、保留 novel 段)。24h 内回填;单 seed 筛选口径,无 p-value 断言。
