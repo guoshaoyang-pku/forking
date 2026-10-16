@@ -4828,3 +4828,18 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 5. 联合臂 2–5 的 bigram α 仅 0.03（单独 bigram 臂 0.21）：联合训练改变了低阶的 gap-freq 形状。
 
 **已知限制**：v2 索引（chunk 语义）与标准 `freq_index.npz`（拼接计数）在 bigram 上有 20,027 个 key 计数不同（跨 chunk 边界对），n=2 的 bin 与标准索引不能逐位比较。
+
+## §76 · v2.2/v2.3/v2.4 + v21 完成回填与首组物理结论 (2026-10-17, done)
+
+**完成度**:v2.2 58/60、v2.3 30/30、v2.4 50/50(360-2,8×H200,~4.5h 全队列消化);v21 13/15(a100_t1_3,2345 两臂排队中)。全部 run 落 per-token dump(token_stats_step002000_{val,train}.npz,val 侧 590k tok + train 侧 590k tok)。收获+绘图:`docs/plot_scripts/gen_v224_sweep_panel_figs.py` → `docs/figs/sweeps_20261017/`(8 图 + panel.html,panel_audit 0 issues)。
+
+**物理结论(单 seed 42,2000 步口径)**:
+- **R 剂量曲线**(v2.2,fig_v22_gap_vs_R):R≤1k 时 gap≈0(表记不住任何东西),R≥10k 陡增,R≥100k 进 1–9 高原;阶数越多越高(n2@1M 2.53,n2-3-4-5-6-7@300k 峰值 9.58)。
+- **碰撞集中 > 总容量**:n≥5 联合在 R=300k 出现峰值后,1M–3M 回落到 8.0–8.6——碰撞把更新集中到少数行的放大效应比容量更能推高 gap。
+- **数据池包络**(v2.3,fig_v23_pool_envelope):池 10M→37M(30→8 epoch),n2 gap 10.5→3.7,但 ≥4 阶联合停在 8.5–10.7 几乎不降。高阶 forking 的消除需要远大于 37M 的池(1B 点待语料)。
+- **模型大小 scaling**(v2.4,fig_v24_*):tri-only gap 随 backbone 17M→159M 从 10.8 涨到 13.6(大模型背得更快:train 1.34→0.62);n2..5 联合对模型大小不敏感(全部 9.3–9.8)——联合碰撞主导后 backbone 容量差异失效。
+- **无碰撞词典**(v21,fig_v21_*):dict(top-1M 唯一行)vs hash(同 1M slot 全碰撞):n5 1.18 vs 6.53、n4 1.58 vs 6.34、n3 2.12 vs 5.57、n2 2.27 vs 2.74;nogram 0.30。阶数越高零碰撞收益越大,等价 continue-BPE「只留高频」的预防式 mask。
+
+**infeasible 判定**:v2.2 的 n2-3-4-5-6 / n2-3-4-5-6-7 × R=3M 两点在 fp32 单卡 H200 物理不可行:5/6 表 × 3M × 768 × 4B × 3 份(param+state+dense grad)= 138/165 GB > 141 GB,与 microbatch 无关(mb16/24 均 OOM 验证)。R=3M 曲线尾点由 n≤4 集合覆盖;n≥5 集合曲线到 2M 已完整(峰-降形态已知)。
+
+**infra 附注**:commit cab6d3b 为 ≥2GiB 表加行分块 RMSProp 更新(CPU 逐位一致 CHUNKED_RMSPROP_BITWISE_OK;临时量从 3×全表降到 1×切片,消除 5 表 3M 场景的 28GB 峰值临时量,使 n5-set×3M 臂在 mb24 下可跑)。同批图:docs/figs/sweeps_20261017/panel.html。
