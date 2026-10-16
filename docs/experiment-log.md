@@ -4759,3 +4759,5 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 | v21_hash_n2-3-4_s42_2000_fd | hash | 2,3,4 | planned |
 
 **验收/产物**：每 run summary.json(final gap) + exact_freq_loss.jsonl(per-f gap)。图:`docs/plot_scripts/gen_v21_dict_line_figs.py` → `docs/figs/epoch_scale/fig_v21_dict_{gap_curves,final_gap,freq_bins}.svg`(gap 曲线 dict vs hash、final-gap 柱状、per-order exact-f gap)。判读问题:①dict 是否降低同 order-set 的 final gap(碰撞隔离效应);②joint 2,3,4,5 下 dict 与 hash 的差距是否大于单 order(联合表碰撞更重 → dict 收益应更大);③per-f gap 的频率结构(dict 应削低频段 gap、保留 novel 段)。24h 内回填;单 seed 筛选口径,无 p-value 断言。
+
+**launch update (2026-10-18)**:queue 首启后 gpu1/gpu2 的 2345 联合臂 mb18 在 A100-40GB OOM(RMSProp denom 临时量,4 表 × param+state ≈ 37.6GB),按 launch-failure requeue 并退役。修复(commit d143125):queue job 行支持可选第 5 字段 device batch,≥2 表臂 mb12(accum 6,total 147,456 不变,梯度与 mb18 精确等价),单表臂仍 mb18;重启队列带 `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`。首启 3 臂(nogram gpu0、dict n5 gpu3、hash n5 gpu5)跨重启存活继续跑。重启后 dict n4/hash n4 已上 gpu1/gpu2。gpu4 被外部进程泄漏显存 2658MiB(pid 33542,容器内不可见)卡在 <2GiB 准入,按让行原则不干预,泄漏清除后自动加入。
