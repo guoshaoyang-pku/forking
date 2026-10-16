@@ -124,6 +124,9 @@ class Config:
     data_seed: int = 42
     epoch_batches: int = 0      # >0: fix one epoch to exactly this many device batches
                                 # (nested-prefix length control); 0 = use full shard length
+    train_max_tokens: int = 0   # >0: train pool = first P content tokens of the train
+                                # shard stream (token-granular nested-prefix truncation,
+                                # rounded down to whole device batches); val unaffected
     replay_mix_passes: int = 0  # >0: one globally chunk-shuffled stream of N passes
                                 # (shuffle experiment mixed arm); overrides epoch replay
     # infra: precomputed n-gram row index / large vocab / precision (plan-8)
@@ -1581,7 +1584,7 @@ class TokenizedShardDataset:
                  device_batch_size: int, seed: int = 42, epoch_batches: int = 0,
                  replay_mix_passes: int = 0, token_dtype: str = "u16",
                  row_index_dir: str = "", static_low_mask: int = 0,
-                 rows_requested: bool = False):
+                 rows_requested: bool = False, max_tokens: int = 0):
         self.data_dir = data_dir
         self.shard_ids = list(shard_ids)
         self.sequence_len = sequence_len
@@ -1603,12 +1606,28 @@ class TokenizedShardDataset:
         # total tokens per shard (lazy)
         self._shard_lens = {}
         # yielded batches per full epoch (drop_last per shard), for epoch-anchored LR
-        if epoch_batches > 0:
+        if max_tokens > 0:
+            if epoch_batches > 0 or replay_mix_passes > 0:
+                raise SystemExit("--train_max_tokens is mutually exclusive with "
+                                 "--epoch_batches / --replay_mix_passes")
+            # Token-granular nested-prefix pool: first floor(P/seq_len) chunks of
+            # the concatenated shard stream, rounded down to whole device batches
+            # so every epoch replays the identical chunk set (no cross-epoch tail).
+            self._chunk_budget = (max_tokens // self.sequence_len) \
+                // self.device_batch_size * self.device_batch_size
+            if self._chunk_budget <= 0:
+                raise SystemExit(
+                    f"--train_max_tokens {max_tokens} is below one device batch "
+                    f"({self.device_batch_size} chunks x {self.sequence_len} tokens)")
+            self._batches_per_epoch = self._chunk_budget // self.device_batch_size
+        elif epoch_batches > 0:
             # Nested-prefix epoch length: the first `epoch_batches` device
             # batches from the shard prefix form one epoch; all epoch lengths
             # are strict prefixes of the same data stream.
+            self._chunk_budget = epoch_batches * self.device_batch_size
             self._batches_per_epoch = epoch_batches
         else:
+            self._chunk_budget = None
             self._batches_per_epoch = sum(
                 self.shard_chunks(sid) // self.device_batch_size for sid in self.shard_ids)
         if self._batches_per_epoch == 0:
@@ -1674,7 +1693,10 @@ class TokenizedShardDataset:
         return len(buf) // self.chunk_size
 
     def total_chunks(self):
-        return sum(self.shard_chunks(s) for s in self.shard_ids)
+        total = sum(self.shard_chunks(s) for s in self.shard_ids)
+        if self._chunk_budget is not None:
+            return min(total, self._chunk_budget)
+        return total
 
     def _iter_chunks(self, with_rows: bool = False):
         """Yield (input, target) tensors for each chunk in fixed order.
@@ -1705,7 +1727,7 @@ class TokenizedShardDataset:
                 _, local = divmod(int(g), per_pass)
                 yield self.get_chunk(local, with_rows=with_rows)
             return
-        budget = self.epoch_batches * self.device_batch_size if self.epoch_batches > 0 else None
+        budget = self._chunk_budget
         emitted = 0
         for sid in self.shard_ids:
             buf = self._load_shard(sid)
@@ -1797,6 +1819,13 @@ class TokenizedShardDataset:
                 tv = _slice(tmask, np.int64).to(torch.bool) if tmask is not None else None
                 return inp, tgt, bi, ti, bv, tv
         raise IndexError(f"chunk {global_idx} out of range")
+
+    def pool_content_tokens(self) -> "int | None":
+        """Exact content-token size of the effective train pool (None = full
+        shards, modulo per-shard drop_last in the legacy epoch-length path)."""
+        if self._chunk_budget is not None:
+            return self._chunk_budget * self.sequence_len
+        return None
 
     def epoch_progress(self) -> float:
         """Fraction of the current epoch completed (0..1 within an epoch)."""
@@ -1993,6 +2022,48 @@ def evaluate_context_gap(model, fixed_train_probe, fixed_val_batches,
         tj = t_idx[in_set]
         out[f"tr_mean_{tag}"] = float((tr_sum[tj] / tr_cnt[tj]).mean()) if tj.size else float("nan")
     return out
+
+
+def dump_token_stats_npz(out_path, model, batches, orders, vocab_size,
+                         dtype_spec: str) -> dict:
+    """Per-token loss + per-order hashed context keys for post-hoc gap-freq
+    statistics (user directive 2026-10-17: every sweep run must allow exact
+    per-token analysis).  Keys use ngram_freq.context_keys_np — the same hash
+    as the frequency index — so pool-relative f lookups join bit for bit.
+
+    Forward follows the diag convention: autocast per `dtype_spec` (bf16 for
+    the standard bf16/fp8 runs), matching exact_freq_loss rows rather than the
+    fp32 scalar val.  Rows are flat over (batch, position) with valid
+    (target != -1) positions kept in batch-major order; `n_per_batch` records
+    the split points.
+    """
+    from ngram_freq import context_keys_np
+    ctx = _autocast_ctx(dtype_spec)
+    loss_all, n_per_batch = [], []
+    key_all = {int(n): [] for n in orders}
+    model.eval()
+    with torch.no_grad():
+        for inp, tgt in batches:
+            with ctx:
+                _, ptl = model(inp, targets=tgt, return_token_losses=True)
+            valid = tgt.ne(-1)
+            loss_all.append(ptl[valid].float().cpu().numpy())
+            n_per_batch.append(int(valid.sum()))
+            toks = inp.cpu().numpy()
+            vmask = valid.cpu().numpy()
+            for n in key_all:
+                k = context_keys_np(toks, n, vocab_size)
+                key_all[n].append(k[vmask])
+    model.train()
+    arrays = {
+        "loss": np.concatenate(loss_all).astype(np.float32),
+        "n_per_batch": np.array(n_per_batch, dtype=np.int64),
+        "orders": np.array(sorted(key_all), dtype=np.int64),
+    }
+    for n in sorted(key_all):
+        arrays[f"key_{n}"] = np.concatenate(key_all[n]).astype(np.int64)
+    np.savez(out_path, **arrays)
+    return {"path": out_path, "tokens": int(sum(n_per_batch))}
 
 
 def accumulate_freq_bins(freq_index, inp, tgt, per_token_loss, vocab_size) -> dict:
@@ -2275,6 +2346,17 @@ def main():
     parser.add_argument("--epoch_batches", type=int, default=0,
                         help=">0: fix one epoch to exactly this many device batches "
                              "(nested-prefix epoch length); 0 = full shard length")
+    parser.add_argument("--train_max_tokens", type=int, default=0,
+                        help=">0: train pool = first P content tokens of the train "
+                             "shard stream (token-granular nested-prefix truncation, "
+                             "rounded down to whole device batches; val stream "
+                             "unaffected). Mutually exclusive with --epoch_batches / "
+                             "--replay_mix_passes")
+    parser.add_argument("--dump_token_stats_steps", default="",
+                        help="comma-separated 1-based steps at which to dump per-token "
+                             "loss + per-order context keys (token_stats_step*_*.npz, "
+                             "post-hoc gap-freq analysis). Empty = final step only; the "
+                             "final step is always dumped")
     parser.add_argument("--replay_mix_passes", type=int, default=0,
                         help=">0: shuffle experiment mixed arm — consume ONE globally "
                              "chunk-shuffled stream of N passes (chunk-level permutation "
@@ -2455,6 +2537,7 @@ def main():
         train_shards=[int(x) for x in args.train_shards.split(",") if x.strip()],
         val_shards=[int(x) for x in args.val_shards.split(",") if x.strip()],
         epoch_batches=args.epoch_batches,
+        train_max_tokens=args.train_max_tokens,
         replay_mix_passes=args.replay_mix_passes,
         row_index=bool(args.row_index),
         row_index_dir=args.row_index_dir,
@@ -2506,7 +2589,8 @@ def main():
                                      token_dtype=cfg.token_dtype,
                                      row_index_dir=cfg.row_index_dir,
                                      static_low_mask=cfg.static_low_mask,
-                                     rows_requested=cfg.row_index)
+                                     rows_requested=cfg.row_index,
+                                     max_tokens=cfg.train_max_tokens)
     val_ds = TokenizedShardDataset(cfg.data_dir, cfg.val_shards, cfg.sequence_len,
                                    cfg.device_batch_size, cfg.data_seed,
                                    token_dtype=cfg.token_dtype)
@@ -2538,7 +2622,8 @@ def main():
     if args.fixed_train_probe > 0:
         probe_ds = TokenizedShardDataset(cfg.data_dir, cfg.train_shards, cfg.sequence_len,
                                          cfg.device_batch_size, cfg.data_seed,
-                                         epoch_batches=cfg.epoch_batches)
+                                         epoch_batches=cfg.epoch_batches,
+                                         max_tokens=cfg.train_max_tokens)
         n_chunks = probe_ds.total_chunks()
         n_need = args.fixed_train_probe * cfg.device_batch_size
         if args.train_probe_mode == "uniform" and n_need < n_chunks:
@@ -2784,6 +2869,12 @@ def main():
     diag_amp_dtype = None
     diag_pool = None
     multi_order_index = False
+    exact_freq_train_batches = None
+    # per-token dump cadence (post-hoc gap-freq analysis): listed steps plus the
+    # final step (always).  Empty flag = final step only.
+    dump_steps = {int(s) for s in args.dump_token_stats_steps.split(",") if s.strip()}
+    dump_orders = sorted(ngram_orders) if ngram_orders else \
+        ([2] if cfg.enable_bigram else []) + ([3] if cfg.enable_trigram else [])
     if args.freq_index and os.path.exists(args.freq_index):
         from ngram_freq import load_frequency_index
         freq_index_obj = load_frequency_index(args.freq_index)
@@ -2823,7 +2914,8 @@ def main():
         freq_train_ds = TokenizedShardDataset(cfg.data_dir, cfg.train_shards,
                                               cfg.sequence_len,
                                               cfg.device_batch_size,
-                                              cfg.data_seed)
+                                              cfg.data_seed,
+                                              max_tokens=cfg.train_max_tokens)
         freq_train_iter = freq_train_ds.iter_batches(device)
         # exact-frequency diagnostics need a fixed train-side reference even when
         # --fixed_train_probe is 0: grab a small fixed set from the independent
@@ -2849,6 +2941,18 @@ def main():
             except Exception as e:
                 print(f"[nglab] async diag unavailable ({e!r}); using sync path")
                 diag_pool = None
+
+    # Per-token dump train batches: 4 fixed batches from an independent
+    # pool-truncated iterator (same convention as the exact-freq train rows;
+    # reuses those batches when the freq pipeline already built them).
+    dump_train_batches = exact_freq_train_batches
+    if dump_train_batches is None:
+        _dump_train_ds = TokenizedShardDataset(
+            cfg.data_dir, cfg.train_shards, cfg.sequence_len,
+            cfg.device_batch_size, cfg.data_seed, max_tokens=cfg.train_max_tokens)
+        _dump_train_iter = _dump_train_ds.iter_batches(device)
+        dump_train_batches = [next(_dump_train_iter) for _ in range(4)]
+    dump_amp_dtype_spec = args.dtype if args.dtype in ("bf16", "fp8") else "fp32"
 
     context_gap_log = None
     if cfg.intervention == "random_context_loss_mask" or cfg.context_eval_ab:
@@ -3208,6 +3312,24 @@ def main():
             if freq_bin_log is not None:
                 freq_bin_log.flush()
 
+        # --- per-token stats dump (post-hoc gap-freq analysis) ---
+        # Diagnostic-only: failures here must never kill a finished run.
+        if (step + 1) in dump_steps or step == cfg.max_steps - 1:
+            _dtag = f"step{step + 1:06d}"
+            try:
+                _nv = dump_token_stats_npz(
+                    os.path.join(cfg.out_dir, f"token_stats_{_dtag}_val.npz"),
+                    model, fixed_val_batches[:cfg.val_batches], dump_orders,
+                    cfg.vocab_size, dump_amp_dtype_spec)
+                _nt = dump_token_stats_npz(
+                    os.path.join(cfg.out_dir, f"token_stats_{_dtag}_train.npz"),
+                    model, dump_train_batches, dump_orders,
+                    cfg.vocab_size, dump_amp_dtype_spec)
+                print(f"[nglab] token stats dumped step {step + 1}: "
+                      f"val {_nv['tokens']} tok, train {_nt['tokens']} tok")
+            except Exception as _de:
+                print(f"[nglab] token stats dump FAILED at step {step + 1}: {_de!r}")
+
         # --- logit-stats probe submission (§5.2 supplement) ---
         # Runs on the SAME cadence as diag_due. Uses separate bf16 forwards on
         # val batches to keep the standard exact-freq/freq-bin pipeline byte-
@@ -3339,6 +3461,9 @@ def main():
         "steps": cfg.max_steps,
         "seed": cfg.seed,
         "epoch_batches": cfg.epoch_batches,
+        "train_max_tokens": cfg.train_max_tokens,
+        "train_pool_content_tokens": train_ds.pool_content_tokens(),
+        "dump_token_stats_steps": sorted(dump_steps) if dump_steps else "final_only",
         "replay_mix_passes": cfg.replay_mix_passes,
         "fixed_train_probe_sha256": probe_hash if args.fixed_train_probe > 0 else None,
         "fixed_train_probe_batches": len(fixed_train_probe),
