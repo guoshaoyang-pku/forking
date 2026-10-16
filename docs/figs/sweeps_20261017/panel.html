@@ -59,8 +59,9 @@
   <table>
     <tr><th>实验线</th><th>内容</th><th>完成</th></tr>
     <tr><td>v2.2 表容量</td><td>6 个阶集合 × 10 个表容量点</td><td>58/60（2 点 infeasible）</td></tr>
-    <tr><td>v2.3 数据池包络</td><td>6 个阶集合 × 5 个池点</td><td>30/30</td></tr>
-    <tr><td>v2.4 模型大小</td><td>5 档模型 × 2 模式 × 5 个池点</td><td>50/50</td></tr>
+    <tr><td>v2.3 数据池包络</td><td>6 个阶集合 × 5 个池点</td><td>30/30（49.7M 点在跑）</td></tr>
+    <tr><td>v2.4 模型大小</td><td>5 档模型 × 2 模式 × 5 个池点</td><td>50/50（49.7M 点在跑）</td></tr>
+    <tr><td>seed 复跑</td><td>R=1M 与池 10M 关键臂 × seed 43/44</td><td>24 臂在跑</td></tr>
     <tr><td>v2.1 词典对照（A100）</td><td>dict/hash × 6 阶集合 + 无表基线</td><td>13/15（2 臂排队中）</td></tr>
   </table>
 </details>
@@ -78,6 +79,13 @@
 <figure>
   <img src="fig_v22_final_gap_r1m.png" alt="各阶集合在 R=1M 的最终 gap 柱状图">
   <figcaption>R=100 万时各阶集合的最终 gap。阶数越多，gap 越高。</figcaption>
+</figure>
+
+<h2>forking 从第 2 个 epoch 开始：每重放一遍数据，gap 阶梯式抬升</h2>
+<p>epoch 指模型把整个数据池完整看过一遍。把 R=100 万的六条曲线画到 epoch 轴上：第一遍数据期间 gap 几乎为 0，第二次见到同一数据（epoch 2）时瞬间跳变，之后每重放一遍就抬一阶；到第 3 个 epoch 已经 2–6.5，与 DeepSeek/Kimi 在预训练第 3 个 epoch 观察到的严重退化一致。小数据池（10M token，30 个 epoch）则是缓慢连续爬升到 10.5——重复遍数越多，背题越深。</p>
+<figure>
+  <img src="fig_epoch_forking_curves.png" alt="gap 随 epoch 数的变化，六个阶集合加小池对照">
+  <figcaption>R=100 万固定，横轴为已见 epoch 数。竖虚线标 epoch 3。</figcaption>
 </figure>
 
 <h2>数据池从 10M 扩到 37M，高阶集合的 gap 几乎不动</h2>
