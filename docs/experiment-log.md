@@ -4761,3 +4761,21 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 **验收/产物**：每 run summary.json(final gap) + exact_freq_loss.jsonl(per-f gap)。图:`docs/plot_scripts/gen_v21_dict_line_figs.py` → `docs/figs/epoch_scale/fig_v21_dict_{gap_curves,final_gap,freq_bins}.svg`(gap 曲线 dict vs hash、final-gap 柱状、per-order exact-f gap)。判读问题:①dict 是否降低同 order-set 的 final gap(碰撞隔离效应);②joint 2,3,4,5 下 dict 与 hash 的差距是否大于单 order(联合表碰撞更重 → dict 收益应更大);③per-f gap 的频率结构(dict 应削低频段 gap、保留 novel 段)。24h 内回填;单 seed 筛选口径,无 p-value 断言。
 
 **launch update (2026-10-18)**:queue 首启后 gpu1/gpu2 的 2345 联合臂 mb18 在 A100-40GB OOM(RMSProp denom 临时量,4 表 × param+state ≈ 37.6GB),按 launch-failure requeue 并退役。修复(commit d143125):queue job 行支持可选第 5 字段 device batch,≥2 表臂 mb12(accum 6,total 147,456 不变,梯度与 mb18 精确等价),单表臂仍 mb18;重启队列带 `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`。首启 3 臂(nogram gpu0、dict n5 gpu3、hash n5 gpu5)跨重启存活继续跑。重启后 dict n4/hash n4 已上 gpu1/gpu2。gpu4 被外部进程泄漏显存 2658MiB(pid 33542,容器内不可见)卡在 <2GiB 准入,按让行原则不干预,泄漏清除后自动加入。
+
+## §74 · v2.2 table-capacity R scan + v2.3 training-data envelope, 8k vocab, with per-token stats dump (2026-10-17, running)
+
+**来源**:用户 2026-10-17 指令(生产级复现路线第一步):「关于词表大小…对于 n=2, 2~3, 2~4, 2~5, 2~6, 2~7 都扫10个点,1~之前的上界,可能是3e6」「关于训练数据…n=2, 2~3, 2~4, 2~5, 2~6, 2~7 都是同时开,词表都是1M…最少10M,总共插15个点」「所有实验都要记录每个token的loss和context,便于事后做gap-freq统计」。
+
+**v2.2 R scan**(60 臂):orders ∈ {2, 2-3, 2-4, 2-5, 2-6, 2-7} × R ∈ {1, 10, 100, 1k, 10k, 100k, 300k, 1M, 2M, 3M},hash clean table,每 order 一张 R 行表(R < distinct 为碰撞域;R=1M 时 2..7 各 order distinct 47.9M/47.1M/44.5M/43.0M/47.7M/48.4M → 碰撞率 98%量级,是「表容量受限」的极端对照)。run_id `v22r_n{orders}_r{R}_s42_2000_fd_fixed`。
+
+**v2.3 data envelope**(R=1M,6 order-set × pool 点):pool = shard1 流的前缀截断 `--train_max_tokens`(commit 3d284db,token 粒度嵌套前缀,整 device batch 取整,epoch 确定性重放;CPU 测试 POOL_TRUNCATION_OK)。固定 2000 步 = 295M tokens 训练量:pool 10M ≈ 30 epochs(重 forking),pool 1B ≈ 0.3 epoch(无重复)——包络回答「gap 是否随 pool 抬升」。今晚跑 5 点 {10,14,19,27,37}M(≤ shard1 的 49.69M);>52M 点需新增 tokenize shard(见 blocker)。run_id `v23d_n{orders}_p{pool}_s42_2000_fd_fixed`。
+
+**per-token dump(本轮新基建,用户硬性要求)**:每个 run 末步(可用 `--dump_token_stats_steps` 加中间步)落 `token_stats_step*_val.npz` / `_train.npz`:fields = loss(fp32 per-token CE,bf16 autocast diag 口径)、key_{n}(int64,`ngram_freq.context_keys_np` splitmix64 hash,与 freq index 逐位一致,可离线 join pool-relative f)、n_per_batch、orders。val 侧 = fixed val batches(590k tok),train 侧 = pool 截断 iterator 前 4 batch(590k tok)。CPU 冒烟:键 packed+splitmix64 双路径一致、loss 独立重算一致。**v21 的 a100 run 无 dump(代码先于本 commit),其 gap-freq 统计继续走 exact_freq_loss.jsonl**。
+
+**infra**:commit 3d284db + e75f8d6;launcher `run_v22_rscan.sh` / `run_v23_dataenv.sh` / `queue_sweeps.sh`(flock 队列,<2GiB 准入,MAX_FAILS=2 行级重试——防 config-OOM 无限重排)。首启 bug:整行当路径 → bash: No such file(e75f8d6 修复),秒败耗尽重试,jobs 文件重写后重 launch,无 GPU 污染。
+
+**部署状态**:360-2 ✅ 8×H200 全排(02:13 起,n2 R-scan 前 8 臂 50-57GB 96-100% util,82 臂排队,预计 ~2.5 天);360-1 ❌ /data 99% 满(7.8T/7.9T,无 sudo,无法建 index)——待清理后按同一流程同步+排队;ophis-gpu ❌ 用户配额满(1.1T used)——同待。smoke:v22 30 步 + v23 30 步(p10m)全过后清理。
+
+**blocker(1B pool)**:raw parquet 语料在 ophis `/home/user/.cache/autoresearch/data/` 无读权限;shard_60-66 已证实为逐行复制品(作废)。>52M 的 v2.3 点与 v2.2 线不冲突,待语料方案定后补 tokenize;1B 单点训练 ~15 天(2000 步版仅 ~4h,但 1B 点应为「满 epoch 量」语义,步数待用户拍板)。
+
+**判读问题**:①v2.2:gap-R 曲线在哪一级 R 饱和?饱和点是否随 max(order) 右移(R 应正比于 Σ distinct)?②v2.2:大 R 极限是否收敛到 v2ord 全量 hash 基线?③v2.3:gap-pool 包络在 30 epoch → 0.3 epoch 间是否单调下降,拐点 epoch 数与 8k/H200 v5 线是否一致?④per-token dump:R 扫描的 gap-freq 幂律指数是否随 R 收窄高频段而变斜?
