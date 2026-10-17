@@ -2253,7 +2253,8 @@ def count_init_clean_tables(model, npz_path: str, log=print) -> dict:
         cur = keys64 % V
         if branch == "bigram":
             prev = keys64 // V
-            p1, p2 = next(iter(model.bigram_hash_primes_per_layer.values()))[:2]
+            # per-layer value = list of K hash families; K=1 clean uses [0]
+            p1, p2 = next(iter(model.bigram_hash_primes_per_layer.values()))[0][:2]
             rows = ((prev * p1) ^ (cur * p2)) % table_size
         else:
             prev = (keys64 // V) % V

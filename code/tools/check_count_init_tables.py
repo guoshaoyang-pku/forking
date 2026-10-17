@@ -26,7 +26,9 @@ class _Stub:
         self.bigram_K = 1
         self.trigram_K = 1
         from train import _BASE_BIGRAM_PRIMES, _BASE_TRIGRAM_PRIMES
-        self.bigram_hash_primes_per_layer = {0: _BASE_BIGRAM_PRIMES[0][0]}
+        # match the real model structure: per-layer value is a LIST of K
+        # hash families (K=1 clean uses [0]); trigram value is a flat tuple
+        self.bigram_hash_primes_per_layer = {0: _BASE_BIGRAM_PRIMES[0]}
         self.trigram_hash_primes_per_layer = {0: _BASE_TRIGRAM_PRIMES[0]}
         g = torch.Generator().manual_seed(seed)
         self.transformer = type("T", (), {})()
