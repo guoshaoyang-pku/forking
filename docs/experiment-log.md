@@ -4892,6 +4892,8 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 
 **状态更正（2026-10-17 15:40）**：a100_t1 上 `ngram-gap-lab-keep` 部署目录与 `logs/` 已不存在（被清理），**7 个 keephash 臂从未启动**——准入条件（已用显存 < 2 GiB）始终未满足：a100_t1 全 8 卡自 08:59 起被另一租户 RL 任务占用（约 30 GB/卡，100% util，`a100_rl` q35 GSPO）。§73 主根本身也已无 run 目录/logs，但 13 个完成臂的 summary 已 harvest 回本地 `output/harvest_v21/`（结果安全，panel 图即出自该 harvest）。重排队需拍板：① 等 A100 空闲后原位重建 keep 树重排队（保持 A100 硬件配对）；② 改 H200（与 dict/hash 同机，破坏 A100 配对设计但立即可跑）。本节在重跑前保持 queued 状态。
 
+**重排队（2026-10-17 16:02，用户拍板「A100 不允许用，只允许 H200」）**：keephash 7 臂全部改在 **360-2 H200**（mb72，root `/data/home/guoshaoyang/ngram-gap-lab`，作业文件 `sweeps_jobs_h200_batch.txt`，queue_sweeps 8 卡，16:02 起）。§73 的 2345 dict/hash 同机配对臂已在本机完成（见 §73 结果回填），keephash 落地后整个 §73/§77 三方对照（dict / keephash / hash）同为 H200 口径，A100 仅作单阶旁证。完成后回填 final gap、覆盖率与两个差值。
+
 ## §78 · epoch 固定协议（--train_epochs）+ E=3 包络重排（2026-10-17，done）
 
 **来源**:用户 2026-10-17 纠正:「增加数据集大小的实验应该固定Epoch数量，而非Step数量。这才是为什么我说一B实验跑得很慢的原因。必要的时候可以使用多卡同时训练来加速。你也可以直接把实验排上,总之大的实验要先并行排上队跑起来。」——v2.3/v2.4 原 2000 步固定设计在池变化时重复次数不受控（10M=30 epoch vs 1B=0.3 epoch），不是干净的包络对照。
@@ -4938,3 +4940,8 @@ v24ms（5 档 backbone × 2 模式 × 6 池）:
 4. tri 档在 10M/19M 出现非单调（L10 @10M 2.94 < L8 3.32；L10 @19M 3.55 > L12 3.54），单 seed 噪声量级（§76 跨卡噪声 0.004–0.134 远小于此），判读斜率时以两端档（17M vs 159M）为准。
 
 **遗留**:1B 池点仍等语料（blocker 同 §74，1B×E3≈20,343 步≈1.6h/臂）；E∈{2,6} 锚点未跑（如需 onset 精细曲线再排）。
+
+**增补臂（2026-10-17 16:03 排队，用户指令「A100 不允许用，只允许 H200。有卡就排上队跑实验」）**:
+- **E=3 seed 复跑（关键臂 p10m，与 §74/§75 seed 复跑同口径）**:v23d 6 order-set × seed {43,44} = 12 臂（360-1 健康卡 1,2,4,5,6）+ v24ms 5 档 × {tri,n25} × seed {43,44} = 20 臂（360-2），run_id `*_s{43|44}_e3_fd`。 Purpose:tri 中间档在 10M/19M 的 ±0.4 非单调超出跨卡噪声，seed 复跑给 E=3 模型斜率一个误差棒。
+- **E=6 锚点（§78 遗留项）**:v23d 6 order-set × p49.7M × E=6 × seed 42 = 6 臂（360-1），run_id `v23d_n*_p49m_s42_e6_fd`。E=6 @ 49.7M ≈ 原「固定步数版 49.7M 点（2000 步=5.9 epoch）」的协议化版本，给 epoch 轴 onset 曲线补一个协议一致的高池端点。
+- **infra**:新 wrapper `code/cluster/run_e3_seed.sh`（md5 7200553d，两机已同步）——queue_sweeps 只传位置参数，per-line seed 经 `NGLAB_SEED` 由 wrapper 注入；作业文件 360-2 `sweeps_jobs_h200_batch.txt`（27 行 = keephash 7 + v24 seed 20）、360-1 `sweeps_jobs_e3_rep.txt`（18 行 = v23 seed 12 + E=6 6）。预计 360-2 ~50 min、360-1 ~60 min 消化完。
