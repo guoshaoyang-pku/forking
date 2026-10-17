@@ -5238,3 +5238,27 @@ router 平衡良好；z-loss 68→2.4/1.7 收敛正常；topk_mass oeon 0.69 / o
 | `v25oe_n23d1m_p1b_s42_e3_fd_fixed` | 360-1 6 | dict top-1M, orders 2,3 only |
 
 **Readout**: Δval = val(arm) − val(nogram, same host, same step) at E=1/2/3 (steps 6782/13563/20345) from train_log (constant LR ⇒ E=1/2 are prefixes); gap at the same steps. Single seed, no significance claims.
+
+### §82 interim backfill (2026-10-18 04:30; round 1 + round 2 partial)
+
+Δval = val(arm) − val(nogram, same host, same step), mean over ±30 steps; gap = val − online train at the same steps. E1/E2/E3 = steps 6782/13563/20345. nogram final (ophis): train 2.728 / val 2.693 / gap −0.035; the 360-1 nogram matches within 0.01 at every readout step.
+
+| arm | table LR | E1 Δval / gap | E2 Δval / gap | E3 Δval / gap |
+|---|---|---|---|---|
+| hash1m (all contexts, R=1M/order) | 128× | +0.32 / −0.04 | +0.49 / +0.49 | +0.73 / +0.93 |
+| d1m (top-1M every order) | 128× | −0.01 / −0.05 | +0.06 / +0.15 | +0.15 / +0.32 |
+| f256 (f≥256 every order: 369k/408k/152k/46k) | 128× | −0.00 / −0.05 | +0.03 / +0.04 | +0.07 / +0.10 |
+| k256k (256k/256k/64k/16k) | 128× | −0.00 / −0.05 | +0.02 / +0.03 | crashed @16950 |
+| k64k (64k/64k/16k/4k) | 128× | +0.04 / −0.05 | +0.05 / −0.01 | crashed @16820 |
+| n23d1m (orders 2,3 only, top-1M) | 128× | −0.04 / −0.05 | +0.02 / +0.10 | crashed @16780 |
+| f256 | 16× | −0.07 / −0.05 | running (step 10000: −0.06 / +0.03) | running |
+| n23d1m (360-1) | 16× | −0.10 / −0.05 | crashed @6920 | — |
+| n23d1m (ophis rerun) / f256 | 16× / 4× | running | | |
+
+**Incident**: the five 360-1 dict arms died at ~03:15 with ENOSPC. Cause: in this train.py the periodic exact-freq/freq-bin diagnostic follows `val_interval` regardless of `--exact_freq_eval_interval`, so each 1B run wrote a ~27 GB `exact_freq_loss.jsonl` (multi-order bins every 10 steps), filling the shared 360-1 `/data` (100%). Fixed by `--diag_interval` (commit after 9b8ec28; 0 = legacy behavior; the `_tls` launcher passes 1000000 so only the final step is diagnosed). The ~92 GB of these logs on 360-1 have not been removed; deletion awaits user approval (P5). Their train_log.jsonl up to the crash is intact and used above.
+
+**Interim reading (single seed)**:
+1. At 50M × 1B × E=3, the all-contexts hash table forks (gap 0.93 at E3) and is worse than nogram at every readout.
+2. Per-order selection removes most of the forking: E3 gap 0.10 with f≥256 vs 0.93 hash; the smaller per-order vocabularies (k256k, k64k) stay ≤0.03 at E2. A smaller vocabulary means less forking.
+3. At the standard table LR 128× (chosen in §21 to maximise the step-1000 gap), the selected tables give essentially no benefit: |Δval| ≤ 0.04 at E1 and +0.07 at E3 for f256.
+4. Lowering the table LR to 16× produces a benefit: E1 Δval −0.07 (f256, n2–5) and −0.10 (n2–3 top-1M). Whether it survives E2/E3 is pending.
