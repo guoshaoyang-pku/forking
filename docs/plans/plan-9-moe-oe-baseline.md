@@ -1,6 +1,6 @@
 # Plan 9 · OE × MoE：matched-budget MoE × OE 研究家族（v2，按 GPT-pro 交接修订）
 
-> 状态：实现中（2026-10-17 v2 重写）。设计单一事实来源 =
+> 状态：P0/P1/S0 完成（2026-10-17，§81）；主 2×2 等用户确认（P5）。设计单一事实来源 =
 > `docs/plans/plan-9-handoff-gptpro-20261017.txt`（GPT pro 指正全文，已归档）；
 > 本文是其在仓库内的落地版。v1 的 E32/K8/d_e384「OLMoE 原样缩放主基线」说法作废。
 > 实现与开跑前须按 P3 注册到 `experiment-log.md`；主 6 run 开跑须用户确认（P5）。

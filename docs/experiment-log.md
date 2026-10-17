@@ -5186,3 +5186,26 @@ experts、loss 量级正常、moe_diag/panel 字段齐全、吞吐与显存入�
 
 launcher `code/cluster/run_p9_s0.sh`；CPU 单元测试 7/7（本地 + ophis 双环境）；
 dense 路径回归 diff 6e-6（GPU 噪声内）。
+
+### §81 回填（2026-10-17 21:20，done）
+
+S0 两臂完成（ophis GPU0 H200，md5 train.py b5e9b810 / moe.py 3a3bab21，venv torch 2.9.1）：
+
+| 臂 | train | val | gap | tok/s | peakGB | dead(8层) | loadH(8层) |
+|---|---:|---:|---:|---:|---:|---|---|
+| oeon_u100m_r1_seed42 | 4.3043 | 4.2704 | −0.034 | 188,515 | 74.6 | 全 0 | 0.997–1.000 |
+| oeoff_u100m_r1_seed42 | 4.1511 | 4.0944 | −0.057 | 190,310 | 62.6 | 全 0 | 0.991–0.999 |
+
+验收逐项：①NaN/Inf 无（两臂 nan_free）；②assignment 守恒（运行期 68 个 eval block
+× 8 层 assign_frac 和恒 = 1.000000，CPU T4 等价）；③无永久 dead experts；④loss 量级
+正常（4.09–4.30 @ 100M×1pass；**注**：无同 manifest dense 参照，量级判定为主实验
+dense 臂的职责）；⑤moe_diag 68 行字段齐全 + panel 7 个 npz（16,384 tok × 8 层 ×
+topk_idx/probs/margin）；⑥吞吐/显存入账本（表侧 +12GB 峰值差，对齐审计 18GB 中的
+常驻部分）；⑦账本自动打印并入 summary/moe_ledger.json。
+
+观察（非结论，S0 不进论文）：per-layer aux ≈ 1.0（日志行 aux 8.06 为 8 层和），
+router 平衡良好；z-loss 68→2.4/1.7 收敛正常；topk_mass oeon 0.69 / oeoff 0.82；
+1-pass 下 gap ≈ 0（无重放无 forking，符合预期——主实验的 forking 检验在 epoch 2/3）。
+
+**S0 通过。主 2×2（32R/top-4 G4X8，OE on/off × dense on/off × 3 seeds = 12 run，
+1B×3 pass manifest 协议）等用户确认后启动（P5）。**
