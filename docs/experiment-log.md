@@ -5209,3 +5209,32 @@ router 平衡良好；z-loss 68→2.4/1.7 收敛正常；topk_mass oeon 0.69 / o
 
 **S0 通过。主 2×2（32R/top-4 G4X8，OE on/off × dense on/off × 3 seeds = 12 run，
 1B×3 pass manifest 协议）等用户确认后启动（P5）。**
+
+## §82 · v2.5 per-order OE vocabulary at 1B: 50M-class backbone × 1B ClimbMix × E=3 (2026-10-18, running)
+
+**Source**: user 2026-10-18: different orders should get different vocabulary sizes; 4/5-grams should only model very frequent contexts; precompute counts and set per-order f / R limits; target setting = ~50M model × 1B data; goal = an OE with good benefit and little forking. Corpus = local ClimbMix (user confirmed).
+
+**Setting**: V5 standard (§1) except: train pool = first 1B tokens (`--train_max_tokens 1000000000`, 488,232 chunks) of ClimbMix shards 1,11–23,25–32 (`tokenized_full163`; shard 24 dropped: one row duplicates val shard 9; 3 single-row duplicates inside train kept); `--train_epochs 3` (20,345 steps); val shards 2–10+6542 (md5 identical to the standard `data/tokenized`); 8L/6H/768D (56.6M non-embedding); orders n=2..5 joint unless noted; per-order R = 2^20 slots. freq diag off. Code: commit 9b8ec28 (`--ngram_dict_per_order`, `ngram_freq.py --train_max_tokens`), train.py md5 51e98e84; launcher `code/cluster/run_v25_oe1b.sh`.
+
+**Counts on the 1B pool** (`freq_index_o2to5_1b.npz`, ophis; selection uses the f≥30 pruned copy `_f30.npz` md5 b42b3679, identical for every K/f used here):
+
+| n | distinct | singleton share of positions | top-1M min f / coverage | top-256k min f / coverage | f≥256 keys / coverage |
+|---|---:|---:|---|---|---|
+| 2 | 13.6M | 0.5% | 56 / 0.921 | 413 / 0.807 | 369k / 0.842 |
+| 3 | 158.7M | 9.9% | 106 / 0.477 | 378 / 0.330 | 408k / 0.375 |
+| 4 | 450.6M | 35.3% | 59 / 0.206 | (64k) 460 / 0.080 | 152k / 0.109 |
+| 5 | 696.4M | 61.0% | 30 / 0.095 | (16k) 484 / 0.021 | 46k / 0.031 |
+
+(train.log's "position coverage" is relative to the pruned index; the table above uses the full index.)
+
+| run_id | host / GPU | arm |
+|---|---|---|
+| `v25oe_nogram_p1b_s42_e3_fd_fixed` | ophis 4 and 360-1 1 | no table (same-host control on both hosts) |
+| `v25oe_hash1m_p1b_s42_e3_fd_fixed` | 360-1 2 | hash, R=1M per order, all contexts |
+| `v25oe_d1m_p1b_s42_e3_fd_fixed` | ophis 5 | dict top-1M every order |
+| `v25oe_f256_p1b_s42_e3_fd_fixed` | ophis 6 | dict f≥256 every order (369k/408k/152k/46k) |
+| `v25oe_k256k_p1b_s42_e3_fd_fixed` | 360-1 4 | dict K = 256k/256k/64k/16k |
+| `v25oe_k64k_p1b_s42_e3_fd_fixed` | 360-1 5 | dict K = 64k/64k/16k/4k |
+| `v25oe_n23d1m_p1b_s42_e3_fd_fixed` | 360-1 6 | dict top-1M, orders 2,3 only |
+
+**Readout**: Δval = val(arm) − val(nogram, same host, same step) at E=1/2/3 (steps 6782/13563/20345) from train_log (constant LR ⇒ E=1/2 are prefixes); gap at the same steps. Single seed, no significance claims.
