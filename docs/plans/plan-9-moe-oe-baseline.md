@@ -41,20 +41,77 @@
    - H4 干预通用性：mask_low（表侧）与 aux-loss/expert-dropout（router 侧）是否跨架构互补/可替代？
 4. 厂商侧存在性证明：Qwen3.8 = MoE + engram 同模型（125B/512 experts/20M rows），LongCat-Flash-Lite 同路线；但**都没有发 forking/频率治理证据**。
 
+## 2.5 社区 OE 做法调研（2026-10-17）：parameter-golf 与 modded-nanogpt speedrun
+
+### A. modded-nanogpt record 62 · Bigram Hash Embedding（训练内 OE 的小规模权威实现）
+
+PR #201（KellerJordan/modded-nanogpt，val loss 3.2776，−5.6s/−165 steps ≈ 5%）：
+
+- 表：`bigram_vocab_size = 5 × vocab_size`（50304×5 ≈ 251K rows）；hash 公式
+  `(p1·prev) XOR (p2·cur) mod R`（rand_int 36313/27191）——**与我们 clean 表第一族公式
+  同构，独立收敛**（外部效度）；hash 在 dataloader CPU 端算好（= 我们 plan-8 index-first 的同款思想）。
+- 注入：embedding **zero-init**，每层残差加 `λ_l · bigram_ve`（λ 初始 0.1，可学）——
+  每层注入而非单点；pos 0 走保留 index；跨文档边界未特殊处理（试过 masking，无收益且更慢）。
+- **实现内负结果**：gating、trigram、multi-hash 都没跑赢「直接相加」（ClassicLarry 注明
+  单实现 Caveat）。注意这与 Qwen engram（contextual gating + 双支）相反——规模与训练
+  budget 不同，不能直接互推；但它支持我们无 gate 的 input 注入主线。
+- 数据泄漏检查规范值得抄：随机 token 输入 → loss 平坦于 10.8 附近才算干净。
+
+### B. OpenAI Model Craft「parameter-golf」（16MB 工件、8×H100 ×10min、FineWeb BPB 计分）
+
+分析论文 [arXiv:2607.01517](https://arxiv.org/abs/2607.01517) + issue #140：冠军方案普遍用
+**推理时 n-gram blending**（不是训练内 OE）：
+
+- 形态：eval 时对近期 context 在线建 n-gram cache（Katz backoff，2–7 gram），
+  `P_mix = λ·P_neural + (1−λ)·P_ngram`（字节级）。
+- 三代进化：固定 5-gram α=0.20（−0.07 BPB）→ multi-order backoff 2-7（再 −0.02）→
+  **entropy-adaptive λ**（按模型预测熵调整信任，再 −0.02）。neural-only 1.1271 → 0.9674。
+- 为什么有效：局部重复是残差主导信号；零工件字节（cache 从 eval 数据现场建，test-time）。
+- **关键区别**：固定表不会被梯度更新 ⇒ 不会 sharpen ⇒ 我们的 forking 机制预测它
+  「train loss 不降、val 不恶化」——与 trained-in 表正好构成对照。
+
+### C. OE 方法三分类（论文 related-work 的现成骨架）
+
+| 类 | 代表 | 表参数 | 重复数据下的预测 |
+|---|---|---|---|
+| trained-in hash embedding（= engram） | 我们 / DeepSeek Engram / BHE / NGM | 学习 | **forking**（本项目主题） |
+| test-time blending | parameter-golf / infini-gram | 无（或固定） | 不 fork（表不可学习） |
+| frozen / reparam 表 | COUNT / MeKi / 我们的 freeze 线 | 固定 | 部分缓解（C10：backbone 侧仍漂移） |
+
+### D. 对 plan-9 的四个直接影响
+
+1. hash 公式与注入哲学（直接相加 vs gating）都有外部先例可引，审稿人问「为什么这样设计」有答案。
+2. 新增两个**廉价对照臂**（各 1 run）：`frozen_table`（已有 freeze 管线）与可选
+   test-time blend——把「表可学习性是 forking 必要条件」变成可测命题，直接连接 golf 的经验观察。
+3. BHE 的 5×V 表规模 vs 我们的 2^20（=2048×V）：两者都在「大于词表、远小于 distinct」
+   的甜点区；S2 可加一臂 R=5V 的 BHE 式小表做交叉验证。
+4. speedrun 的泄漏检查 + load-diff 评估规范纳入我们的验收清单（S0/S1 沿用）。
+
 ## 3. 极简 MoE baseline 规格（小而 solid 的关键决策）
 
-**原则**：P1 极简——在现有 nanoGPT 主线上只加一个变量（dense MLP → MoE MLP），n-gram 管线/口径/数据全部不动。不自建 router 学习花活（无 BPR、无 expert choice、无 soft routing），router = 线性 + top-k + Switch 式 aux load-balance loss（可关）。
+**原则**：P1 极简——在现有 nanoGPT 主线上只加一个变量（dense MLP → MoE MLP），n-gram 管线/口径/数据全部不动。不自建 router 学习花活（无 BPR、无 expert choice、无 soft routing），router = 线性 + top-k + 权威负载均衡损失（可关）。
 
-### 3.1 结构（`code/train.py` 新增 `--moe_experts E --moe_topk K --moe_aux_weight w`）
+### 3.0 权威锚点（2026-10-17 调研，替代自造配置）
 
-| 坐标 | 取值 | 理由 |
+| 来源 | 配置 | 我们借什么 |
 |---|---|---|
-| expert 结构 | 标准 MLP（768 → d_e → 768，ReLU/GELU 同 dense 块） | 与 dense 逐位可比 |
-| E / K | **E=8, top-2, d_e=1536** | active FFN params = 2×768×1536×2 = 4.7M ≈ dense FFN（768×3072×2）→ **matched-active**；total = 4× dense FFN → 直接检验 2609.11917 的「total params 才是退化主因」 |
-| router | `nn.Linear(768, 8)`，fp32 softmax，token-level top-2 | 极简；无噪声项（单变量） |
-| aux loss | Switch 式负载均衡，`--moe_aux_weight 0.01`（0 = 关，单变量消融位） | 防 router 塌缩；关闭臂用于纯观察 |
-| 诊断 | per-eval-block 记录：expert load 分布（均值路由份额）、load 熵、dead-expert 数、aux loss 值 | router ossification 的直接测量（对齐 2609.11917 的中间变量） |
+| **OLMoE-1B-7B**（AllenAI，[arXiv:2409.02060](https://arxiv.org/abs/2409.02060)，全开放） | 64 experts / top-8，d=2048，expert dim 1024（= d/2），无 shared expert；balance loss **0.01** + router z-loss **0.001**；dropless per-token；norm_topk_prob=False | **K/E = 1/8**；expert dim = d/2；两个正则权重 |
+| **Qwen3.8-Flash-Next**（arXiv:2608.30320） | 512 experts top-10+1shared，expert dim 640（= 0.25 d）；n-gram/表/router 留在 AdamW | 细粒度薄 expert 是旗舰方向；MoE+engram 共存 |
+| **2609.11917**（MoE 退化论文） | 记号：granularity g = expert dim / (4d)；变 g、n、k；结论「退化随 **total params/稀疏度** 增长」 | **granularity 记法**；matched-active 设计的理论依据 |
+| DeepSeek-MoE | 64 routed + 2 shared，top-8，balance 0.001 | 细粒度+shared 的起源（S3 可加 shared-expert 消融） |
+
+### 3.1 结构（`code/train.py` 新增 `--moe_experts E --moe_topk K --moe_aux_weight w --moe_zloss_weight z`）
+
+| 坐标 | 取值 | 权威依据 |
+|---|---|---|
+| expert 结构 | 标准 MLP（同 dense 块的实现，2 矩阵 GELU） | 与 dense 逐位可比；P1 优先于 SwiGLU |
+| E / K | **E=32, top-8, d_e=384**（granularity g=1/2） | OLMoE 的 **K/E=1/8** 与 expert dim=d/2 原样缩放；active FFN = 8×768×384×2 = 4.7M ≈ dense FFN（**matched-active**）；total = 4× dense FFN → 直接检验 2609.11917「total params 主因」 |
+| router | `nn.Linear(768, 32)`，fp32 softmax，token-level top-8，不归一化 topk 权重（norm_topk_prob=False） | OLMoE 同款 |
+| aux loss | Switch 式负载均衡 **0.01** + router z-loss **0.001**（各可关） | OLMoE 权威值；关闭臂用于纯观察 |
+| 诊断 | per-eval-block：expert load 分布、load 熵、dead-expert 数、aux/z-loss 值 | router ossification 直接测量（2609.11917 中间变量） |
 | 其余 | backbone/n-gram/优化器/数据/口径 = §1 SSOT 原封不动 | P1 |
+
+（弃选 E=8/top-2：组合数 C(8,2)=28 太少，router ossification 的动态范围不足；E=32/top-8 保留 matched-active 且对齐权威比例。）
 
 ### 3.2 run_id 与登记
 
