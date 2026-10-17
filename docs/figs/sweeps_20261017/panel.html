@@ -62,6 +62,7 @@
     <tr><td>v2.3 数据池包络</td><td>6 个阶集合 × 5 个池点</td><td>30/30（49.7M 点在跑）</td></tr>
     <tr><td>v2.4 模型大小</td><td>5 档模型 × 2 模式 × 5 个池点</td><td>50/50（49.7M 点在跑）</td></tr>
     <tr><td>seed 复跑</td><td>R=1M 与池 10M 关键臂 × seed 43/44</td><td>24 臂在跑</td></tr>
+    <tr><td>v2 阶数扫描（360-1）</td><td>n=2..8 单独 + 2–5 联合 + 无表基线 × 3 seed</td><td>27/27（4 臂因 GPU ECC 隔离重跑）</td></tr>
     <tr><td>v2.1 词典对照（A100）</td><td>dict/hash × 6 阶集合 + 无表基线</td><td>13/15（2 臂排队中）</td></tr>
   </table>
 </details>
@@ -124,6 +125,14 @@
   <figcaption>n=5 的 gap 曲线：dict 表的 gap 稳定在低位，hash 表持续上升，无表基线几乎为 0。</figcaption>
 </figure>
 
+<h2>低频上下文贡献更多 gap：幂律指数本身被表碰撞压平</h2>
+<p>把每个 n-gram 上下文在训练数据里出现的次数记为 F。对角线指每个阶在自己单独的实验里、按 F 分桶量自己的 gap。gap 随 F 近似幂律下降（gap ≈ A·F^−α）：F=1 的最低频上下文 gap 高达 5–8，F 越高 gap 越低；n=2 到 n=5 拟合干净（R²≥0.84）。但指数 α 本身随表的碰撞负载（不同上下文数除以表行数，3.4 一路涨到 46）从 0.21–0.35 一路跌到 0 以下——n≥6 的拟合只剩 4–8 个有效桶，不能读成「阶数越高幂律越平」的阶数效应。碰撞控制的解法归口到无碰撞词典线（上文 dict 表），本线只作标准口径对照。</p>
+<figure>
+  <img src="../v2_order_sweep_20261017/fig_gap_vs_F_and_alpha.png" alt="左：各阶对角 gap 随频率 F 的幂律下降；右：拟合指数随碰撞负载衰减">
+  <figcaption>27 个臂（n=2..8 单独 + 2–5 联合 + 无表基线，各 3 个 seed，R=100 万行）。左图点为分桶 gap（固定探针口径，与主表 online 口径数值略不同），虚线为拟合斜率；右图横轴为每行表项平均承载的不同上下文数。</figcaption>
+</figure>
+<div class="warn"><strong>注意：</strong>n≥5 时验证集里 85–98% 的上下文训练中从未出现，而这些实验的验证 loss（10.3–10.6）超过了均匀分布上限（ln 8192 ≈ 9.01）——模型对没见过的上下文高度自信地给出错误续接。所以高阶的 gap 主要来自「对 novel 过度锐化」，不是「背下了训练集」。另外 2–5 联合臂里 bigram 的指数只剩 0.03（单独跑时 0.21）：联合训练改变了低阶的 gap-freq 形状。</div>
+
 <details>
   <summary>口径与复现</summary>
   <table>
@@ -131,8 +140,8 @@
     <tr><td>gap 定义</td><td>val loss − online train loss（同 step）</td></tr>
     <tr><td>setting</td><td>agents.md §1 极简 setting：input 注入、lr 6e-4 warmup_constant(100)、表 RMSProp (0,0.99)×128、bf16 不 compile</td></tr>
     <tr><td>诊断</td><td>每 10 步 fixed-val + 每 token loss/context dump（token_stats_*.npz）</td></tr>
-    <tr><td>run_id</td><td>v22r_* / v23d_* / v24ms_*（H200, 360-2）；v21_*（A100）</td></tr>
-    <tr><td>日志</td><td>docs/experiment-log.md §73–§75</td></tr>
+    <tr><td>run_id</td><td>v22r_* / v23d_* / v24ms_*（H200, 360-2）；v2ord_*（H200, 360-1）；v21_*（A100）</td></tr>
+    <tr><td>日志</td><td>docs/experiment-log.md §73–§77</td></tr>
   </table>
 </details>
 
