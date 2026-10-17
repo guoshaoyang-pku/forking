@@ -5146,3 +5146,43 @@ smoke 输出存档 `frz0_count_smoke_s42`。
 - 判读:误差棒 ±0.01–0.05 下，trigram 的 gap 随 backbone 单调上升、n=2..5 联合单调略降，两池端一致。§78「模型斜率衰减但不变号」升级为带误差棒的结论；tri 中间档的 ±0.4 非单调确认是 10M 端 seed 噪声（49.7M 端无此现象，10M 端 l10 SD 0.363）。
 
 **本轮 H200-only 冲刺小结（2026-10-17 15:22–19:35，用户指令「A100 不允许用，只允许 H200。有卡就排上队跑实验」）**:新增完成 **87 臂**，全部 H200（360-1 + 360-2）:2345 联合 dict/hash 2（15:52）+ keephash 7（16:20）+ v21 同机单阶/低阶补跑 8（18:07）+ E2/E6 剂量网格 18（17:25）+ E=3 seed 复跑 52（v23@10M 12 + v24@10M 20 + v24@49.7M 20，19:35）。360-2 于 16:29 起用户配额耗尽停摆（见 infra 事故节）；360-1 健康卡（1/5/6）满负荷至 19:35 后空闲，0/3/7 ECC 不可用。
+
+## §81 · plan-9 P1 审计 + 1B manifest + S0 工程 pilot（2026-10-17，running）
+
+**上游**:GPT-pro 交接（`docs/plans/plan-9-handoff-gptpro-20261017.txt`）+ plan-9 v2。
+只推进到 S0；主 2×2（12 run）等用户确认（P5）。
+
+**P1 审计结论（`code/tools/oe_param_audit.py`，真实实现核算）**:
+1. OE 表参数 = **1,610,612,736**（bigram_ves + trigram_ves 各 805,306,368 = 2×2^20×768），
+   与 §79 冻结计数逐位一致；
+2. 表侧显存 = **18.0 GB**（fp32 参数 6.0 + RMSProp exp_avg_sq 6.0 + 瞬时梯度 6.0）；
+   dense 侧 0.96 GB。H200 141GB 可容纳;
+3. touched rows（shard-1 流，49.7M tok）:bigram 唯一行 1,010,522/2^20（96.4% 占用）、
+   trigram **100% 饱和**（碰撞必然）——1B 协议下双表从第一步起全占用，频率 bin/
+   mask_low 解释须以此为前提;
+4. 回退 hash 公式与 precompute row 文件逐位一致（1,010,522 双路径同值）。
+
+**1B manifest（`code/tools/build_p9_manifest.py` → `data/manifest_full163/`）**:
+- 池 = 162 train 分片全部 packed rows = 3,792,017 rows = **7,760,093,184 tokens**；
+- row-level 固定 permutation（seed 20260917，与 model seed 独立），物化为 158 个
+  `shard_%05d.bin`（24,000 rows/个，train.py 零改动即可按 manifest 顺序消费）；
+- nested 前缀子集：s0_pilot_100m = 48,852 rows、main_1b = 488,281 rows、scale_2b =
+  976,562 rows（同一 permutation 前缀，`--train_max_tokens` token 精确截断）；
+- val = 6542 整分片（sha256 入档）；panel = 6542 前 8 行（16,384 tok）；
+- manifest.json：源分片 sha256×162 + permutation sha256 + 物化分片 sha256×158 +
+  tokenizer sha256 ×3；已验证 token 总量守恒 + row-0 抽检;
+- 偏差登记：.bin 无 doc id，permutation 粒度 = 2049-token packed row（跨 162 分片
+  打散文档顺序/来源局部性，非 doc-level；handoff §6 的仓库现实修正 B）。
+- 独立复 tokenize（shard 66 双写竞态）byte-identical——tokenizer 确定性额外验证。
+
+**S0（工程 pilot，不做论文结论）**:G4/X4/S0 = 16R/top-4/d_e768，OE on/off 两臂，
+100M × 1 pass × seed 42（678 步）。验收：无 NaN、assignment 守恒、无永久 dead
+experts、loss 量级正常、moe_diag/panel 字段齐全、吞吐与显存入账本。
+
+| run_id | 臂 |
+|---|---|
+| `p9_moe_g4_x4_s0_e16_k4_de768_oeon_u100m_r1_seed42` | MoE 16R/top-4 + OE（clean 表 2^20，input 注入） |
+| `p9_moe_g4_x4_s0_e16_k4_de768_oeoff_u100m_r1_seed42` | MoE 16R/top-4 无 OE（enable 0） |
+
+launcher `code/cluster/run_p9_s0.sh`；CPU 单元测试 7/7（本地 + ophis 双环境）；
+dense 路径回归 diff 6e-6（GPU 噪声内）。
