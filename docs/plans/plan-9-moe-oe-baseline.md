@@ -68,30 +68,37 @@ PR #201（KellerJordan/modded-nanogpt，val loss 3.2776，−5.6s/−165 steps �
   **entropy-adaptive λ**（按模型预测熵调整信任，再 −0.02）。neural-only 1.1271 → 0.9674。
 - 为什么有效：局部重复是残差主导信号；零工件字节（cache 从 eval 数据现场建，test-time）。
 - **关键区别**：固定表不会被梯度更新 ⇒ 不会 sharpen ⇒ 预测「train/val 不分化」。
-  **已实测（§79 freeze0 pair，2026-10-17）**：step-0 冻结随机表 final gap **0.064** vs
-  可学习对照 **2.702**（2.4%）——预测成立。用户曾挑战「冻结仍分割子空间、数据少了
-  照样 fork」；实测否证了随机分区版（分区存在但只是 backbone 可忽略的噪声），但
-  既有 causal 臂支持其 backbone 侧直觉的另一半：e1/e2 冻结**已写满**的表 gap
-  3.452 > ctrl 2.81（§72 @128×）/ 5.386 = ctrl 94%（§38 m3）——**发起 fork 需要表
-  可学习，维持 fork 不需要**（backbone 接管甚至恶化）。三态：随机冻结不 fork /
-  学后再冻照样 fork / 全程可学习完整 fork。
+  **已实测两轮（§79+§80，2026-10-17）**：
+  - step-0 冻结**随机**表 gap **0.064** vs 可学习对照 **2.702**（§79）；
+  - step-0 冻结 **count-init** 表（行 = 桶内经验续接分布的 init-wte 投影，真实信号
+    但不可学习，golf 等价物）gap **0.022**，且 train 3.673 < 随机冻结 3.786、
+    val 3.695 < 3.851（§80）——**真实信号改善了绝对损失却没有产生任何分化**，
+    信号效用与 forking 解耦。
+  用户曾挑战「冻结仍分割子空间、数据少了照样 fork」；两轮实测否证：分区存在、
+  信号真实，都不 fork——**forking 需要表在重复数据上被梯度塑形**（训练动力学属性，
+  非内容属性）。但既有 causal 臂支持其 backbone 侧直觉的另一半：e1/e2 冻结**已写满**
+  的表 gap 3.452 > ctrl 2.81（§72 @128×）/ 5.386 = ctrl 94%（§38 m3）——**发起 fork
+  需要表可学习，维持 fork 不需要**（backbone 接管甚至恶化）。判词：点火 = 表侧
+  gradient sharpening；燃烧 = backbone 共适应；内容质量与冻结时机均非充分条件。
 
-### C. OE 方法三分类（论文 related-work 的现成骨架；frozen 行已实测）
+### C. OE 方法三分类（论文 related-work 的现成骨架；frozen 两种内容均已实测）
 
 | 类 | 代表 | 表参数 | 重复数据下的预测 | 实测 |
 |---|---|---|---|---|
 | trained-in hash embedding（= engram） | 我们 / DeepSeek Engram / BHE / NGM | 学习 | **forking**（本项目主题） | gap 2.702（§79 ctrl） |
-| test-time blending | parameter-golf / infini-gram | 无（或固定） | 不 fork（表不可学习） | 随机冻结 0.064（§79）|
-| frozen / reparam 表 | COUNT / MeKi / 我们的 freeze 线 | 固定 | 分两种：**随机 init 不 fork；学满后冻结照样 fork 且可恶化** | 0.064 vs 3.452>2.81（§79+§72）|
+| test-time blending | parameter-golf / infini-gram | 无（或固定） | 不 fork（表不可学习） | 随机冻结 0.064（§79）；**count-init 冻结 0.022 且 train/val 同降（§80）** |
+| frozen / reparam 表 | COUNT / MeKi / 我们的 freeze 线 | 固定 | 随机或 count 内容 init：不 fork；**学满后冻结：照样 fork 且可恶化** | 0.064 / 0.022 vs 3.452>2.81（§79+§80+§72）|
 
-> golf 等价性注记：§79 的随机 init 冻结是**下界**；golf 的表是 count 统计（携带真实
-> 信号但不可学习），更锐的复刻是 count-init 冻结臂（可选后续，未排）。
+> golf 等价性注记（已测）：§80 的 count-init 冻结臂 = golf 的最贴近复刻（真实统计
+> 信号 + 不可学习）→ gap 0.022，信号效用（train/val 绝对值都更好）与 forking（无）
+> 解耦——「不可学习的表按构造安全」从预测升级为机制证据。
 
-### D. 对 plan-9 的直接影响（§79 后更新）
+### D. 对 plan-9 的直接影响（§79/§80 后更新）
 
 1. hash 公式与注入哲学（直接相加 vs gating）都有外部先例可引，审稿人问「为什么这样设计」有答案。
-2. **廉价对照臂已落地 1/2**：frozen_table 的 step-0 版已实测（§79：0.064 vs 2.702，
-   「表可学习性是 forking 发起必要条件」从预测升级为证据）；count-init 冻结臂留作可选。
+2. **廉价对照臂已落地 2/2**：step-0 随机冻结（§79:0.064）与 count-init 冻结
+   （§80:0.022）都实测完成——「表可学习性是 forking 发起的必要条件」现在是
+   两点证据 + §72/§38 的学满冻结对照构成的完整判词；论文机制章可直接引用。
 3. BHE 的 5×V 表规模 vs 我们的 2^20（=2048×V）：两者都在「大于词表、远小于 distinct」
    的甜点区；S2 可加一臂 R=5V 的 BHE 式小表做交叉验证。
 4. speedrun 的泄漏检查 + load-diff 评估规范纳入我们的验收清单（S0/S1 沿用）。
@@ -99,6 +106,9 @@ PR #201（KellerJordan/modded-nanogpt，val loss 3.2776，−5.6s/−165 steps �
    table-LR 协议；当前代码 1000 步协议的可学习表对照 = **2.702**（与 LR 扫描 2.73 @128×
    一致）。2×2 网格的 dense 两臂须在当前代码/协议上重跑（或先确认协议等价），不得与
    旧绝对值直比。
+6. **论文新增可卖点（§80）**：「信号效用与 forking 解耦」——一个不可学习但信息丰富
+   的 n-gram 表改善绝对损失而不引发 train/val 分化；这把 forking 定位为
+   **训练动力学现象而非信息现象**，是 follow-up paper 的差异化论点之一。
 
 ## 3. 极简 MoE baseline 规格（小而 solid 的关键决策）
 
