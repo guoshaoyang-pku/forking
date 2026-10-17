@@ -2517,6 +2517,9 @@ def main():
                              "(2/3 included, routed through the generic path), keep the top-K "
                              "train contexts by count as unique rows (miss contributes zero). "
                              "Requires --freq_index with those orders; K <= --ngram_clean_table")
+    parser.add_argument("--diag_interval", type=int, default=0,
+                        help="periodic exact-freq/freq-bin diagnostics every N steps (0 = every "
+                             "val step, legacy); the final step is always diagnosed")
     parser.add_argument("--ngram_dict_per_order", default="",
                         help="v2.5 per-order dictionary selection with --ngram_dict_topk, e.g. "
                              "'2:k=262144,3:k=262144,4:f=64,5:f=256': k = top-K cap (<= R), "
@@ -3657,7 +3660,7 @@ def main():
             (cfg.val_steps and (step + 1) in cfg.val_steps)
             or (not cfg.val_steps
                 and (((step + 1) % cfg.val_interval_steps == 0
-                      and (step + 1) % max(1, args.exact_freq_eval_interval) == 0)
+                      and (args.diag_interval <= 0 or (step + 1) % args.diag_interval == 0))
                      or step == cfg.max_steps - 1))
         )
         if diag_due and (exact_freq_log is not None or freq_bin_log is not None):

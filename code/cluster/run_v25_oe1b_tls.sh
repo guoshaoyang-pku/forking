@@ -45,7 +45,7 @@ CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --lr 0.0006 --lr_schedule warmup_constant --warmup_steps 100 \
   --table_optimizer rmsprop --table_betas 0.0,0.99 --table_lr_scale "$TLS" \
   --val_interval 10 --val_batches 4 --table_norm_interval 50 --fixed_train_probe 0 \
-  --freq_eval_interval 1000000 --exact_freq_eval_interval 1000000 \
+  --freq_eval_interval 1000000 --exact_freq_eval_interval 1000000 --diag_interval 1000000 \
   > "$RESULT_DIR/train.log" 2>&1
 test -s "$RESULT_DIR/summary.json"
 echo "[v25] complete: $RESULT_DIR"
