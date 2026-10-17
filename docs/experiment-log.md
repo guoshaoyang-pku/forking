@@ -4742,27 +4742,34 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 
 | run_id | mode | orders | status |
 |---|---|---|---|
-| v21_nogram_s42_2000_fd | nogram | — | planned |
-| v21_dict_n2-3-4-5_s42_2000_fd | dict | 2,3,4,5 | planned |
-| v21_hash_n2-3-4-5_s42_2000_fd | hash | 2,3,4,5 | planned |
-| v21_dict_n2_s42_2000_fd | dict | 2 | planned |
-| v21_dict_n3_s42_2000_fd | dict | 3 | planned |
-| v21_dict_n4_s42_2000_fd | dict | 4 | planned |
-| v21_dict_n5_s42_2000_fd | dict | 5 | planned |
-| v21_hash_n2_s42_2000_fd | hash | 2 | planned |
-| v21_hash_n3_s42_2000_fd | hash | 3 | planned |
-| v21_hash_n4_s42_2000_fd | hash | 4 | planned |
-| v21_hash_n5_s42_2000_fd | hash | 5 | planned |
-| v21_dict_n2-3_s42_2000_fd | dict | 2,3 | planned |
-| v21_dict_n2-3-4_s42_2000_fd | dict | 2,3,4 | planned |
-| v21_hash_n2-3_s42_2000_fd | hash | 2,3 | planned |
-| v21_hash_n2-3-4_s42_2000_fd | hash | 2,3,4 | planned |
+| v21_nogram_s42_2000_fd | nogram | — | done(A100) |
+| v21_dict_n2-3-4-5_s42_2000_fd | dict | 2,3,4,5 | done(H200 360-2) |
+| v21_hash_n2-3-4-5_s42_2000_fd | hash | 2,3,4,5 | done(H200 360-2) |
+| v21_dict_n2_s42_2000_fd | dict | 2 | done(A100) |
+| v21_dict_n3_s42_2000_fd | dict | 3 | done(A100) |
+| v21_dict_n4_s42_2000_fd | dict | 4 | done(A100) |
+| v21_dict_n5_s42_2000_fd | dict | 5 | done(A100) |
+| v21_hash_n2_s42_2000_fd | hash | 2 | done(A100) |
+| v21_hash_n3_s42_2000_fd | hash | 3 | done(A100) |
+| v21_hash_n4_s42_2000_fd | hash | 4 | done(A100) |
+| v21_hash_n5_s42_2000_fd | hash | 5 | done(A100) |
+| v21_dict_n2-3_s42_2000_fd | dict | 2,3 | done(A100) |
+| v21_dict_n2-3-4_s42_2000_fd | dict | 2,3,4 | done(A100) |
+| v21_hash_n2-3_s42_2000_fd | hash | 2,3 | done(A100) |
+| v21_hash_n2-3-4_s42_2000_fd | hash | 2,3,4 | done(A100) |
 
 **验收/产物**：每 run summary.json(final gap) + exact_freq_loss.jsonl(per-f gap)。图:`docs/plot_scripts/gen_v21_dict_line_figs.py` → `docs/figs/epoch_scale/fig_v21_dict_{gap_curves,final_gap,freq_bins}.svg`(gap 曲线 dict vs hash、final-gap 柱状、per-order exact-f gap)。判读问题:①dict 是否降低同 order-set 的 final gap(碰撞隔离效应);②joint 2,3,4,5 下 dict 与 hash 的差距是否大于单 order(联合表碰撞更重 → dict 收益应更大);③per-f gap 的频率结构(dict 应削低频段 gap、保留 novel 段)。24h 内回填;单 seed 筛选口径,无 p-value 断言。
 
 **launch update (2026-10-18)**:queue 首启后 gpu1/gpu2 的 2345 联合臂 mb18 在 A100-40GB OOM(RMSProp denom 临时量,4 表 × param+state ≈ 37.6GB),按 launch-failure requeue 并退役。修复(commit d143125):queue job 行支持可选第 5 字段 device batch,≥2 表臂 mb12(accum 6,total 147,456 不变,梯度与 mb18 精确等价),单表臂仍 mb18;重启队列带 `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`。首启 3 臂(nogram gpu0、dict n5 gpu3、hash n5 gpu5)跨重启存活继续跑。重启后 dict n4/hash n4 已上 gpu1/gpu2。gpu4 被外部进程泄漏显存 2658MiB(pid 33542,容器内不可见)卡在 <2GiB 准入,按让行原则不干预,泄漏清除后自动加入。
 
-## §74 · v2.2 table-capacity R scan + v2.3 training-data envelope, 8k vocab, with per-token stats dump (2026-10-17, running)
+**launch update 2（2026-10-17 15:35）**:2345 联合两臂在 A100-40GB 二次 OOM 后按 MAX_FAILS 退役——4 表 × (param+RMSProp state) ≈ 37.6 GB，任何 device batch 都超 40 GB（与 §76 v2.2 R=3M infeasible 判定同因），**该两臂在 A100 物理不可行**。同日 15:35 改在 360-2 H200 同机配对补跑（launcher `run_v21_dict_lines.sh` md5 81e239be 同步）：`v21_dict_n2-3-4-5_s42_2000_fd`（gpu2）/ `v21_hash_n2-3-4-5_s42_2000_fd`（gpu4），mb72，V5 标准 + per-token dump。作为 §76 v2ord_n2-3-4-5（360-1 H200，8.228±0.024）的补充核对点；结果出来后回填本表并更新 panel。
+
+**结果回填（2026-10-17 15:52）**:两臂完成，summary 已 harvest 到 `output/harvest_v21/`。
+- `v21_hash_n2-3-4-5_s42_2000_fd`（360-2 gpu4）:**gap 8.2669**（train 0.2619 / val 8.5288）——与 360-1 v2ord_n2-3-4-5 的 8.228±0.024 差 0.039，跨主机复现良好。
+- `v21_dict_n2-3-4-5_s42_2000_fd`（360-2 gpu2）:**gap 4.4349**（train 1.3928 / val 5.8277）。
+- **同机配对 dict−hash = −3.83 nats**:联合 2-5 下零碰撞表把 gap 从 8.27 压到 4.43，判读问题①答案为「是」（单 order 隔离对照 dict−hash：n5 −5.36 / n4 −4.75 / n3 −3.45 / n2 −0.47，A100 口径）。注意 dict 2345 的绝对 gap（4.43）仍高于任何单 order dict 臂——碰撞之外，覆盖率（top-1M 对 4 阶联合训练位置的覆盖）与四表联合动力学也贡献 gap，与 §77 keephash（覆盖隔离对照）的判读闭环待其重跑后完成。
+
+## §74 · v2.2 table-capacity R scan + v2.3 training-data envelope, 8k vocab, with per-token stats dump (2026-10-17, done)
 
 **来源**:用户 2026-10-17 指令(生产级复现路线第一步):「关于词表大小…对于 n=2, 2~3, 2~4, 2~5, 2~6, 2~7 都扫10个点,1~之前的上界,可能是3e6」「关于训练数据…n=2, 2~3, 2~4, 2~5, 2~6, 2~7 都是同时开,词表都是1M…最少10M,总共插15个点」「所有实验都要记录每个token的loss和context,便于事后做gap-freq统计」。
 
@@ -4883,7 +4890,9 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 
 **注意**：`experiment-log.md` 中现有两个 §76（本批 order sweep 的 §76，以及另一会话的 v2.2/v2.3/v2.4 回填 §76）。本节取 §77，编号冲突需要统一。
 
-## §78 · epoch 固定协议（--train_epochs）+ E=3 包络重排（2026-10-17，running）
+**状态更正（2026-10-17 15:40）**：a100_t1 上 `ngram-gap-lab-keep` 部署目录与 `logs/` 已不存在（被清理），**7 个 keephash 臂从未启动**——准入条件（已用显存 < 2 GiB）始终未满足：a100_t1 全 8 卡自 08:59 起被另一租户 RL 任务占用（约 30 GB/卡，100% util，`a100_rl` q35 GSPO）。§73 主根本身也已无 run 目录/logs，但 13 个完成臂的 summary 已 harvest 回本地 `output/harvest_v21/`（结果安全，panel 图即出自该 harvest）。重排队需拍板：① 等 A100 空闲后原位重建 keep 树重排队（保持 A100 硬件配对）；② 改 H200（与 dict/hash 同机，破坏 A100 配对设计但立即可跑）。本节在重跑前保持 queued 状态。
+
+## §78 · epoch 固定协议（--train_epochs）+ E=3 包络重排（2026-10-17，done）
 
 **来源**:用户 2026-10-17 纠正:「增加数据集大小的实验应该固定Epoch数量，而非Step数量。这才是为什么我说一B实验跑得很慢的原因。必要的时候可以使用多卡同时训练来加速。你也可以直接把实验排上,总之大的实验要先并行排上队跑起来。」——v2.3/v2.4 原 2000 步固定设计在池变化时重复次数不受控（10M=30 epoch vs 1B=0.3 epoch），不是干净的包络对照。
 
@@ -4898,3 +4907,34 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 - 1B×E3 = 20,343 步 ≈ 1.6h/臂（8L H200 实测 0.28s/step）；多卡 DDP 暂缓（单臂时长可接受，P1 风险大），1B 仍等语料（blocker 同 §74）。
 
 **判读问题**:①E=3 包络下 gap-pool 曲线与固定步数版（§74/§75）的偏差定量给出「步数混淆」的大小;②10M 池 E=3（1.67）vs 2000 步（10.5）的 6 倍差是否主要由 epoch 3→30 的额外重放贡献;③E=3 时模型大小斜率（v24e）是否比固定步数版（§75:10.8→13.6）更陡——固定步数下小池大模型见过更多 epoch，可能高估了模型效应。
+
+**完成回填（2026-10-17 15:30）**:96/96 臂全部完成（360-1 66 臂 gpu1/2/4/5/6；360-2 30 臂 gpu0/1/3/7），两机队列清空，无 NaN。每个池点实际 epoch 精确 = 3.00（E=3 × pool/147456 向上取整，10M=201 步 → 49.7M=1011 步）。harvest:96 份 summary → `output/harvest_e3/`；结果表 `docs/appendices/epoch_envelope_e3_20261017/e3_results.csv`；图 `docs/plot_scripts/gen_e3_epoch_envelope_figs.py` → `docs/figs/sweeps_20261017/fig_e3_{pool_envelope,modelscale}.png`（panel.html 已收录 §78 行，panel_audit 0 issues）。per-token dump（token_stats_step*_val/train.npz，各 590k tok/臂）随 run 落在两机 `data/runs_fixed/`，未拉回本地（gap-freq 统计时按需取）。
+
+**结果（final gap，seed 42，E=3；行=orders/模型档，列=池 M tok）**:
+
+v23d（6 阶集合 × 6 池）:
+| orders | 10M | 14M | 19M | 27M | 37M | 49.7M |
+|---|---|---|---|---|---|---|
+| 2 | 1.67 | 1.58 | 1.38 | 1.19 | 1.08 | 0.98 |
+| 2-3 | 4.11 | 3.89 | 3.65 | 3.21 | 2.95 | 2.75 |
+| 2-3-4 | 5.90 | 5.72 | 5.44 | 5.00 | 4.68 | 4.50 |
+| 2-3-4-5 | 6.61 | 6.48 | 6.36 | 6.09 | 5.90 | 5.77 |
+| 2-3-4-5-6 | 6.67 | 6.55 | 6.45 | 6.37 | 6.31 | 6.34 |
+| 2-3-4-5-6-7 | 6.76 | 6.65 | 6.54 | 6.52 | 6.56 | 6.53 |
+
+v24ms（5 档 backbone × 2 模式 × 6 池）:
+| 档 | tri@10M | tri@49.7M | n25@10M | n25@49.7M |
+|---|---|---|---|---|
+| L4h4d512 (17M) | 2.97 | 2.02 | 5.97 | 4.98 |
+| L6h5d640 (35M) | 3.23 | 2.25 | 5.96 | 4.88 |
+| L8h6d768 (63M) | 3.32 | 2.48 | 5.94 | 4.76 |
+| L10h7d896 (104M) | 2.94 | 2.71 | 5.93 | 4.58 |
+| L12h8d1024 (159M) | 3.69 | 2.81 | 5.82 | 4.40 |
+
+**物理判读**:
+1. **步数混淆定量**:同池点 E=3 vs 固定 2000 步（295M tok）差 4–6×。n2@10M:1.67 vs 10.53（6.3×，即 §78 排队时预告的首臂对照）；2-3-4-5@10M:6.61 vs 10.68；n≥5 联合约 0.6–0.7×。§74/§75 固定步数包络的绝对值全部偏高，趋势（形状、排序）不变。
+2. **形状不变**:E=3 下 n≤4 的 gap 仍随池增大单调下降（n2 1.67→0.98），n≥5 联合仍几乎不动（6.3–6.8）——「高阶联合的 forking 不随池缓解」在 epoch 匹配后依然成立，且 3 个 epoch 即达 6.5+，与 DS/Kimi 报告的第 3 epoch 严重 forking 同形。
+3. **模型斜率衰减但不变号**:tri 的 gap 对 backbone 大小斜率从 +2.8（10.8→13.6，固定步数）缩到 +0.7（2.97→3.69 @10M）；n25 联合两种协议都对模型大小不敏感，E=3 下随模型增大略降（5.97→5.82 @10M，4.98→4.40 @49.7M）。固定步数版把「大模型在小池上被动多看的 epoch」记到了模型头上，高估模型效应。
+4. tri 档在 10M/19M 出现非单调（L10 @10M 2.94 < L8 3.32；L10 @19M 3.55 > L12 3.54），单 seed 噪声量级（§76 跨卡噪声 0.004–0.134 远小于此），判读斜率时以两端档（17M vs 159M）为准。
+
+**遗留**:1B 池点仍等语料（blocker 同 §74，1B×E3≈20,343 步≈1.6h/臂）；E∈{2,6} 锚点未跑（如需 onset 精细曲线再排）。
