@@ -6,7 +6,7 @@
 # RL jobs on the A100 fleet).
 #
 #   queue_v21_dict_lines.sh <job_file> <gpu,gpu,...>
-#   job line:  "dict 2,3,4,5 42"  |  "hash 5 42"  |  "nogram nogram 42"
+#   job line:  "dict 2,3,4,5 42"  |  "hash 5 42"  |  "keephash 2,3,4,5 42"  |  "nogram nogram 42"
 #              optional 4th field = device batch (A100 arms with >=2 tables
 #              need 12; unset = NGLAB_DEVICE_BATCH or 72)
 set -uo pipefail

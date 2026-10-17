@@ -91,6 +91,7 @@ class Config:
     ngram_extra_orders: tuple = ()    # v2: generic clean single tables for orders n >= 4 (input only)
     ngram_clean_table: int = 0        # rows R of every generic order-n table
     ngram_dict_topk: int = 0          # v2.1: >0 = no-collision dictionary mode (see load_ngram_dictionaries)
+    ngram_keep_rows: str = "dict"     # with ngram_dict_topk: dict = unique rows | hash = hash rows under the same top-K membership (coverage control)
     intervention: str = "none"        # none | freeze_table | freeze_backbone | freeze_both | hash_reseed | mask_low_freq | mask_high_freq | random_context_loss_mask
     intervention_epoch: int = 1       # fire when 0-indexed epoch reaches this value (1 = start of epoch 2)
     intervention_epochs: tuple = ()   # extra 0-indexed due epochs for multi-fire interventions (e.g. (1, 2))
@@ -214,6 +215,11 @@ def ngram_hash_constants(n: int) -> tuple:
         for k in range(n)
     )
 
+
+# row-slice threshold for the RMSProp table update (see _table_rmsprop_step);
+# module-level so test_ngram_keep_cpu.py can exercise the sliced path on CPU
+_TABLE_SLICE_BYTES = 2 << 30
+_TABLE_SLICE_ROWS = 1 << 18
 
 # splitmix64 finalizer constants as int64 bit patterns (== ngram_freq.py's
 # numpy uint64 version; used by the dictionary-mode key function, whose
@@ -1075,7 +1081,12 @@ class NanoGPT(nn.Module):
                 residual = tgve if residual is None else residual + tgve
         for n in self.ngram_extra_orders:
             nve_tbl = self.ngram_ves[str(n)]
-            if n in self.ngram_dict_keys:
+            if n in self.ngram_dict_keys and self.config.ngram_keep_rows == "hash":
+                # coverage-matched control: identical top-K membership mask, but the
+                # row is the hash row, so collisions among kept contexts remain
+                _, valid = self._ngram_dict_rows(n, idx)
+                nve = nve_tbl(self._ngram_row_indices(n, idx)) * valid.unsqueeze(-1).to(nve_tbl.weight.dtype)
+            elif n in self.ngram_dict_keys:
                 rows, valid = self._ngram_dict_rows(n, idx)
                 nve = nve_tbl(rows) * valid.unsqueeze(-1).to(nve_tbl.weight.dtype)
             else:
@@ -1462,9 +1473,9 @@ class MixedOptimizer:
         # updated in row-slices: elementwise math is identical, but the
         # square/denom temporaries are bounded to one slice instead of three
         # full-table copies (~28 GiB peak at 3M x 768).
-        if p.numel() * p.element_size() > (2 << 30):
-            for i in range(0, p.shape[0], 1 << 18):
-                sl = slice(i, min(i + (1 << 18), p.shape[0]))
+        if p.numel() * p.element_size() > _TABLE_SLICE_BYTES:
+            for i in range(0, p.shape[0], _TABLE_SLICE_ROWS):
+                sl = slice(i, min(i + _TABLE_SLICE_ROWS, p.shape[0]))
                 es = exp_avg_sq[sl]
                 gs = g[sl]
                 es.lerp_(gs.square(), 1 - b2)
@@ -2315,6 +2326,10 @@ def main():
                              "(2/3 included, routed through the generic path), keep the top-K "
                              "train contexts by count as unique rows (miss contributes zero). "
                              "Requires --freq_index with those orders; K <= --ngram_clean_table")
+    parser.add_argument("--ngram_keep_rows", default="dict", choices=["dict", "hash"],
+                        help="with --ngram_dict_topk: dict = unique rows (no-collision dictionary); "
+                             "hash = hash rows masked to the same top-K membership (coverage-matched "
+                             "control: separates collisions from coverage)")
     parser.add_argument("--diag_workers", type=int, default=1,
                         help="background diag worker processes (v2 multi-order index: >1 keeps "
                              "up with 7 orders; rows may land out of step order)")
@@ -2478,6 +2493,8 @@ def main():
         if args.ngram_dict_topk > args.ngram_clean_table > 0 or \
                 (args.ngram_dict_topk > 0 and args.ngram_clean_table <= 0):
             parser.error("--ngram_dict_topk must be <= --ngram_clean_table (and R > 0)")
+    if args.ngram_keep_rows == "hash" and args.ngram_dict_topk <= 0:
+        parser.error("--ngram_keep_rows hash requires --ngram_dict_topk > 0 (membership mask)")
     if ngram_orders:
         if min(ngram_orders) < 2 or max(ngram_orders) > 16:
             parser.error("--ngram_orders must lie in [2, 16]")
@@ -2537,6 +2554,7 @@ def main():
         ngram_extra_orders=extra_orders,
         ngram_clean_table=args.ngram_clean_table if extra_orders else 0,
         ngram_dict_topk=args.ngram_dict_topk if extra_orders else 0,
+        ngram_keep_rows=args.ngram_keep_rows if args.ngram_dict_topk > 0 else "dict",
         intervention=args.intervention,
         intervention_epoch=args.intervention_epoch,
         intervention_epochs=tuple(
@@ -3530,6 +3548,7 @@ def main():
         "disable_ngram_tables": bool(args.disable_ngram_tables),
         "row_index": bool(args.row_index),
         "ngram_dict_topk": int(args.ngram_dict_topk),
+        "ngram_keep_rows": args.ngram_keep_rows,
         "ngram_orders": sorted(ngram_orders),
         "rows_meta": _rows_meta,
         "token_dtype": cfg.token_dtype,
