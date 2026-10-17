@@ -26,7 +26,7 @@
 <pre class="mermaid">
 flowchart LR
   G["v2 目标<br/>缓解 forking + 最大化 OE 收益"]
-  G --> T1["① 生产级 PT 复现 forking<br/>为什么 1B 时消失？"]
+  G --> T1["① 生产级 PT 的 forking<br/>scaling 与外推"]
   G --> T2["② 端到端 OE 收益<br/>设计好的 OE"]
   G --> T3["③ 顺路：MoE × OE 模型家族"]
 
@@ -35,6 +35,7 @@ flowchart LR
   T1 --> a3["表大小 R<br/>≥100k 进入高原<br/>58/60"]
   T1 --> a4["数据包络 6 种阶集合<br/>n≥5 联合不随池下降<br/>6/15 点，缺 1B"]
   T1 --> a5["gap-freq 幂律<br/>有碰撞混淆<br/>188 臂 dump 未分析"]
+  T1 --> a7["外推到 1B / 20B / 750B<br/>初版：两种拟合分歧<br/>判别线 D/N=5、20 未跑"]
   T1 --> a6["生产级 SFT<br/>未开始"]
 
   T2 --> b1["只留高频 + 无碰撞<br/>gap 8.27 → 3.87<br/>覆盖率是主力"]
@@ -51,17 +52,19 @@ flowchart LR
   classDef root fill:#ddf4ff,stroke:#0969da,color:#1f2328
   class G,T1,T2,T3 root
   class a1,a3,b1,c1 done
-  class a2,a4,a5 part
+  class a2,a4,a5,a7 part
   class a6,b2,b3,b4,c2 todo
 </pre>
 
 <table>
-  <tr><th>「1B 时 forking 消失」的嫌疑</th><th>当前证据（≤49.7M 池，E=3）</th><th>判断</th></tr>
-  <tr><td>n 不够大</td><td>n≥5 联合 6.76→6.53 几乎不降；n2 1.67→0.98 明显下降</td><td>支持，最可能的主因</td></tr>
-  <tr><td>模型不够大</td><td>tri 2.02→2.78 随模型升；n2–5 联合 4.97→4.44 反而降</td><td>部分支持</td></tr>
-  <tr><td>表（词表）不够大</td><td>R≥100k 已进高原，1M→2M 变化小</td><td>不支持</td></tr>
+  <tr><th>scaling 关系（trigram，E=3，50 臂）</th><th>数字</th><th>外推含义（假设）</th></tr>
+  <tr><td>模型 N</td><td>gap ∝ N<sup>+0.108</sup></td><td>同样数据下，大模型更 fork</td></tr>
+  <tr><td>数据 D</td><td>gap ∝ D<sup>−0.170</sup></td><td>数据多能缓解，但 n 越大缓解越弱（n2-7 指数仅 −0.02）</td></tr>
+  <tr><td>D/N 固定</td><td>gap ∝ N<sup>−0.06</sup></td><td>D=20N 时 1B–750B 的 trigram gap 约 1.0–1.6（E=3–4），不会消失</td></tr>
+  <tr><td>N×D 交互项</td><td>+0.056（90% 0.033–0.081）</td><td>另一种同样好的拟合：随规模恶化，需 D/N=5、20 的实验室线判别</td></tr>
+  <tr><td>生产「100B 子集重复」</td><td>D<sub>rep</sub>/N ≈ 0.13–1</td><td>正落在实验室已测 D/N 区间，外推只在 N 轴</td></tr>
 </table>
-<p class="sub" style="margin-top:8px">1B 点本身未跑，上表是外推，仍是假设。</p>
+<p class="sub" style="margin-top:8px">详见 docs/appendices/v2_scaling_20261017/README.md。</p>
 <script>mermaid.initialize({ startOnLoad: true, theme: "base", flowchart: { curve: "basis", nodeSpacing: 18, rankSpacing: 50 } });</script>
 </body>
 </html>

@@ -12,7 +12,7 @@
 ```mermaid
 flowchart LR
   G["v2：缓解 forking<br/>+ 最大化 OE 收益"]
-  G --> T1["① 生产级 PT 复现 forking<br/>为什么 1B 时消失？"]
+  G --> T1["① 生产级 PT 的 forking<br/>scaling 与外推"]
   G --> T2["② 端到端 OE 收益<br/>设计好的 OE"]
   G --> T3["③ 顺路：MoE × OE 模型家族"]
   T1 --> a1["n 扫描 2–8 + 2–5 联合<br/>✅ 已完成"]
@@ -20,6 +20,7 @@ flowchart LR
   T1 --> a3["表大小 R 扫描<br/>✅ 58/60"]
   T1 --> a4["数据包络 6 种阶集合<br/>🟡 6/15 点，缺 1B"]
   T1 --> a5["gap-freq 幂律<br/>🟡 有碰撞混淆"]
+  T1 --> a7["外推到 1B/20B/750B<br/>🟡 初版，两种形式分歧"]
   T1 --> a6["生产级 SFT<br/>❌ 未开始"]
   T2 --> b1["只留高频 + 无碰撞<br/>✅ gap 大降"]
   T2 --> b2["净收益 val 低于 nogram<br/>❌ 几乎都没做到"]
@@ -46,15 +47,21 @@ flowchart LR
 | epoch 剂量 E∈{2,3,6} | 严格单调，无平台；E=2 已明显 fork；重复次数比池大小更关键 | n2–5 @49.7M：2.89/5.77/8.26 | §78，18 臂 |
 | 协议修正 | 固定 2000 步在小池上等于 30 epoch，把 gap 高估 4–6× | n2 @10M：10.53（2000 步）vs 1.67（E=3） | §78 |
 
-### 2.2 「1B 时 forking 消失」的三个嫌疑，目前判到哪
+### 2.2 scaling 与外推（详见 `../appendices/v2_scaling_20261017/README.md`）
 
-| 嫌疑 | 当前证据（≤49.7M） | 判断 |
-|---|---|---|
-| n 不够大 | n≥5 联合的 gap 几乎不随数据池下降，n2 则下降明显 | **支持**，最可能的主因 |
-| 模型不够大 | 只有 trigram 时支持；n2–5 联合时大模型 gap 反而降 | 部分支持 |
-| 表（词表）不够大 | R≥100k 已进高原，1M→2M 变化小 | 不支持 |
+生产级 PT 本身有 forking。第一条线的任务是从实验室规模外推到：
+- 第一阶段：Dense 1B / 20B；MoE 取 FLAME-Large（1.3B 总量）。D = 20 × 总参数，重复 3–4 遍。
+- 生产：Dense 100B 或 750B-A10B（DeepSeek-V4.1-Flash：552B + 196B Engram，8/16B 激活）。15–30T 语料，其中 100B 子集重复 3–4 遍。
 
-以上均是 ≤49.7M 池的外推，**1B 点本身还没跑**，结论仍是假设。
+| 结论（假设） | 依据 |
+|---|---|
+| trigram：`log gap = 2.01 + 0.108·log N − 0.170·log D`；沿 D/N 固定，gap ∝ N^−0.06 | 50 臂，E=3，log-RMSE 0.062 |
+| 按可分幂律，目标规模 trigram gap 约 1.0–1.6（E=3–4），不会消失 | 外推 |
+| 加 N×D 交互项同样拟合得好，但外推是「随规模恶化」 | 交互系数 90% 区间 0.033–0.081 |
+| 生产的「100B 子集重复」对应 D_rep/N ≈ 0.13–1，正落在实验室测过的 D/N 区间 | 外推只发生在 N 轴 |
+| 旧的「1B 时 forking 消失」：2000 步只训 0.3 遍，没有重复（E=1 的 gap 只有 E=3 的 2–6%） | §78 曲线 |
+
+**在实验室内就能判别两种形式**：在 D/N=5 或 20 的线上，两者对 N 的趋势符号相反。
 
 ### 2.3 协议对齐（读历史数字用）
 
@@ -64,10 +71,9 @@ flowchart LR
 
 ### 2.4 未解决
 
-- **>49.7M 的 9 个数据点（含 1B）**：handoff 记为「语料无读权限」，但 plan-9 线已在 ophis 用同一 8192 词表
-  tokenize 了全部 163 分片，并做好了 main_1b 前缀（`data/manifest_full163/`）。缺的只是该池上的多阶 freq index。
-  1B 只需跑一条 E=3（≈20k 步，≈1.6h/臂）：学习率 constant、同 seed、同数据顺序，所以 E=1/E=2 就是
-  这条曲线的前缀，按飞书说的直接复用，不必另跑。等价性待用已有 E2/E6 臂的 train_log 核对。
+- **D/N=5、20 的判别线**（L1/L2）与 clean n2-4 版本（L3）：数据用 ophis `data/manifest_full163/`（7.76B，与现有 run 同语料、同 tokenizer），搬到 360-1。E=4 曲线的前缀即 E=1/2/3，不另跑。
+- **v24 的 n2-5 臂（75 个）漏传 `--bigram_clean_table`**，bigram 走了旧 2-hash 表，同条件 gap 比 clean 版低 0.7–1.0。「n2-5 联合时大模型 gap 反而降」需用 clean 表重跑后才能引用。
+- **生产结构未测**：多 head hash 表、「新数据 + 重复子集」混合流、129k 词表、MoE 上的 OE forking。
 - **无碰撞的 gap-freq 幂律**：§76 的 α 与「每行承载的上下文数」混在一起。188 臂（§78 166 + §73/§77 22）
   的 per-token dump 还在两台 360 上，没拉回本地分析。
 - **R=3M 两个尾点**（n2–6、n2–7）：单卡 H200 放不下（138–165GB），需要表分片或多卡。
@@ -140,26 +146,26 @@ H200 同机，2000 步，seed 42：
 
 ### 需要用户拍板
 
-- [ ] push：`v2_main` 领先 `forking/v2_main` 24 个 commit。
-- [ ] 360-2 配额清理（`ngram-gap-lab-plan7` 82G / `ngram-gap-exp` 75G / `workdir` 51G / `logs/failed_launch/`），不清则 360-2 停摆。
-- [ ] 1B 在 ophis 直接跑，还是把约 2GB 数据搬到 360-1（>1GB 跨集群）。
-- [ ] FLAME 家族的语料：保留 full-163（建议）还是重建 OpenWebText。
+- [x] push：已推到 `MetaCircleAI/forking_v2` main（`53b77d4`，快进）。
+- [x] 360-2 配额：用户与另一 agent 清理。
+- [ ] **语料统一**：仓库所有现有 run 用的都是 ClimbMix（`karpathy/climbmix-400b-shuffle`，论文附录 B），不是 OpenWebText；full-163 也是同一语料池。ophis 与 360-1 上都没有 OWT。
+  - 统一到 ClimbMix：现有 350+ 臂直接可比。
+  - 统一到 OWT：v2 全部扫描需在新语料上重跑。
+- [ ] L6 多 head hash 表属于新架构变体，开跑前需拍板。
 
 ### 实验，按优先级
 
-1. **给净收益补对照**：E=3 × 6 池 + E2/E6 × 两池端的 nogram 臂（约 10 臂，很便宜）。之后所有 OE 臂同时报 gap 和 Δval。
-2. **OE 收益组合臂**（② 的主攻方向）：
+1. **① 外推判别线 L1**：trigram，D/N=5，5 档 backbone，E=4，配 nogram（最长约 4h/臂，估）。之后 L2（D/N=20）。
+2. **L3**：clean n2-4（对齐 DS 的 {2,3,4}）跑同样的线，替代有问题的 v24 n2-5 臂。
+3. **② 净收益对照**：E=3 包络补 nogram 臂（约 10 臂），之后所有 OE 臂同时报 gap 和 Δval。
+4. **② OE 收益组合臂**：
    - keephash + 每 epoch reseed；
    - keephash 改用 y/v 注入；
    - count-init + 可学习；
    - 第 1 个 epoch 后冻表。
-
-   先用 n5 和 n2–5 两个阶集合、E=3 @49.7M 筛选。
-3. **1B 点**：在 manifest_full163 的 main_1b 上，n2 / n2–3 / n2–5 / tri 各跑一条 E=3，同时配 nogram；E1/E2 从曲线读。
-4. **gap-freq 幂律**：拉回 188 臂 per-token dump，每个 n 出幂律；用 dict 臂给去碰撞后的指数，并核实「保留集内去碰撞反升」。
-5. **更可训练的 OE**：先出候选清单并登记，再排卡。
-6. **生产级 SFT**：等 1B 预训练点出来后，用它的 checkpoint 设计。
-7. **FLAME 家族 P1→P3**：语料定后开工；P4 等放行。
+5. **gap-freq 幂律**：拉回 188 臂的 per-token dump 分析。
+6. **L4/L5**：R 随 D 放大；「新数据 + 重复子集」混合流（需新 loader 功能）。
+7. **FLAME 家族 P1→P3**：语料与主线统一后开工；P4 等放行。
 
 ### 文档卫生
 
