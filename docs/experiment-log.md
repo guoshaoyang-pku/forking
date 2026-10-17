@@ -4882,3 +4882,19 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 7. 本节不记录任何结果；完成后回填 final gap、覆盖率与 dict−keephash、keephash−hash 差值。
 
 **注意**：`experiment-log.md` 中现有两个 §76（本批 order sweep 的 §76，以及另一会话的 v2.2/v2.3/v2.4 回填 §76）。本节取 §77，编号冲突需要统一。
+
+## §78 · epoch 固定协议（--train_epochs）+ E=3 包络重排（2026-10-17，running）
+
+**来源**:用户 2026-10-17 纠正:「增加数据集大小的实验应该固定Epoch数量，而非Step数量。这才是为什么我说一B实验跑得很慢的原因。必要的时候可以使用多卡同时训练来加速。你也可以直接把实验排上,总之大的实验要先并行排上队跑起来。」——v2.3/v2.4 原 2000 步固定设计在池变化时重复次数不受控（10M=30 epoch vs 1B=0.3 epoch），不是干净的包络对照。
+
+**实现**（commit 9e9c8c6）:`--train_epochs E`，steps = ceil(E × pool_tokens / 147456)（`steps_for_epochs`，向上取整）；与 --steps 互斥（steps 须留默认）；要求显式 --train_max_tokens。summary 记 train_epochs/实际 steps。launcher v23/v24 第 6/9 位参数 EPOCHS>0 时切换 run_id 标签 `e{E}`（如 `v23d_n2_p10m_s42_e3_fd`）。GPU 冒烟:E=1@10M → steps=67、pool=9,879,552、summary 三字段正确。
+
+**E=3 的选择**:厂商（DS/Kimi）报告第 3 个 epoch 出现严重 forking，本地 onset 曲线（§76 panel fig_epoch_forking_curves）epoch 2 起跳、epoch 3 达 2–6.5。固定步数版的 49.7M 点（2000 步=5.9 epoch）保留作 E≈6 锚点。
+
+**已排队 96 臂（E=3）**:
+- 360-1（`/data/shared/guoshaoyang/forking-v2`，健康卡 1,2,4,5,6;gpu0/3/7 ECC 避开）:v23e 6 order-set × 6 池 {10,14,19,27,37,49.7}M = 36 + v24e tri 5 档 × 6 池 = 30，共 66。root 迁移注意:360-1 活跃根是另一会话的 forking-v2（freq index 在此，/data/home 旧根磁盘满已弃用），env.sh 五个 NGLAB_* 指过去。
+- 360-2（卡 0,1,3,7，与旧队列的 2,4,5,6 不相交避免抢卡）:v24e n25 5 档 × 6 池 = 30。
+- 实测速度:E=3 臂 201–1011 步（10M→49.7M），2–10 分钟/臂；首臂 v23d_n2_p10m_s42_e3_fd 已完成 **final gap 1.67**（同池固定 2000 步版 = 29.9 epoch → gap ~10.5）——协议差异即物理:重复次数对齐后，10M 池在 3 epoch 时只显现轻中度 forking。
+- 1B×E3 = 20,343 步 ≈ 1.6h/臂（8L H200 实测 0.28s/step）；多卡 DDP 暂缓（单臂时长可接受，P1 风险大），1B 仍等语料（blocker 同 §74）。
+
+**判读问题**:①E=3 包络下 gap-pool 曲线与固定步数版（§74/§75）的偏差定量给出「步数混淆」的大小;②10M 池 E=3（1.67）vs 2000 步（10.5）的 6 倍差是否主要由 epoch 3→30 的额外重放贡献;③E=3 时模型大小斜率（v24e）是否比固定步数版（§75:10.8→13.6）更陡——固定步数下小池大模型见过更多 epoch，可能高估了模型效应。
