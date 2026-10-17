@@ -4846,3 +4846,39 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 
 
 **并入 §73 词典线（2026-10-17，用户拍板「碰撞控制并入 §73，不另开 R 扫描」）**：本节的 H200 hash 臂作为 §73 的跨硬件核对点（核对表与覆盖率见 `docs/appendices/v2_order_sweep_20261017/crosscheck_73_dict_and_coverage.md`）。同 seed 的 A100 与 H200 hash 臂差 ≤ 0.11 nats。A100 dict 臂显著更低（n5：1.18 vs hash 6.53），但 top-1M 只覆盖 n5 训练位置的 11.7%，**碰撞因子与覆盖因子未分离**。下一步提议：覆盖率匹配的 hash + `mask_low_freq` 对照（阈值取使保留集合 = top-1M），由 §73 持有者决定是否入队；本节不占 A100 队列。
+
+
+## §77 · v2.1 覆盖率匹配对照 keephash：同一 top-K 成员掩码 + hash 行（2026-10-17，queued；未出结果）
+
+**目的**：§73 的 dict 臂同时改变两件事：行分配（无碰撞）与覆盖率（只有 top-K 上下文有行，其余位置 OE=0）。keephash 保持完全相同的 top-K 成员掩码，只把行换回 hash 行，因此 dict 与 keephash 之差 = 碰撞因子；keephash 与 hash 之差 = 覆盖因子。
+
+**代码**：`2877beb`（`--ngram_keep_rows {dict,hash}`，默认 dict，hash 要求 `--ngram_dict_topk>0`；summary 记录 `ngram_keep_rows`；行切片阈值提为模块常量；`code/tools/test_ngram_keep_cpu.py` T1–T6 全过）、`62f7bda`（队列：OOM 型启动失败只重排、不退役 GPU，已用桩启动器验证）。`test_ngram_dict_cpu.py`、`test_ngram_orders_cpu.py`、`test_fastpath_cpu.py` 全过。launcher `run_v21_dict_lines.sh` 新增 mode `keephash`（TAG `keephash_n<orders>`）。
+
+**等价性核对**：box 上部署的 d143125 train.py 与 HEAD 在同一小型 CPU 配置上跑出逐位相同的训练日志（去掉 elapsed）、freq-bin 日志与 exact-freq 日志；summary 仅新增配置字段。
+
+**部署**：`a100_t1_3:/home/tione/guoshaoyang/ngram-gap-lab-keep`（HEAD 代码树，md5 与本地核对一致）；`data` 为指向主根的符号链接，输出进入共享的 `data/runs_fixed`。队列 `logs/queue_main.log`，作业 `logs/jobs_keephash.txt`，GPU 0–5。§73 主根的代码与作业文件未改动。
+
+**臂与配对的 dict 臂**（seed 42，2000 步，V5 标准，A100-40GB，bf16，无 compile；mb 只切分同一步，总 batch 147,456 token 不变）：
+
+| run_id | orders | mb | 状态 | 配对 dict 臂 final gap（val loss） | top-1M 训练位置覆盖 |
+|---|---|---|---|---|---|
+| v21_keephash_n2_s42_2000_fd | 2 | 18 | queued | 2.2694（4.592） | 0.931 |
+| v21_keephash_n3_s42_2000_fd | 3 | 18 | queued | 2.1234（4.502） | 0.493 |
+| v21_keephash_n4_s42_2000_fd | 4 | 12 | queued | 1.5836（4.132） | 0.225 |
+| v21_keephash_n5_s42_2000_fd | 5 | 12 | queued | 1.1764（3.905） | 0.117 |
+| v21_keephash_n2-3_s42_2000_fd | 2,3 | 12 | queued | 3.5593（5.361） | — |
+| v21_keephash_n2-3-4_s42_2000_fd | 2,3,4 | 12 | queued | 4.2083（5.736） | — |
+| v21_keephash_n2-3-4-5_s42_2000_fd | 2,3,4,5 | 12 | queued | §73 联合 dict 臂待完成（已在 §73 作业中重排） | — |
+
+对照 hash 臂（同一 A100，§73）：n2 2.7354、n3 5.5713、n4 6.3380、n5 6.5342、2-3 5.8006、2-3-4 7.7193。
+
+**状态与限制**：
+1. 6 张 A100 的显存被另一租户占用约 35 GB（队列准入条件为已用 < 2 GiB），所有臂在 GPU 空出前不会启动。
+2. 联合臂需要约 37 GB，一旦租户回来就会 OOM，因此 OOM 型启动失败只重排（`62f7bda`）。
+3. keephash 中 top-K 内部仍有碰撞（约 1M 个上下文落入 2^20 行），它是“只隔离覆盖”之外的纯碰撞对照，不是无碰撞。
+4. 单 seed，无显著性断言；结果出来后再与 dict、hash 三者并列判读。
+5. 最终步会写 `token_stats_*.npz`（逐 token 损失与上下文键，数十 MB/臂），这是 HEAD 的默认行为。
+6. 解释器取自 `env.sh` 的 `a100_rl` venv，与 §73 已完成臂一致。
+7. 本节不记录任何结果；完成后回填 final gap、覆盖率与 dict−keephash、keephash−hash 差值。
+
+**注意**：`experiment-log.md` 中现有两个 §76（本批 order sweep 的 §76，以及另一会话的 v2.2/v2.3/v2.4 回填 §76）。本节取 §77，编号冲突需要统一。
