@@ -3656,7 +3656,8 @@ def main():
         diag_due = (
             (cfg.val_steps and (step + 1) in cfg.val_steps)
             or (not cfg.val_steps
-                and ((step + 1) % cfg.val_interval_steps == 0
+                and (((step + 1) % cfg.val_interval_steps == 0
+                      and (step + 1) % max(1, args.exact_freq_eval_interval) == 0)
                      or step == cfg.max_steps - 1))
         )
         if diag_due and (exact_freq_log is not None or freq_bin_log is not None):
