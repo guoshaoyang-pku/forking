@@ -4843,3 +4843,6 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 **infeasible 判定**:v2.2 的 n2-3-4-5-6 / n2-3-4-5-6-7 × R=3M 两点在 fp32 单卡 H200 物理不可行:5/6 表 × 3M × 768 × 4B × 3 份(param+state+dense grad)= 138/165 GB > 141 GB,与 microbatch 无关(mb16/24 均 OOM 验证)。R=3M 曲线尾点由 n≤4 集合覆盖;n≥5 集合曲线到 2M 已完整(峰-降形态已知)。
 
 **infra 附注**:commit cab6d3b 为 ≥2GiB 表加行分块 RMSProp 更新(CPU 逐位一致 CHUNKED_RMSPROP_BITWISE_OK;临时量从 3×全表降到 1×切片,消除 5 表 3M 场景的 28GB 峰值临时量,使 n5-set×3M 臂在 mb24 下可跑)。同批图:docs/figs/sweeps_20261017/panel.html。
+
+
+**并入 §73 词典线（2026-10-17，用户拍板「碰撞控制并入 §73，不另开 R 扫描」）**：本节的 H200 hash 臂作为 §73 的跨硬件核对点（核对表与覆盖率见 `docs/appendices/v2_order_sweep_20261017/crosscheck_73_dict_and_coverage.md`）。同 seed 的 A100 与 H200 hash 臂差 ≤ 0.11 nats。A100 dict 臂显著更低（n5：1.18 vs hash 6.53），但 top-1M 只覆盖 n5 训练位置的 11.7%，**碰撞因子与覆盖因子未分离**。下一步提议：覆盖率匹配的 hash + `mask_low_freq` 对照（阈值取使保留集合 = top-1M），由 §73 持有者决定是否入队；本节不占 A100 队列。
