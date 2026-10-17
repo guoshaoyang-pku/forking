@@ -56,6 +56,12 @@ gpu_loop() {
       [[ -d "$run_dir" && ! -s "$run_dir/summary.json" ]] \
         && mv "$run_dir" "$LOG_DIR/failed_launch/$(basename "$run_dir").gpu$gpu.$(date +%s)"
       requeue "$line"
+      if grep -qs "OutOfMemoryError" "$LOG_DIR/failed_launch/$(basename "$run_dir").gpu$gpu."*/train.log 2>/dev/null; then
+        # another tenant holds the card's memory: not a GPU fault, keep the GPU in the loop
+        echo "[queue] $(date '+%F %T') gpu $gpu launch OOM (tenant memory), requeued '$line', waiting"
+        sleep 300
+        continue
+      fi
       echo "[queue] $(date '+%F %T') gpu $gpu launch failure, requeued '$line', retiring gpu"
       return
     else
