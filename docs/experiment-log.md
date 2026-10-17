@@ -4894,6 +4894,24 @@ Owner:郭绍阳(Verdent). 用户指令(2026-10-17):「朴素 no collision，每�
 
 **重排队（2026-10-17 16:02，用户拍板「A100 不允许用，只允许 H200」）**：keephash 7 臂全部改在 **360-2 H200**（mb72，root `/data/home/guoshaoyang/ngram-gap-lab`，作业文件 `sweeps_jobs_h200_batch.txt`，queue_sweeps 8 卡，16:02 起）。§73 的 2345 dict/hash 同机配对臂已在本机完成（见 §73 结果回填），keephash 落地后整个 §73/§77 三方对照（dict / keephash / hash）同为 H200 口径，A100 仅作单阶旁证。完成后回填 final gap、覆盖率与两个差值。
 
+**结果回填（2026-10-17 16:20）**：7/7 臂完成（360-2 H200，seed 42，2000 步，per-token dump 齐全），summary 已 harvest 到 `output/harvest_v21/`。
+
+| arm | final gap | 配对 hash（360-1 v2ord，3 seed） | 覆盖率效应 hash→keephash | 配对 dict（§73，A100） | 隔离效应 keephash→dict |
+|---|---|---|---|---|---|
+| keephash n2 | 1.8150 | 2.607±0.023 | −0.79 | 2.2694 | +0.45 |
+| keephash n3 | 1.5942 | 5.542±0.023 | −3.95 | 2.1234 | +0.53 |
+| keephash n4 | 1.2400 | 6.324±0.075 | −5.08 | 1.5836 | +0.34 |
+| keephash n5 | 0.9219 | 6.557±0.143 | −5.63 | 1.1764 | +0.25 |
+| keephash n2-3 | 2.9732 | 5.801（A100） | — | 3.5593（A100） | +0.59 |
+| keephash n2-3-4 | 3.4645 | 7.719（A100） | — | 4.2083（A100） | +0.74 |
+| keephash n2-3-4-5 | 3.8735 | **8.2669（360-2 同机）** | −4.39 | **4.4349（360-2 同机）** | +0.56 |
+
+**三方分解判读（单 seed，H200 口径）**：
+1. **覆盖率是 dict 收益的主因子，不是碰撞。** hash→keephash（把 top-1M 之外的上下文挡在表外）压掉 0.79–5.63 nats，且与 §73 覆盖率单调一致（n2 覆盖 0.931 → −0.79；n5 覆盖 0.117 → −5.63）；联合 2-5 同机对照 −4.39。
+2. **kept 集合内部的碰撞隔离反而轻微抬升 gap。** keephash→dict 为 +0.25–0.74：top-1M kept key 在 2^20 hash 行内平均负载 ~0.95，dict 把它们完全隔离后每行独占梯度、记忆更锐。与 §76「碰撞负载推高 gap」不矛盾——那里是 46 上下文/行的重污染域，这里是 ~2/行的轻度稀释；方向反转发生在轻稀释区，属假设，待 per-token dump 的 gap-freq 统计核实。
+3. **keephash 自身随阶数单调下降**（n5 0.92，远低于 hash 6.56、略高于 nogram 0.24）：即便只保留 top-1M 高频上下文的 hash 行，gap 也被压到 1 附近——「只留高频」本身（continue-BPE 形态）就带走了绝大部分 forking。
+4. 注意事项：单阶 dict 值来自 A100（跨硬件差 ≤0.11，§76），360-2 同机 dict/hash 单阶臂已排队（见 §73 增补），落地后本表 hash/dict 列将全部同机化。
+
 ## §78 · epoch 固定协议（--train_epochs）+ E=3 包络重排（2026-10-17，done）
 
 **来源**:用户 2026-10-17 纠正:「增加数据集大小的实验应该固定Epoch数量，而非Step数量。这才是为什么我说一B实验跑得很慢的原因。必要的时候可以使用多卡同时训练来加速。你也可以直接把实验排上,总之大的实验要先并行排上队跑起来。」——v2.3/v2.4 原 2000 步固定设计在池变化时重复次数不受控（10M=30 epoch vs 1B=0.3 epoch），不是干净的包络对照。
@@ -4945,3 +4963,35 @@ v24ms（5 档 backbone × 2 模式 × 6 池）:
 - **E=3 seed 复跑（关键臂 p10m，与 §74/§75 seed 复跑同口径）**:v23d 6 order-set × seed {43,44} = 12 臂（360-1 健康卡 1,2,4,5,6）+ v24ms 5 档 × {tri,n25} × seed {43,44} = 20 臂（360-2），run_id `*_s{43|44}_e3_fd`。 Purpose:tri 中间档在 10M/19M 的 ±0.4 非单调超出跨卡噪声，seed 复跑给 E=3 模型斜率一个误差棒。
 - **E=6 锚点（§78 遗留项）**:v23d 6 order-set × p49.7M × E=6 × seed 42 = 6 臂（360-1），run_id `v23d_n*_p49m_s42_e6_fd`。E=6 @ 49.7M ≈ 原「固定步数版 49.7M 点（2000 步=5.9 epoch）」的协议化版本，给 epoch 轴 onset 曲线补一个协议一致的高池端点。
 - **infra**:新 wrapper `code/cluster/run_e3_seed.sh`（md5 7200553d，两机已同步）——queue_sweeps 只传位置参数，per-line seed 经 `NGLAB_SEED` 由 wrapper 注入；作业文件 360-2 `sweeps_jobs_h200_batch.txt`（27 行 = keephash 7 + v24 seed 20）、360-1 `sweeps_jobs_e3_rep.txt`（18 行 = v23 seed 12 + E=6 6）。预计 360-2 ~50 min、360-1 ~60 min 消化完。
+
+**增补臂 2（2026-10-17 16:25 排队）——epoch 剂量网格补全**:E∈{2,6} × 池 {10M, 49.7M} × 6 order-set（seed 42），与已有 E=3 全池 96 臂拼成 3 epoch 点 × 2 池端 × 6 阶集合的协议一致剂量网格。360-1 补 E=2@49.7M ×6 + E=6@10M ×6（`sweeps_jobs_e3_rep.txt` 追加，12 臂）；360-2 补 E=2@10M ×6（`sweeps_jobs_h200_batch.txt` 追加）。run_id `v23d_n*_p{10m|49m}_s42_e{2|6}_fd`。E=2@10M=136 步、E=6@10M=406 步、E=2@49.7M=674 步。
+
+## §79 · freeze0 对照对：冻结随机表是否仍然 forking（2026-10-17，planned）
+
+**来源**:用户对 plan-9 §2.5B 预测的纠正——「表不可学习 ⇒ 不会 sharpen ⇒ 不 fork」不成立：
+数据少了照样 fork；我们的机制里**冻结 n-gram 仍然确定性分割 context 子空间**（固定随机
+context→row→embedding 映射），backbone 照样能在 replay 下按分区 specialize。现有 freeze
+证据全部是**中途冻结**（e1/e2 边界，表已写满内容；`causalv5m3_freeze_table_e2` 仍保留
+对照 93.95% gap），从未测过 **step-0 冻结随机表**。parameter-golf 的 test-time blending
+等价物（表固定不可学习）在我们的 trained-in 架构里的最干净复刻就是本对照对。
+
+**设计**（2 臂，v5 标准 setting 原封不动，唯一变量 `--freeze_table`）:
+
+| run_id | 臂 | 变量 |
+|---|---|---|
+| `frz0_ctrl_s42` | 标准 input 注入，表可学习 | —（同时校验当前代码对权威 1.867 的复现性） |
+| `frz0_table_s42` | 同上 + `--freeze_table` | 表+gate 参数 `requires_grad=False`（input 路线无 gate，等价于只冻 `ngram_ves` 两张表）；表保持 N(0,0.02) 随机初始化，永不更新 |
+
+setting：input 注入 · bigram+trigram clean 表 R=2^20 · RMSProp (0.0,0.99) · table_lr_scale 128 ·
+lr 6e-4 warmup_constant(100) · seed 42 · 1000 步（shard1 ≈ 3 epoch replay）· bf16 不 compile ·
+device_batch 72 · val_interval 10 · train shard 1 / val shards 2-10+6542 · `data/runs_fixed`。
+
+**竞争预测（登记在案，跑完判读）**:
+- **H-user（用户机制）**:固定随机映射仍分割子空间，backbone 跨 pass 按分区共适应 →
+  gap 显著高于 nogram 权威值 0.245，可能达到可学习表 1.867 的相当比例。
+- **H-sharpen（plan-9 §2.5B 旧文本）**:表不可学习 ⇒ 无表侧 sharpening ⇒ gap 接近 nogram。
+
+**判读**:① frozen gap vs nogram 0.245 vs ctrl（应 ≈1.867，校验当前代码）；② frozen/ctrl
+比值给「表侧 sharpening vs backbone 侧分区共适应」的分解——直接决定 plan-9 §2.5C 分类表中
+frozen 行的预测改写与 golf 对照臂设计。验收：两臂完成、无 NaN、ctrl final gap 落在历史
+权威值 ±0.1 内（跨卡噪声 0.004–0.134 之上留余量）；launcher `code/cluster/run_v5_freeze0_pair.sh`。
