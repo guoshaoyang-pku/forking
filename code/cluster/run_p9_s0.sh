@@ -11,6 +11,7 @@
 set -euo pipefail
 
 GPU_ID=${GPU_ID:-0}
+PYTHON=${PYTHON:-python3}
 DATA_DIR=${NGLAB_DATA_DIR:-data/manifest_full163}
 OUT_DIR=${NGLAB_OUT_DIR:-data/runs_fixed}
 CODE_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -47,7 +48,7 @@ COMMON_ARGS=(
 )
 
 echo "== arm S0-OEON =="
-CUDA_VISIBLE_DEVICES=$GPU_ID python3 code/train.py \
+CUDA_VISIBLE_DEVICES=$GPU_ID $PYTHON code/train.py \
   --run_id p9_moe_g4_x4_s0_e16_k4_de768_oeon_u100m_r1_seed42 \
   --enable_bigram 1 --enable_trigram 1 \
   --bigram_clean_table 1048576 --trigram_clean_table 1048576 \
@@ -55,14 +56,14 @@ CUDA_VISIBLE_DEVICES=$GPU_ID python3 code/train.py \
   "${COMMON_ARGS[@]}"
 
 echo "== arm S0-OEOFF =="
-CUDA_VISIBLE_DEVICES=$GPU_ID python3 code/train.py \
+CUDA_VISIBLE_DEVICES=$GPU_ID $PYTHON code/train.py \
   --run_id p9_moe_g4_x4_s0_e16_k4_de768_oeoff_u100m_r1_seed42 \
   --enable_bigram 0 --enable_trigram 0 \
   --bigram_clean_table 0 --trigram_clean_table 0 \
   "${COMMON_ARGS[@]}"
 
 echo "== S0 summary =="
-python3 - "$OUT_DIR" <<'EOF'
+$PYTHON - "$OUT_DIR" <<'EOF'
 import json, sys, math
 out = sys.argv[1]
 ids = ["p9_moe_g4_x4_s0_e16_k4_de768_oeon_u100m_r1_seed42",
