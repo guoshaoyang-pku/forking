@@ -61,7 +61,8 @@
     <tr><td>v2.2 表容量</td><td>6 个阶集合 × 10 个表容量点</td><td>58/60（2 点 infeasible）</td></tr>
     <tr><td>v2.3 数据池包络</td><td>6 个阶集合 × 5 个池点</td><td>30/30（49.7M 点在跑）</td></tr>
     <tr><td>v2.4 模型大小</td><td>5 档模型 × 2 模式 × 5 个池点</td><td>50/50（49.7M 点在跑）</td></tr>
-    <tr><td>seed 复跑</td><td>R=1M 与池 10M 关键臂 × seed 43/44</td><td>24 臂在跑</td></tr>
+    <tr><td>seed 复跑</td><td>R=1M 与池 10M 关键臂 × seed 43/44</td><td>24/24（2 臂收尾中）</td></tr>
+    <tr><td>epoch 固定包络 E=3</td><td>6 阶集合 × 6 池 + 5 档模型 × 2 模式 × 6 池</td><td>96 臂在跑（新协议 §78）</td></tr>
     <tr><td>v2 阶数扫描（360-1）</td><td>n=2..8 单独 + 2–5 联合 + 无表基线 × 3 seed</td><td>27/27（4 臂因 GPU ECC 隔离重跑）</td></tr>
     <tr><td>v2.1 词典对照（A100）</td><td>dict/hash × 6 阶集合 + 无表基线</td><td>13/15（2 臂排队中）</td></tr>
   </table>
