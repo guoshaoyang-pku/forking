@@ -46,6 +46,10 @@ def main():
     parser.add_argument("--token_dtype", default="u16", choices=["u16", "u32"],
                         help="shard dtype; u32 required for tokenizer vocab > 65535 "
                              "(train.py --token_dtype must match)")
+    parser.add_argument("--lib_data_dir", default="",
+                        help="override lib.DATA_DIR (parquet pool) after import, e.g. "
+                             "the full-163 shared pool on /data2. Pair with "
+                             "FIXED_TOKENIZER_DIR env to point at a readable tokenizer.")
     args = parser.parse_args()
 
     os.makedirs(args.out_dir, exist_ok=True)
@@ -55,7 +59,11 @@ def main():
     sys.path.insert(0, args.lib_dir)
 
     from lib import Tokenizer, TOKENIZER_DIR, make_dataloader
+    import lib as _lib
 
+    if args.lib_data_dir:
+        _lib.DATA_DIR = args.lib_data_dir
+        print(f"[prepare] lib.DATA_DIR overridden -> {args.lib_data_dir}")
     tok = Tokenizer.from_directory(TOKENIZER_DIR)
     print(f"[prepare] vocab_size={tok.get_vocab_size()} BOS={tok.bos_token_id}")
 
@@ -73,8 +81,11 @@ def main():
 
     for sid in shard_ids:
         # Write a temporary data_split.json that puts this single shard as "train"
-        # and a dummy different shard as "test" (required non-empty by lib.py)
-        dummy_test = [s for s in shard_ids if s != sid][:1] or [sid]
+        # and a dummy different shard as "test" (required non-empty by lib.py).
+        # lib.py rejects train/test overlap, so the dummy must differ from sid.
+        dummy_test = [s for s in shard_ids if s != sid][:1]
+        if not dummy_test:
+            dummy_test = [6542] if sid != 6542 else [0]
         tmp_split = {"train": [sid], "test": dummy_test}
         with open(data_split_path, "w") as f:
             json.dump(tmp_split, f)

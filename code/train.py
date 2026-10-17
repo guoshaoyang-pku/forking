@@ -139,6 +139,14 @@ class Config:
                                 # offline index (prevention arm; plan-8 G3; needs --row_index)
     static_low_mask_keep_novel: bool = True  # novel (f==0) stays enabled in the static mask
     fp8_torchao: bool = False   # torchao float8 on backbone Linears only (table untouched)
+    # plan-9 MoE (moe_g == 0 -> dense path, bit-identical default; see code/moe.py)
+    moe_g: int = 0              # granularity G = d_ff / d_e
+    moe_x: int = 0              # FFN total expansion X (expert units / active units)
+    moe_shared_units: int = 0   # always-on shared experts S (0 <= S < G)
+    moe_aux_weight: float = 0.01
+    moe_zloss_weight: float = 0.001
+    moe_norm_topk_prob: bool = False  # OLMoE-faithful default: no top-k renorm
+    moe_panel_interval: int = 10      # ossification panel every Nth eval block
     # output
     out_dir: str = ""
 
@@ -387,7 +395,18 @@ class Block(nn.Module):
         self.ln_1 = LayerNorm(config.n_embd, bias=config.bias)
         self.attn = CausalSelfAttention(config, layer_idx)
         self.ln_2 = LayerNorm(config.n_embd, bias=config.bias)
-        self.mlp = MLP(config)
+        if getattr(config, "moe_g", 0) > 0:
+            from moe import moeify, MoEFFN
+            # same (G, X, S) point in every layer; expert MLP layout/init is
+            # identical to the dense MLP (init_weights covers nn.Linear)
+            self.moe_arch = moeify(
+                config.n_embd, 4 * config.n_embd, config.moe_g, config.moe_x,
+                config.moe_shared_units, config.moe_aux_weight,
+                config.moe_zloss_weight, config.moe_norm_topk_prob)
+            self.mlp = MoEFFN(self.moe_arch, bias=config.bias,
+                              dropout=config.dropout)
+        else:
+            self.mlp = MLP(config)
 
     def forward(self, x, ve=None, bigram_ve=None, trigram_ve=None):
         x = x + self.attn(self.ln_1(x), ve=ve, bigram_ve=bigram_ve, trigram_ve=trigram_ve)
@@ -599,6 +618,34 @@ class NanoGPT(nn.Module):
                 g = getattr(blk.attn, gname, None)
                 if g is not None:
                     torch.nn.init.zeros_(g.weight)
+
+    # ---- plan-9 MoE helpers -------------------------------------------------
+    def moe_layer_modules(self):
+        """List of MoEFFN modules (empty on the dense path)."""
+        if getattr(self.config, "moe_g", 0) == 0:
+            return []
+        return [blk.mlp for blk in self.transformer.h]
+
+    def moe_extra_loss(self):
+        """Sum over layers of (aux*aux_weight + z*zloss_weight), or None.
+
+        Differentiable tensors stashed by the last MoEFFN forward; the training
+        loop adds this to the LM loss for backward while evaluate_val() stays a
+        pure CE path (loss contract, plan-9 handoff 7.5).
+        """
+        mods = self.moe_layer_modules()
+        if not mods:
+            return None
+        total = None
+        for m in mods:
+            term = m.last_aux_loss * m.arch.aux_weight \
+                + m.last_z_loss * m.arch.zloss_weight
+            total = term if total is None else total + term
+        return total
+
+    @property
+    def moe_active(self) -> bool:
+        return getattr(self.config, "moe_g", 0) > 0
 
     @staticmethod
     def _reseed_constants(constants, salt):
@@ -1956,10 +2003,11 @@ def _autocast_ctx(dtype: str):
 def evaluate_val(model: NanoGPT, fixed_val_batches, dtype: str = "fp32") -> float:
     """Val loss on a FIXED batch set captured once at startup and reused for
     every evaluation, so the val-loss curve always measures the same val data."""
+    from moe import moe_diag_paused
     model.eval()
     losses = []
     ctx = _autocast_ctx(dtype)
-    with torch.no_grad():
+    with torch.no_grad(), moe_diag_paused(model):
         for inp, tgt in fixed_val_batches:
             with ctx:
                 loss = model(inp, targets=tgt)
@@ -1974,10 +2022,11 @@ def evaluate_fixed_probe(model: NanoGPT, fixed_train_probe, dtype: str = "fp32")
     Returns the mean loss over the probe.  Used with evaluate_val to form
     the optional fixed-probe diagnostic gap = fixed_val − fixed_train_probe.
     The standard scaling gap is the online batch-averaged train loss."""
+    from moe import moe_diag_paused
     model.eval()
     losses = []
     ctx = _autocast_ctx(dtype)
-    with torch.no_grad():
+    with torch.no_grad(), moe_diag_paused(model):
         for inp, tgt in fixed_train_probe:
             with ctx:
                 loss = model(inp, targets=tgt)
@@ -2560,7 +2609,26 @@ def main():
                         help="torchao float8 training on backbone Linear modules only "
                              "(lm_head and all n-gram tables/gates stay bf16/fp32); "
                              "requires torchao; run the bf16 pairing before adopting")
+    # ---- plan-9 MoE (code/moe.py; defaults keep the dense path bit-identical)
+    parser.add_argument("--moe_g", type=int, default=0,
+                        help="granularity G = d_ff/d_e; 0 = dense (no MoE)")
+    parser.add_argument("--moe_x", type=int, default=0,
+                        help="FFN total expansion X = expert units / active units")
+    parser.add_argument("--moe_shared_units", type=int, default=0,
+                        help="always-on shared experts S (0 <= S < G)")
+    parser.add_argument("--moe_aux_weight", type=float, default=0.01,
+                        help="Switch-style load-balance loss weight (OLMoE value)")
+    parser.add_argument("--moe_zloss_weight", type=float, default=0.001,
+                        help="router z-loss weight (OLMoE value)")
+    parser.add_argument("--moe_norm_topk_prob", action="store_true",
+                        help="renormalize top-k router weights (default off, "
+                             "OLMoE-faithful); top-k probability mass is logged "
+                             "either way")
+    parser.add_argument("--moe_panel_interval", type=int, default=10,
+                        help="ossification panel capture every Nth eval block")
     args = parser.parse_args()
+    if (args.moe_g > 0) != (args.moe_x > 0):
+        parser.error("--moe_g and --moe_x must be set together (G,X >= 1) or both 0")
     if args.freeze_embeddings_only and (args.freeze_table or args.disable_ngram_tables):
         parser.error("--freeze_embeddings_only is exclusive with --freeze_table/--disable_ngram_tables")
     if args.lora_rank < 0 or (args.lora_rank and (not args.init_model or args.lora_alpha <= 0)):
@@ -2692,6 +2760,13 @@ def main():
         static_low_mask=args.static_low_mask,
         static_low_mask_keep_novel=bool(args.static_low_mask_keep_novel),
         fp8_torchao=bool(args.fp8_torchao),
+        moe_g=args.moe_g,
+        moe_x=args.moe_x,
+        moe_shared_units=args.moe_shared_units,
+        moe_aux_weight=args.moe_aux_weight,
+        moe_zloss_weight=args.moe_zloss_weight,
+        moe_norm_topk_prob=bool(args.moe_norm_topk_prob),
+        moe_panel_interval=args.moe_panel_interval,
         out_dir=os.path.join(args.out_dir, args.run_id),
     )
 
@@ -2772,6 +2847,13 @@ def main():
     fixed_freq_val_batches = fixed_val_batches[:args.freq_eval_batches]
     print(f"[nglab] fixed val batches: {len(fixed_val_batches)} x shape {tuple(fixed_val_batches[0][0].shape)} "
           f"+ {len(fixed_freq_val_batches)} freq-val batches")
+    # plan-9 ossification panel: first 8 rows of the first val batch
+    # (16,384 tokens; with --val_shards 6542 this is the first 8 rows of the
+    # group-canonical val shard; never trained; identical capture each time)
+    moe_panel_x = validation_batches[0][0][:8].clone() if cfg.moe_g > 0 else None
+    moe_panel_count = 0
+    if moe_panel_x is not None:
+        os.makedirs(os.path.join(cfg.out_dir, "moe_panel"), exist_ok=True)
     # Fixed train probe: captured from a SEPARATE dataset instance that owns its
     # own iterator, so grabbing the probe never consumes the training stream and
     # never advances the training epoch counter.  The probe is a fixed set of
@@ -2838,6 +2920,23 @@ def main():
             raise SystemExit("--table_init_count is incompatible with hash_reseed "
                              "(count content is tied to the base hash families)")
         count_init_clean_tables(model, os.path.abspath(args.table_init_count))
+    if model.moe_active:
+        from moe import params_ledger, format_ledger
+        oe_params = 0
+        for attr in ("ngram_ves", "bigram_ves", "trigram_ves", "value_embeds"):
+            mod = getattr(model, attr, None)
+            if isinstance(mod, nn.ModuleDict):
+                oe_params += sum(p.numel() for m in mod.values()
+                                 for p in m.parameters())
+            elif isinstance(mod, nn.Module):
+                oe_params += sum(p.numel() for p in mod.parameters())
+        led = params_ledger(model.transformer.h[0].mlp.arch, cfg.n_layer,
+                            cfg.vocab_size, cfg.sequence_len, cfg.n_head,
+                            oe_table_params=oe_params)
+        print(format_ledger(led))
+        cfg_moe_ledger = led
+    else:
+        cfg_moe_ledger = None
     if args.disable_ngram_tables:
         disabled = 0
         for name, p in model.named_parameters():
@@ -3026,6 +3125,11 @@ def main():
 
     # logs
     train_log = open(os.path.join(cfg.out_dir, "train_log.jsonl"), "w")
+    moe_diag_log = open(os.path.join(cfg.out_dir, "moe_diag.jsonl"), "w") \
+        if (cfg.moe_g > 0) else None
+    if cfg_moe_ledger is not None:
+        with open(os.path.join(cfg.out_dir, "moe_ledger.json"), "w") as f:
+            json.dump(cfg_moe_ledger, f, indent=2)
     table_log = open(os.path.join(cfg.out_dir, "table_norm.jsonl"), "w")
     table_diag_log = open(os.path.join(cfg.out_dir, "table_diag.jsonl"), "w") \
         if args.table_diag else None
@@ -3035,6 +3139,7 @@ def main():
     fixed_train_freq_log = None
     freq_bin_log = None
     exact_freq_log = None
+    moe_aux_last = moe_z_last = moe_extra_last = 0.0   # plan-9 summary fields
     freq_index_obj = None
     diag_amp_dtype = None
     diag_pool = None
@@ -3258,6 +3363,10 @@ def main():
         # gradient accumulation
         optimizer.zero_grad()
         accum_loss = 0.0
+        moe_lm_accum = 0.0        # pure CE (loss contract: report this as train CE)
+        moe_extra_accum = 0.0     # aux*aux_weight + z*zloss_weight, summed layers
+        moe_aux_raw_accum = 0.0
+        moe_z_raw_accum = 0.0
         for micro in range(grad_accum):
             try:
                 if cfg.row_index:
@@ -3304,12 +3413,33 @@ def main():
                 else:
                     loss = model(inp, targets=tgt, pre_rows=pre_rows)
                 loss = loss / grad_accum
+                if model.moe_active:
+                    # plan-9 loss contract: LM CE and router losses stay
+                    # separable; backward sees their sum, logging keeps both
+                    moe_lm_accum += float(loss.detach())
+                    _mods = model.moe_layer_modules()
+                    _aux = sum(float(m.last_aux_loss.detach()) for m in _mods) / grad_accum
+                    _z = sum(float(m.last_z_loss.detach()) for m in _mods) / grad_accum
+                    moe_aux_raw_accum += _aux
+                    moe_z_raw_accum += _z
+                    moe_extra = model.moe_extra_loss()
+                    moe_extra_accum += float(moe_extra.detach()) / grad_accum
+                    loss = loss + moe_extra / grad_accum
             # freeze_both freezes every parameter: the graph then has no
             # grad_fn, so backward is skipped entirely (optimizer no-ops).
             if loss.requires_grad:
                 loss.backward()
             accum_loss += loss.item()
         train_loss = accum_loss
+        # plan-9 loss contract: on the MoE path the reported train CE / gap is
+        # the pure LM loss (aux/z are logged separately, never mixed into gap)
+        if model.moe_active:
+            train_loss = moe_lm_accum
+            moe_aux_last = moe_aux_raw_accum
+            moe_z_last = moe_z_raw_accum
+            moe_extra_last = moe_extra_accum
+        else:
+            moe_aux_last = moe_z_last = moe_extra_last = 0.0
         if cfg.lr_schedule_epochs > 0:
             # epoch-anchored LR: all runs share the same per-epoch trajectory
             progress = min(1.0, (train_ds._epoch + train_ds.epoch_progress()) / cfg.lr_schedule_epochs)
@@ -3361,6 +3491,41 @@ def main():
             print(f"[nglab] step {step+1:4d} | train {train_loss:.4f} | val {last_val_loss:.4f} "
                   f"| gap {last_val_loss-train_loss:+.4f} | epoch {train_ds._epoch+1} | "
                   f"lr_m {lr_mult:.2f} | {(time.time()-t0):.0f}s")
+
+            # plan-9 MoE diagnostics: per-layer load stats + aux/z (handoff 7.3)
+            if model.moe_active:
+                moe_entry = {"step": step + 1, "epoch": train_ds._epoch + 1,
+                             "aux_raw": moe_aux_last, "z_raw": moe_z_last,
+                             "extra_weighted": moe_extra_last,
+                             "elapsed_s": time.time() - t0}
+                for li, m in enumerate(model.moe_layer_modules()):
+                    moe_entry[f"l{li}"] = m.drain_load_stats()
+                moe_diag_log.write(json.dumps(moe_entry) + "\n")
+                moe_diag_log.flush()
+                _l0 = moe_entry["l0"]
+                print(f"[nglab]   moe aux {moe_aux_last:.4f} z {moe_z_last:.4f} | "
+                      f"l0 loadH {_l0['load_entropy_norm']:.3f} dead "
+                      f"{_l0['dead_experts']} topk_mass {_l0['topk_mass_mean']:.3f}")
+                # ossification panel capture (every Nth eval block)
+                moe_panel_count += 1
+                if moe_panel_count % cfg.moe_panel_interval == 0 \
+                        or step == cfg.max_steps - 1:
+                    from moe import capture_panel_routing, moe_diag_paused
+                    was_training = model.training
+                    model.eval()
+                    with torch.no_grad(), moe_diag_paused(model), \
+                            _autocast_ctx(args.dtype):
+                        cap = capture_panel_routing(model, moe_panel_x)
+                    if was_training:
+                        model.train()
+                    flat = {}
+                    for lname, s in cap.items():
+                        flat[f"{lname}_topk_idx"] = s["topk_idx"].numpy()
+                        flat[f"{lname}_topk_probs"] = s["topk_probs"].numpy()
+                        flat[f"{lname}_top1_margin"] = s["top1_margin"].numpy()
+                    np.savez_compressed(
+                        os.path.join(cfg.out_dir, "moe_panel",
+                                     f"step{step + 1:06d}.npz"), **flat)
 
         epoch_boundary = (train_ds._batch_in_epoch == 0 and step > 0)
 
@@ -3707,6 +3872,17 @@ def main():
         "final_fixed_val_loss": last_fixed_val_loss,
         "final_fixed_gap": last_fixed_val_loss - last_fixed_train_loss,
         "n_params": n_params,
+        # plan-9 MoE accounting (None on the dense path)
+        "moe": ({
+            "arch": cfg_moe_ledger["arch"],
+            "params": cfg_moe_ledger["params"],
+            "final_aux_raw": moe_aux_last,
+            "final_z_raw": moe_z_last,
+            "tokens_per_s": (cfg.total_batch_size * cfg.max_steps
+                             / max(1e-9, time.time() - t0)),
+            "peak_mem_gb": (torch.cuda.max_memory_allocated() / 2**30
+                            if torch.cuda.is_available() else None),
+        } if cfg_moe_ledger is not None else None),
         "bigram_perfect_rows": (
             getattr(getattr(model, "_orig_mod", model), "bigram_table_size", None)
             if cfg.bigram_perfect_map else None

@@ -1,0 +1,895 @@
+Plan 9 修订与执行交接：OpenWebText 上的 matched-budget MoE × OE 研究家族
+日期：2026-10-17
+用途：交给本地 agent，修改现有 Plan 9、实现配置生成器、完成验收，并按本文顺序启动实验。
+本文是当前设计的单一事实来源。不要再沿用旧文档中 E=32、top-8、d_e=384 是“O​​LMoE 原样缩放主基线”等说法。
+
+======================================================================
+0. 最终决策摘要
+======================================================================
+
+1. 数据量
+主实验固定使用 OpenWebText 中一个 1.0B GPT-2 BPE token 的“无重放语料子集”，完整顺序重放 3 遍：
+- unique-corpus budget U = 1.0B tokens
+- repetition rate R = 3
+- total seen tokens T = 3.0B
+- 保存 epoch 1、2、3 的精确边界 checkpoint，并保留统一延长到 epoch 4 的能力。
+
+理由：
+- 对约 124M active 参数的 d_model=768、12-layer GPT-2-small 级模型，3.0B / 124M ≈ 24 tokens per active parameter，接近重复数据论文使用的 T ≈ 20 × N_active。
+- 完整 nanoGPT OpenWebText 约 9.04B train tokens；全量跑 3 遍会变成约 27.1B tokens/run，不适合多架构、多 seed 的机制网格。
+- 1B 子集既能在合理成本内完成多次 replay，又不会小到只是在训练一个明显欠拟合的 toy。
+- 若本仓库的 active 参数不是约 124M，按公式 U_target = (20 × N_active) / 3 重新计算，再就近取整；主模型仍优先保持 1B，以复用既有 dense 结果。
+- S0 工程 sanity 只用 100M tokens、1 个 seed、1 个 pass。
+- 主结论成立后，只对关键四臂做 2B unique × 3 passes 的规模复核；不要一开始全网格使用 2B。
+- 如果三遍时 MoE-only 重复效应太弱，所有主臂从同一 checkpoint 统一延长到第 4 遍；禁止只延长“看起来有希望”的臂。
+
+2. 主 MoE baseline
+d_model = 768
+dense_ffn_dim = 3072
+num_routed_experts = 32
+top_k_routed = 4
+expert_ffn_dim = 768
+num_shared_experts = 0
+dropless token-choice routing
+router logits / softmax in FP32
+Switch-style load-balance loss weight = 0.01
+router z-loss weight = 0.001
+expert MLP 类型、激活函数、bias、初始化方式必须与 dense MLP 完全一致
+OLMoE-faithful 主臂默认 norm_topk_prob = false，但必须记录 selected_topk_probability_mass；结构扫描若发现该量随 E 显著变化，补一个 norm_topk_prob=true 的鲁棒性对照。
+
+该配置的统一坐标：
+G = 4（granularity）
+X = 8（FFN total expansion）
+即 32 routed / top-4 / d_e=768。
+
+3. shared expert
+核心 2×2 不使用 shared expert，以保持最干净的 learned-routing baseline。
+严格 matched 的 shared 对照为：
+31 routed / top-3 + 1 always-on shared，d_e=768。
+它与 32 routed / top-4 在 expert unit 总数、每 token active expert unit 数和 FFN 主体 FLOPs 上匹配。
+不要使用“32 routed / top-4 + 1 shared”，那会把 active expert compute 从 4 个 unit 增至 5 个，增加 25%。
+
+4. 原配置的去向
+旧配置 E=32、K=8、d_e=384 是有效配置，但其正确标签是：
+G=8、X=4 的 fine-granularity arm。
+它不是 OLMoE 的 K/E=1/8 缩放，也不是新的主 baseline。
+若要在 G=8 下同时保持 X=8 和 K/E=1/8，应使用 E=64、K=8、d_e=384。
+
+5. 开源定位
+不要再做一套只有“不同尺寸 checkpoint”的普通 MoE family；FLAME-MoE 已经发布了七个 active size。
+值得开源的是：
+matched-budget、可组合生成、带完整训练轨迹与诊断的 MoE × OE research lattice。
+核心资产应是 moeify()、oeify()、正交结构轴、重复数据协议、router/OE 联合诊断和中间 checkpoints，而不是单纯的模型数量。
+
+======================================================================
+1. 当前 Plan 9 中必须逐项改正的问题
+======================================================================
+
+1.1 granularity 记号错误
+
+当前 d=768、d_ff=3072、d_e=384 时：
+d_e / d_ff = 384 / 3072 = 1/8。
+若采用 Fine-Grained MoE Scaling 的记号：
+G = d_ff / d_e = 8。
+旧文档写成 g=1/2 是把 d_e/d 与 d_e/d_ff 混在了一起。
+
+本文统一使用：
+G = d_ff / d_e，G 越大，expert 越细。
+q = d_e / d_ff = 1/G，只在引用“Mixtures-of-Experts Overfit More to Repeated Data”的原记号时使用。
+X = P_MoE_FFN_total / P_dense_FFN，也等于 total expert units / active expert units。
+
+1.2 旧配置没有继承 OLMoE 的 K/E 比例
+
+旧配置 E=32、K=8：
+K/E = 1/4。
+OLMoE 最终模型 E=64、K=8：
+K/E = 1/8。
+因此旧文档“原样继承 K/E=1/8”错误。
+
+1.3 旧配置确实 matched-active，但只是 X=4
+
+两矩阵 GELU MLP 下：
+P_dense_FFN = 2 × d × d_ff。
+P_active_MoE_FFN = 2 × K × d × d_e。
+P_total_MoE_FFN = 2 × E × d × d_e。
+
+对 E=32、K=8、d_e=384：
+K × d_e = 8 × 384 = 3072 = d_ff，因此 active FFN 完全匹配。
+E × d_e / d_ff = 32 × 384 / 3072 = 4，因此 total FFN expansion X=4。
+
+对推荐主配置 E=32、K=4、d_e=768：
+K × d_e = 3072，仍 matched-active。
+E × d_e / d_ff = 8，因此 X=8。
+
+1.4 “total = 4× dense”只能指 FFN 参数
+
+整个模型并不是 dense 的 4 倍或 8 倍。
+必须分别报告：
+- dense FFN 参数
+- active MoE FFN 参数
+- total MoE FFN 参数
+- router 参数
+- non-FFN 参数
+- OE table 参数
+- whole-model active 参数
+- whole-model total 参数
+
+忽略 embedding，若每层 attention 约为 4d²、dense 两矩阵 4d FFN 约为 8d²，则 block 级近似：
+block_ratio(X) ≈ (4 + 8X) / 12。
+X=4 时约 3.0×；
+X=8 时约 5.67×。
+实际数值必须由代码按真实层数、weight tying、bias 和 OE 参数自动打印。
+
+1.5 matched-active 不等于 matched wall-clock compute
+
+即使 K × d_e = d_ff，MoE 仍多出：
+router projection、softmax、top-k、dispatch、gather/scatter、expert load imbalance、tiny GEMM 利用率损失，以及多卡时的 all-to-all。
+所有实验至少同时记录：
+- theoretical active matmul FLOPs/token
+- measured tokens/s
+- step time
+- peak GPU memory
+- router/dispatch 时间
+- 若跨卡，通信时间和通信字节
+论文中不要把 matched-active 直接写成 matched-compute 或 matched-wall-clock。
+
+1.6 旧 S3 “E=32、top-2”会破坏 matched-active
+
+若 d_e 仍为 384：
+2 × 384 = 768，只相当于 dense FFN active width 的四分之一。
+研究 total capacity 时应固定 K=4、d_e=768，只改变 E=8/16/32。
+研究 granularity 时应联动改变 E、K、d_e，见第 3 节。
+
+1.7 不要以 C(E,K) 太小为由淘汰 8选2
+
+组合数可以解释路由灵活性，但不能直接推出“router ossification 动态范围不足”。
+E=8、K=2、d_e=1536 恰好是重要的 coarse-granularity 对照。
+它与 E=16/K=4/d_e=768、E=32/K=8/d_e=384 在 X=4 下具有相同 active FFN 和 total FFN，只改变 G。
+
+1.8 load entropy 不是 router ossification
+
+load entropy、dead experts、aux loss 测的是负载占用。
+router ossification 测的是固定输入在不同 checkpoint 上是否继续选择相同 expert。
+必须新增固定 held-out panel 的跨 checkpoint 路由一致性，不得用 load entropy 替代。
+
+1.9 “dense 两臂是权威数据”表述不成立
+
+dense+OE 的 1.867 和 dense+no-OE 的 0.245 是本项目内部基线，不是外部“权威数据”。
+只有在以下全部一致时才能复用：
+- code commit
+- OpenWebText 1B 子集的 document IDs / hash manifest
+- tokenizer
+- token order
+- batch 与 sequence length
+- optimizer、LR schedule 和 weight decay
+- epoch 定义
+- eval split 与 gap 定义
+- OE 配置
+任一项变化，都应重跑相应 dense arm，或明确标成历史参考而非同一 2×2 单元。
+
+======================================================================
+2. 权威锚点应该如何使用
+======================================================================
+
+2.1 OLMoE：主结构锚点
+
+可继承：
+- dropless token-choice routing
+- 线性 router
+- FP32 router softmax
+- load-balance loss 0.01
+- router z-loss 0.001
+- no shared expert 作为最终方案
+- 64/top-8 与 32/top-4 的 matched granularity 对照思想
+- norm_topk_prob=false 可作为 OLMoE-faithful 默认
+
+不可声称：
+- 我们完整复刻 OLMoE。OLMoE 使用不同模型规模、SwiGLU、数据、训练长度和工程栈。
+- E=32/K=8/d_e=384 是 OLMoE 原样缩放。
+
+OLMoE 的直接结构启示：
+- 其受控 granularity 对照包含 64 experts/top-8/d_e=1024 与 32 experts/top-4/d_e=2048，保持 active 和 total FFN 不变。
+- 缩放到 d=768、d_ff=3072 后，32/top-4 对应 d_e=768，因此推荐为小模型中心点。
+- OLMoE 对 32 routed/top-4 与 31 routed/top-3 + 1 shared 做了 matched 消融，shared 版本略差；所以核心 baseline 不使用 shared 是有依据的，而不是因为“小模型不能使用 shared”。
+
+2.2 Fine-Grained MoE Scaling：家族坐标锚点
+
+采用：
+G = d_ff / d_e
+X = total MoE FFN / dense FFN
+E_total = G × X
+K_active = G
+
+该工作支持把 granularity 与 expansion rate 分开研究，也指出 G 太高时 routing overhead 会压过理论收益。
+不要把其 compute-optimal scaling law 直接当成我们 OpenWebText 重复数据 setting 的最优参数，因为数据、训练规模和硬件不同。
+
+2.3 Mixtures-of-Experts Overfit More to Repeated Data：重复实验锚点
+
+采用：
+- 总 token budget 以 active parameters 为基准，T ≈ 20 × N_active。
+- 固定总 T，通过改变 unique corpus U 和 repetition R=T/U 研究重复。
+- 固定 random permutation，构造 nested subsets。
+- MoE axes：总 expert 数 n、expert granularity q=d_e/d_ff、active k=1/q。
+- router ossification 用固定 16,384-token panel 的 consecutive-checkpoint top-1 agreement。
+- 负载均衡指标不能预测全部重复效应。
+- expert output masking、expert dropout、普通 residual dropout 是更有希望的干预；router jitter、仅调 weight decay 或 gradient clipping 不是首选主干预。
+
+本项目不是直接复刻该论文：
+- 该论文固定 T、改变 U；
+- 本项目先固定 U=1B、观察 epoch 1→3 的 replay trajectory。
+论文中应写成“epoch-trajectory adaptation / extension”，不能写成直接复刻。
+
+2.4 FLAME-MoE：现成 size family 外部基线
+
+FLAME-MoE 已提供七个模型，active 参数从 38M 到 1.7B，使用固定的 64-expert/top-8/2-shared recipe，并开放数据管线、脚本、日志和 checkpoints。
+因此：
+- 如果目标只是获得不同 active size 的现成 MoE，直接使用 FLAME-MoE。
+- 本项目不应重复做一套同质的 size-only family。
+- 本项目的差异化应是 structural lattice + OE + repetition/forking + lightweight nanoGPT implementation。
+
+2.5 DeepSeekMoE / Qwen3.8-Flash-Next：shared 与 OE 共存的存在性证明
+
+DeepSeekMoE 支持“shared expert 可能有益”的相反证据；因此 shared 不应被永久排除，而应成为 matched control。
+Qwen3.8-Flash-Next 证明大规模 MoE 与 n-gram embedding 可以共存，但其 125B backbone、6B active、额外约 51B n-gram table、host-memory prefetch 和 contextual design 不能直接缩成 nanoGPT 配方。
+关于 Qwen 的正确表述：
+- 它测试过 n-gram vocabulary、placement、frequency partition 等容量分配思路。
+- 更大的 n-gram vocabulary 可继续降低 pretraining loss，但下游收益会饱和。
+- 不要再写“厂商没有做频率治理”；应写“做过频率分区等尝试，但没有从 repetition-induced forking 的角度系统研究”。
+
+======================================================================
+3. MoE family 的统一生成算法
+======================================================================
+
+输入：
+d_model = d
+dense_ffn_dim = d_ff
+granularity = G
+FFN total expansion = X
+num_shared_expert_units = S
+
+定义：
+d_e = d_ff / G
+K_total_active = G
+E_total_units = G × X
+
+无 shared：
+E_routed = G × X
+K_routed = G
+S = 0
+
+有 shared 且严格 matched：
+E_shared = S
+E_routed = G × X - S
+K_routed = G - S
+每 token 实际 active units = K_routed + S = G
+
+必须验证：
+G、X、S 为合法整数；
+d_ff % G == 0；
+0 <= S < G；
+E_routed >= K_routed；
+所有 shared 和 routed expert 使用相同 d_e 与同一种 MLP。
+
+建议 API：
+moeify(
+    dense_config,
+    granularity_G,
+    expansion_X,
+    shared_units_S=0,
+    routing="token_choice",
+    dropless=True,
+    aux_weight=0.01,
+    zloss_weight=0.001,
+    norm_topk_prob=False
+)
+
+配置生成后自动输出：
+d_e、E_routed、K_routed、E_shared、G、X、K/E、active FFN params、total FFN params、whole-model active/total params、理论 FLOPs/token。
+
+d=768、d_ff=3072 的标准点：
+
+A. 主 baseline
+G=4、X=8、S=0
+d_e=768
+32R/top-4
+
+B. shared matched control
+G=4、X=8、S=1
+d_e=768
+31R/top-3 + 1S
+
+C. 工程 pilot
+G=4、X=4、S=0
+d_e=768
+16R/top-4
+
+D. capacity axis，固定 G=4
+X=2：8R/top-4/d_e=768
+X=4：16R/top-4/d_e=768
+X=8：32R/top-4/d_e=768
+
+E. granularity axis，固定 X=4
+G=2：8R/top-2/d_e=1536
+G=4：16R/top-4/d_e=768
+G=8：32R/top-8/d_e=384
+
+F. 高 granularity、OLMoE ratio 点
+G=8、X=8：
+64R/top-8/d_e=384
+
+G. 不建议作为 shared 主对照的点
+G=2、X=4、S=1：
+7R/top-1 + 1S。
+虽然数学上匹配，但 shared 占 active FFN 的 50%，router 只剩一个自由 slot，结构干预过强。shared 主实验使用 G=4。
+
+======================================================================
+4. shared expert 的最终处理
+======================================================================
+
+结论：
+- 小模型可以有 shared expert；FLAME-MoE 的最小 active model 仍使用 shared recipe。
+- 现有证据不一致：OLMoE 的 matched shared 消融略差，DeepSeekMoE/FLAME 采用 shared。
+- 所以 shared 不是默认真理，也不是应当删除的结构，而是独立实验轴。
+
+核心因果顺序：
+1. 先完成 no-shared 的 Dense/MoE × OE 2×2。
+2. 再比较：
+   32R/top-4
+   versus
+   31R/top-3 + 1S
+3. 两者分别配 OE off/on。
+4. 先各 1 seed；若 shared×OE interaction 明显，再补到 3 seeds。
+
+解释边界：
+shared expert 与 OE 都提供“非稀疏或低熵的公共路径”，可能替代，也可能互补。
+要回答的是：
+- shared 是否吸收高频通用模式，从而降低 routed expert ossification；
+- OE 是否让 shared 的边际作用下降；
+- shared 是否把 routed experts 推向更极端的稀有模式 specialization；
+- shared × trainable OE 是否改变 forking gap。
+
+======================================================================
+5. OE 部分必须修正与标准化
+======================================================================
+
+5.1 当前表大小算术错误
+
+若 vocab V=50,304：
+2^20 / 50,304 ≈ 20.85。
+所以 2^20 rows 约为 20.8V，不是 2048V。
+
+若 bigram 与 trigram 各有一张 2^20 × 768 的全维表：
+P_table = 2 × 2^20 × 768 = 1,610,612,736，约 1.61B 参数。
+这对 124M 级 backbone 已经是主要参数来源。
+agent 必须按真实实现核算：
+- 是两张独立表还是共享表；
+- embedding dim 是否真为 768；
+- 是否有低维 table + projection；
+- optimizer state 是否稀疏；
+- table 是否放 GPU；
+- 每步实际 touched rows 和 update coverage。
+
+5.2 核心 2×2 不应临时更换 OE recipe
+
+为了复用现有 dense+OE 结果，主 2×2 中 OE 配置必须与原 v5 完全一致。
+不要一边改 MoE，一边把 OE 改成 BHE 5V 或 contextual gate。
+外部有效性放在主结论之后：
+- current OE
+- BHE-style R=5V
+- frozen table
+- 可选 test-time n-gram blend
+
+5.3 OE family 的两个独立归一化坐标
+
+定义：
+rho_OE = P_OE / P_active_backbone
+r_hash = R_rows / V_vocab
+
+跨模型 size family 需要两套 profile：
+
+A. capacity-normalized OE
+固定 rho_OE，用于比较 OE 相对模型容量。
+若有 H 个 n-gram orders、每表维度 d_oe：
+R ≈ rho_OE × P_active / (H × d_oe)，再 round 到合适大小。
+
+B. collision-normalized OE
+固定 R/V，或固定 distinct-ngram-per-row，用于比较碰撞与 row sharpening。
+
+二者不能同时严格保持，必须分别命名，不能笼统称“同一个 OE setting”。
+
+5.4 三类 OE 的正确预测
+
+trainable hash embedding：
+会发生 table gradient sharpening；table 与 backbone 都可能 fork。
+
+frozen table：
+不会发生 table parameter sharpening；backbone 仍可能利用固定 lookup 信号而过拟合，所以不能写成“绝对不 fork”。
+
+test-time n-gram cache/backoff：
+没有训练期可学习 table，因此不会发生训练梯度导致的 table sharpening；但会进行 evaluation-local adaptation，仍可能利用 eval context 重复，不能简单写成“完全不改变评测”。
+
+5.5 modded-nanoGPT 与 Parameter Golf 的使用边界
+
+- 将 modded-nanoGPT PR #201 固定为 BHE 小规模外部锚点，必须 pin PR/commit；不要把不断变化的主分支 leaderboard 配方当成干净因果 baseline。
+- BHE 的价值是支持：hash index 预计算、zero-init、简单 residual addition、小表 R≈5V 在小模型上有效。
+- Parameter Golf 支持“test-time classical n-gram blending 在强提交中仍有收益”，但排行榜分析是观察性证据，不是我们的 trainable OE 机制证据。
+- 不在正文使用未经绑定到具体 submission/commit 的 BPB 数字。
+
+======================================================================
+6. OpenWebText 数据构造合同
+======================================================================
+
+6.1 数据源
+
+nanoGPT 标准预处理的 OpenWebText：
+- train 约 9,035,582,198 GPT-2 BPE tokens
+- val 约 4,434,897 tokens
+主实验只从 train 中选固定 1.0B-token 子集。
+
+6.2 抽样方式
+
+禁止直接截取 train.bin 的前 1B tokens，因为文档顺序和来源局部性可能形成偏差。
+推荐：
+1. 在 document level 建立固定 random permutation，data_seed 单独固定。
+2. 按该 permutation 顺序拼接完整文档，直到达到目标 token budget。
+3. 最后一个文档可截断，但记录边界。
+4. 输出 immutable manifest：
+   - source document IDs
+   - permutation seed
+   - tokenizer hash
+   - exact token count
+   - binary shard hashes
+5. 所有 architecture、OE setting 和 model seeds 共享同一 manifest。
+6. 若以后做 0.5B/1B/2B 梯度，使用同一 permutation，保证 nested subsets。
+
+6.3 replay 方式
+
+- epoch 2、3 必须严格重放同一文档集合。
+- 允许每个 epoch 采用预注册的确定性 reshuffle，但所有臂必须完全一致；更建议主实验保持同一 packed-token order，以最大化机制可解释性。
+- data_seed 与 model_seed 分开。
+- 三个 model seeds 使用相同数据顺序，便于 paired comparison。
+- LR schedule 按 seen tokens/epoch anchor 定义，不按受吞吐影响的 wall-clock 或模糊 step 数定义。
+
+6.4 验证
+
+- 保留标准约 4.43M-token OWT val 作为 primary CE。
+- 另固定 16,384-token diagnostic panel，仅用于 router checkpoint-to-checkpoint 分析。
+- diagnostic panel 永远不得进入训练。
+- 若需要频率分桶和 OE hit-rate 分析，可增加一个较大的 analysis-only holdout，但 primary metric 不得中途替换。
+
+======================================================================
+7. 实现验收：任何正式训练前必须通过
+======================================================================
+
+7.1 dense equivalence
+
+构造 E=1、K=1、d_e=d_ff。
+复制 dense MLP 权重到唯一 expert，router 固定权重 1。
+同一输入下：
+- forward 输出近似逐元素一致
+- input gradient 一致
+- expert weight gradient 与 dense MLP gradient 一致
+容差按 BF16/FP32 路径分别注册。
+
+7.2 expert permutation equivariance
+
+同时置换：
+- expert weights
+- router output columns
+最终输出必须不变。
+
+7.3 assignment conservation
+
+每 batch 的 routed assignment 总数：
+N_nonpad_tokens × K_routed。
+shared expert 的调用数：
+N_nonpad_tokens × S。
+dropless 下不得静默丢 token。
+
+7.4 routing-weight contract
+
+单元测试必须明确：
+- softmax 是对全部 experts 做，再 top-k；
+- top-k 后是否 renormalize；
+- shared output 如何加权；
+- selected_topk_probability_mass 的定义；
+- 对 padding / document boundary 的行为。
+
+主 OLMoE-faithful 配置默认不做 top-k 后 renormalization。
+因为 capacity axis 会改变 E 而 K 固定，必须日志记录 top-k mass；若该量造成明显架构尺度偏差，补 norm_topk_prob=true robustness，而不是静默修改主定义。
+
+7.5 loss contract
+
+总 loss 分开记录：
+lm_loss
+aux_load_balance_raw
+aux_load_balance_weighted
+router_zloss_raw
+router_zloss_weighted
+total_loss
+比较语言建模效果时使用 lm_loss/CE，不要把 aux loss 混入 reported train CE。
+
+7.6 参数与性能账本
+
+启动时自动打印并写入 run metadata：
+- dense/non-expert params
+- routed expert params
+- shared expert params
+- router params
+- OE params
+- whole-model total params
+- per-token active params
+- theoretical FLOPs/token
+- measured tokens/s
+- peak memory
+
+======================================================================
+8. 必须记录的诊断
+======================================================================
+
+8.1 标准训练指标
+
+- train CE：固定 seen-train sample 与在线 batch 两种口径分开
+- OWT held-out CE
+- 原项目定义的 forking gap
+- epoch 1/2/3 的绝对值和增量
+- tokens/s、step time、memory
+- gradient norm，按 backbone/router/experts/OE table 分组
+
+8.2 router load 指标
+
+每层记录：
+- expert token fraction f_i
+- normalized load entropy H(f)/log(E)
+- effective expert count exp(H)
+- load CV
+- max load / mean load
+- rolling dead-expert count/rate
+- aux loss
+- z-loss
+- selected top-k probability mass
+不要使用固定的“entropy > 1.5 nat”阈值跨 E 比较。
+
+8.3 router ossification 指标
+
+对固定 16,384-token panel，在每个 checkpoint 记录：
+- top-1 expert IDs
+- top-k expert IDs
+- router logits 或至少 top-k logits/probabilities
+
+计算：
+- consecutive-checkpoint top-1 agreement
+- 与 epoch-1 checkpoint 的 top-1 agreement
+- top-k Jaccard
+- rank-weighted overlap
+- Kth 与 K+1th router-logit margin
+- token-conditioned routing entropy
+
+注意：
+跨不同 E 比较 stability 时要报告 chance baseline 1/E，并避免把“expert 更多导致自然 agreement 更低”误解为更有 plasticity。
+
+8.4 expert specialization
+
+- 每个 expert 输出 norm
+- expert knockout CE delta
+- token/vocabulary/frequency bucket specialization
+- expert pair co-activation entropy
+- shared expert 输出占比及 norm（shared arm）
+
+8.5 OE 指标
+
+- 每 row exposure count
+- 每 row cumulative update norm
+- row norm vs exposure-frequency regression
+- touched-row coverage
+- collision multiplicity
+- train/val n-gram hit rate
+- train-only 高频 row 在 val 中的使用情况
+- bigram/trigram 分支分别记录
+- table gradient norm、projection gradient norm
+
+8.6 MoE × OE 联合指标
+
+对 token 记录或可重建：
+- n-gram row ID / frequency bin
+- selected expert IDs
+- router margin
+- token CE
+- OE gate/scale（若存在）
+
+计算：
+- I(expert; n-gram row)
+- I(expert; frequency bin)
+- 高频 OE rows 对应 token 的 route stability
+- row update concentration 与 router stability 的时间相关
+- shared expert 使用/输出与 OE frequency 的关系
+
+======================================================================
+9. 核心统计问题
+======================================================================
+
+主 2×2：
+
+                  OE off             OE on
+Dense             existing/rerun     existing/rerun
+MoE G4 X8 S0      new                new
+
+每个可比臂 3 seeds，使用 paired seeds 和相同数据顺序。
+
+主交互量：
+I(e) =
+[Gap_MoE+OE(e) - Gap_MoE(e)]
+-
+[Gap_Dense+OE(e) - Gap_Dense(e)]
+
+同时报告：
+- 每个 epoch 的 I(e)
+- epoch 1→3 的增量
+- interaction AUC
+- paired-seed mean、std 和置信区间
+- 原始 train/val CE，不能只报告 gap
+
+解释：
+I>0 才支持“MoE 放大 OE forking”。
+MoE+OE 单臂 gap 很大，不足以证明超加性交互。
+
+可选强控制：
+从 epoch-1 checkpoint 分支：
+A. replay 同一 1B 两遍
+B. 使用 OWT 中未见过的 2B fresh tokens
+只在关键臂做，用于区分训练时间效应与重复效应。
+若做该控制，LR/token schedule 必须完全匹配。
+
+======================================================================
+10. 序列实验执行顺序
+======================================================================
+
+阶段 0：代码与合同测试，不启动正式长跑
+- 完成第 7 节全部单元测试。
+- 输出 config generator 和参数/FLOPs 账本。
+- 实现 router 与 OE diagnostics。
+- 固定 1B OpenWebText manifest。
+验收失败则停止，不得用长跑调试基础正确性。
+
+阶段 1：S0 工程 pilot
+配置：
+G=4、X=4、S=0，即 16R/top-4/d_e=768。
+OE on 一臂，OE off 一臂。
+数据：
+100M tokens，1 pass，1 seed。
+验收：
+- 无 NaN/Inf
+- assignment conservation
+- 无永久 dead experts；短期不均衡允许
+- lm loss 与 dense 同量级
+- diagnostics 文件可复现
+- tokens/s 与 memory 可接受
+S0 不用于论文结论。
+
+阶段 2：主 2×2
+主 MoE：
+G=4、X=8、S=0，即 32R/top-4/d_e=768。
+数据：
+1B unique × 3 passes。
+seeds：
+3。
+需要新增：
+MoE+OE、MoE+noOE，各 3 seeds，共 6 runs。
+dense 两臂只有满足第 1.9 节时才复用；否则重跑。
+这是 Plan 9 的第一核心交付，优先于所有 family sweep。
+
+阶段 3：capacity axis
+固定 G=4、S=0、d_e=768、K=4：
+X=2：E=8
+X=4：E=16
+X=8：E=32（阶段 2 已有）
+先对新增 E=8/16 各跑 OE off/on、1 seed。
+若 gap 或 interaction 随 X 呈单调趋势，再为 E=8/16 补到 3 seeds。
+目标：
+在 active FFN 不变时，检验 total expert capacity 是否提高 repetition/OE forking。
+
+阶段 4：granularity axis
+固定 X=4、S=0：
+G=2：E8/K2/d_e1536
+G=4：E16/K4/d_e768（阶段 3 已有）
+G=8：E32/K8/d_e384
+先对新增两点各跑 OE off/on、1 seed。
+若趋势明确，再补关键点 seeds。
+目标：
+在 active 与 total FFN 都不变时，区分 expert 粒度/组合性与 total capacity 的作用。
+
+阶段 5：shared axis
+固定 G=4、X=8：
+no shared：32R/top-4
+shared：31R/top-3 + 1S
+各配 OE off/on。
+no-shared 来自阶段 2；先新增 shared 两臂各 1 seed。
+若 shared×OE interaction 明显，再补到 3 seeds。
+
+阶段 6：OE 外部有效性
+仅在主架构 G4/X8/S0 上：
+- current trainable OE
+- frozen current OE
+- BHE-style 5V trainable table
+- 可选 test-time n-gram blend
+先 1 seed。
+目标：
+检验结论是否依赖超大 OE table，以及“可学习 table 是 table-sharpening 的必要条件”。
+test-time blend 不与 trainable OE 混成同一训练架构结论。
+
+阶段 7：机制干预
+优先顺序：
+1. table-side mask_low
+2. expert output masking
+3. expert dropout
+4.普通 residual dropout
+5. aux loss weight 0.003/0.01/0.03
+6. z-loss on/off
+router jitter 不列为首选，因为现有重复数据工作未发现稳定收益。
+先单变量、1 seed；只复制最有效干预到 3 seeds。
+禁止一开始做完整笛卡尔积。
+
+阶段 8：规模复核
+仅对 headline 四臂：
+Dense/MoE × OE off/on
+使用 2B unique × 3 passes，或在另一个 backbone size 上按 T≈20N_active、R=3 缩放。
+目的：
+证明结论不是 1B subset 或单一模型尺寸的偶然现象。
+
+======================================================================
+11. size family 的数据缩放
+======================================================================
+
+若发布多 active-size family，不要让所有模型机械使用同样 token 数并声称“compute-optimal”。
+
+重复机制 family 的推荐规则：
+T_total ≈ 20 × N_active
+R = 3
+U_unique = T_total / 3
+
+例如：
+N_active=50M：T≈1.0B，U≈0.33B
+N_active=100M：T≈2.0B，U≈0.67B
+N_active=124M：T≈2.48B，U≈0.83B，可统一取 1.0B
+N_active=200M：T≈4.0B，U≈1.33B
+
+OpenWebText full train 上限约 9.04B unique-corpus tokens。
+为方便 nested subsets，可预建 0.33B、0.67B、1B、1.33B、2B manifest。
+若研究的目标改为“同一数据集上的模型尺寸比较”，则另设 fixed-U track，不能与 tokens-per-active-param track 混报。
+
+======================================================================
+12. 运行命名与元数据
+======================================================================
+
+旧 run_id “moe2of8”全部废弃或标历史。
+
+推荐：
+p9_{arch}_g{G}_x{X}_s{S}_e{Er}_k{Kr}_de{de}_{oe}_u{U}_r{R}_seed{seed}
+
+示例：
+p9_moe_g4_x8_s0_e32_k4_de768_oeon_u1b_r3_seed42
+p9_moe_g4_x8_s1_e31_k3_de768_oeoff_u1b_r3_seed42
+p9_dense_oeon_u1b_r3_seed42
+
+每个 run metadata 至少写：
+git commit
+dirty status
+data manifest hash
+tokenizer hash
+model/config JSON
+optimizer/scheduler config
+all seeds
+parameter/FLOPs report
+hardware
+software/CUDA/PyTorch versions
+start/end timestamps
+checkpoint list
+eval protocol version
+
+======================================================================
+13. 是否值得开源：最终判断
+======================================================================
+
+不值得开源的版本：
+- 只训练若干尺寸；
+- 所有模型固定单一 MoE recipe；
+- 没有 dense matched controls；
+- 没有 OE；
+- 没有中间 checkpoints 和 routing logs。
+这与 FLAME-MoE 重复。
+
+值得开源的最小版本：
+1. moeify()：任意 dense config → 严格 matched MoE。
+2. oeify()：按 rho_OE 或 R/V 生成 OE。
+3. 三条 MoE 轴：capacity X、granularity G、shared S。
+4. 三条 OE 轴：off、trainable、frozen。
+5. 固定 OpenWebText manifests 与 replay protocol。
+6. router ossification、expert specialization、OE row sharpening 联合诊断。
+7. 主 2×2 三 seeds 和结构 ribs 单 seed→确认后补 seeds。
+8. 全部 checkpoints、logs、configs 和数据 manifest。
+9. 轻量 nanoGPT 级实现，不强依赖 Megatron/SLURM。
+
+推荐发布形式：
+- size spine：3 个 backbone sizes，每个仅发布 Dense/MoE × OE off/on。
+- structural ribs：只在中间尺寸扫描 X、G、S 和 OE mode。
+- 以 FLAME-MoE 作为外部 size-family baseline；
+- 以 OLMoE 作为结构锚；
+- 以 Fine-Grained MoE Scaling 作为参数化坐标；
+- 以 MoE repeated-data paper 作为 replay 与 ossification 方法锚；
+- 以 Qwen3.8、modded-nanoGPT、Parameter Golf 作为 OE 外部背景，不把它们当成同一机制证据。
+
+项目的正确论文定位：
+“在严格 matched-active、可控 total capacity、granularity 与 shared ratio 的小型 MoE 系列中，研究 learned n-gram over-encoding 与 sparse expert specialization 在重复数据下如何交互。”
+
+======================================================================
+14. agent 修改任务清单
+======================================================================
+
+P0，必须立即完成：
+[ ] 把 Plan 9 的主配置改成 E32/K4/d_e768。
+[ ] 把旧 E32/K8/d_e384 重命名为 G8/X4 granularity arm。
+[ ] 修正所有 granularity、K/E、total parameter 和 2^20/V 算术。
+[ ] 删除“内部 dense 数据是权威数据”的表述。
+[ ] 加入 shared matched control：31R/top3 + 1S。
+[ ] 加入 1B unique × 3 replay 的数据合同。
+[ ] 加入 moeify() 参数化与配置自动核算。
+[ ] 加入第 7 节单元测试。
+[ ] 加入第 8 节 diagnostics。
+[ ] 更新 run_id。
+
+P1，开跑前：
+[ ] 生成 OpenWebText 1B document-level manifest 与 hash。
+[ ] 审计当前 OE 实际参数量和 optimizer state。
+[ ] 确认 dense 历史 run 是否满足完全复用条件。
+[ ] 跑 100M S0。
+[ ] 输出 S0 验收报告，不用自然语言猜测代替数值。
+
+P2，正式实验：
+[ ] 完成主 MoE+OE / MoE+noOE 各 3 seeds。
+[ ] 计算 difference-in-differences。
+[ ] 再按 capacity → granularity → shared → OE robustness → interventions 的顺序推进。
+[ ] 每阶段达到预注册验收后才进入下一阶段。
+
+======================================================================
+15. 主要公开依据
+======================================================================
+
+1. Muennighoff et al., “OLMoE: Open Mixture-of-Experts Language Models”, arXiv:2409.02060.
+关键用途：64/top-8、32/top-4 granularity 对照；no-shared 决策；31/top-3+1 shared matched 消融；LBL=0.01；z-loss=0.001；router saturation 诊断。
+
+2. Ludziejewski et al., “Scaling Laws for Fine-Grained Mixture of Experts”, ICML 2024 / arXiv:2402.07871.
+关键用途：G=d_ff/d_e；expansion rate X；N_expert=G×X；高 G 的收益与 routing overhead。
+
+3. Kang et al., “FLAME-MoE: A Transparent End-to-End Research Platform for Mixture-of-Experts Language Models”, arXiv:2505.20225.
+关键用途：七个 active size、完整日志/checkpoints、固定 64-expert/top-8/2-shared family；说明 size-only family 已有成熟外部基线。
+
+4. Jha et al., “Data Scarcity and Model Sparsity: Mixtures-of-Experts Overfit More to Repeated Data”, arXiv:2609.11917.
+关键用途：T≈20N_active；固定 U/R 协议；total parameters 与重复退化；router ossification；expert/output masking 与 dropout。
+
+5. Qiu et al., “On the Design of Qwen3.8-Next Architecture: Evaluation, Efficiency, and Training Stability”, arXiv:2608.30320.
+关键用途：MoE+n-gram memory 共存；125B/6B active/+51B n-gram；table 大小、placement 和 loss/downstream 不一致。
+
+6. Paudel et al., “Parameter Golf: What Really Works?”, arXiv:2607.01517.
+关键用途：test-time classical n-gram blending 是不同于 trainable OE 的方法；排行榜证据为观察性，不是机制因果证据。
+
+7. KellerJordan/modded-nanogpt，Bigram Hash Embedding PR #201，以及对应固定 commit。
+关键用途：小模型 trainable hash embedding、CPU/index-first、zero-init、简单 residual injection；必须 pin 版本。
+
+8. karpathy/nanoGPT OpenWebText preparation README.
+关键用途：标准预处理约 9.036B train tokens、4.435M val tokens。
+
+======================================================================
+16. 禁止事项
+======================================================================
+
+- 禁止同时改 MoE、OE、数据和 optimizer 后仍声称单变量因果。
+- 禁止把 shared expert 直接叠加到 top-k 之外而不重新匹配 active compute。
+- 禁止只报告 total FFN expansion，不报告 whole-model total 和 OE table。
+- 禁止用 load entropy 代替 route stability。
+- 禁止跨 E 使用未归一化 entropy 阈值。
+- 禁止把 matched-active 写成 matched wall-clock。
+- 禁止因某臂结果弱而选择性延长 epoch。
+- 禁止在 capacity/granularity sweep 看到单 seed 趋势后直接写稳定结论；关键点必须补 seeds。
+- 禁止把 Parameter Golf test-time cache 的效果解释成 trainable OE table sharpening。
+- 禁止把 Qwen3.8 的大模型 recipe 直接称为小模型 scaling law。
+- 禁止在没有 exact commit/config 的情况下引用 speedrun leaderboard 数字。
