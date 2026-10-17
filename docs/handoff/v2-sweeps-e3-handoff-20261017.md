@@ -1,7 +1,21 @@
-# v2 扫描 + E=3 包络 Handoff（2026-10-17 15:45）
+# v2 扫描 + E=3 包络 Handoff（2026-10-17 15:45 初版 · 19:40 H200-only 冲刺增补）
 
 > **相关文档**：登记 `docs/experiment-log.md` §73–§78；进度 panel `docs/figs/sweeps_20261017/panel.html`；E=3 结果表 `docs/appendices/epoch_envelope_e3_20261017/e3_results.csv`。
 > **数字口径**：本文所有数字可追溯到 run_id（`data/runs_fixed/`，本地 harvest 在 `output/harvest_e3/`、`output/harvest_v21/`、`output/harvest_v224/`）。单 seed（42），无显著性断言。
+
+---
+
+## 0.5 H200-only 冲刺增补（16:00–19:35，87 臂，全部 H200）
+
+用户 16:00 指令「A100 不允许用，只允许 H200。有卡就排上队跑实验」。已完成：
+
+1. **§73/§77 三方对照全矩阵同机化（22 臂，全 H200）**。dict / hash / keephash × {n2, n3, n4, n5, 2-3, 2-3-4, 2-3-4-5} + nogram：
+   - **覆盖率因子（keephash−hash）主导**：−0.75（n2）～ −5.67（n5）；联合 2-5 −4.39。
+   - **碰撞隔离因子（dict−keephash）轻微反向**：+0.25 ～ +0.64 —— kept 集合内 ~1 上下文/行的轻度负载区，零碰撞反而让记忆更锐。方向反转假设待 per-token dump 核实。
+   - hash H200 值与 §76 v2ord 3-seed 差 ≤0.11；nogram 0.2396 ≈ §74 的 0.245。
+2. **epoch 剂量网格（E2/E6 × {10M, 49.7M} × 6 阶集合，18 臂）**：所有 (order-set, 池) 组合 gap 随 E 严格单调；49.7M 端 E=2→6 涨幅更大（n2 0.39→2.62；2-5 2.89→8.26），无平台化。n≥5 联合在 E=2 已达 5.4–6.2 → forking 第 2 个 epoch 内启动，「3 epoch 重 forking」是中段不是起点。
+3. **E=3 seed 复跑（52 臂）**：v23@10M 12 + v24@10M 20 + v24@49.7M 20。误差棒 ±0.01–0.05 下：tri 斜率 +0.61（@10M）/+0.76（@49.7M）**严格单调**；n25 斜率 −0.11/−0.53 **严格单调下降**。tri 中间档 ±0.4 非单调确认为 10M 端 seed 噪声（l10 SD 0.363）。§78 模型结论升级为带误差棒版本。
+4. **infra 事故**：360-2 用户配额 16:29 耗尽（$HOME 521G），8 臂 ENOSPC 死亡，360-2 全停摆；nogram 臂另受 concurrent commit 的 `enable_bigram` bug 影响（HEAD c6ef4fb 已修）。v2.1 补跑整体移植 360-1 隔离树 `forking-v2-v21`（code 冻结 md5 3346bd35，data symlink 只读）。**未 push（P5）。**
 
 ---
 
@@ -50,17 +64,17 @@
 
 ## 3. 需要拍板
 
-1. **keephash 重排队**：① 等 A100 空闲原位重建（保持硬件配对）；② 改 H200（立即可跑，与 dict/hash 同机）。a100_t1 当前 8/8 卡被 `a100_rl` 租户任务占用，恢复时间未知。
-2. **>52M 池 / 1B 点语料**：raw parquet 在 ophis 无读权限（§74 blocker 未解）。1B×E3 ≈ 20,343 步 ≈ 1.6h/臂，语料一到即可排。
+1. **360-2 配额清理（新阻塞）**：$HOME 521G 配额耗尽，360-2 无法接任何新实验。候选清理：`ngram-gap-lab-plan7`（82G）、`ngram-gap-exp`（75G）、`workdir`（51G）；另有本轮事故的部分目录 `ngram-gap-lab/logs/failed_launch/`。删除需你确认（P5）。
+2. **>52M 池 / 1B 点语料**：raw parquet 在 ophis 无读权限（§74 blocker 未解）。1B×E3 ≈ 20,343 步 ≈ 1.6h/臂，语料一到即可排（360-1 健康卡 5 张）。
 3. **本轮 commit 是否 push**（P5，等确认）。
 
-## 4. 基础设施快照（2026-10-17 15:55）
+## 4. 基础设施快照（2026-10-17 19:40）
 
-- **360-2**：8 卡全部空闲（§73 补臂已结束）；两机队列文件均空，可随时接新实验。
-- **360-1**：gpu0/3/7 ECC 不可用（避开）；/data 曾 99% 满，建 index 走 forking-v2 根。
+- **360-1**：健康卡 1/2/4/5/6 全部空闲（本轮队列 19:35 清空）；gpu0/3/7 ECC 不可用；/data 99% 满（102G 余量，够小 dump）。隔离树 `forking-v2-v21` 保留（code md5 3346bd35，可复用）。
+- **360-2**：**配额耗尽全停摆**（写 1KB 都失败），8 卡 0%；恢复需清理（见 §3.1）。
+- **A100（perm/t1）**：按用户指令不再使用。
 - **ophis-gpu**：用户配额满，未用。
-- **a100_perm / a100_t1**：v2 线无占用；a100_t1 被外部 RL 任务占满。
-- 代码：本地 HEAD train.py md5 `279ce4c3` 与 360-2 一致；`run_v21_dict_lines.sh` md5 `81e239be` 已同步 360-2。
+- 代码：本轮所有 run 冻结于 md5 `3346bd35`（train.py）；launcher `run_e3_seed.sh` md5 `7200553d`（两机）、`run_v21_dict_lines.sh` md5 `81e239be`。
 
 ## 5. 本轮产物坐标
 
