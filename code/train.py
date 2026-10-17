@@ -2211,6 +2211,95 @@ def compute_shared_contexts(model: NanoGPT, train_probe, val_probe,
     return {"shared_total": len(shared), "per_f": out, "branch": branch}
 
 
+def count_init_clean_tables(model, npz_path: str, log=print) -> dict:
+    """Overwrite clean single-table embeddings with deterministic count-based
+    content (§80 golf-equivalent arm): each row becomes the count-weighted
+    empirical mean of the init wte rows of its bucket's continuation tokens,
+        row_r = (1/C_r) * sum_{keys k in bucket r} c_k * wte[cur(k)],
+    with zero rows where C_r = 0. Content is pure frequency statistics of the
+    training text (no learning); pair with --freeze_table to keep it fixed.
+    Bucketing uses the model's own clean hash (K=1 families), so rows line up
+    exactly with the contexts the forward pass addresses. Bigram keys decode
+    as prev*V+cur, trigram keys as prev2*V^2+prev*V+cur (boundary padding in
+    the index matches the model's chunk-start padding)."""
+    from ngram_freq import GlobalFrequencyIndex
+
+    if getattr(model, "bigram_perfect", False):
+        raise SystemExit("--table_init_count does not support perfect-map tables")
+    if model.bigram_K != 1 or model.trigram_K != 1:
+        raise SystemExit("--table_init_count requires clean single-table branches (K=1)")
+    if len(model.bigram_ves) != 1 or len(model.trigram_ves) != 1:
+        raise SystemExit("--table_init_count supports exactly one table layer per branch "
+                         "(standard input injection); multi-layer v/y is out of scope")
+    fi = GlobalFrequencyIndex.load(npz_path)
+    fi._ensure_sorted()
+    V = model.config.vocab_size
+    wte = model.transformer.wte.weight.detach().to(torch.float32)
+    D = wte.shape[1]
+    for branch, counts in (("bigram", fi._bigram_counts_sorted),
+                           ("trigram", fi._trigram_counts_sorted)):
+        if (np.asarray(counts, dtype=np.int64) <= 0).any():
+            raise SystemExit(f"--table_init_count: {branch} counts contain non-positive "
+                             "entries (corrupt freq index); refusing silent wrap")
+    out = {}
+    for branch, keys, counts, table_attr, table_size in (
+        ("bigram", fi._bigram_keys_sorted, fi._bigram_counts_sorted,
+         model.bigram_ves, model.bigram_table_size),
+        ("trigram", fi._trigram_keys_sorted, fi._trigram_counts_sorted,
+         model.trigram_ves, model.trigram_table_size),
+    ):
+        keys64 = np.ascontiguousarray(keys, dtype=np.int64)
+        counts64 = np.ascontiguousarray(counts, dtype=np.int64)
+        cur = keys64 % V
+        if branch == "bigram":
+            prev = keys64 // V
+            p1, p2 = next(iter(model.bigram_hash_primes_per_layer.values()))[:2]
+            rows = ((prev * p1) ^ (cur * p2)) % table_size
+        else:
+            prev = (keys64 // V) % V
+            prev2 = keys64 // (V * V)
+            q0, q1, q2 = next(iter(model.trigram_hash_primes_per_layer.values()))[:3]
+            rows = ((prev2 * q0) ^ (prev * q1) ^ (cur * q2)) % table_size
+        acc = torch.zeros(table_size, D, dtype=torch.float32)
+        cnt = torch.zeros(table_size, dtype=torch.float64)
+        rows_t = torch.from_numpy(rows)
+        cur_t = torch.from_numpy(cur)
+        c_t = torch.from_numpy(counts64.astype(np.float64))
+        CH = 1_000_000
+        for s in range(0, rows_t.numel(), CH):
+            e = min(s + CH, rows_t.numel())
+            wc = wte[cur_t[s:e]]
+            acc.index_add_(0, rows_t[s:e], (c_t[s:e].unsqueeze(1) * wc).float())
+            cnt.index_add_(0, rows_t[s:e], c_t[s:e])
+        row = acc / cnt.clamp(min=1.0).unsqueeze(1).float()
+        row[cnt == 0] = 0.0
+        written = 0
+        for li, mlist in table_attr.items():
+            emb = mlist[0]
+            if emb.weight.shape != row.shape:
+                raise SystemExit(
+                    f"--table_init_count shape mismatch for {branch} layer {li}: "
+                    f"table {tuple(emb.weight.shape)} vs init {tuple(row.shape)}")
+            emb.weight.data.copy_(row.to(emb.weight.dtype))
+            written += row.numel()
+        nz = int((cnt > 0).sum())
+        norms = row.norm(dim=1)
+        stats = {
+            "branch": branch,
+            "keys": int(keys64.size),
+            "rows_nonzero": nz,
+            "rows_total": int(table_size),
+            "mean_row_norm": float(norms[norms > 0].mean()) if nz else 0.0,
+            "max_row_norm": float(norms.max()) if nz else 0.0,
+            "params_written": written,
+        }
+        out[branch] = stats
+        log(f"[nglab] table_init_count[{branch}]: {stats['keys']:,} keys -> "
+            f"{nz:,}/{table_size:,} nonzero rows; mean|row| {stats['mean_row_norm']:.4f}, "
+            f"max|row| {stats['max_row_norm']:.4f}")
+    return out
+
+
 def steps_for_epochs(n_epochs: int, batches_per_epoch: int, device_batch_size: int,
                      sequence_len: int, total_batch_size: int) -> int:
     """Optimizer steps needed to see exactly n_epochs of the effective pool.
@@ -2429,6 +2518,12 @@ def main():
                              "of the standard bf16 configuration)")
     parser.add_argument("--init_model", default="",
                         help="initialize model weights from a compatible final_model.pt state_dict")
+    parser.add_argument("--table_init_count", default="",
+                        help="overwrite clean single-table embeddings with deterministic "
+                             "count-based content (count-weighted mean of init-wte rows of "
+                             "each hash bucket, from a freq_index npz of the TRAIN text; "
+                             "§80 golf-equivalent arm). Pair with --freeze_table. "
+                             "Standard input injection, K=1, single layer only")
     parser.add_argument("--freeze_table", action="store_true",
                         help="freeze n-gram tables and gates after initialization; optimizer state starts empty")
     parser.add_argument("--freeze_embeddings_only", action="store_true",
@@ -2735,6 +2830,13 @@ def main():
             raise SystemExit(
                 f"--init_model incompatible: missing={missing[:8]} unexpected={unexpected[:8]}")
         print(f"[nglab] initialized model from {init_path}")
+    if args.table_init_count:
+        if not os.path.isfile(args.table_init_count):
+            raise SystemExit(f"--table_init_count not found: {args.table_init_count}")
+        if args.intervention == "hash_reseed":
+            raise SystemExit("--table_init_count is incompatible with hash_reseed "
+                             "(count content is tied to the base hash families)")
+        count_init_clean_tables(model, os.path.abspath(args.table_init_count))
     if args.disable_ngram_tables:
         disabled = 0
         for name, p in model.named_parameters():
@@ -3577,6 +3679,7 @@ def main():
         "torch_compile": args.compile,
         "init_model": os.path.abspath(args.init_model) if args.init_model else None,
         "freeze_table": bool(args.freeze_table),
+        "table_init_count": str(args.table_init_count),
         "freeze_embeddings_only": bool(args.freeze_embeddings_only),
         "lora_rank": args.lora_rank,
         "lora_alpha": args.lora_alpha if args.lora_rank else None,

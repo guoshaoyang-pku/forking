@@ -5069,3 +5069,38 @@ ophis-gpu GPU0，H200，md5 3346bd35（含 c6ef4fb 修复：v2 dict-mode 合并�
 1. 结论与 §77 回填一致且更干净:**覆盖率因子（keephash−hash，−0.75 ~ −5.67）主导 dict 收益；kept 集合内碰撞隔离（dict−keephash，+0.25 ~ +0.64）轻微反向**。方向反转发生在轻稀释区（~1 上下文/行）的假设待 per-token dump 核实。
 2. 更正:§77 回填表中「配对 dict（§73，A100）」列的数值（2.2694/2.1234/1.5836/1.1764/3.5593/4.2083）部分实为本轮 H200 早批值与本日 A100 harvest 混排，**以本表 H200 值为准**；A100 口径仅存于 §73 原表（run 已随 a100 部署清理，值以登记为准）。hash 单阶 H200 值与 §76 v2ord 3-seed（2.607/5.542/6.324/6.557）差 ≤0.11，nogram 0.2396 ≈ §74 的 0.245，跨树复现良好。
 3. harvest:22 份 summary 齐全于 `output/harvest_v21/`（本地);per-token dump 在两机 runs_fixed。
+
+## §80 · count-init 冻结臂：真实信号但不可学习的表是否 fork（golf 等价物，2026-10-17，planned）
+
+**来源**:§79 的注记落地——随机 init 冻结是下界（0.064，fork 不发生）；golf 的
+Katz backoff 表携带**真实统计信号**但不可学习。本臂把两者对齐：表内容 = 训练文本
+频率统计的确定性函数，冻结训练 backbone。
+
+**实现**（`--table_init_count <freq_index.npz>`，commit 本次）:
+row_r = (1/C_r)·Σ_{k∈bucket r} c_k·wte_init[cur(k)]——每个 hash 桶的行 = 桶内各
+(context→continuation) 键按计数加权的 init-wte 平均（经验续接分布投影到初始嵌入
+空间）；C_r=0 的行置零。寻址沿用模型自身 clean hash（K=1 base primes），行与
+forward 寻址严格对齐；量级 ≤ init wte 尺度（无新超参）。配 `--freeze_table` 冻结。
+CPU 测试 `code/tools/check_count_init_tables.py` PASS（加权均值/零未见行/确定性/
+hash 对齐/单键精确）；负计数防御（freq index 损坏时拒绝静默 wrap）。
+
+**设计**（1 臂，v5 标准 setting，与 §79 两臂共享对照）:
+
+| run_id | 臂 | 与 §79 的单变量关系 |
+|---|---|---|
+| `frz0_count_s42` | count-init + `--freeze_table` | vs `frz0_table_s42`：仅表内容（随机→真实统计）；vs `frz0_ctrl_s42`：表内容+可学习性 |
+
+setting：同 §79（input 注入 · R=2^20 · RMSProp(0.0,0.99) · 128× · lr 6e-4
+warmup_constant(100) · seed 42 · 1000 步 · bf16 不 compile · freq_index.npz 只读）。
+
+**竞争预测**:①「信号派」:真实信号让 backbone 更依赖表 → 共适应更强 → gap 高于
+随机冻结 0.064（可能显著）；②「学习派」:fork 的本质是**表被梯度塑形以服务重复
+样本**（sharpening 在表侧发生），固定内容无论多好都不构成 specialization 基底 →
+gap 仍 ~0.06。golf 的经验（blending 帮助大且不伤害）倾向①有正收益但受 λ 控制上限；
+我们机制预测关键变量是**表内容的可塑性与数据重复的交互**，非内容质量本身。
+
+**判读**:frz0_count vs frz0_table(0.064) vs frz0_ctrl(2.702)。若 ① 成立且 gap
+可观 → 「真实信号+不可学习」部分足够引发 forking，plan-9 §2.5B/C 需再修正
+（golf 等价物不能免于 fork 的预测升级）；若 ② 成立 → 确认「表侧可学习性是
+forking 发起的必要条件」强度排序：随机冻结 ≈ count 冻结 << 可学习。
+launcher `code/cluster/run_v5_freeze0_count.sh`。
