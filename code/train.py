@@ -2261,11 +2261,11 @@ def count_init_clean_tables(model, npz_path: str, log=print) -> dict:
             prev2 = keys64 // (V * V)
             q0, q1, q2 = next(iter(model.trigram_hash_primes_per_layer.values()))[:3]
             rows = ((prev2 * q0) ^ (prev * q1) ^ (cur * q2)) % table_size
-        acc = torch.zeros(table_size, D, dtype=torch.float32)
-        cnt = torch.zeros(table_size, dtype=torch.float64)
-        rows_t = torch.from_numpy(rows)
-        cur_t = torch.from_numpy(cur)
-        c_t = torch.from_numpy(counts64.astype(np.float64))
+        acc = torch.zeros(table_size, D, dtype=torch.float32, device=wte.device)
+        cnt = torch.zeros(table_size, dtype=torch.float64, device=wte.device)
+        rows_t = torch.from_numpy(rows).to(wte.device)
+        cur_t = torch.from_numpy(cur).to(wte.device)
+        c_t = torch.from_numpy(counts64.astype(np.float64)).to(wte.device)
         CH = 1_000_000
         for s in range(0, rows_t.numel(), CH):
             e = min(s + CH, rows_t.numel())
