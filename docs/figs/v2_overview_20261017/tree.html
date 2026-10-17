@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>v2 全景：缓解 forking + 最大化 OE 收益</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  body { font-family: -apple-system, "PingFang SC", "Noto Sans SC", sans-serif; margin: 32px 40px; color: #1f2328; background: #fff; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.sub { color: #57606a; font-size: 13px; margin: 0 0 18px; }
+  .legend { font-size: 13px; margin: 0 0 12px; }
+  .legend span { display: inline-block; padding: 2px 8px; border-radius: 4px; margin-right: 8px; border: 1px solid; }
+  .done { background: #dafbe1; border-color: #2da44e; }
+  .part { background: #fff8c5; border-color: #bf8700; }
+  .todo { background: #ffebe9; border-color: #cf222e; }
+  table { border-collapse: collapse; font-size: 13px; margin-top: 18px; }
+  td, th { border: 1px solid #d0d7de; padding: 4px 10px; text-align: left; vertical-align: top; }
+  th { background: #f6f8fa; }
+</style>
+</head>
+<body>
+<h1>v2 全景：缓解 forking，同时吃到尽可能大的 OE 收益</h1>
+<p class="sub">2026-10-17 晚 · 任务结构按飞书任务页 · 数字与出处见 docs/handoff/takeover-overview-20261017.md（experiment-log §73–§81）</p>
+<div class="legend"><span class="done">已完成</span><span class="part">部分完成</span><span class="todo">未开始 / 未解决</span></div>
+
+<pre class="mermaid">
+flowchart LR
+  G["v2 目标<br/>缓解 forking + 最大化 OE 收益"]
+  G --> T1["① 生产级 PT 复现 forking<br/>为什么 1B 时消失？"]
+  G --> T2["② 端到端 OE 收益<br/>设计好的 OE"]
+  G --> T3["③ 顺路：MoE × OE 模型家族"]
+
+  T1 --> a1["n 扫描 2–8 + 2–5 联合<br/>n5 后持平；2–5 联合 8.23"]
+  T1 --> a2["模型大小 × 数据<br/>tri 随模型升，2–5 联合降<br/>只到 49.7M"]
+  T1 --> a3["表大小 R<br/>≥100k 进入高原<br/>58/60"]
+  T1 --> a4["数据包络 6 种阶集合<br/>n≥5 联合不随池下降<br/>6/15 点，缺 1B"]
+  T1 --> a5["gap-freq 幂律<br/>有碰撞混淆<br/>188 臂 dump 未分析"]
+  T1 --> a6["生产级 SFT<br/>未开始"]
+
+  T2 --> b1["只留高频 + 无碰撞<br/>gap 8.27 → 3.87<br/>覆盖率是主力"]
+  T2 --> b2["净收益：val 低于 nogram<br/>只有 reseed + y/v 做到 −0.1"]
+  T2 --> b3["更可训练的 OE<br/>未开始"]
+  T2 --> b4["固定训练时长对比<br/>未开始"]
+
+  T3 --> c1["MoE 基础设施 + S0<br/>PASS"]
+  T3 --> c2["FLAME 四臂家族<br/>Dense / +OE / MoE / MoE+OE"]
+
+  classDef done fill:#dafbe1,stroke:#2da44e,color:#1f2328
+  classDef part fill:#fff8c5,stroke:#bf8700,color:#1f2328
+  classDef todo fill:#ffebe9,stroke:#cf222e,color:#1f2328
+  classDef root fill:#ddf4ff,stroke:#0969da,color:#1f2328
+  class G,T1,T2,T3 root
+  class a1,a3,b1,c1 done
+  class a2,a4,a5 part
+  class a6,b2,b3,b4,c2 todo
+</pre>
+
+<table>
+  <tr><th>「1B 时 forking 消失」的嫌疑</th><th>当前证据（≤49.7M 池，E=3）</th><th>判断</th></tr>
+  <tr><td>n 不够大</td><td>n≥5 联合 6.76→6.53 几乎不降；n2 1.67→0.98 明显下降</td><td>支持，最可能的主因</td></tr>
+  <tr><td>模型不够大</td><td>tri 2.02→2.78 随模型升；n2–5 联合 4.97→4.44 反而降</td><td>部分支持</td></tr>
+  <tr><td>表（词表）不够大</td><td>R≥100k 已进高原，1M→2M 变化小</td><td>不支持</td></tr>
+</table>
+<p class="sub" style="margin-top:8px">1B 点本身未跑，上表是外推，仍是假设。</p>
+<script>mermaid.initialize({ startOnLoad: true, theme: "base", flowchart: { curve: "basis", nodeSpacing: 18, rankSpacing: 50 } });</script>
+</body>
+</html>

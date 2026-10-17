@@ -41,6 +41,8 @@ T1 目前仅完成远端 summary 回收与冲突审计；33 个重复 ID 均存�
 
 ## 主线（nanoGPT）
 
+**2026-10-17 v2 全部线（§73–§81：阶数/R/池/epoch/模型大小、dict-hash-keephash、freeze0 家族、plan-9 S0）的聚合阵列、实验树与 todo：`handoff/takeover-overview-20261017.md`。**
+
 覆盖率/理论当前入口：§67，docs/appendices/coverage_takeover_20260925/README.md；三 seed online gap 的仿射近似（bigram 3–8%、trigram 3–11% 相对 rms），不再以语料固定 gap 指数为结论。
 
 | # | 线名 | 科学问题 | run_id 前缀 | launcher | 作图脚本 | 图目录 | log § | 状态 |
