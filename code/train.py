@@ -2211,6 +2211,18 @@ def compute_shared_contexts(model: NanoGPT, train_probe, val_probe,
     return {"shared_total": len(shared), "per_f": out, "branch": branch}
 
 
+def steps_for_epochs(n_epochs: int, batches_per_epoch: int, device_batch_size: int,
+                     sequence_len: int, total_batch_size: int) -> int:
+    """Optimizer steps needed to see exactly n_epochs of the effective pool.
+
+    The pool size in tokens is batches_per_epoch * device_batch_size *
+    sequence_len (drop_last already applied at the batch level); steps round UP
+    so the last, partial step never shortchanges the requested epoch count.
+    """
+    tokens_per_epoch = batches_per_epoch * device_batch_size * sequence_len
+    return -(-n_epochs * tokens_per_epoch // total_batch_size)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--run_id", default="run")
@@ -2221,6 +2233,12 @@ def main():
                              "one independent clean table per layer (e.g. '1,3,5,7'); "
                              "empty = default single-layer layout")
     parser.add_argument("--steps", type=int, default=1000)
+    parser.add_argument("--train_epochs", type=int, default=0,
+                        help=">0: run exactly this many epochs over the effective "
+                             "train pool; --steps is derived as ceil(E * pool / "
+                             "total_batch) and must be left at its default.  The "
+                             "epoch-count-matched protocol for data-size envelopes "
+                             "(2026-10-17 user directive)")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--deterministic", type=int, default=0,
                         help="1 = strict run-to-run determinism: "
@@ -2623,6 +2641,23 @@ def main():
                                      static_low_mask=cfg.static_low_mask,
                                      rows_requested=cfg.row_index,
                                      max_tokens=cfg.train_max_tokens)
+    if args.train_epochs > 0:
+        if args.steps != 1000:
+            raise SystemExit("--train_epochs and --steps are mutually exclusive "
+                             "(leave --steps at its default)")
+        if args.train_max_tokens <= 0 and cfg.epoch_batches <= 0 \
+                and cfg.replay_mix_passes <= 0:
+            raise SystemExit("--train_epochs requires an explicit pool size: pass "
+                             "--train_max_tokens (or --epoch_batches)")
+        _ep_steps = steps_for_epochs(args.train_epochs, train_ds._batches_per_epoch,
+                                     cfg.device_batch_size, cfg.sequence_len,
+                                     cfg.total_batch_size)
+        cfg.max_steps = _ep_steps
+        print(f"[nglab] epoch-anchored protocol: {args.train_epochs} epochs x "
+              f"{train_ds._batches_per_epoch} batches/epoch x "
+              f"{cfg.device_batch_size * cfg.sequence_len} tok = "
+              f"{train_ds._batches_per_epoch * cfg.device_batch_size * cfg.sequence_len:,} "
+              f"tok/epoch -> steps={_ep_steps}")
     val_ds = TokenizedShardDataset(cfg.data_dir, cfg.val_shards, cfg.sequence_len,
                                    cfg.device_batch_size, cfg.data_seed,
                                    token_dtype=cfg.token_dtype)
@@ -3493,6 +3528,7 @@ def main():
         "steps": cfg.max_steps,
         "seed": cfg.seed,
         "epoch_batches": cfg.epoch_batches,
+        "train_epochs": args.train_epochs,
         "train_max_tokens": cfg.train_max_tokens,
         "train_pool_content_tokens": train_ds.pool_content_tokens(),
         "dump_token_stats_steps": sorted(dump_steps) if dump_steps else "final_only",

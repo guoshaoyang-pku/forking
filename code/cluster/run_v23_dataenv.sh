@@ -22,6 +22,19 @@ ORDERS="${2:?orders, e.g. 2,3,4,5}"
 POOL="${3:?pool content tokens, e.g. 10000000}"
 STEPS="${4:-2000}"
 DEVICE_BATCH="${5:-${NGLAB_DEVICE_BATCH:-72}}"
+EPOCHS="${6:-0}"
+# Epoch-anchored protocol (2026-10-17 user directive): EPOCHS>0 fixes the number
+# of passes over the pool and derives steps = ceil(E * pool / total_batch);
+# run_id carries an e{E} tag instead of the step count.  This is the correct
+# control for data-size envelopes — repetition count matched across pools —
+# and is why 1B x 3 epochs = 20.3k steps (~1.6h on H200), not 2k steps.
+if (( EPOCHS > 0 )); then
+  STAG="e${EPOCHS}"
+  STEP_ARGS=(--train_epochs "$EPOCHS")
+else
+  STAG="${STEPS}"
+  STEP_ARGS=(--steps "$STEPS")
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="${NGLAB_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
@@ -43,7 +56,7 @@ ptag() {
 
 TAG="n${ORDERS//,/-}"
 TRAIN_SHARDS="${NGLAB_ENV_TRAIN_SHARDS:-1}"
-RUN_ID="v23d_${TAG}_p$(ptag "$POOL")_s${NGLAB_SEED:-42}_${STEPS}_fd"
+RUN_ID="v23d_${TAG}_p$(ptag "$POOL")_s${NGLAB_SEED:-42}_${STAG}_fd"
 RESULT_DIR="$OUT_DIR/${RUN_ID}_fixed"
 
 # restart hygiene: an incomplete dir from a previous failed launch is moved
@@ -71,7 +84,7 @@ if (( POOL > AVAIL )); then
 fi
 
 mkdir -p "$RESULT_DIR"
-echo "[v23d] run=$RUN_ID gpu=$GPU orders=$ORDERS pool=$POOL avail=$AVAIL steps=$STEPS mb=$DEVICE_BATCH shards=[$TRAIN_SHARDS]"
+echo "[v23d] run=$RUN_ID gpu=$GPU orders=$ORDERS pool=$POOL avail=$AVAIL steps=$STEPS epochs=$EPOCHS mb=$DEVICE_BATCH shards=[$TRAIN_SHARDS]"
 
 CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --run_id "${RUN_ID}_fixed" \
@@ -81,7 +94,7 @@ CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --train_max_tokens "$POOL" \
   --val_shards "${NGLAB_VAL_SHARDS:-2,3,4,5,6,7,8,9,10,6542}" \
   --seed "${NGLAB_SEED:-42}" \
-  --steps "$STEPS" \
+  "${STEP_ARGS[@]}" \
   --dtype bf16 \
   --injection_position input \
   --enable_unigram 0 \

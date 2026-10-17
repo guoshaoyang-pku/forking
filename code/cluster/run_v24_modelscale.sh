@@ -24,6 +24,17 @@ MODE="${5:?mode: tri | n25}"
 POOL="${6:?pool content tokens, e.g. 10000000}"
 STEPS="${7:-2000}"
 DEVICE_BATCH="${8:-${NGLAB_DEVICE_BATCH:-72}}"
+EPOCHS="${9:-0}"
+# Epoch-anchored protocol (2026-10-17 user directive): EPOCHS>0 fixes the number
+# of passes over the pool and derives steps = ceil(E * pool / total_batch);
+# run_id carries an e{E} tag instead of the step count.
+if (( EPOCHS > 0 )); then
+  STAG="e${EPOCHS}"
+  STEP_ARGS=(--train_epochs "$EPOCHS")
+else
+  STAG="${STEPS}"
+  STEP_ARGS=(--steps "$STEPS")
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="${NGLAB_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
@@ -52,7 +63,7 @@ ptag() {
   esac
 }
 
-RUN_ID="v24ms_l${NL}h${NH}d${NE}_${MTAG}_p$(ptag "$POOL")_s${NGLAB_SEED:-42}_${STEPS}_fd"
+RUN_ID="v24ms_l${NL}h${NH}d${NE}_${MTAG}_p$(ptag "$POOL")_s${NGLAB_SEED:-42}_${STAG}_fd"
 RESULT_DIR="$OUT_DIR/${RUN_ID}_fixed"
 
 # restart hygiene: an incomplete dir from a previous failed launch is moved
@@ -102,7 +113,7 @@ CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --train_max_tokens "$POOL" \
   --val_shards "${NGLAB_VAL_SHARDS:-2,3,4,5,6,7,8,9,10,6542}" \
   --seed "${NGLAB_SEED:-42}" \
-  --steps "$STEPS" \
+  "${STEP_ARGS[@]}" \
   --dtype bf16 \
   --injection_position input \
   --enable_unigram 0 \
