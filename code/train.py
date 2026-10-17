@@ -2941,7 +2941,7 @@ def main():
     # final step (always).  Empty flag = final step only.
     dump_steps = {int(s) for s in args.dump_token_stats_steps.split(",") if s.strip()}
     dump_orders = sorted(ngram_orders) if ngram_orders else \
-        ([2] if cfg.enable_bigram else []) + ([3] if cfg.enable_trigram else [])
+        ([2] if cfg.enable_bigram_ve else []) + ([3] if cfg.enable_trigram_ve else [])
     if args.freq_index and os.path.exists(args.freq_index):
         from ngram_freq import load_frequency_index
         freq_index_obj = load_frequency_index(args.freq_index)
