@@ -92,6 +92,7 @@ class Config:
     ngram_clean_table: int = 0        # rows R of every generic order-n table
     ngram_dict_topk: int = 0          # v2.1: >0 = no-collision dictionary mode (see load_ngram_dictionaries)
     ngram_keep_rows: str = "dict"     # with ngram_dict_topk: dict = unique rows | hash = hash rows under the same top-K membership (coverage control)
+    ngram_dict_per_order: str = ""    # v2.5: per-order selection, e.g. "2:k=262144,4:f=64" (k = top-K cap, f = min train count); unlisted orders use ngram_dict_topk
     intervention: str = "none"        # none | freeze_table | freeze_backbone | freeze_both | hash_reseed | mask_low_freq | mask_high_freq | random_context_loss_mask
     intervention_epoch: int = 1       # fire when 0-indexed epoch reaches this value (1 = start of epoch 2)
     intervention_epochs: tuple = ()   # extra 0-indexed due epochs for multi-fire interventions (e.g. (1, 2))
@@ -235,6 +236,27 @@ _TABLE_SLICE_ROWS = 1 << 18
 _MIX_C1_I64 = 0xBF58476D1CE4E5B9 - (1 << 64)
 _MIX_C2_I64 = 0x94D049BB133111EB - (1 << 64)
 _SPLITMIX_SEED_I64 = 0x9E3779B97F4A7C15 - (1 << 64)
+
+
+def parse_ngram_dict_per_order(spec: str) -> dict:
+    """'2:k=262144,4:f=64,5:k=8192:f=32' -> {2: {'k': 262144}, 4: {'f': 64}, 5: {...}}."""
+    out = {}
+    for item in (spec or "").split(","):
+        item = item.strip()
+        if not item:
+            continue
+        parts = item.split(":")
+        n = int(parts[0])
+        d = {}
+        for kv in parts[1:]:
+            key, val = kv.split("=")
+            if key not in ("k", "f") or int(val) < 1:
+                raise ValueError(f"bad --ngram_dict_per_order item {item!r}")
+            d[key] = int(val)
+        if not d:
+            raise ValueError(f"bad --ngram_dict_per_order item {item!r}")
+        out[n] = d
+    return out
 
 
 def _mix64_i64(z: torch.Tensor) -> torch.Tensor:
@@ -1000,7 +1022,7 @@ class NanoGPT(nn.Module):
         valid = table[pos_c] == keys.reshape(-1)
         return pos_c.view_as(keys), valid.view_as(keys)
 
-    def load_ngram_dictionaries(self, freq_index, topk: int, log=print):
+    def load_ngram_dictionaries(self, freq_index, topk: int, log=print, per_order: str = ""):
         """Build per-order no-collision dictionaries from a multi-order index.
 
         Selection: the top-`topk` train contexts by count, ties broken by key
@@ -1012,6 +1034,8 @@ class NanoGPT(nn.Module):
         key space itself is splitmix64-hashed, so two distinct contexts share a
         key with probability ~pairs/2^64 (none at corpus scale).
         """
+        spec = parse_ngram_dict_per_order(per_order)
+        self.ngram_dict_stats = {}
         for n in self.ngram_extra_orders:
             keys = freq_index._keys.get(n)
             counts = freq_index._counts.get(n)
@@ -1020,17 +1044,27 @@ class NanoGPT(nn.Module):
                                  f"(has {getattr(freq_index, 'orders', '?')}); "
                                  "rebuild with ngram_freq.py --orders")
             counts64 = counts.astype(np.int64)
-            if keys.size <= topk:
-                sel = np.arange(keys.size)
+            k_n = int(spec.get(n, {}).get("k", topk))
+            f_n = int(spec.get(n, {}).get("f", 1))
+            if k_n > self.config.ngram_clean_table:
+                raise SystemExit(f"dict order {n}: k={k_n} exceeds --ngram_clean_table "
+                                 f"{self.config.ngram_clean_table}")
+            elig = np.flatnonzero(counts64 >= f_n)
+            if elig.size <= k_n:
+                sel = elig
             else:
-                order = np.argsort(-counts64, kind="stable")[:topk]
+                order = elig[np.argsort(-counts64[elig], kind="stable")[:k_n]]
                 sel = np.sort(order)
             dkeys = np.ascontiguousarray(keys[sel], dtype=np.int64)
             device = next(self.parameters()).device
             self.ngram_dict_keys[n] = torch.from_numpy(dkeys).to(device)
             coverage = float(counts64[sel].sum()) / max(1, int(counts64.sum()))
+            min_kept = int(counts64[sel].min()) if sel.size else 0
+            self.ngram_dict_stats[n] = dict(distinct=int(keys.size), kept=int(dkeys.size),
+                                            k=k_n, f=f_n, min_kept_count=min_kept,
+                                            coverage=coverage)
             log(f"[nglab] dict n={n}: {keys.size:,} distinct -> kept {dkeys.size:,} "
-                f"(topk={topk}), position coverage {coverage:.4f}")
+                f"(k={k_n}, f>={f_n}, min kept count {min_kept}), position coverage {coverage:.4f}")
 
     def _check_pre_rows_supported(self):
         """Precomputed rows are only valid for the clean single-table mainline.
@@ -2483,6 +2517,10 @@ def main():
                              "(2/3 included, routed through the generic path), keep the top-K "
                              "train contexts by count as unique rows (miss contributes zero). "
                              "Requires --freq_index with those orders; K <= --ngram_clean_table")
+    parser.add_argument("--ngram_dict_per_order", default="",
+                        help="v2.5 per-order dictionary selection with --ngram_dict_topk, e.g. "
+                             "'2:k=262144,3:k=262144,4:f=64,5:f=256': k = top-K cap (<= R), "
+                             "f = minimum train count; unlisted orders use --ngram_dict_topk")
     parser.add_argument("--ngram_keep_rows", default="dict", choices=["dict", "hash"],
                         help="with --ngram_dict_topk: dict = unique rows (no-collision dictionary); "
                              "hash = hash rows masked to the same top-K membership (coverage-matched "
@@ -2675,6 +2713,13 @@ def main():
         if args.ngram_dict_topk > args.ngram_clean_table > 0 or \
                 (args.ngram_dict_topk > 0 and args.ngram_clean_table <= 0):
             parser.error("--ngram_dict_topk must be <= --ngram_clean_table (and R > 0)")
+    if args.ngram_dict_per_order:
+        if args.ngram_dict_topk <= 0:
+            parser.error("--ngram_dict_per_order requires --ngram_dict_topk > 0")
+        _spec = parse_ngram_dict_per_order(args.ngram_dict_per_order)
+        _ords = {int(x) for x in args.ngram_orders.split(",") if x.strip()}
+        if not set(_spec) <= _ords:
+            parser.error(f"--ngram_dict_per_order orders {sorted(_spec)} not in --ngram_orders")
     if args.ngram_keep_rows == "hash" and args.ngram_dict_topk <= 0:
         parser.error("--ngram_keep_rows hash requires --ngram_dict_topk > 0 (membership mask)")
     if ngram_orders:
@@ -2737,6 +2782,7 @@ def main():
         ngram_clean_table=args.ngram_clean_table if extra_orders else 0,
         ngram_dict_topk=args.ngram_dict_topk if extra_orders else 0,
         ngram_keep_rows=args.ngram_keep_rows if args.ngram_dict_topk > 0 else "dict",
+        ngram_dict_per_order=args.ngram_dict_per_order if args.ngram_dict_topk > 0 else "",
         intervention=args.intervention,
         intervention_epoch=args.intervention_epoch,
         intervention_epochs=tuple(
@@ -3167,7 +3213,8 @@ def main():
                 if not multi_order_index:
                     raise SystemExit("--ngram_dict_topk needs a multi-order freq index "
                                      "(rebuild with ngram_freq.py --orders)")
-                model.load_ngram_dictionaries(freq_index_obj, cfg.ngram_dict_topk)
+                model.load_ngram_dictionaries(freq_index_obj, cfg.ngram_dict_topk,
+                                              per_order=cfg.ngram_dict_per_order)
                 dict_npz = os.path.join(cfg.out_dir, f"ngram_dicts_top{cfg.ngram_dict_topk}.npz")
                 np.savez_compressed(dict_npz, **{
                     f"keys_{n}": model.ngram_dict_keys[n].cpu().numpy()
@@ -3854,6 +3901,8 @@ def main():
         "row_index": bool(args.row_index),
         "ngram_dict_topk": int(args.ngram_dict_topk),
         "ngram_keep_rows": args.ngram_keep_rows,
+        "ngram_dict_per_order": args.ngram_dict_per_order,
+        "ngram_dict_stats": {str(k): v for k, v in getattr(model, "ngram_dict_stats", {}).items()},
         "ngram_orders": sorted(ngram_orders),
         "rows_meta": _rows_meta,
         "token_dtype": cfg.token_dtype,

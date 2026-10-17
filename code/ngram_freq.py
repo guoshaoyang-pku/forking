@@ -418,17 +418,27 @@ class MultiOrderFrequencyIndex:
     @classmethod
     def build_from_chunks(cls, data_dir: str, shard_ids: list, vocab_size: int,
                           orders, chunk_size: int, token_dtype: str = "u16",
-                          log=print) -> "MultiOrderFrequencyIndex":
+                          log=print, max_chunks: int = 0) -> "MultiOrderFrequencyIndex":
+        """max_chunks > 0: count only the first max_chunks chunks of the shard
+        stream (= train.py --train_max_tokens pool, see train_pool_chunks)."""
         np_dtype = np.uint32 if token_dtype == "u32" else np.uint16
         T = chunk_size - 1
         tokens = []
+        left = max_chunks if max_chunks > 0 else None
         for sid in shard_ids:
+            if left is not None and left <= 0:
+                break
             path = os.path.join(data_dir, f"shard_{sid:05d}.bin")
             if not os.path.exists(path):
                 raise FileNotFoundError(f"Missing shard: {path}")
             buf = np.memmap(path, dtype=np_dtype, mode="r")
             m = len(buf) // chunk_size
+            if left is not None:
+                m = min(m, left)
+                left -= m
             tokens.append(np.array(buf[:m * chunk_size]).reshape(m, chunk_size)[:, :T])
+        if left is not None and left > 0:
+            raise SystemExit(f"shards hold {max_chunks - left} chunks < requested {max_chunks}")
         x = np.concatenate(tokens, axis=0)
         keys_sorted, counts_sorted = {}, {}
         for n in orders:
@@ -438,7 +448,8 @@ class MultiOrderFrequencyIndex:
             counts_sorted[int(n)] = uc.astype(np.int32)
             log(f"[ngram_freq] n={n}: {uk.size:,} distinct over {x.size:,} positions")
         meta = {"chunk_size": int(chunk_size), "shard_ids": [int(s) for s in shard_ids],
-                "positions": int(x.size), "token_dtype": token_dtype}
+                "positions": int(x.size), "token_dtype": token_dtype,
+                "max_chunks": int(max_chunks)}
         return cls(orders, keys_sorted, counts_sorted, vocab_size, meta)
 
     def save(self, path: str):
@@ -458,6 +469,13 @@ class MultiOrderFrequencyIndex:
         return cls(orders, {n: np.asarray(d[f"keys_{n}"], dtype=np.int64) for n in orders},
                    {n: np.asarray(d[f"counts_{n}"], dtype=np.int32) for n in orders},
                    int(d["vocab_size"][0]), meta)
+
+
+def train_pool_chunks(max_tokens: int, sequence_len: int, device_batch_size: int) -> int:
+    """Chunk budget of train.py's --train_max_tokens pool (0 = whole stream)."""
+    if max_tokens <= 0:
+        return 0
+    return (max_tokens // sequence_len) // device_batch_size * device_batch_size
 
 
 def load_frequency_index(path: str):
@@ -865,13 +883,18 @@ if __name__ == "__main__":
                         help="v2 multi-order index, e.g. '2,3,4,5,6,7,8' (chunk semantics; "
                              "needs --sequence_len); empty = legacy bigram/trigram index")
     parser.add_argument("--sequence_len", type=int, default=2048)
+    parser.add_argument("--train_max_tokens", type=int, default=0,
+                        help="count only the train.py --train_max_tokens pool (needs --device_batch_size)")
+    parser.add_argument("--device_batch_size", type=int, default=72)
     args = parser.parse_args()
     shard_ids = [int(x) for x in args.train_shards.split(",") if x.strip()]
     if args.orders.strip():
         orders = sorted({int(x) for x in args.orders.split(",") if x.strip()})
         idx = MultiOrderFrequencyIndex.build_from_chunks(
             args.data_dir, shard_ids, args.vocab_size, orders,
-            chunk_size=args.sequence_len + 1, token_dtype=args.token_dtype)
+            chunk_size=args.sequence_len + 1, token_dtype=args.token_dtype,
+            max_chunks=train_pool_chunks(args.train_max_tokens, args.sequence_len,
+                                         args.device_batch_size))
         idx.save(args.out)
         print(f"[ngram_freq] saved multi-order index to {args.out}")
         raise SystemExit(0)

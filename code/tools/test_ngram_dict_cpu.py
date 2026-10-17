@@ -11,6 +11,8 @@ Covers:
       zero; dictionary members hit unique rows (no collision)
   T4  end-to-end 5-step train (orders 2,3,4,5 joint, dict mode) with loss
       finite and ngram_ves in the table (RMSProp) group
+  T5  v2.5 per-order selection (--ngram_dict_per_order): k cap, f threshold,
+      both, unlisted order falls back to topk; empty spec == legacy bit for bit
 """
 from __future__ import annotations
 
@@ -195,11 +197,44 @@ def test_t4():
     print(f"T4 PASS: 5-step dict train finite ({losses[0]:.3f} -> {losses[-1]:.3f})")
 
 
+def test_t5():
+    from train import parse_ngram_dict_per_order
+    assert parse_ngram_dict_per_order("") == {}
+    assert parse_ngram_dict_per_order("2:k=7,5:f=3:k=9") == {2: {"k": 7}, 5: {"f": 3, "k": 9}}
+    for bad in ("2:x=1", "2", "2:k=0"):
+        try:
+            parse_ngram_dict_per_order(bad)
+        except ValueError:
+            continue
+        raise AssertionError(f"T5: {bad!r} accepted")
+    idx = synth_index()
+    legacy = make_model((2, 3, 5), dict_topk=TOPK)
+    legacy.load_ngram_dictionaries(idx, TOPK, log=lambda *a: None)
+    same = make_model((2, 3, 5), dict_topk=TOPK)
+    same.load_ngram_dictionaries(idx, TOPK, log=lambda *a: None, per_order="")
+    for n in (2, 3, 5):
+        assert torch.equal(legacy.ngram_dict_keys[n], same.ngram_dict_keys[n]), "T5: empty spec drift"
+    m = make_model((2, 3, 5), dict_topk=TOPK)
+    m.load_ngram_dictionaries(idx, TOPK, log=lambda *a: None, per_order="2:k=50,3:f=30,5:k=40:f=45")
+    for n, (k, f) in {2: (50, 1), 3: (TOPK, 30), 5: (40, 45)}.items():
+        c = idx._counts[n].astype(np.int64)
+        kept = np.isin(idx._keys[n], m.ngram_dict_keys[n].numpy())
+        elig = c >= f
+        assert kept.sum() == min(k, elig.sum()), f"T5: n={n} kept {kept.sum()}"
+        assert not np.any(kept & ~elig), f"T5: n={n} kept below f"
+        if kept.sum() < elig.sum():
+            assert c[kept].min() >= c[elig & ~kept].max(), f"T5: n={n} not top-K within eligible"
+        st = m.ngram_dict_stats[n]
+        assert st["kept"] == kept.sum() and st["f"] == f and st["k"] == k
+    print("T5 PASS: per-order k/f selection correct; empty spec bit-identical to legacy")
+
+
 def main():
     test_t1()
     test_t2()
     test_t3()
     test_t4()
+    test_t5()
     print("ALL NGRAM DICT CPU TESTS PASSED")
 
 
