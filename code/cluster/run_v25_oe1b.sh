@@ -2,6 +2,8 @@
 # v2.5 OE selection at 1B (user 2026-10-18): 8L/768 (~50M non-embedding) x 1B ClimbMix
 # unique tokens x E=3, per-order dictionary R / f limits.  V5 standard otherwise
 # (input injection, RMSProp(0,0.99) x128, lr 6e-4 warmup_constant(100), bf16, no compile).
+# freq index = 1B pool counts pruned to f>=30 (selection only); the final-step freq-bin
+# diagnostics therefore mislabel f<30 contexts as novel and are NOT evidence.
 #
 #   run_v25_oe1b.sh <gpu> <tag> <mode:nogram|hash|dict> <orders> [per_order_spec] [epochs]
 # e.g. run_v25_oe1b.sh 4 d1m dict 2,3,4,5
@@ -41,7 +43,7 @@ CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --lr 0.0006 --lr_schedule warmup_constant --warmup_steps 100 \
   --table_optimizer rmsprop --table_betas 0.0,0.99 --table_lr_scale 128.0 \
   --val_interval 10 --val_batches 4 --table_norm_interval 50 --fixed_train_probe 0 \
-  --freq_eval_interval 0 --exact_freq_eval_interval 0 \
+  --freq_eval_interval 1000000 --exact_freq_eval_interval 1000000 \
   > "$RESULT_DIR/train.log" 2>&1
 test -s "$RESULT_DIR/summary.json"
 echo "[v25] complete: $RESULT_DIR"
