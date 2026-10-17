@@ -1,0 +1,252 @@
+Plan 9 追加修订：转向 FLAME-derived Dense × MoE × OE 配对家族
+日期：2026-10-17
+优先级：本追加修订高于此前的 plan9_moe_oe_agent_handoff.txt；发生冲突时以本文为准。
+执行要求：若正式长跑尚未启动，立即暂停在 S0/代码审计阶段；已经完成的通用 MoE、router 诊断、OE 审计和数据 manifest 工作全部保留，不要返工。
+
+======================================================================
+0. 方向变更
+======================================================================
+
+此前文档把自定义的 32 routed / top-4 / no-shared MoE 设为发布主线。
+现改为：
+
+发布主线 = FLAME-derived MoE + 严格 active-matched dense twin，再分别加 OE on/off。
+
+每个尺度发布四个核心模型：
+1. Dense
+2. Dense + OE
+3. FLAME-derived MoE
+4. FLAME-derived MoE + OE
+
+此前的 32/top-4/no-shared、granularity、capacity、shared-expert 网格仍有价值，但降级为论文中的结构消融，不再作为模型家族的主干。
+
+原文以下内容继续有效：
+- OpenWebText manifest、token 顺序和 epoch checkpoint 契约
+- OE 参数审计与 trainable/frozen 对照
+- router load、route stability、dead experts、row exposure/update 等诊断
+- E=1 等价性、assignment conservation、expert permutation 等单元测试
+- 参数/FLOPs/吞吐/显存账本
+- repetition/forking 的统计口径
+
+======================================================================
+1. FLAME 架构必须按官方代码语义复现
+======================================================================
+
+不要只写“64 total / top-8 / 2 shared”，因为官方 Megatron 配置的精确语义是：
+
+- 64 个 routed experts
+- router 从 64 个 routed experts 中选 top-6
+- 另有一个 always-on shared FFN，其 intermediate width = 2 × 单个 routed expert width
+- 因而 shared FFN 等价于 2 个 expert units
+- 每 token 总 active expert width = (6 + 2) × d_e = 8 × d_e
+- 第一层为 dense FFN；其余层为 MoE
+- SwiGLU
+- RMSNorm，epsilon 1e-6
+- RoPE
+- linear layers 无 bias
+- input embedding 与 LM head 不共享
+- 16 attention heads
+- router FP32
+- router pre-softmax + softmax score
+- load-balance coefficient 0.01
+- router z-loss coefficient 0.001
+- hidden dropout = 0
+- attention dropout = 0
+- initialization std = 0.02
+
+实现时应直接保存一个 `flame_profile=true` 或等价配置，不要把它近似成此前的 OLMoE-style no-shared 配置。
+
+======================================================================
+2. 推荐的三点小模型家族
+======================================================================
+
+核心只做三点；不必一开始复刻 FLAME 全部七个尺度。
+
+A. Tiny
+- FLAME 名义规模：38M active / 100M total
+- layers = 9
+- hidden = 256
+- dense FFN hidden = 1368
+- routed expert hidden d_e = 176
+- MoE layer pattern：第 1 层 dense，后 8 层 MoE
+
+B. Small / 主实验中心点
+- FLAME 名义规模：115M active / 459M total
+- layers = 12
+- hidden = 512
+- dense FFN hidden = 2736
+- routed expert hidden d_e = 352
+- MoE layer pattern：第 1 层 dense，后 11 层 MoE
+
+C. Large
+- FLAME 名义规模：290M active / 1.3B total
+- layers = 9
+- hidden = 1024
+- dense FFN hidden = 5472
+- routed expert hidden d_e = 704
+- MoE layer pattern：第 1 层 dense，后 8 层 MoE
+
+该三点满足“主要是小模型，最大模型总参数略大于 1B”。
+
+暂不纳入：
+- 98M active / 349M total：与 115M/459M 太接近，除非专门研究 9 层 vs 12 层。
+- 419M/2.2B 及更大模型：超出当前“小模型家族”的必要范围。
+
+重要命名：
+模型名必须同时写 active/total，例如 `flame_290mA_1p3bT`。
+禁止只写“1.3B”，以免把 total parameters 误当成每 token active parameters。
+
+======================================================================
+3. Dense twin 如何定义
+======================================================================
+
+FLAME 论文原有的 Dense-77M、Dense-191M、Dense-411M、Dense-1.4B 是按训练 FLOPs和既有 Pythia/DCLM 架构匹配的性能 baseline，不是逐层同构的因果 twin。
+本项目需要自己生成 dense twin。
+
+Primary dense twin：
+- tokenizer、vocab、context length、embedding、LM head、层数、hidden size、attention heads、RoPE、RMSNorm、SwiGLU、初始化、数据顺序、optimizer 全部与对应 FLAME-derived MoE 相同
+- 第一层保持与 FLAME 相同的 dense FFN
+- 后续每个 MoE FFN 替换为一个 dense SwiGLU FFN
+- 为严格匹配每 token 激活的 expert FFN 参数与主矩阵 FLOPs，后续 dense FFN width 设置为：
+  d_ff_twin = 8 × d_e
+
+因此：
+- Tiny：d_ff_twin = 1408
+- Small：d_ff_twin = 2816
+- Large：d_ff_twin = 5632
+
+这与 FLAME 表中的 dense FFN hidden（1368/2736/5472）只差约 2.9%。
+主因果对照使用 8×d_e 的 exact-active twin；FLAME 原始 dense FFN width 版本可作为“official-shape”辅助对照，但不要混为同一模型。
+
+匹配边界：
+- expert FFN active parameters 和主要 matmul FLOPs可以精确匹配
+- MoE 仍额外包含 router、top-k、dispatch 和通信开销
+- 因此称为 `active-FFN-matched`，不要称为 wall-clock matched
+- 所有结果同时报告 active params、total params、理论 FLOPs/token、tokens/s 和显存
+
+在每个尺度，dense twin 的总参数应接近对应 MoE 的 active parameters，而不会接近 MoE total parameters。这是正确的主比较：
+- Dense twin 约 38M vs MoE 38M active / 100M total
+- Dense twin 约 115M vs MoE 115M active / 459M total
+- Dense twin 约 290M vs MoE 290M active / 1.3B total
+
+若需要回答“收益来自稀疏结构还是单纯更多 total capacity”，只在 Small 或 Large 额外训练一个 total-parameter-matched dense control；不要全家族都做。
+
+======================================================================
+4. OE 如何接入
+======================================================================
+
+OE 必须对 dense twin 与 FLAME-derived MoE 使用完全相同的：
+- n-gram order
+- hash 规则
+- injection layer / 相对深度
+- gating 形式
+- initialization
+- trainable/frozen 状态
+- table parameter budget
+- optimizer group
+
+核心四臂：
+Dense
+Dense + OE
+MoE
+MoE + OE
+
+Small 尺度先完成完整 2×2 和 3 seeds。
+Tiny、Large 在确认效应后再扩展。
+
+跨尺度发布时不要机械固定同一个绝对 OE table：
+- 主家族采用固定 `P_OE / P_active_backbone` 的 capacity-normalized OE
+- 另保留 Small 尺度当前绝对表配置，作为与既有实验连续的 reproduction arm
+- 日志必须打印 OE total params、rows、embedding dim、rows/vocab、collision statistics 和 touched-row ratio
+
+======================================================================
+5. OpenWebText 数据预算
+======================================================================
+
+Small（115M active）继续采用此前协议：
+- 1.0B unique OpenWebText tokens
+- 顺序重放 3 遍
+- 总见到 3.0B tokens
+- epoch 1/2/3 精确 checkpoint
+
+这与原先约 124M active 的设计非常接近，因此此前的 1B manifest 和数据工作可以直接保留。
+
+若最终扩展为三尺度家族，为保持每个 active parameter 看到的 token 数近似一致，按 Small 比例缩放 unique corpus：
+- Tiny 38M active：约 0.33B unique × 3
+- Small 115M active：1.00B unique × 3
+- Large 290M active：约 2.50B unique × 3
+
+三个子集必须是同一固定 OpenWebText manifest 的 nested prefixes/subsets，并保持文档级切分和固定 token 顺序。
+若研究目的改为“固定同一数据量下的 scale effect”，可另做所有尺度共同 1B×3 的控制实验，但不要与 token/parameter-matched 主家族混报。
+
+======================================================================
+6. 立即执行顺序
+======================================================================
+
+P0. 立即状态检查
+- 若 1B×3 正式长跑尚未启动，不要启动
+- 若只完成了旧 32/top-4 MoE 的代码，实现保留为 structural ablation
+- 报告当前 commit、已完成项目和已启动 run
+
+P1. 增加 FLAME profile
+- 实现 64 routed / top-6 + shared width 2d_e
+- 实现第一层 dense、后续层 MoE 的 layer pattern
+- 对齐官方 router、SwiGLU、RMSNorm、RoPE、bias 和 weight tying 语义
+- 自动打印 active/total 参数账本
+
+P2. 实现 exact-active dense twin generator
+- d_ff_twin = 8d_e
+- 除 FFN 类型外，其余结构完全同构
+- 写前向、参数量和 FLOPs 验收测试
+
+P3. Small 尺度 S0
+先只跑 100M tokens、1 pass、1 seed：
+- Dense
+- MoE
+随后：
+- Dense + OE
+- MoE + OE
+
+验收：
+- 无 NaN/Inf
+- 参数账本符合预期
+- MoE 无明显 router collapse
+- 四臂 loss 均处于合理同量级
+- OE 和 router diagnostics 完整
+- throughput、显存和 dispatch 开销已记录
+
+P4. Small 正式核心实验
+- 四臂各 3 seeds
+- 1B unique × 3 passes
+- paired data order
+- 保存 epoch 1/2/3 checkpoints
+- 预注册 difference-in-differences
+
+P5. 家族扩展
+只有 Small 的核心现象成立后：
+- Tiny 四臂先各 1 seed
+- Large 四臂先各 1 seed
+- 对关键结论补足 3 seeds
+- 再决定是否加入 frozen OE、total-matched dense 和旧 OLMoE-style no-shared 消融
+
+======================================================================
+7. 对此前文档的明确覆盖关系
+======================================================================
+
+以下旧决策被本文覆盖：
+- “发布主 MoE = 32 routed/top-4/no-shared”
+- “开源主线是自建 MoE structural lattice”
+- “全部尺度固定 1B unique ×3”
+- “shared expert 只作为后期可选消融”
+
+新的决策：
+- 发布主线继承 FLAME
+- shared path 是 FLAME 主配置的一部分
+- dense 使用逐层同构的 exact-active twin
+- OE 是本项目核心新增变量
+- 自定义 no-shared/capacity/granularity 网格只作为后续机制消融
+- 主实验中心点为 115M active /459M total
+- 家族上限为 290M active /1.3B total
+
+交付要求：
+完成 P0-P3 后提交一次中间报告和 commit；未经确认不得启动 P4 的 12 个正式 run。
