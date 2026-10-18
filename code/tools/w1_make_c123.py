@@ -696,6 +696,8 @@ if __name__ == "__main__":
     ap.add_argument("out_path")
     ap.add_argument("--seed", type=int, default=ROUTING_SEED)
     ap.add_argument("--order", type=int, default=None)
+    ap.add_argument("--m-total", type=int, default=None,
+                    help="physical row budget summed over orders (default 131072)")
     a = ap.parse_args()
     build(a.index_path, a.stats_dir, a.algo, a.out_path, seed=a.seed,
-          order=a.order)
+          order=a.order, m_total=a.m_total)
