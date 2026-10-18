@@ -93,6 +93,8 @@ class Config:
     ngram_dict_topk: int = 0          # v2.1: >0 = no-collision dictionary mode (see load_ngram_dictionaries)
     ngram_keep_rows: str = "dict"     # with ngram_dict_topk: dict = unique rows | hash = hash rows under the same top-K membership (coverage control)
     ngram_dict_per_order: str = ""    # v2.5: per-order selection, e.g. "2:k=262144,4:f=64" (k = top-K cap, f = min train count); unlisted orders use ngram_dict_topk
+    ngram_assign_file: str = ""       # v26: explicit context->row assignment npz (keys_<n>, rows_<n> [(2,K) if heads=2], R_<n>); replaces dict_topk
+    ngram_heads: int = 1              # v26: 2 = two half-width tables per order (matched-budget multi-hash / H2)
     intervention: str = "none"        # none | freeze_table | freeze_backbone | freeze_both | hash_reseed | mask_low_freq | mask_high_freq | random_context_loss_mask
     intervention_epoch: int = 1       # fire when 0-indexed epoch reaches this value (1 = start of epoch 2)
     intervention_epochs: tuple = ()   # extra 0-indexed due epochs for multi-fire interventions (e.g. (1, 2))
@@ -570,7 +572,8 @@ class NanoGPT(nn.Module):
                 raise ValueError("--ngram_orders supports input injection only")
             if config.ngram_clean_table <= 0:
                 raise ValueError("generic n-gram tables need ngram_clean_table > 0")
-            if min(self.ngram_extra_orders) < 4 and config.ngram_dict_topk <= 0:
+            if min(self.ngram_extra_orders) < 4 and config.ngram_dict_topk <= 0 \
+                    and not config.ngram_assign_file:
                 raise ValueError("generic n-gram tables need orders >= 4 (orders 2/3 use the "
                                  "legacy branches unless --ngram_dict_topk is set)")
         # _weight=empty: no default init, so constructing these tables does not
@@ -581,15 +584,26 @@ class NanoGPT(nn.Module):
             raise ValueError("dictionary mode (--ngram_dict_topk) routes every order "
                              "through the generic path; legacy branches must be off")
         self.ngram_ves = nn.ModuleDict({
-            str(n): nn.Embedding(config.ngram_clean_table, config.n_embd,
-                                 _weight=torch.empty(config.ngram_clean_table, config.n_embd))
+            str(n): nn.Embedding(config.ngram_clean_table,
+                                 config.n_embd // 2 if config.ngram_heads == 2 else config.n_embd,
+                                 _weight=torch.empty(config.ngram_clean_table,
+                                                     config.n_embd // 2 if config.ngram_heads == 2 else config.n_embd))
             for n in self.ngram_extra_orders
         })
+        self.ngram_ves_b = nn.ModuleDict({
+            str(n): nn.Embedding(config.ngram_clean_table,
+                                 config.n_embd - config.n_embd // 2,
+                                 _weight=torch.empty(config.ngram_clean_table,
+                                                     config.n_embd - config.n_embd // 2))
+            for n in self.ngram_extra_orders
+        }) if config.ngram_heads == 2 else nn.ModuleDict()
         self.ngram_hash_constants = {n: ngram_hash_constants(n) for n in self.ngram_extra_orders}
         # v2.1 dictionary (no-collision) mode: per order, a sorted int64 tensor of
         # the top-ngram_dict_topk train contexts; rows come from searchsorted and
         # misses contribute exactly zero (filled by load_ngram_dictionaries)
         self.ngram_dict_keys: dict = {}
+        self.ngram_assign_rows: dict = {}   # v26: order -> int64 tensor (K,) or (2,K)
+        self.ngram_assign_R: dict = {}      # v26: order -> physical rows R_n
         self._freq_mask_index = None
         self._freq_mask_mode = "none"
         self._freq_mask_threshold = 0
@@ -608,6 +622,7 @@ class NanoGPT(nn.Module):
         # their normal_ keeps the RNG stream (and thus bigram/trigram init)
         # identical to a run without them
         generic = {id(m) for m in self.ngram_ves.values()}
+        generic |= {id(m) for m in self.ngram_ves_b.values()}
         for m in self.modules():
             if id(m) in generic:
                 continue
@@ -634,6 +649,8 @@ class NanoGPT(nn.Module):
             for tve in lvs:
                 torch.nn.init.uniform_(tve.weight, -s, s)
         for nve in self.ngram_ves.values():
+            torch.nn.init.uniform_(nve.weight, -s, s)
+        for nve in self.ngram_ves_b.values():
             torch.nn.init.uniform_(nve.weight, -s, s)
         for blk in self.transformer.h:
             for gname in ("ve_gate", "bigram_gate", "trigram_gate"):
@@ -1066,6 +1083,68 @@ class NanoGPT(nn.Module):
             log(f"[nglab] dict n={n}: {keys.size:,} distinct -> kept {dkeys.size:,} "
                 f"(k={k_n}, f>={f_n}, min kept count {min_kept}), position coverage {coverage:.4f}")
 
+    def load_ngram_assignment(self, path: str, log=print):
+        """v26 explicit context->row assignment (teacher-free algorithm search).
+
+        npz format per order n in ngram_extra_orders:
+          keys_<n>  int64 (K_n,) sorted ascending (same key semantics as dict mode)
+          rows_<n>  int32 (K_n,) for heads=1, or (2, K_n) for heads=2
+          R_<n>     int64 scalar physical row count (rows < R <= ngram_clean_table)
+          counts_<n> (optional) int64 train counts for coverage logging
+        Collisions (two keys -> same row) are the routing algorithm's choice.
+        """
+        z = np.load(path)
+        heads = self.config.ngram_heads
+        device = next(self.parameters()).device
+        self.ngram_assign_stats = {}
+        for n in self.ngram_extra_orders:
+            keys = np.ascontiguousarray(z[f"keys_{n}"], dtype=np.int64)
+            rows = np.asarray(z[f"rows_{n}"], dtype=np.int64)
+            R = int(z[f"R_{n}"])
+            if heads == 2:
+                if rows.shape != (2, keys.size):
+                    raise SystemExit(f"assign n={n}: rows shape {rows.shape} != (2, {keys.size})")
+            else:
+                if rows.shape != (keys.size,):
+                    raise SystemExit(f"assign n={n}: rows shape {rows.shape} != ({keys.size},)")
+            if keys.size and not np.all(np.diff(keys) > 0):
+                raise SystemExit(f"assign n={n}: keys not strictly increasing")
+            if R > self.config.ngram_clean_table:
+                raise SystemExit(f"assign n={n}: R={R} exceeds --ngram_clean_table")
+            if rows.size and (rows.min() < 0 or rows.max() >= R):
+                raise SystemExit(f"assign n={n}: rows out of [0, {R})")
+            self.ngram_dict_keys[n] = torch.from_numpy(keys).to(device)
+            self.ngram_assign_rows[n] = torch.from_numpy(rows).to(device)
+            self.ngram_assign_R[n] = R
+            if heads == 2:
+                used = int(np.unique(rows[0]).size + np.unique(rows[1]).size)
+            else:
+                used = int(np.unique(rows.reshape(-1)).size)
+            cnt = z[f"counts_{n}"] if f"counts_{n}" in z else None
+            cov = float(cnt.sum()) / float(z["counts_total"]) \
+                if cnt is not None and "counts_total" in z else float("nan")
+            self.ngram_assign_stats[n] = dict(K=int(keys.size), R=R, rows_used=used,
+                                              collisions=int(keys.size * heads - used),
+                                              coverage=cov)
+            log(f"[nglab] assign n={n}: {keys.size:,} keys -> {used:,}/{R:,} rows "
+                f"(heads={heads}, collisions {keys.size * heads - used:,}, coverage {cov:.4f})")
+        log(f"[nglab] assignment loaded from {path} "
+            f"(meta: {str(z['meta_json'])[:200] if 'meta_json' in z else 'n/a'})")
+
+    def _ngram_assign_lookup(self, n, idx):
+        """(rows, valid) with explicit assignment: rows = assign_rows[..., pos]."""
+        keys = self._ngram_context_keys_torch(idx, n)
+        table = self.ngram_dict_keys[n]
+        pos = torch.searchsorted(table, keys.reshape(-1))
+        pos_c = pos.clamp(max=table.numel() - 1)
+        valid = table[pos_c] == keys.reshape(-1)
+        ar = self.ngram_assign_rows[n]
+        if ar.dim() == 2:  # heads=2: (2, K) -> (2, B*T)
+            rows = ar[:, pos_c].view(2, *keys.shape)
+        else:
+            rows = ar[pos_c].view_as(keys)
+        return rows, valid.view_as(keys)
+
     def _check_pre_rows_supported(self):
         """Precomputed rows are only valid for the clean single-table mainline.
 
@@ -1161,17 +1240,26 @@ class NanoGPT(nn.Module):
                     tgve = tgve.masked_fill(mask.unsqueeze(-1), 0)
                 residual = tgve if residual is None else residual + tgve
         for n in self.ngram_extra_orders:
-            nve_tbl = self.ngram_ves[str(n)]
-            if n in self.ngram_dict_keys and self.config.ngram_keep_rows == "hash":
+            if n in self.ngram_assign_rows:
+                rows, valid = self._ngram_assign_lookup(n, idx)
+                if self.config.ngram_heads == 2:
+                    nve = torch.cat([self.ngram_ves[str(n)](rows[0]),
+                                     self.ngram_ves_b[str(n)](rows[1])], dim=-1)
+                else:
+                    nve = self.ngram_ves[str(n)](rows)
+                nve = nve * valid.unsqueeze(-1).to(nve.dtype)
+            elif n in self.ngram_dict_keys and self.config.ngram_keep_rows == "hash":
                 # coverage-matched control: identical top-K membership mask, but the
                 # row is the hash row, so collisions among kept contexts remain
+                nve_tbl = self.ngram_ves[str(n)]
                 _, valid = self._ngram_dict_rows(n, idx)
                 nve = nve_tbl(self._ngram_row_indices(n, idx)) * valid.unsqueeze(-1).to(nve_tbl.weight.dtype)
             elif n in self.ngram_dict_keys:
+                nve_tbl = self.ngram_ves[str(n)]
                 rows, valid = self._ngram_dict_rows(n, idx)
                 nve = nve_tbl(rows) * valid.unsqueeze(-1).to(nve_tbl.weight.dtype)
             else:
-                nve = nve_tbl(self._ngram_row_indices(n, idx))
+                nve = self.ngram_ves[str(n)](self._ngram_row_indices(n, idx))
             residual = nve if residual is None else residual + nve
         if residual is None:
             residual = torch.zeros(idx.size(0), T, self.config.n_embd,
@@ -2528,6 +2616,14 @@ def main():
                         help="with --ngram_dict_topk: dict = unique rows (no-collision dictionary); "
                              "hash = hash rows masked to the same top-K membership (coverage-matched "
                              "control: separates collisions from coverage)")
+    parser.add_argument("--ngram_assign_file", default="",
+                        help="v26 explicit context->row assignment npz (keys_<n> int64 sorted, "
+                             "rows_<n> int32 [(2,K) with --ngram_heads 2], R_<n> int64; optional "
+                             "counts_<n>). Replaces --ngram_dict_topk; collisions are the routing "
+                             "algorithm's choice")
+    parser.add_argument("--ngram_heads", type=int, default=1, choices=[1, 2],
+                        help="with --ngram_assign_file: 2 = two half-width tables per order, "
+                             "same total params and active width (H2 matched-budget multi-hash)")
     parser.add_argument("--diag_workers", type=int, default=1,
                         help="background diag worker processes (v2 multi-order index: >1 keeps "
                              "up with 7 orders; rows may land out of step order)")
@@ -2725,10 +2821,19 @@ def main():
             parser.error(f"--ngram_dict_per_order orders {sorted(_spec)} not in --ngram_orders")
     if args.ngram_keep_rows == "hash" and args.ngram_dict_topk <= 0:
         parser.error("--ngram_keep_rows hash requires --ngram_dict_topk > 0 (membership mask)")
+    if args.ngram_assign_file:
+        if not ngram_orders:
+            parser.error("--ngram_assign_file requires --ngram_orders")
+        if args.ngram_dict_topk > 0:
+            parser.error("--ngram_assign_file replaces --ngram_dict_topk (use one)")
+        if args.row_index:
+            parser.error("--ngram_assign_file is incompatible with --row_index")
+        if args.ngram_clean_table <= 0:
+            parser.error("--ngram_assign_file requires --ngram_clean_table >= max R_n")
     if ngram_orders:
         if min(ngram_orders) < 2 or max(ngram_orders) > 16:
             parser.error("--ngram_orders must lie in [2, 16]")
-        if args.ngram_dict_topk > 0:
+        if args.ngram_dict_topk > 0 or args.ngram_assign_file:
             extra_orders = tuple(ngram_orders)      # 2/3 also take the generic path
             args.enable_bigram = 0
             args.enable_trigram = 0
@@ -2786,6 +2891,8 @@ def main():
         ngram_dict_topk=args.ngram_dict_topk if extra_orders else 0,
         ngram_keep_rows=args.ngram_keep_rows if args.ngram_dict_topk > 0 else "dict",
         ngram_dict_per_order=args.ngram_dict_per_order if args.ngram_dict_topk > 0 else "",
+        ngram_assign_file=args.ngram_assign_file if extra_orders else "",
+        ngram_heads=args.ngram_heads if args.ngram_assign_file else 1,
         intervention=args.intervention,
         intervention_epoch=args.intervention_epoch,
         intervention_epochs=tuple(
@@ -2950,6 +3057,19 @@ def main():
     # model
     model = NanoGPT(cfg).to(device)
     model.init_weights()
+    if cfg.ngram_assign_file:
+        if not os.path.isfile(cfg.ngram_assign_file):
+            raise SystemExit(f"--ngram_assign_file not found: {cfg.ngram_assign_file}")
+        model.load_ngram_assignment(os.path.abspath(cfg.ngram_assign_file))
+    # paired-seed audit: backbone init must be identical across arms that share
+    # a seed (n-gram tables consume no RNG before this point; log to verify)
+    import hashlib as _hashlib
+    _h = _hashlib.md5()
+    for _name, _p in model.named_parameters():
+        if "ngram" in _name or "value_embeds" in _name:
+            continue
+        _h.update(_p.detach().cpu().numpy().tobytes())
+    print(f"[nglab] backbone init md5 {_h.hexdigest()} (seed {args.seed})")
     if args.init_model:
         init_path = os.path.abspath(args.init_model)
         if not os.path.isfile(init_path):
@@ -3207,8 +3327,10 @@ def main():
             if args.logit_stats:
                 raise SystemExit("--logit_stats is not supported with a multi-order freq index")
             if fixed_train_probe:
-                raise SystemExit("fixed-train freq bins are not supported with a multi-order "
-                                 "freq index (use --fixed_train_probe 0)")
+                # train-side freq bins need legacy GlobalFrequencyIndex; the probe
+                # loss itself is index-independent, so keep it and skip the bins
+                print("[nglab] multi-order freq index: train-side freq bins disabled; "
+                      "fixed-train probe loss still enabled")
             if freq_index_obj.vocab_size != cfg.vocab_size:
                 raise SystemExit("multi-order freq index vocab_size != --vocab_size")
             print(f"[nglab] multi-order freq index: branches={freq_index_obj.branches}")
@@ -3224,7 +3346,7 @@ def main():
                     for n in cfg.ngram_extra_orders})
                 print(f"[nglab] dictionaries saved: {dict_npz}")
         freq_bin_log = open(os.path.join(cfg.out_dir, "freq_bin_loss.jsonl"), "w")
-        if fixed_train_probe:
+        if fixed_train_probe and not multi_order_index:
             fixed_train_freq_log = open(
                 os.path.join(cfg.out_dir, "fixed_train_freq_bin_loss.jsonl"), "w"
             )
