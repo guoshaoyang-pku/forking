@@ -18,7 +18,9 @@ FREQ_INDEX="${NGLAB_FREQ_INDEX:-$ROOT/data/freq_index_o2to5_1b_f30.npz}"
 SHARDS="$(cat "$ROOT/data/train_shards_1b.txt")"
 HEADS=1
 [[ "$TAG" == "h2" ]] && HEADS=2
-RUN_ID="v26w1_${TAG}_tls${TLS}_p1b_s${NGLAB_SEED:-42}_e${EPOCHS}_fd"
+RUNTAG="${NGLAB_RUNTAG:-}"
+[[ -n "$RUNTAG" ]] && RUNTAG="_${RUNTAG}"
+RUN_ID="v26w1_${TAG}${RUNTAG}_tls${TLS}_p1b_s${NGLAB_SEED:-42}_e${EPOCHS}_fd"
 RESULT_DIR="$OUT_DIR/${RUN_ID}_fixed"
 [[ ! -e "$RESULT_DIR" ]] || { echo "refusing existing run: $RESULT_DIR" >&2; exit 2; }
 mkdir -p "$RESULT_DIR"
