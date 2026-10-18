@@ -5468,3 +5468,8 @@ Final table, Δval vs v26 nogram same seed (c2/c3 s43 on ophis use 360-1 nogram 
 **P0 verdict (two-seed)**: at M=128k, predictive-KL routing (C1/C3) ties at best and usually loses to the naive two-head random hash H2. C3's E1 is the best of W1 (-0.044 s42) but its E3 advantage evaporates (s42 -0.001) and E1 is seed-variable (s43 -0.023). H2's 2-hash distinguishability under over-subscription is the robust mechanism — the "routing quality" story does not transfer to LM loss at this budget.
 **Budget conclusion**: M=128k costs ~43% of E1 benefit vs M=974k exact (-0.040 vs -0.070). W1.5 note: H2+greedy-KL init is unpromising (C3 ≈ C1 + KL-exchange ≈ exactly that and it doesn't beat H2).
 **Next per plan**: M-scan (how big must the table be): H2 vs exact-dict at M=256k/512k, plus optionally 128k, s42 first. W1 gate §8 (repeated exposure curves, 3rd seed) deferred pending M-scan.
+
+### §95 M-scan launched (2026-10-19 13:20)
+
+H2 at M=256k (R={2:99268,3:109831,4:40765,5:12280}) and M=512k (R={2:198535,3:219663,4:81530,5:24560}), s42, ophis GPU0/1. NGLAB_RUNTAG/NGLAB_CLEAN_TABLE launcher extensions committed. C3@512k rematch builder running on 360-2 CPU (--m-total 524288). "exact@256k/512k" is mathematically impossible (n=2 alone has 368,957 selected contexts > budget) — exact exists only at M>=974k = the f256 arm itself. Benefit-vs-M curve will be: H2@128k(-0.040/-0.022) -> H2@256k -> H2@512k -> H2/exact@974k (-0.070/-0.020).
+Note: nogram reference for M-scan = v26 s42/s43 (same frame); ophis v26 nogram s44 not yet queued (ophis GPU2/3/6 free, h2m256k/h2m512k on 0/1).
