@@ -5436,3 +5436,17 @@ Feishu array doc (management view, updated with direction annotations + benefit-
 **W1 vs v26 nogram (exact frame, s42)**: H1 E1 Δval -0.041 / E3 +0.133 (xgap -0.005, i.e. even train benefit gone); H2 E1 -0.040 / E2 -0.037 / E3 -0.022 (xgap +0.016). H2's E1 benefit is ~55% of exact-f256's (-0.070, cross-frame).
 
 **Fleet (16 arms)**: 360-2 8/8 (s1/c1/c2/c3 s42, nogram/h2/s1/c1 s44); 360-1 (s1/c1/h2-retry/nogram s43); ophis (c2/c3 s43). Every W1 arm x2 seeds; s44 for nogram/h2/s1/c1. ETA s42 routing arms 07:10-09:00.
+
+### §93 W1 two-seed interim: H2 stable winner; S1/H1 dead; C2 stochastic-diverges; C1 seed-variable (2026-10-19 09:00)
+
+All Δval vs v26 nogram same seed (in-frame). Two seeds:
+
+| arm | s42 E1 | s42 E3 | s43 E1 | s43 E3 | verdict |
+|---|---|---|---|---|---|
+| H2 | -0.040 | -0.022 | -0.036 | -0.023 | **stable best @128k** |
+| C1 | -0.040 | -0.017 | -0.021 | -0.012 | works but E1 seed-variance 0.019 |
+| S1 | +0.039 | +0.040 | +0.060 | +0.044 | dead: n=2 collapses to 8,079 groups ≈ unigram table (suffix-tree depth 1) |
+| H1 | -0.041 | +0.133 | -0.018 | +0.069 | dead: over-subscribed single-table collisions |
+| C2 | -0.036 | +4.562 diverged | (s43 17k, no divergence, ~0 benefit) | | stochastic EOS (§87 signature) + no benefit |
+
+P0 interim: at M=128k no routing beats H2 (random two-head hash). Budget cost: best E1 -0.040 vs exact-f256 -0.070 (M=974k rows) — the 128k budget itself costs ~43% of first-epoch benefit. C3 (KL-exchange on C1) pending; if it does not beat H2, options per plan: W1.5 (H2+mismatch penalty / hybrid two-stage) or answer "how big must M be" (M-scan: 128k/256k/512k exact vs H2).
