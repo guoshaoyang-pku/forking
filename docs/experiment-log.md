@@ -5415,3 +5415,14 @@ Feishu array doc (management view, updated with direction annotations + benefit-
 - **Builders** (running on 360-2): H1/H2 (random-hash controls, done); S1 suffix-trie (candidate-cap 256 shortlist, exact entropy-identity merge loss on shortlist, torch backend; n=3 proj ~10 min); C1/C2/C3 (fit-fold smoothing alpha from {32,128,512} on routing-dev, PROB/RESIDUAL features, PCA-128 fit on fit fold only, two-level weighted k-means sum(local K)=R_n exact, C3 exact-KL exchange with monotone-J assert). All synth tests green incl. merge-loss==NLL identity, determinism, purity>95%.
 - **Launched** (01:00-03:30): 360-2 GPU0/1 h1/h2 s42, GPU6 v26-nogram s42; 360-1 GPU1/2 h1/h2 s43, GPU4 v26-nogram s43. S1/C1/C2/C3 s42 queued on 360-2 GPU2-5 pending builders (~04:30); s43 on 360-1 GPU5/6 + ophis GPU4/5.
 - exact-f256 reference = existing v25oe_f256_tls4 (E1 -0.070, E3 Δval -0.020) — not re-run.
+
+### §91 W1 first results: H1 collapses at E3, H2 survives; full W1 fleet launched (2026-10-19 05:00)
+
+**First W1 harvest (assignment mode validated end-to-end).** Δ vs same-seed nogram (v25 ref; v26 nogram refs still running):
+- **H1 (single-head random hash, 974k contexts -> 131k rows, 7.4x over-subscribed)**: s42 E1 Δval -0.020, E2 spike +0.267 (stochastic, recovers), E3 Δval **+0.143** / Δtrain +0.151; s43 E1 -0.013, E2 +0.007, E3 **+0.080**. Verdict: random collisions in an over-subscribed single table destroy the benefit by E3 (both seeds, magnitude varies).
+- **H2 (two-head matched-budget hash, 2 independent half-width tables)**: s42 E1 -0.019, E2 -0.016, E3 Δval **-0.012**, excess gap +0.013. Two independent hashes keep colliding pairs distinguishable -> survives E3 with a small net benefit. (s43 crashed at step 2050 on 360-1 GPU2: CUDA "invalid access of peer GPU memory" hardware error; relaunched on GPU5.)
+- Both far below exact-f256@4x (E1 -0.070, E3 -0.020): at M=128k the routing algorithm is the whole game -> S1/C1/C2/C3.
+
+**Fleet state (05:00).** 360-2: GPU0 s1-s42, GPU1 c1-s42, GPU2 c2-s42, GPU6 nogram-s42, GPU3-5 free + c3 builder on CPU. 360-1: GPU1 s1-s43, GPU4 nogram-s43, GPU5 h2-s43(retry), GPU6 c1-s43 (GPU2 ECC-suspect, 0/3/7 ECC-bad). ophis: GPU4 c2-s43, GPU5 reserved for c3-s43, GPU6 free. Assignments md5'd across hosts (h1/h2/s1/c1/c2 identical files everywhere — same routing seed).
+
+**Builder notes.** S1: n=2 occupied 8,079/49,634 (suffix-group ceiling ~unigram count, spec-permitted under-occupation, reported); n=3/4/5 full budget. C1/C2 same R. C3 KL-exchange still running (CPU-bound single-thread loop). C builders hit a torch cuda-generator crash (cpu generator passed to cuda multinomial) — fixed by drawing on cpu (deterministic), tests green, relaunched.
