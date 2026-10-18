@@ -5387,3 +5387,20 @@ Feishu array doc (management view, updated with direction annotations + benefit-
 **Ghost-launch incident (resolved, friendly).** At 21:55:49 an unknown actor truncated 5 of my 360-2 launch logs and launched `d1m/f256_tls1_s43` mirrors (died in the GPU-memory race with my fleet); at 21:58:56 it launched the full **tls1 seed-43 column on 360-1** (hash1m/d1m/f256/k256k/k64k, GPUs 1/2/4/5/6, my exact specs and /var/tmp tree) — **now training normally**. This is a parallel session of the user's complementing the matrix with the 1× second seed; its runs are adopted here as the s43 half of the 1× column (provenance: not launched by this session; specs verified identical). Its 360-2 leftover dirs are empty and harmless. The 36-day-old `lean_poincare dispatch_loop.py` daemon on 360-2 is a Lean-project runner, unrelated (no v25oe tasks in its queue).
 
 **External-baseline check (OE/Engram/SCONE audit zip).** No published baseline covers 1B tokens (OE curves start ~10B, SCONE ~8B, Engram ~215B). Model-size-direction evidence (OE 151M 0.107 > 400M 0.090 @400B; SCONE 0.7B > 1B > 1.3B) says smaller backbones benefit more, but the tokens-direction pullback (1B ≈ 50–70% of the 10B value) cancels it: expected 50M×1B benefit ≈ 0.03–0.10, center ~0.05–0.07. Our measured E1 benefit (−0.07~−0.10) sits at the top of that range — **not anomalously small** (details in the analysis report; data at /tmp/oe_audit on the workstation).
+
+### §89 Status snapshot @2026-10-18 23:17 (pre-compression checkpoint)
+
+**Feishu management table is the single live view**: https://mcna3q3ujim2.feishu.cn/docx/OQPddYsAToFEYtxMKLccqyhknNh — 48 rows, all harvested numbers through §88 (E1/E3 Δtrain + Δval + gap, benefit=green, loss=red). Update it after every harvest.
+
+**Running now (~step 13.8k–18.0k of 20343, ETA ~00:00–00:30):**
+- 360-2 GPU1-7 (s42, **parallel session owns these**, launched 21:54): hash1m/d1m/f256/k256k/k64k @1× + d1m/f256 @0.5×; their ref nogram_tls1_s42 done. Harvest via their nogram ref.
+- 360-1 GPU1/2/4/5/6 (s43, mine): hash1m/d1m/k256k/k64k/f256 @1×; ref = nogram_tls16_s43 (nogram has no table, tls tag is no-op).
+- ophis GPU0-3 (s42, mine): hash1m@8, hash1m@2, k256k@2, k64k@2; ref = nogram_p1b_s42_e3.
+
+**Free cards**: ophis GPU4/5/6 (GPU7 = zhubaiyu lease.py, needs sudo kill); 360-2 GPU0 (0/3/7 ECC-bad on 360-1, avoid); 360-1 none.
+
+**Completed & harvested** (all in Feishu table): s42 full grid {hash1m,d1m,f256}×{128,16,8,4,2} + {k256k,k64k}×{16,8,4} + k64k@2 running; s43 {hash1m,d1m,k256k,k64k}×{16,4} + f256@4.
+
+**Key facts**: benefit LR-flat 2×–16× (d1m E1 Δtrain ≈ −0.09~−0.10), only 128× suppresses; f256@8 DIVERGED (boundary arm-specific, non-monotone, §87 hypothesis open); recipes = f256@4× / k256k@4× (E3 gap ≈ 0–0.02 with E1 benefit −0.06~−0.07); vs papers: at matched D/N=20 we match OE (0.098 vs 0.070) — gap is training-duration/model-size, not injection depth.
+
+**Queued ideas (§87.6)**: k256k@16× + table grad-clip / E3 table-LR warmdown (divergence mechanism test). Awaiting user's new directions — experiment lines may change.
