@@ -5473,3 +5473,8 @@ Final table, Δval vs v26 nogram same seed (c2/c3 s43 on ophis use 360-1 nogram 
 
 H2 at M=256k (R={2:99268,3:109831,4:40765,5:12280}) and M=512k (R={2:198535,3:219663,4:81530,5:24560}), s42, ophis GPU0/1. NGLAB_RUNTAG/NGLAB_CLEAN_TABLE launcher extensions committed. C3@512k rematch builder running on 360-2 CPU (--m-total 524288). "exact@256k/512k" is mathematically impossible (n=2 alone has 368,957 selected contexts > budget) — exact exists only at M>=974k = the f256 arm itself. Benefit-vs-M curve will be: H2@128k(-0.040/-0.022) -> H2@256k -> H2@512k -> H2/exact@974k (-0.070/-0.020).
 Note: nogram reference for M-scan = v26 s42/s43 (same frame); ophis v26 nogram s44 not yet queued (ophis GPU2/3/6 free, h2m256k/h2m512k on 0/1).
+
+### §96 third seed (s44): H2 only stable arm; nogram-frame seed variance ±0.02 confirmed (2026-10-19 13:50)
+
+3-seed E1/E3 Δval: H2 -0.040/-0.022, -0.036/-0.023, -0.011/-0.008 (mean -0.029/-0.018, always negative); C1 -0.040/-0.017, -0.021/-0.012, -0.018/+0.089 (E3 unstable); S1 +0.04~+0.06 baseline + s44 EOS divergence (+3.955); C2/H1 dead.
+**Key meta-finding**: nogram E1 val across seeds: 2.870 / 2.853 / 2.851 — the reference frame itself moves ±0.02 per seed; per-arm seed-3 noise of the same order. All W1 deltas must be read with this band. M-scan second/third seeds launched: h2-m256k/m512k s43 (360-2 GPU0/1), s44 (360-1 GPU1/4); v26 nogram s42 on ophis GPU2 (local reference for the ophis M-scan column). c3-512k builder still on 360-2 CPU.
