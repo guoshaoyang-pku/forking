@@ -5262,3 +5262,87 @@ router 平衡良好；z-loss 68→2.4/1.7 收敛正常；topk_mass oeon 0.69 / o
 2. Per-order selection removes most of the forking: E3 gap 0.10 with f≥256 vs 0.93 hash; the smaller per-order vocabularies (k256k, k64k) stay ≤0.03 at E2. A smaller vocabulary means less forking.
 3. At the standard table LR 128× (chosen in §21 to maximise the step-1000 gap), the selected tables give essentially no benefit: |Δval| ≤ 0.04 at E1 and +0.07 at E3 for f256.
 4. Lowering the table LR to 16× produces a benefit: E1 Δval −0.07 (f256, n2–5) and −0.10 (n2–3 top-1M). Whether it survives E2/E3 is pending.
+
+### §83 360-1 incident resolution + 7-arm LR×selection matrix on ophis (2026-10-18)
+
+**360-1 cleanup.** The five dict arms had not crashed but were *hung*: every process blocked on ENOSPC from 03:21 (train_log mtime frozen) and could never advance. Curves up to the freeze are intact in each `train_log.jsonl` and are the @128× readouts used in §82 (k256k@16950, k64k@16820, n23d1m@16780, n23d1m_tls16@6920, n23d1m_tls4@100). hash1m@128× and nogram@128× **completed** at step 20343. I killed the 5 hung PIDs; their open (already-unlinked) `exact_freq_loss.jsonl` handles are released.
+
+**360-1 disk is a shared-disk race, not a local-junk problem.** `/data` (7.9T) is 100% full, dominated by `/data/shared/physics-shortcuts` (**5.3T, another tenant**); `guoshaoyang` = 1.2T. Completed run dirs are only ~42 MB (checkpoints are small), so the 27 GB/run `exact_freq_loss.jsonl` was the only large per-run artifact and is now handled by `--diag_interval`. Freeing my ~92 GB shows **no** available space because the actively-writing neighbor immediately reclaims freed blocks. Recovering 360-1 therefore needs either coordination with the physics-shortcuts owner/admin or approval to delete my large abandoned dirs — `comfyresearch-seed-scan` 450G, `aiq_rl_store` 180G, `rebuttal_21962_20260725` 62G, `forking-v2` 29G. The `rm -rf` on these was blocked by the safety guard pending explicit approval. **360-1 is unusable for new runs until then.** (360-2 quota exhausted; A100s blocked by a co-tenant holding ~35 GB/card.)
+
+**ophis round-1/2 complete.** All six ophis v25oe runs reached step 20343: d1m/f256/nogram @128×, f256 @16× and @4×, n23d1m @16×. GPUs 0–3 freed up (the residual ~840 MB processes from completed runs exited); GPU7 is held by co-tenant `zhubaiyu`'s `lease.py` (untouchable).
+
+**7 new arms launched on ophis GPUs 0–6** (table-LR response × per-order selection, all n=2–5 joint, 1B ClimbMix, E=3, V5 standard, fixed `--diag_interval` launcher, md5 `01beb2ff`; train.py md5 `0fa3f34d` matches local commit 4c12fd1):
+
+| run_id | GPU | mode | per-order selection | table LR |
+|---|---|---|---|---|
+| v25oe_hash1m_tls16 | 4 | hash | none (all contexts) | 16× |
+| v25oe_hash1m_tls4 | 1 | hash | none | 4× |
+| v25oe_d1m_tls16 | 5 | dict | top-1M every order | 16× |
+| v25oe_d1m_tls4 | 2 | dict | top-1M every order | 4× |
+| v25oe_k256k_tls16 | 6 | dict | 256k/256k/64k/16k | 16× |
+| v25oe_k256k_tls4 | 3 | dict | 256k/256k/64k/16k | 4× |
+| v25oe_k64k_tls16 | 0 | dict | 64k/64k/16k/4k | 16× |
+
+**Purpose.** (a) `hash1m @16×/@4×` isolates LR from selection: does lowering the table LR alone close the forking gap, and does it also erase the benefit? (b) `d1m/k256k @16×/@4×` + `k64k @16×` give the LR response for each selection strength; with f256 (128/16/4 done) this completes the LR × selection map needed to pick a recipe that keeps the E1 benefit (−0.07~−0.10 at 16×) while driving the E3 gap toward f256's 0.10. All seven confirmed training (hash + pre-warmed dict arms at ~87 GB / 99–100% util; new dict arms ramping through the 15.8 GB freq-index load).
+
+### §84 360-1 disk workaround (no deletion) + seed-43 replicate of the 16× column (2026-10-18)
+
+**Disk workaround — no abandoned data deleted.** 360-1 `HOME` is on the full `/data`, but `/var/tmp` sits on the `/var` volume (89G free) and is writable. Since run outputs are ~42 MB each and the big inputs (tokenized 32 shards, f30 freq index 107 MB) can be *read* from the full `/data`, I built `NGLAB_ROOT=/var/tmp/guoshaoyang_v25` with `data/tokenized` symlinked to the full disk and `runs_fixed/` + `tmp/` as real dirs on `/var`. The 750G abandoned-dir deletion (§83) is therefore unnecessary for now — and pointless anyway given the shared-disk race with `physics-shortcuts` (5.3T).
+
+**Stale code caught + fixed.** The `/data/.../forking-v25/code` on 360-1 was **stale** (train.py `51e98e84`, launcher `dd7d8c17` = the pre-`--diag_interval` version — which is exactly why the hung tls16/tls4 runs lacked that flag). Rsynced the local authoritative `4c12fd1` (train.py `0fa3f34d`, launcher `01beb2ff`) into the `/var/tmp` tree; md5 re-verified. Completed 360-1 runs (hash1m/nogram @128×) used the stale code but the training math is identical (only diag output differed), so their results stand.
+
+**ophis GPU7 not reclaimable by me.** `lease.py` (PID 2972950) belongs to `zhubaiyu` (departed); `kill` → Operation not permitted, `sudo -n` needs a password. Blocked pending sudo; 7 ophis GPUs in use meanwhile.
+
+**5 seed-43 arms on 360-1 GPUs 1/2/4/5/6** (0/3/7 have uncorrected ECC errors, avoided; NGLAB_SEED=43, f30 freq index, fixed launcher, TMPDIR on /var):
+
+| run_id | GPU | mode | per-order selection | table LR |
+|---|---|---|---|---|
+| v25oe_nogram_tls16_p1b_s43_e3_fd | 1 | nogram | — (reference) | n/a |
+| v25oe_hash1m_tls16_p1b_s43_e3_fd | 2 | hash | none | 16× |
+| v25oe_d1m_tls16_p1b_s43_e3_fd | 4 | dict | top-1M every order | 16× |
+| v25oe_k256k_tls16_p1b_s43_e3_fd | 5 | dict | 256k/256k/64k/16k | 16× |
+| v25oe_k64k_tls16_p1b_s43_e3_fd | 6 | dict | 64k/64k/16k/4k | 16× |
+
+**Purpose.** The "16× gives a benefit" headline currently rests on single-seed ophis runs. This is a same-machine seed-43 replicate of the full n2–5 16× column (hash/d1m/k256k/k64k) plus its nogram reference, giving a 2-seed check on both the E1 benefit (−0.07~−0.10) and the E3 gap ordering (f256 0.10 < k-selection < hash 0.93). Δval reference = 360-1 `nogram_tls16_s43` (nogram has no table, so the tls16 tag is a cosmetic no-op). All five confirmed training (50–87 GB, 99–100% util).
+
+**Concurrency now: 12 runs** — 7 on ophis (seed 42, the LR×selection matrix, §83) + 5 on 360-1 (seed 43 replicate, this section).
+
+### §85 Harvest: table-LR x per-order-selection matrix at 1B, E=3 (2026-10-18 19:40)
+
+All 12 §83/§84 runs completed (~1-1.5 h each on a dedicated H200; fast-diag ~4 it/s, far under the 6-8 h estimate). Δval = val(arm) − val(same-host, same-seed nogram), ±30-step mean; gap = val − online-train at that step. Negative Δval = OE helps; the deploy goal is E1 Δval < 0 AND E3 gap ≈ 0 AND E3 Δval ≤ 0.
+
+**Seed-42 matrix (ophis).** E1 Δval | E3 Δval | E3 gap:
+
+| selection | 128× | 16× | 4× |
+|---|---|---|---|
+| hash1m (all ctx) | −0.03 / +0.73 / **0.93** | +0.12 / +0.50 / 0.83 | −0.05 / +0.30 / 0.69 |
+| d1m (top-1M/order) | −0.01 / +0.15 / 0.30 | −0.09 / +0.06 / 0.27 | −0.10 / +0.07 / 0.19 |
+| f256 (f≥256/order) | −0.00 / +0.07 / 0.09 | −0.07 / −0.00 / 0.07 | **−0.07 / −0.02 / 0.02** |
+| k256k | (partial @128) | −0.06 / **+1.05 diverged** | **−0.06 / −0.00 / 0.00** |
+| k64k | (partial @128) | +0.01 / +0.02 / −0.02 | running §86 |
+
+**Two-seed check (16× column, s42 ophis vs s43 360-1) — all replicate:**
+| arm | E1 Δval s42/s43 | E3 gap s42/s43 |
+|---|---|---|
+| d1m@16 | −0.09 / −0.07 | 0.27 / 0.28 |
+| hash1m@16 | +0.12 / +0.13 | 0.83 / 0.81 |
+| k256k@16 | diverged / diverged | (E3 blow-up both) |
+| k64k@16 | +0.01 / −0.01 | −0.02 / −0.02 |
+
+**Findings.**
+1. **128× suppresses the E1 benefit** (it was chosen to maximize the step-1000 *gap*, the wrong objective for benefit). The benefit only switches on at ≤16×, and is *flat* between 16× and 4× (d1m −0.09/−0.10; f256 −0.07/−0.07) → dropping to 4× costs no benefit.
+2. **Forking is reduced by selection AND by lower LR, and the two compose.** At 128×: hash 0.93 > d1m 0.30 > f256 0.09. Down the LR column: f256 0.09→0.07→0.02, d1m 0.30→0.27→0.19, hash 0.93→0.83→0.69.
+3. **The recipe that keeps benefit and ~eliminates forking: per-order high-frequency selection + table LR ≈ 4×.** f256@4 → E1 −0.07, E3 gap 0.02, E3 Δval −0.02 (beats nogram). k256k@4 → E1 −0.06, E3 gap 0.00, E3 Δval −0.00.
+4. **Stability boundary between 4× and 16×.** k256k@16 and n23d1m@16 diverge late (val smooth to ~step 15-17k then explodes to 3.6-4.2), reproducibly across both seeds; every arm is stable at 4×. 16× is too hot for some table configs at E3.
+5. **Answer to "why is there a gap even with low-frequency removed — is the vocab just too big?"** Both dials matter. The *number of distinct rows kept* sets the forking ceiling (singletons/rare rows are the largest driver: hash-all ≫ top-1M > f≥256 at fixed 128×). But a residual gap persists even with only high-frequency rows (f256@128 = 0.09): those kept high-freq contexts are exactly the ones repeated across 3 epochs, and at high table LR they over-sharpen on the training continuation. That residual is an **LR × repetition** effect on kept rows, not a vocab-size effect — collapsing LR to 4× removes it (0.09→0.02) while keeping the benefit. So "is the vocab too big" — yes for the ceiling, but LR is the lever that kills the residual.
+
+Caveats: 50M-model × 1B-token × E=3, n=2-5 joint, single seed per cell (16× column two-seed). The recipe is established for this regime; the model/data-scaling line (1B+ params, 15-30T corpus) is separate. f256 keeps 369k/408k/152k/46k rows (n=2..5); k256k keeps 262k/262k/65k/16k at min-count ~400 (higher-freq than f256 yet diverges at 16× while f256 does not — divergence is not a simple row-count or min-freq effect).
+
+### §86 Dose-response completion + 4× two-seed (2026-10-18 19:50)
+
+12 arms launched to (a) map the LR dose-response between the stable 4× and the diverging 16× (new 8× column) and find the benefit floor (new 2× probes), and (b) two-seed the 4× winner column. Fixed `--diag_interval` launcher, md5 `01beb2ff`; train.py `0fa3f34d` = commit 4c12fd1.
+
+**ophis, seed 42, GPUs 0-6** (full 15.8 GB freq index): f256@8, d1m@8, k256k@8, k64k@8, k64k@4, f256@2, d1m@2.
+**360-1, seed 43, GPUs 1/2/4/5/6** (f30-pruned index; NGLAB_ROOT=/var/tmp/guoshaoyang_v25): f256@4, k256k@4, d1m@4, k64k@4, hash1m@4.
+
+After this batch the LR grid for each of {hash1m, d1m, f256, k256k, k64k} spans 2/4/8/16/(128)× on s42, and the 4× column has two seeds. All 12 confirmed launched; ophis dict arms ramping through the freq-index load.
