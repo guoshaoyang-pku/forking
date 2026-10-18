@@ -5450,3 +5450,21 @@ All Δval vs v26 nogram same seed (in-frame). Two seeds:
 | C2 | -0.036 | +4.562 diverged | (s43 17k, no divergence, ~0 benefit) | | stochastic EOS (§87 signature) + no benefit |
 
 P0 interim: at M=128k no routing beats H2 (random two-head hash). Budget cost: best E1 -0.040 vs exact-f256 -0.070 (M=974k rows) — the 128k budget itself costs ~43% of first-epoch benefit. C3 (KL-exchange on C1) pending; if it does not beat H2, options per plan: W1.5 (H2+mismatch penalty / hybrid two-stage) or answer "how big must M be" (M-scan: 128k/256k/512k exact vs H2).
+
+### §94 W1 COMPLETE (8 points x 2 seeds): no routing beats random two-head hash at M=128k (2026-10-19 12:30)
+
+Final table, Δval vs v26 nogram same seed (c2/c3 s43 on ophis use 360-1 nogram s43, cross-host ±0.01 caveat):
+
+| arm | s42 E1 | s42 E2 | s42 E3 | s43 E1 | s43 E2 | s43 E3 |
+|---|---|---|---|---|---|---|
+| **H2** | **-0.040** | **-0.037** | **-0.022** | **-0.036** | **-0.031** | **-0.023** |
+| C3 | -0.044 | -0.040 | -0.001 | -0.023 | -0.019 | -0.016 |
+| C1 | -0.040 | -0.032 | -0.017 | -0.021 | +0.001 | -0.012 |
+| C2 | -0.036 | +0.046 | +4.562 EOS | -0.029 | -0.025 | +0.025 |
+| S1 | +0.039 | +0.033 | +0.040 | +0.060 | +0.052 | +0.044 |
+| H1 | -0.041 | +0.246 | +0.133 | -0.018 | -0.001 | +0.069 |
+| exact-f256 (M=974k, v25 frame) | -0.070 | — | -0.020 | -0.068 | — | -0.002 |
+
+**P0 verdict (two-seed)**: at M=128k, predictive-KL routing (C1/C3) ties at best and usually loses to the naive two-head random hash H2. C3's E1 is the best of W1 (-0.044 s42) but its E3 advantage evaporates (s42 -0.001) and E1 is seed-variable (s43 -0.023). H2's 2-hash distinguishability under over-subscription is the robust mechanism — the "routing quality" story does not transfer to LM loss at this budget.
+**Budget conclusion**: M=128k costs ~43% of E1 benefit vs M=974k exact (-0.040 vs -0.070). W1.5 note: H2+greedy-KL init is unpromising (C3 ≈ C1 + KL-exchange ≈ exactly that and it doesn't beat H2).
+**Next per plan**: M-scan (how big must the table be): H2 vs exact-dict at M=256k/512k, plus optionally 128k, s42 first. W1 gate §8 (repeated exposure curves, 3rd seed) deferred pending M-scan.
