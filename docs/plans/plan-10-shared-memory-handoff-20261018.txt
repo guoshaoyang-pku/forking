@@ -1,0 +1,43 @@
+OE 共享记忆、迁移与重路由实验交接
+
+目标
+把 OE 拆成 context→code 的路由和 codebook values 两部分，检验有意义的共享是否优于随机碰撞，以及这两部分能否跨模型复用。主要优化 validation loss、训练成本和参数效率；不预设 learned routing 一定更好。
+
+一、统一实验合同
+主试验沿用约 50M backbone、固定 1B-token ClimbMix 训练子集、n2–n5、E1/E2/E3 原样重放。冻结 tokenizer、训练/验证文档划分、数据顺序、注入位置及优化器。共享实验固定同一批 f≥256 contexts；低频 context 不入表。各阶独立分配槽位，首轮 table LR 沿用 4×，但不视为压缩后的最优值。
+128k/256k 均指四阶合计的物理槽数；按各阶保留 context 数固定比例分配。比较路由质量时，各臂的槽数、向量维度、lookup 数、输出尺度与初始化规则一致；exact table 只作为较大容量参考，不宣称等参数。不能用包含全部低频 context 的旧 hash1m 代替高频筛选后的随机 hash 对照。
+统计量统一为 Δval=Lval(OE)−Lval(nogram)，Δtrain 同理，excess_gap=Δval−Δtrain。以 Δval 为主，train/gap 为诊断。按最新配对数，f256@4× 在 E3 的 excess_gap=−0.020−(−0.078)=0.058；旧报告的 0.02 不能直接当作同口径的 excess_gap，需审计。最终统一使用同一 checkpoint 的 train-eval/val loss；online train loss 另列，窗口不跨 epoch。
+
+二、实验 A：高频筛选后，随机共享与语义共享
+固定 128k 总槽数，比较 nogram、exact-f256、filtered-random-hash、E1-vector-clustering、continuation-clustering 五臂。前两臂仅在配置和测量口径一致时复用。
+E1-vector：从只训练第一遍的 exact teacher 提取实际注入空间的向量，做加权球面聚类。Continuation：从训练语料构建平滑 continuation signature，并测试相对低阶 suffix 的预测残差。冻结 context→slot；codebook values 与目标 backbone 均按统一规则从头初始化，不把 teacher centroid 初始化混进路由比较。
+先验证 learned sharing 是否在相同容量下优于 random hash；有效后把赢家与 random 扩至 256k。按 token 流量施加软热点约束，不强制每个槽严格等载。记录 token-position coverage，而不只统计保留 type 比例。
+
+三、实验 B：共享形式与聚类目标消融
+仅在 A 的赢家上比较单 codebook 与两个 codebook 的加和组合；为双 codebook 增加同结构的随机双 hash 对照。固定总浮点参数，校准输出尺度，另报 lookup 数和带宽开销；不要称为严格等计算。
+聚类目标依次比较实际注入向量、相对低阶 continuation residual。再单独比较无负载约束与软流量约束。避免同时改变筛选阈值、LR、容量和路由。
+
+四、实验 C：强 teacher 的可缓存目标
+作为可选扩展，先抽样高频 context 的多次出现，不直接跑完整 1B 强模型推理。teacher 在位置 t 只能读取前缀并预测 t+1；提取最终实际读出表征或预测分布的低维表示，不累加各层已经累计的 hidden states，不聚类单个 hash 物理 row。带多残差流时按模型真实读出接口取值。
+为每个 context 保存均值 μc、方差和频次，比较聚类 μc 与 μc−μsuffix(c)。大模型实际可访问性、tokenizer 和读出接口先核验；不同 tokenizer 必须按原文边界对齐。只有胜过廉价的 E1-vector/continuation 方案，才扩大采样。该实验是待验证方案，不把任何特定大模型的表尺寸当作前提。
+
+五、实验 D：小模型→大模型、前代→后代复用
+固定目标模型和容量，比较四臂：随机路由+随机值；目标模型重新学习路由+从头学习值；复用旧路由+随机值；复用旧路由+旧值+适配器。
+先以同尺寸不同 seed 检查可复用性，再做小→大；“前代→后代”使用相同合同。维度或表征空间不一致时训练 projection/gate，短暂适配后再决定是否小学习率解冻 codebook。首轮保持 tokenizer/context 定义相同。
+同时报告达到相同 val 所需 tokens、总计算量及最终 val。构表、teacher、聚类、补偿训练成本全部计入，另给多次复用后的摊销账本。复用同一训练池构表属于额外离线数据暴露，不称为端到端严格单遍训练。
+
+六、实验 E：是否需要重新分配路由
+从同一个 E1 checkpoint 分支：路由固定；重新聚类+向量重建/迁移；随机重配+相同迁移及补偿预算。后者区分语义重配收益与重置/扰动收益。记录即时 loss 跳变、恢复成本及 E2/E3 Δval。
+必须同时处理 codebook values 和 optimizer state；不能只换索引，不能每步在线重路由。先只测一次阶段边界，再考虑跨代重分配。持续重路由若无净收益，默认固定。
+
+七、实验 F：规模、MoE 与生产式重复
+仅把前述赢家扩展到既定 FLAME-derived MoE 和 active-matched dense twin，完成 Dense/MoE × OE off/on 四臂；再逐级扩大尺寸。
+另做固定总 token 预算下的“持续新数据+固定子集重复”，与整池重复区分；构表策略设为训练分区的全局统计或重复子集统计，分别标记。不要把整池重复结果直接外推成生产结论，也不先加入 mHC 等额外结构变量。
+
+八、共同验收与执行顺序
+所有 teacher、计数、聚类和筛选只使用训练分区；验证集不参与构表，最终评估保留独立测试集。记录每阶 context 数、coverage、物理槽数、OE 参数、slot 流量、聚类失真、吞吐、内存，以及每个 epoch 的 Δval/Δtrain/excess_gap。限制诊断写盘频率并做预运行空间检查。
+先完成统计口径审计和实验 A；单 seed 筛选，仅对赢家及必要对照补足 3 seeds，再做 B、D、E。C 是可选的较贵 teacher 扩展；F 最后做。不要先展开全笛卡尔积，也不要重跑可严格复用的基线。
+成功可以是更低 validation loss，或相同 validation loss 下更少参数/总训练成本；不能只凭 train loss 更低或 gap 缩小判成功。只有跨 seed/跨模型迁移确有收益，才发布 tokenizer/context 规范、context→codes、统计量、codebook、适配器和数据版本组成的 n-gram 初始化包。
+
+来源与范围
+现有配方背景来自本会话所附实验记录（每阶频率筛选、table LR、E1–E3 对照）；gap 审计使用用户最新提供的 Δtrain/Δval 配对表。A–F 是本轮讨论整理出的待验证实验，不是已证实结论。
