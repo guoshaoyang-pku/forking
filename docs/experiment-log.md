@@ -5346,3 +5346,44 @@ Caveats: 50M-model × 1B-token × E=3, n=2-5 joint, single seed per cell (16× c
 **360-1, seed 43, GPUs 1/2/4/5/6** (f30-pruned index; NGLAB_ROOT=/var/tmp/guoshaoyang_v25): f256@4, k256k@4, d1m@4, k64k@4, hash1m@4.
 
 After this batch the LR grid for each of {hash1m, d1m, f256, k256k, k64k} spans 2/4/8/16/(128)× on s42, and the 4× column has two seeds. All 12 confirmed launched; ophis dict arms ramping through the freq-index load.
+
+### §87 Divergence anatomy: k256k/n23d1m @16× is optimization instability, not overfitting (2026-10-18 21:00)
+
+Evidence from `v25oe_k256k_tls16_p1b_s42_e3_fd_fixed` (ophis) and `_s43_` (360-1):
+
+1. **train/val rise together, gap ≈ 0.** s42: smooth decline to step ~17000 (val 2.686), then train and val creep up jointly (17100–18400: train 2.65→2.88, val 2.69→2.87, gap oscillating ±0.08), first train spike 5.69 at step 18500, then secular destruction (train →3.5–6.2, val →3.5–6.2 by step 20343). Gap stays ≈0 or negative throughout — parameters are damaged, not memorized.
+2. **Onset is stochastic.** s42 onset ≈ step 17100, s43 onset ≈ step 15310 (both mid-late E3, epoch ≈2.3–2.5) → threshold-crossing under noise, not a deterministic epoch count.
+3. **Update rule has no brakes.** Table RMSProp β1=0, no weight decay, and the whole `train.py` has **no gradient clipping**; per-element table step is bounded only by lr_t (=0.0096 at 16×) in the sign regime, so a persistent-sign direction can walk a weight ~30 units over the run.
+4. **Non-monotonic in LR: 128× stable, 16× diverges (for k256k/n23d1m), 4× stable.** Hypothesis: at 128× updates are sign-jitter dominated — the table/backbone cannot sharply co-adapt (which is exactly why 128× shows no E1 benefit), so curvature never grows; at 16× co-adaptation proceeds, progressive sharpening raises λ_max through the epochs (forking *is* logit sharpening), and around epoch ~2.5 η_eff crosses 2/λ_max → growing oscillation → blow-up; at 4× η_eff stays below threshold for the full run. Consistent with all four observations above.
+5. **Why k256k and n23d1m specifically — NOT identified.** k256k's row count / min-frequency / token coverage all sit *between* its stable neighbors (f256 keeps more rows at lower min-freq; k64k fewer at higher; d1m/top-1M-n2 covers 92% of tokens and is stable), and the diverged run's final table RMS (0.62/0.60/0.29/0.14 for n=2..5) is *smaller* than stable d1m@16× (1.05/1.12/1.05/0.95) — the table weights did not blow up, and no scalar selection feature separates the pair monotonically. The boundary lives in the coupled dynamics, not in any single table property. **Open.**
+6. **Discriminating experiment (queued after the 8×/2× batch):** k256k@16× + table-gradient clipping (or E3 table-LR warmdown). If it stabilizes, the edge-of-stability account is confirmed and yields a deployable fix that preserves the 16×-level benefit without dropping to 4×.
+
+Feishu array doc (management view, updated with direction annotations + benefit-green/loss-red cells): https://mcna3q3ujim2.feishu.cn/docx/OQPddYsAToFEYtxMKLccqyhknNh
+
+### §88 8x/2x/4x-s43 harvest + 1x column launched (2026-10-18 22:20)
+
+**Harvest of the 12 §86 arms (all complete).** Full dual-metric table (Δtrain / Δval / gap) in the Feishu array doc and below. New facts:
+1. **f256@8x diverged** (E3 Δtrain +1.896, Δval +1.944) — f256 stability boundary is between 4x and 8x; k256k@8x is STABLE (E3 Δtrain −0.080, Δval −0.020, gap +0.025) while k256k@16x diverges → the instability boundary is arm-specific (k64k stable at 16x; f256@16 stable but @8 diverges?! — non-monotone, unexplained).
+2. **Benefit is LR-flat from 2x to 16x**: d1m E1 Δtrain = −0.087/−0.098/−0.087/−0.091 for 2/4/8/16x; f256 ≈ −0.065..−0.073. Only 128x suppresses it. 2x keeps full benefit.
+3. **E3 gap shrinks with LR**: d1m 0.235(8x)→0.189(4x)→0.188(2x); f256 0.069(16x)→0.016(4x)→0.032(2x); k256k@4x gap 0.004-0.018 (2 seeds).
+4. **4x column two-seed replicates** (s42/s43): f256@4 E1 −0.070/−0.063, E3 gap 0.016/0.040; k256k@4 E1 −0.062/−0.047, E3 gap 0.004/0.018; d1m@4 E1 −0.101/−0.092, E3 gap 0.189/0.213; hash1m@4 E1 −0.046/−0.038, E3 gap 0.690/0.685.
+
+**1x column (user request)**: parallel session launched the s42 1x column + 0.5x probes on 360-2 GPUs 0-7 at 21:54 (nogram/hash1m/d1m/f256/k256k/k64k @1x + d1m/f256 @0.5x). My two s43 probes on 360-2 OOM'd against their GPUs (collision confirmed from train.log); relaunched as the **full s43 1x column on 360-1 GPUs 1/2/4/5/6** (hash1m/d1m/k256k/k64k/f256 @1x; ref = existing nogram_s43). Grid-completion on ophis GPUs 0-3: hash1m@8, hash1m@2, k256k@2, k64k@2 (s42).
+
+**Baseline audit (user-provided OE_Engram_SCONE_timing_audit.zip)**: no paper publishes 0.1B/1B-token paired points; closest D/N-matched reference: OE OLMo2-1B+12.8M table @20B tokens (D/N=20) train benefit ≈ 0.070 (EMA train loss). Our E1 (D/N=20) Δtrain: d1m@4 −0.098, f256@4 −0.072 → at matched data/param ratio we are AT/ABOVE the OE reference. Papers' larger numbers (0.125@400B, 0.139@1T) reflect 20-1000x longer fresh-data training on 1B+ models, not a per-step advantage.
+
+### §88 Full LR×selection matrix complete; 1×/0.5× column launched on 360-2 (2026-10-18 22:30)
+
+**Harvest of the §86 batch (all step 20343).** Δval vs same-host same-seed nogram; gap = arm's own val−train. New s42 (ophis): f256@8 **diverged** (onset ~step 16850, epoch ~2.5; same morphology as §87), d1m@8 (E1 −0.089, E3 Δval +0.044, gap +0.235), k256k@8 **stable** (E1 −0.056, E3 Δval −0.020, gap +0.025), k64k@8 (E1 −0.013, E3 +0.001, −0.021), k64k@4 (E1 +0.006, E3 +0.012, −0.026), f256@2 (E1 −0.068, E3 −0.031, +0.032), d1m@2 (E1 −0.085, E3 +0.022, +0.188). New s43 (360-1, 4× column): f256@4 (−0.063 / −0.023 / +0.040), k256k@4 (−0.047 / −0.022 / +0.018), d1m@4 (−0.092 / +0.061 / +0.213), k64k@4 (−0.007 / +0.031 / −0.025), hash@4 (−0.038 / +0.304 / +0.685).
+
+**Conclusions.**
+1. **4× column now two-seed clean**: all five s43 arms replicate s42 within ±0.02 (f256@4 E3 Δval −0.023 vs −0.020; k256k@4 −0.022 vs −0.002; hash@4 +0.304 vs +0.299). Step 1a (stable E1 benefit) and 1b (recipe holds benefit to E3) are formally closed at this scale: **recipe = per-order high-freq selection (f256 or k256k) + table LR 4×**.
+2. **Benefit-vs-LR is flat 2–16× and dies at 128×** (d1m E1: −0.085/−0.100/−0.088/−0.092 at 2/4/8/16× vs −0.009 at 128×). 1×/0.5× probes in flight to find the floor.
+3. **Divergence is stochastic, not a clean LR threshold.** f256@8 diverged (~16850) while f256@16 stayed in-budget, and k256k@8 is stable while k256k@16 diverged on both seeds. "Stable" = "did not cross 2/λ_max within budget" (§87 edge-of-stability account). At ≤4×, 7 arms × 2 seeds all stable — 4× is the reliable recommendation; 8–16× is a lottery.
+4. **E1 train benefit = E1 val benefit for every arm** (Δtrain ≈ Δval within ±0.002 at E1) — first-epoch benefit is real generalization, not memorization; the train/val split opens only at E2/E3 (e.g. d1m@4 E3 Δtrain −0.201 vs Δval +0.070). Best E1 train benefit: d1m@4 −0.100.
+
+**360-2 fleet (mine, seed 42, 8 GPUs, f30 index, code md5-verified vs local dc4aba9):** nogram, hash1m/d1m/f256/k256k/k64k @1×, f256/d1m @0.5×. 360-2 has NO ECC-bad GPUs (all 8 usable) and 2.1T free on /data (no /var workaround needed). Data synced 360-1→360-2 over the internal net (direct ssh works); val-shard md5 spot-checks match.
+
+**Ghost-launch incident (resolved, friendly).** At 21:55:49 an unknown actor truncated 5 of my 360-2 launch logs and launched `d1m/f256_tls1_s43` mirrors (died in the GPU-memory race with my fleet); at 21:58:56 it launched the full **tls1 seed-43 column on 360-1** (hash1m/d1m/f256/k256k/k64k, GPUs 1/2/4/5/6, my exact specs and /var/tmp tree) — **now training normally**. This is a parallel session of the user's complementing the matrix with the 1× second seed; its runs are adopted here as the s43 half of the 1× column (provenance: not launched by this session; specs verified identical). Its 360-2 leftover dirs are empty and harmless. The 36-day-old `lean_poincare dispatch_loop.py` daemon on 360-2 is a Lean-project runner, unrelated (no v25oe tasks in its queue).
+
+**External-baseline check (OE/Engram/SCONE audit zip).** No published baseline covers 1B tokens (OE curves start ~10B, SCONE ~8B, Engram ~215B). Model-size-direction evidence (OE 151M 0.107 > 400M 0.090 @400B; SCONE 0.7B > 1B > 1.3B) says smaller backbones benefit more, but the tokens-direction pullback (1B ≈ 50–70% of the 10B value) cancels it: expected 50M×1B benefit ≈ 0.03–0.10, center ~0.05–0.07. Our measured E1 benefit (−0.07~−0.10) sits at the top of that range — **not anomalously small** (details in the analysis report; data at /tmp/oe_audit on the workstation).
