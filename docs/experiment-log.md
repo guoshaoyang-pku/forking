@@ -5426,3 +5426,13 @@ Feishu array doc (management view, updated with direction annotations + benefit-
 **Fleet state (05:00).** 360-2: GPU0 s1-s42, GPU1 c1-s42, GPU2 c2-s42, GPU6 nogram-s42, GPU3-5 free + c3 builder on CPU. 360-1: GPU1 s1-s43, GPU4 nogram-s43, GPU5 h2-s43(retry), GPU6 c1-s43 (GPU2 ECC-suspect, 0/3/7 ECC-bad). ophis: GPU4 c2-s43, GPU5 reserved for c3-s43, GPU6 free. Assignments md5'd across hosts (h1/h2/s1/c1/c2 identical files everywhere — same routing seed).
 
 **Builder notes.** S1: n=2 occupied 8,079/49,634 (suffix-group ceiling ~unigram count, spec-permitted under-occupation, reported); n=3/4/5 full budget. C1/C2 same R. C3 KL-exchange still running (CPU-bound single-thread loop). C builders hit a torch cuda-generator crash (cpu generator passed to cuda multinomial) — fixed by drawing on cpu (deterministic), tests green, relaunched.
+
+### §92 v26 frame shift documented; paired-seed md5 audit passes; s44 column launched (2026-10-19 06:40)
+
+**Frame shift.** v26 nogram s42 (360-2): E1 2.880/2.870, E3 2.743/2.705 — uniformly +0.015~0.02 worse than the v25 nogram frame (360-2 v25 tls1 nogram: E1 2.864/2.849; ophis v25 nogram: E1 2.865/2.853). Cause: v26 runs enable --fixed_train_probe 4, whose probe TokenizedShardDataset instantiation perturbs the global RNG/data order vs v25 (probe batches themselves are separate random-access chunks, NOT consumed from the train stream; backbone init identical across v26 arms). **All W1 comparisons are within-frame (v26 arm - v26 nogram, same seed).** Cross-frame quotes (exact-f256@4x E1 -0.070) carry the nogram offset caveat.
+
+**md5 audit (paired-seed control)**: all 6 s42 v26 arms backbone-init md5 529c5976..., all 7 s43 arms 41e73538... — init noise excluded as a confound.
+
+**W1 vs v26 nogram (exact frame, s42)**: H1 E1 Δval -0.041 / E3 +0.133 (xgap -0.005, i.e. even train benefit gone); H2 E1 -0.040 / E2 -0.037 / E3 -0.022 (xgap +0.016). H2's E1 benefit is ~55% of exact-f256's (-0.070, cross-frame).
+
+**Fleet (16 arms)**: 360-2 8/8 (s1/c1/c2/c3 s42, nogram/h2/s1/c1 s44); 360-1 (s1/c1/h2-retry/nogram s43); ophis (c2/c3 s43). Every W1 arm x2 seeds; s44 for nogram/h2/s1/c1. ETA s42 routing arms 07:10-09:00.
