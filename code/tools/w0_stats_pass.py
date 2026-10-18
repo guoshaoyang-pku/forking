@@ -37,6 +37,9 @@ ORDERS = (2, 3, 4, 5)
 VOCAB = 8192
 CHUNK = 2049
 FMIN = 256
+# 1B-token pool = first 488,232 chunks of the shard stream (train.py
+# --train_max_tokens 1e9 via train_pool_chunks; freq-index meta max_chunks)
+POOL_CHUNKS = 488232
 FOLDS = {0: [1, 11, 12, 13, 14, 15, 16, 17, 18, 19],
          1: [20, 21, 22, 23, 25, 26, 27, 28, 29, 30],
          2: [31, 32]}
@@ -62,10 +65,14 @@ uni = np.zeros((3, VOCAB), dtype=np.int64)
 hit_tot = {(n, f): 0 for n in ORDERS for f in (0, 1, 2)}
 
 t0 = time.time()
+chunks_left = POOL_CHUNKS
 for si, sid in enumerate(SHARDS):
+    if chunks_left <= 0:
+        break
     path = os.path.join(DATA, "tokenized", f"shard_{sid:05d}.bin")
     toks = np.memmap(path, dtype=np.uint16, mode="r")
-    nchunks = toks.size // CHUNK
+    nchunks = min(toks.size // CHUNK, chunks_left)
+    chunks_left -= nchunks
     fold = shard_fold[sid]
     buf = {n: {"idx": [], "y": [], "first": [], "suffix": []} for n in ORDERS}
     for ci in range(nchunks):
@@ -102,6 +109,7 @@ for si, sid in enumerate(SHARDS):
 
 manifest = {"root": ROOT, "shards": SHARDS, "folds": {str(k): v for k, v in FOLDS.items()},
             "fmin": FMIN, "chunk": CHUNK, "vocab": VOCAB, "orders": ORDERS,
+            "pool_chunks": POOL_CHUNKS,
             "selected": {str(n): int(sel_keys[n].size) for n in ORDERS},
             "hit_totals": {f"{n},{f}": int(hit_tot[(n, f)]) for n in ORDERS for f in (0, 1, 2)},
             "elapsed_s": round(time.time() - t0, 1)}
