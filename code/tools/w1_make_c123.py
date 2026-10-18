@@ -234,7 +234,8 @@ def kmeanspp_init(X, w, k, gen):
         if tot <= 0:                        # all remaining points identical
             idx = weighted_choice(p, 1, gen)
         else:
-            idx = torch.multinomial(probs / tot, 1, generator=gen)
+            # cpu generator -> draw on cpu (same values => same deterministic idx)
+            idx = torch.multinomial((probs / tot).cpu(), 1, generator=gen)
         i = int(idx[0])
         centers.append(X[i:i + 1])
         d2 = torch.minimum(d2, ((X - centers[-1]) ** 2).sum(dim=1))
