@@ -40,7 +40,7 @@ import os
 import sys
 import time
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Optional
 
 import numpy as np
@@ -150,8 +150,76 @@ class Config:
     moe_zloss_weight: float = 0.001
     moe_norm_topk_prob: bool = False  # OLMoE-faithful default: no top-k renorm
     moe_panel_interval: int = 10      # ossification panel every Nth eval block
+    # plan-9 FLAME profile (pivot addendum 2026-10-17; see moe.py FLAME_SCALES)
+    flame_profile: str = ""     # "" | tiny | small | large (master preset)
+    flame_dense_twin: bool = False  # P2: MoE layers -> dense SwiGLU width 8*d_e
+    flame_twin_width: int = 0       # filled by apply_flame_preset (= 8*d_e)
+    norm_type: str = "layernorm"    # layernorm | rmsnorm (flame: rmsnorm eps 1e-6)
+    pos_type: str = "learned"       # learned wpe | rope (flame: rope)
+    untied_head: bool = False       # flame: wte and lm_head not shared
+    ffn_type: str = "gelu"          # gelu | swiglu
+    d_ff: int = 0                   # explicit FFN width (0 = legacy 4*n_embd gelu)
+    moe_d_e: int = 0                # explicit FLAME MoE spec (0 = legacy G/X path)
+    moe_e_routed: int = 0
+    moe_k_routed: int = 0
+    moe_layer_pattern: str = ""     # "" = all layers MoE | flame = layer 0 dense
     # output
     out_dir: str = ""
+
+
+def model_moe_active(cfg) -> bool:
+    """Config-level MoE check (legacy G/X path or FLAME explicit path)."""
+    return cfg.moe_g > 0 or (cfg.moe_d_e > 0 and not cfg.flame_dense_twin)
+
+
+def _json_default(o):
+    import dataclasses
+    if dataclasses.is_dataclass(o):
+        return dataclasses.asdict(o)
+    raise TypeError(f"not JSON serializable: {type(o)}")
+
+
+def apply_flame_preset(config) -> None:
+    """plan-9 FLAME pivot preset (docs/plans/plan-9-flame-pivot-addendum-20261017.txt).
+
+    Sets the full FLAME-derived architecture in one flag: SwiGLU, RMSNorm
+    (eps 1e-6), RoPE, no bias, untied wte/lm_head, 16 heads, layer 0 dense
+    FFN, layers 1..L-1 MoE (64 routed / top-6 + always-on shared FFN of width
+    2*d_e == 2 shared units), router fp32 pre-softmax, aux 0.01, z 0.001,
+    init std 0.02. --flame_dense_twin replaces the MoE layers with dense
+    SwiGLU FFNs of width 8*d_e (exact-active twin, P2).
+    """
+    from moe import (FLAME_SCALES, FLAME_E_ROUTED, FLAME_K_ROUTED,
+                     FLAME_SHARED_UNITS, FLAME_AUX_WEIGHT, FLAME_ZLOSS_WEIGHT)
+    scale = config.flame_profile
+    if scale not in FLAME_SCALES:
+        raise ValueError(f"--flame_profile must be one of {sorted(FLAME_SCALES)} "
+                         f"(got {scale!r})")
+    if config.moe_g > 0:
+        raise ValueError("--flame_profile is mutually exclusive with the legacy "
+                         "--moe_g/--moe_x path (structural ablation config)")
+    n_layer, n_embd, n_head, d_ff, d_e = FLAME_SCALES[scale]
+    config.n_layer = n_layer
+    config.n_embd = n_embd
+    config.n_head = n_head
+    config.d_ff = d_ff                    # layer-0 dense FFN width
+    config.bias = False
+    config.dropout = 0.0
+    config.norm_type = "rmsnorm"
+    config.pos_type = "rope"
+    config.untied_head = True
+    config.ffn_type = "swiglu"
+    config.moe_d_e = d_e
+    config.moe_e_routed = FLAME_E_ROUTED
+    config.moe_k_routed = FLAME_K_ROUTED
+    config.moe_shared_units = FLAME_SHARED_UNITS
+    config.moe_aux_weight = FLAME_AUX_WEIGHT
+    config.moe_zloss_weight = FLAME_ZLOSS_WEIGHT
+    config.moe_norm_topk_prob = False
+    config.moe_layer_pattern = "flame"
+    if config.flame_dense_twin:
+        from moe import flame_active_ffn_width
+        config.flame_twin_width = flame_active_ffn_width(scale)
 
 
 def has_ve(layer_idx: int, n_layer: int) -> bool:
@@ -284,6 +352,21 @@ class LayerNorm(nn.Module):
         return F.layer_norm(x, self.weight.shape, self.weight, self.bias, 1e-5)
 
 
+class RMSNormLearned(nn.Module):
+    """RMSNorm with learnable weight, no mean subtraction (plan-9 FLAME)."""
+
+    def __init__(self, ndim, eps=1e-6):
+        super().__init__()
+        self.weight = nn.Parameter(torch.ones(ndim))
+        self.eps = eps
+
+    def forward(self, x):
+        dt = x.dtype
+        x = x.float()
+        x = x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
+        return (x * self.weight).to(dt)
+
+
 class CausalSelfAttention(nn.Module):
     """nanoGPT fused-c_attn attention with optional n-gram value injection.
 
@@ -335,6 +418,30 @@ class CausalSelfAttention(nn.Module):
             if need_gate and config.enable_trigram_ve and layer_idx in trigram_gate_layers else None
         )
         self.fourgram_gate = None  # fourgram not supported in minimal version
+        self.pos_type = config.pos_type
+        if config.pos_type == "rope":
+            # RoPE on the full head_dim (plan-9 FLAME pivot), precomputed once
+            assert self.head_dim % 2 == 0, "RoPE requires even head_dim"
+            max_seq_len = config.sequence_len
+            inv_freq = 1.0 / (10000.0 ** (torch.arange(0, self.head_dim, 2).float()
+                                          / self.head_dim))
+            t = torch.arange(max_seq_len).float()
+            freqs = torch.outer(t, inv_freq)  # (T, head_dim/2)
+            self.register_buffer("rope_cos", torch.cos(freqs), persistent=False)
+            self.register_buffer("rope_sin", torch.sin(freqs), persistent=False)
+
+    def _apply_rope(self, q, k):
+        # q, k: (B, H, T, hd); rotate consecutive pairs (x_{2i}, x_{2i+1})
+        T = q.size(2)
+        cos = self.rope_cos[:T].view(1, 1, T, -1)
+        sin = self.rope_sin[:T].view(1, 1, T, -1)
+        def rot(x):
+            x1 = x[..., 0::2]
+            x2 = x[..., 1::2]
+            o1 = x1 * cos - x2 * sin
+            o2 = x1 * sin + x2 * cos
+            return torch.stack((o1, o2), dim=-1).flatten(-2)
+        return rot(q), rot(k)
 
     def _add_value_residual(self, branch, v_heads, residual, gate, x, ch_start, heads):
         residual = residual.view(x.size(0), x.size(1), heads, self.head_dim)
@@ -390,6 +497,8 @@ class CausalSelfAttention(nn.Module):
         q = q.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
         k = k.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
         v = v.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
+        if self.pos_type == "rope":
+            q, k = self._apply_rope(q, k)
         y = F.scaled_dot_product_attention(
             q, k, v, attn_mask=None,
             dropout_p=self.attn_dropout_p if self.training else 0.0, is_causal=True)
@@ -404,22 +513,55 @@ class CausalSelfAttention(nn.Module):
 class MLP(nn.Module):
     def __init__(self, config: Config):
         super().__init__()
-        self.c_fc = nn.Linear(config.n_embd, 4 * config.n_embd, bias=config.bias)
-        self.gelu = nn.GELU()
-        self.c_proj = nn.Linear(4 * config.n_embd, config.n_embd, bias=config.bias)
+        self.ffn_type = config.ffn_type
+        if config.ffn_type == "swiglu":
+            # Megatron SwiGLU: w2(SiLU(w1 x) * w3 x); 3*d*w params (plan-9 FLAME)
+            assert config.d_ff > 0, "swiglu requires explicit --d_ff"
+            self.w1 = nn.Linear(config.n_embd, config.d_ff, bias=config.bias)
+            self.w3 = nn.Linear(config.n_embd, config.d_ff, bias=config.bias)
+            self.w2 = nn.Linear(config.d_ff, config.n_embd, bias=config.bias)
+        else:
+            assert config.d_ff == 0, "--d_ff is only used with --ffn_type swiglu"
+            self.c_fc = nn.Linear(config.n_embd, 4 * config.n_embd, bias=config.bias)
+            self.gelu = nn.GELU()
+            self.c_proj = nn.Linear(4 * config.n_embd, config.n_embd, bias=config.bias)
         self.dropout = nn.Dropout(config.dropout)
 
     def forward(self, x):
+        if self.ffn_type == "swiglu":
+            return self.dropout(self.w2(F.silu(self.w1(x)) * self.w3(x)))
         return self.dropout(self.c_proj(self.gelu(self.c_fc(x))))
 
 
 class Block(nn.Module):
     def __init__(self, config: Config, layer_idx: int):
         super().__init__()
-        self.ln_1 = LayerNorm(config.n_embd, bias=config.bias)
+        if config.norm_type == "rmsnorm":
+            eps = 1e-6  # plan-9 FLAME profile pins RMSNorm eps to 1e-6
+            self.ln_1 = RMSNormLearned(config.n_embd, eps=eps)
+            self.ln_2 = RMSNormLearned(config.n_embd, eps=eps)
+        else:
+            self.ln_1 = LayerNorm(config.n_embd, bias=config.bias)
+            self.ln_2 = LayerNorm(config.n_embd, bias=config.bias)
         self.attn = CausalSelfAttention(config, layer_idx)
-        self.ln_2 = LayerNorm(config.n_embd, bias=config.bias)
-        if getattr(config, "moe_g", 0) > 0:
+        # per-layer MoE: layer 0 stays dense under --moe_layer_pattern flame
+        moe_active = (config.moe_d_e > 0 and not config.flame_dense_twin
+                      and (layer_idx != 0 or config.moe_layer_pattern != "flame"))
+        if moe_active:
+            from moe import moeify_explicit, MoEFFN
+            self.moe_arch = moeify_explicit(
+                config.n_embd, config.moe_d_e, config.moe_e_routed,
+                config.moe_k_routed, config.moe_shared_units,
+                config.moe_aux_weight, config.moe_zloss_weight,
+                config.moe_norm_topk_prob, config.ffn_type)
+            self.mlp = MoEFFN(self.moe_arch, bias=config.bias,
+                              dropout=config.dropout)
+        elif config.flame_dense_twin and layer_idx != 0 and config.moe_d_e > 0:
+            # P2 exact-active twin: MoE layers -> dense SwiGLU width 8*d_e
+            assert config.ffn_type == "swiglu"
+            twin_cfg = replace(config, d_ff=config.flame_twin_width)
+            self.mlp = MLP(twin_cfg)
+        elif config.moe_g > 0:
             from moe import moeify, MoEFFN
             # same (G, X, S) point in every layer; expert MLP layout/init is
             # identical to the dense MLP (init_weights covers nn.Linear)
@@ -449,11 +591,19 @@ class NanoGPT(nn.Module):
             "drop": nn.Dropout(config.dropout),
             "h": nn.ModuleList([Block(config, i) for i in range(config.n_layer)]),
         })
-        self.transformer["wpe"] = nn.Embedding(config.sequence_len, config.n_embd)
-        self.transformer["ln_f"] = LayerNorm(config.n_embd, bias=config.bias)
+        if config.pos_type == "learned":
+            self.transformer["wpe"] = nn.Embedding(config.sequence_len, config.n_embd)
+        if config.norm_type == "rmsnorm":
+            self.transformer["ln_f"] = RMSNormLearned(config.n_embd, eps=1e-6)
+        else:
+            self.transformer["ln_f"] = LayerNorm(config.n_embd, bias=config.bias)
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
-        # tied embeddings (matches baseline_input setting)
-        self.lm_head.weight = self.transformer.wte.weight
+        if config.untied_head:
+            # plan-9 FLAME: wte and lm_head are separate parameters
+            pass
+        else:
+            # tied embeddings (matches baseline_input setting)
+            self.lm_head.weight = self.transformer.wte.weight
 
         ngram_layers = sorted(i for i in range(config.n_layer) if has_ve(i, config.n_layer))
         self.value_embeds = nn.ModuleDict({
@@ -635,6 +785,15 @@ class NanoGPT(nn.Module):
         for name, p in self.named_parameters():
             if name.endswith("c_proj.weight"):
                 torch.nn.init.normal_(p, mean=0.0, std=0.02 / math.sqrt(2 * self.config.n_layer))
+            if self.config.flame_profile:
+                # plan-9 FLAME pivot: uniform(±sqrt(1/fan_in)) for attention qkvo
+                # and router; std 0.02 elsewhere (wte, lm_head, FFN w1/w2/w3)
+                if name.endswith("c_attn.weight") or name.endswith(".router.weight"):
+                    fan_in = p.size(1)
+                    bound = 1.0 / math.sqrt(fan_in)
+                    torch.nn.init.uniform_(p, -bound, bound)
+                elif name.endswith("lm_head.weight"):
+                    torch.nn.init.normal_(p, mean=0.0, std=0.02)
         self._initialize_ngram_tables()
 
     @torch.no_grad()
@@ -661,9 +820,11 @@ class NanoGPT(nn.Module):
     # ---- plan-9 MoE helpers -------------------------------------------------
     def moe_layer_modules(self):
         """List of MoEFFN modules (empty on the dense path)."""
-        if getattr(self.config, "moe_g", 0) == 0:
+        if getattr(self.config, "moe_g", 0) == 0 \
+                and getattr(self.config, "moe_d_e", 0) == 0:
             return []
-        return [blk.mlp for blk in self.transformer.h]
+        return [blk.mlp for blk in self.transformer.h
+                if hasattr(blk, "moe_arch")]
 
     def moe_extra_loss(self):
         """Sum over layers of (aux*aux_weight + z*zloss_weight), or None.
@@ -684,7 +845,9 @@ class NanoGPT(nn.Module):
 
     @property
     def moe_active(self) -> bool:
-        return getattr(self.config, "moe_g", 0) > 0
+        return getattr(self.config, "moe_g", 0) > 0 \
+            or (getattr(self.config, "moe_d_e", 0) > 0
+                and not self.config.flame_dense_twin)
 
     @staticmethod
     def _reseed_constants(constants, salt):
@@ -1275,7 +1438,7 @@ class NanoGPT(nn.Module):
         B, T = idx.size()
         pos = torch.arange(0, T, dtype=torch.long, device=idx.device).unsqueeze(0)
         x = self.transformer.wte(idx)
-        x = x + self.transformer.wpe(pos)
+        x = x + self.transformer.wpe(pos) if self.config.pos_type == "learned" else x
         ngram_residual = None
         input_pos = self.config.nanogpt_ngram_injection_position == "input"
         if input_pos:
@@ -2792,9 +2955,25 @@ def main():
                              "either way")
     parser.add_argument("--moe_panel_interval", type=int, default=10,
                         help="ossification panel capture every Nth eval block")
+    parser.add_argument("--flame_profile", type=str, default="",
+                        help="plan-9 FLAME preset: tiny | small | large. Sets the "
+                             "full FLAME-derived architecture (SwiGLU/RMSNorm/RoPE/"
+                             "no-bias/untied/16-heads, layer0 dense + MoE 64R/top-6 "
+                             "+ 2 shared units) in one flag; mutually exclusive "
+                             "with --moe_g")
+    parser.add_argument("--flame_dense_twin", action="store_true",
+                        help="P2: replace MoE layers with dense SwiGLU FFNs of "
+                             "width 8*d_e (exact-active twin)")
     args = parser.parse_args()
     if (args.moe_g > 0) != (args.moe_x > 0):
         parser.error("--moe_g and --moe_x must be set together (G,X >= 1) or both 0")
+    if args.flame_profile and args.flame_profile not in ("tiny", "small", "large"):
+        parser.error("--flame_profile must be tiny | small | large")
+    if args.flame_dense_twin and not args.flame_profile:
+        parser.error("--flame_dense_twin requires --flame_profile")
+    if args.flame_profile and args.table_init_npz:
+        parser.error("--table_init_npz writes to tied wte; incompatible with "
+                     "--flame_profile (untied head)")
     if args.freeze_embeddings_only and (args.freeze_table or args.disable_ngram_tables):
         parser.error("--freeze_embeddings_only is exclusive with --freeze_table/--disable_ngram_tables")
     if args.lora_rank < 0 or (args.lora_rank and (not args.init_model or args.lora_alpha <= 0)):
@@ -2952,8 +3131,23 @@ def main():
         moe_zloss_weight=args.moe_zloss_weight,
         moe_norm_topk_prob=bool(args.moe_norm_topk_prob),
         moe_panel_interval=args.moe_panel_interval,
+        flame_profile=args.flame_profile,
+        flame_dense_twin=bool(args.flame_dense_twin),
         out_dir=os.path.join(args.out_dir, args.run_id),
     )
+
+    if cfg.flame_profile:
+        # plan-9 FLAME pivot: apply the master preset (overrides n_layer/n_embd/
+        # n_head/bias/dropout and sets the MoE spec); must precede set_seed and
+        # model construction
+        apply_flame_preset(cfg)
+        print(f"[nglab] FLAME profile {cfg.flame_profile}: {cfg.n_layer}L/"
+              f"{cfg.n_embd}D/{cfg.n_head}H, SwiGLU+RMSNorm+RoPE+untied, "
+              f"d_ff(layer0)={cfg.d_ff}, MoE d_e={cfg.moe_d_e} "
+              f"64R/top-6 + 2 shared units"
+              + (" [dense-twin P2]" if cfg.flame_dense_twin else ""))
+    if cfg.pos_type == "rope" and cfg.ngram_orders:
+        pass  # RoPE changes attention position encoding only; n-gram tables are unaffected
 
     if args.table_betas:
         parts = [float(x) for x in args.table_betas.replace(";", ",").split(",") if x.strip()]
@@ -3035,7 +3229,7 @@ def main():
     # plan-9 ossification panel: first 8 rows of the first val batch
     # (16,384 tokens; with --val_shards 6542 this is the first 8 rows of the
     # group-canonical val shard; never trained; identical capture each time)
-    moe_panel_x = validation_batches[0][0][:8].clone() if cfg.moe_g > 0 else None
+    moe_panel_x = validation_batches[0][0][:8].clone() if model_moe_active(cfg) else None
     moe_panel_count = 0
     if moe_panel_x is not None:
         os.makedirs(os.path.join(cfg.out_dir, "moe_panel"), exist_ok=True)
@@ -3122,7 +3316,24 @@ def main():
         if not os.path.isfile(args.table_init_npz):
             raise SystemExit(f"--table_init_npz not found: {args.table_init_npz}")
         table_init_from_npz(model, os.path.abspath(args.table_init_npz))
-    if model.moe_active:
+    if cfg.flame_profile:
+        # plan-9 FLAME pivot: exact pre-run accounting, printed BEFORE training
+        from moe import flame_param_counts, format_flame_ledger
+        oe_params = 0
+        for attr in ("ngram_ves", "bigram_ves", "trigram_ves", "value_embeds"):
+            mod = getattr(model, attr, None)
+            if isinstance(mod, nn.ModuleDict):
+                oe_params += sum(p.numel() for m in mod.values()
+                                 for p in m.parameters())
+            elif isinstance(mod, nn.Module):
+                oe_params += sum(p.numel() for p in mod.parameters())
+        counts = flame_param_counts(cfg.n_layer, cfg.n_embd, cfg.n_head,
+                                    cfg.d_ff, cfg.moe_d_e, cfg.vocab_size,
+                                    dense_twin=cfg.flame_dense_twin,
+                                    oe_table_params=oe_params)
+        print(format_flame_ledger(cfg.flame_profile, counts, cfg.flame_dense_twin))
+        cfg_moe_ledger = counts
+    elif model.moe_active:
         from moe import params_ledger, format_ledger
         oe_params = 0
         for attr in ("ngram_ves", "bigram_ves", "trigram_ves", "value_embeds"):
@@ -3132,7 +3343,8 @@ def main():
                                  for p in m.parameters())
             elif isinstance(mod, nn.Module):
                 oe_params += sum(p.numel() for p in mod.parameters())
-        led = params_ledger(model.transformer.h[0].mlp.arch, cfg.n_layer,
+        moe_blocks = model.moe_layer_modules()
+        led = params_ledger(moe_blocks[0].arch, cfg.n_layer,
                             cfg.vocab_size, cfg.sequence_len, cfg.n_head,
                             oe_table_params=oe_params)
         print(format_ledger(led))
@@ -3346,10 +3558,10 @@ def main():
     # logs
     train_log = open(os.path.join(cfg.out_dir, "train_log.jsonl"), "w")
     moe_diag_log = open(os.path.join(cfg.out_dir, "moe_diag.jsonl"), "w") \
-        if (cfg.moe_g > 0) else None
+        if model_moe_active(cfg) else None
     if cfg_moe_ledger is not None:
         with open(os.path.join(cfg.out_dir, "moe_ledger.json"), "w") as f:
-            json.dump(cfg_moe_ledger, f, indent=2)
+            json.dump(cfg_moe_ledger, f, indent=2, default=_json_default)
     table_log = open(os.path.join(cfg.out_dir, "table_norm.jsonl"), "w")
     table_diag_log = open(os.path.join(cfg.out_dir, "table_diag.jsonl"), "w") \
         if args.table_diag else None

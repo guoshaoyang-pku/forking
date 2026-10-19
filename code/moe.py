@@ -86,8 +86,8 @@ def capture_panel_routing(model, panel_x: torch.Tensor) -> dict:
 class MoEArch:
     d_model: int
     d_ff: int
-    granularity: int          # G
-    expansion: int            # X
+    granularity: int          # G (legacy path); explicit path: active units K+S
+    expansion: float          # X (legacy); explicit path: (E+S)/(K+S)
     shared_units: int         # S
     d_e: int
     e_routed: int
@@ -95,12 +95,13 @@ class MoEArch:
     aux_weight: float
     zloss_weight: float
     norm_topk_prob: bool
+    ffn_type: str = "gelu"    # gelu | swiglu (FLAME profile)
 
     def describe(self) -> str:
         s = (f"{self.e_routed}R/top-{self.k_routed}"
              + (f"+{self.shared_units}S" if self.shared_units else ""))
         return (f"G{self.granularity}/X{self.expansion}/S{self.shared_units} "
-                f"= {s}/d_e{self.d_e}")
+                f"= {s}/d_e{self.d_e}" + (f"/{self.ffn_type}" if self.ffn_type != "gelu" else ""))
 
 
 def moeify(d_model: int, d_ff: int, granularity: int, expansion: int,
@@ -131,17 +132,64 @@ def moeify(d_model: int, d_ff: int, granularity: int, expansion: int,
     )
 
 
-class ExpertMLP(nn.Module):
-    """Identical layout to the dense train.MLP (c_fc GELU c_proj dropout)."""
+def moeify_explicit(d_model: int, d_e: int, e_routed: int, k_routed: int,
+                    shared_units: int, aux_weight: float = 0.01,
+                    zloss_weight: float = 0.001, norm_topk_prob: bool = False,
+                    ffn_type: str = "gelu") -> MoEArch:
+    """FLAME direct spec (plan-9 FLAME pivot): experts are specified by their
+    concrete widths/counts, not derived from a dense d_ff via (G, X).
 
-    def __init__(self, d_model: int, d_e: int, bias: bool = True, dropout: float = 0.0):
+    FLAME Small: d_e=352, E_routed=64, K_routed=6, S=2 (the always-on shared
+    FFN of width 2*d_e is exactly two shared d_e units, block-diagonal concat;
+    SwiGLU gating is elementwise so the equivalence is exact).
+
+    The ledger reference width d_ff is the per-token ACTIVE FFN width
+    (K_routed + S) * d_e, which is the width the dense twin must match.
+    """
+    if d_e < 1:
+        raise ValueError(f"d_e must be >= 1 (got {d_e})")
+    if e_routed < 1 or k_routed < 1:
+        raise ValueError(f"need E_routed, K_routed >= 1 (got {e_routed}, {k_routed})")
+    if k_routed > e_routed:
+        raise ValueError(f"K_routed ({k_routed}) must be <= E_routed ({e_routed})")
+    if shared_units < 0:
+        raise ValueError(f"S must be >= 0 (got {shared_units})")
+    if ffn_type not in ("gelu", "swiglu"):
+        raise ValueError(f"unsupported ffn_type: {ffn_type}")
+    active_units = k_routed + shared_units
+    d_ff = active_units * d_e
+    return MoEArch(
+        d_model=d_model, d_ff=d_ff, granularity=active_units,
+        expansion=(e_routed + shared_units) / active_units,
+        shared_units=shared_units, d_e=d_e, e_routed=e_routed,
+        k_routed=k_routed, aux_weight=aux_weight, zloss_weight=zloss_weight,
+        norm_topk_prob=norm_topk_prob, ffn_type=ffn_type,
+    )
+
+
+class ExpertMLP(nn.Module):
+    """Expert FFN. gelu: identical layout to the dense train.MLP
+    (c_fc GELU c_proj dropout). swiglu (FLAME): w1/w3 up-projections gated by
+    SiLU, w2 down-projection (Megatron SwiGLU semantics, 3*d*d_e params).
+    """
+
+    def __init__(self, d_model: int, d_e: int, bias: bool = True,
+                 dropout: float = 0.0, ffn_type: str = "gelu"):
         super().__init__()
-        self.c_fc = nn.Linear(d_model, d_e, bias=bias)
-        self.gelu = nn.GELU()
-        self.c_proj = nn.Linear(d_e, d_model, bias=bias)
+        self.ffn_type = ffn_type
+        if ffn_type == "swiglu":
+            self.w1 = nn.Linear(d_model, d_e, bias=bias)
+            self.w3 = nn.Linear(d_model, d_e, bias=bias)
+            self.w2 = nn.Linear(d_e, d_model, bias=bias)
+        else:
+            self.c_fc = nn.Linear(d_model, d_e, bias=bias)
+            self.gelu = nn.GELU()
+            self.c_proj = nn.Linear(d_e, d_model, bias=bias)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
+        if self.ffn_type == "swiglu":
+            return self.dropout(self.w2(F.silu(self.w1(x)) * self.w3(x)))
         return self.dropout(self.c_proj(self.gelu(self.c_fc(x))))
 
 
@@ -159,10 +207,12 @@ class MoEFFN(nn.Module):
         super().__init__()
         self.arch = arch
         self.experts = nn.ModuleList(
-            [ExpertMLP(arch.d_model, arch.d_e, bias=bias, dropout=dropout)
+            [ExpertMLP(arch.d_model, arch.d_e, bias=bias, dropout=dropout,
+                       ffn_type=arch.ffn_type)
              for _ in range(arch.e_routed)])
         self.shared_experts = nn.ModuleList(
-            [ExpertMLP(arch.d_model, arch.d_e, bias=bias, dropout=dropout)
+            [ExpertMLP(arch.d_model, arch.d_e, bias=bias, dropout=dropout,
+                       ffn_type=arch.ffn_type)
              for _ in range(arch.shared_units)])
         self.router = nn.Linear(arch.d_model, arch.e_routed, bias=False)
         # rolling load diagnostics (drained per eval block); paused during
@@ -359,5 +409,102 @@ def format_ledger(led: dict) -> str:
         f"theoretical active matmul MACs/token "
         f"{led['matmul_macs_per_token']['active_param_macs']:,} + attn scores "
         f"{led['matmul_macs_per_token']['attn_score_macs']:,}",
+    ]
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# FLAME profile (plan-9 FLAME pivot, 2026-10-17): preset + exact ledger.
+# ---------------------------------------------------------------------------
+
+# name -> (n_layer, n_embd, n_head, d_ff_dense_layer0, d_e)
+FLAME_SCALES = {
+    "tiny":  (9, 256, 16, 1368, 176),
+    "small": (12, 512, 16, 2736, 352),
+    "large": (9, 1024, 16, 5472, 704),
+}
+FLAME_E_ROUTED = 64
+FLAME_K_ROUTED = 6
+FLAME_SHARED_UNITS = 2        # always-on shared FFN of width 2*d_e
+FLAME_AUX_WEIGHT = 0.01
+FLAME_ZLOSS_WEIGHT = 0.001
+
+
+def flame_active_ffn_width(scale: str) -> int:
+    """Per-token active FFN width (K+S)*d_e = 8*d_e; the dense-twin width."""
+    return (FLAME_K_ROUTED + FLAME_SHARED_UNITS) * FLAME_SCALES[scale][4]
+
+
+def flame_param_counts(n_layer: int, n_embd: int, n_head: int,
+                       d_ff_dense: int, d_e: int, vocab_size: int,
+                       dense_twin: bool, oe_table_params: int = 0) -> dict:
+    """Exact FLAME-profile parameter accounting (no instantiation).
+
+    SwiGLU everywhere (3*d*w per FFN), RMSNorm weights only, RoPE (no wpe),
+    no biases, untied wte/lm_head. Layer 0 is always a dense SwiGLU FFN of
+    width d_ff_dense; layers 1..L-1 are MoE (64R/top-6 + 2 shared units), or
+    dense SwiGLU of width 8*d_e when dense_twin=True.
+    """
+    d = n_embd
+    attn = n_layer * 4 * d * d                      # fused qkvo, no bias
+    norms = (2 * n_layer + 1) * d                   # RMSNorm weights (block x2 + final)
+    embed = 2 * vocab_size * d                      # untied wte + lm_head
+    router_layer = d * FLAME_E_ROUTED
+    router = (n_layer - 1) * router_layer if not dense_twin else 0
+    layer0_ffn = 3 * d * d_ff_dense
+    if dense_twin:
+        twin_ffn = (n_layer - 1) * 3 * d * flame_active_ffn_width_from(d_e)
+        total = attn + norms + embed + layer0_ffn + twin_ffn + oe_table_params
+        active = total
+    else:
+        per_expert = 3 * d * d_e
+        routed = (n_layer - 1) * FLAME_E_ROUTED * per_expert
+        shared = (n_layer - 1) * FLAME_SHARED_UNITS * per_expert
+        total = attn + norms + embed + layer0_ffn + routed + shared + router \
+            + oe_table_params
+        active_ffn_layer = (FLAME_K_ROUTED + FLAME_SHARED_UNITS) * per_expert
+        active = attn + norms + embed + layer0_ffn \
+            + (n_layer - 1) * (active_ffn_layer + router_layer) + oe_table_params
+        # note: router params are included in active (always used), dispatch
+        # overhead is excluded by definition of the active-FFN-matched boundary
+    twin_width = flame_active_ffn_width_from(d_e)
+    dense_twin_total = attn + norms + embed + layer0_ffn \
+        + (n_layer - 1) * 3 * d * twin_width + oe_table_params
+    return {
+        "total": total,
+        "active": active,
+        "dense_twin_total": dense_twin_total,
+        "router": router,
+        "attn": attn, "norms": norms, "embed": embed, "layer0_ffn": layer0_ffn,
+        "oe_table": oe_table_params,
+        "active_ffn_width": twin_width,
+    }
+
+
+def flame_active_ffn_width_from(d_e: int) -> int:
+    return (FLAME_K_ROUTED + FLAME_SHARED_UNITS) * d_e
+
+
+def flame_name(counts: dict) -> str:
+    """flame_{active}A_{total}T naming (never total-only)."""
+    def fmt(x):
+        if x >= 1e9:
+            return f"{x/1e9:.2f}b".replace(".00", "").replace("0b", "b")
+        return f"{x/1e6:.0f}m"
+    return f"flame_{fmt(counts['active'])}A_{fmt(counts['total'])}T"
+
+
+def format_flame_ledger(scale: str, counts: dict, dense_twin: bool) -> str:
+    arm = "dense-twin" if dense_twin else "moe"
+    lines = [
+        f"[flame] profile {scale} ({arm}) {flame_name(counts)}",
+        f"[flame] params: total {counts['total']:,} | active "
+        f"{counts['active']:,} | dense-twin-total {counts['dense_twin_total']:,}",
+        f"[flame] breakdown: attn {counts['attn']:,} | embed(untied) "
+        f"{counts['embed']:,} | layer0-FFN {counts['layer0_ffn']:,} | router "
+        f"{counts['router']:,} | OE table {counts['oe_table']:,}",
+        f"[flame] active-FFN width {counts['active_ffn_width']} "
+        f"(= (K{FLAME_K_ROUTED}+S{FLAME_SHARED_UNITS})*d_e); matched boundary "
+        f"is active-FFN-matched (router/dispatch overhead excluded)",
     ]
     return "\n".join(lines)
