@@ -32,7 +32,11 @@ RESULT_DIR="$OUT_DIR/${RUN_ID}_fixed"
 [[ ! -e "$RESULT_DIR" ]] || { echo "refusing existing run: $RESULT_DIR" >&2; exit 2; }
 mkdir -p "$RESULT_DIR"
 
-if [[ "$MODE" == "E3" ]]; then
+if [[ -n "${NGLAB_EPOCH_BATCHES:-}" ]]; then
+  # exact epoch length (needed by --save_epoch_checkpoints, which requires
+  # cfg.epoch_batches > 0); mutually exclusive with --train_max_tokens.
+  SCHED=(--epoch_batches "$NGLAB_EPOCH_BATCHES" --train_epochs "$EPOCHS")
+elif [[ "$MODE" == "E3" ]]; then
   SCHED=(--train_max_tokens 1000000000 --train_epochs "$EPOCHS")
 else
   SCHED=(--train_max_tokens 1000000000 --steps "$MODE")
