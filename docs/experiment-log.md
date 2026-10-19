@@ -5698,3 +5698,19 @@ W2 波 E3 全部落地（Δval 参照同 §105）：
 2. **exact LR 包络峰值 = 1×**：0.5× −0.038 / 1× −0.048 / 2× −0.040（E3 Δ），部署配方锁定 exact974k+adam+clip@1×；noinit@2× 在跑（E1 −0.071/E2 −0.055，与 1× 打平区间）。
 3. noinit seed 复制：s42 −0.045 / s43 −0.041 @E3，带内通过。
 4. **Step-2 MoE 线**：moe E3 尾段（step 18750，val 2.539，gap +0.124——MoE 自身在 E3 也有 forking）；moe_oe E2 中段（step 12410，val 2.544，gap +0.053，vs moe 同 step 区 val ~2.58 → OE-on-MoE E2 收益约 −0.03 量级，待边界读数）。
+
+### §108 Step-2 四格近成阵：OE-on-MoE 收益 E1/E2 保持 −0.04；noinit LR 峰值同样 1×（2026-10-20 09:30）
+
+**FLAME 2×2 家族（val，s42，1B×E3）**：
+
+| arm | E1 | E2 | E3 | 结构/配方收益 |
+|---|---|---|---|---|
+| dense（73mA twin） | 2.8951 | 2.7733 | 2.7117 | — |
+| dense_oe（k256k@1×） | 2.8453 | 2.7205 | 2.6725 | OE-on-dense：−0.050/−0.053/−0.039 |
+| moe（64R/top-6+2shared） | 2.6918 | 2.5756 | 2.5326 | MoE 结构：−0.203/−0.198/−0.180 |
+| moe_oe（k256k@1×） | 2.6543 | 2.5332 | 在跑 | OE-on-MoE：−0.038/−0.042/? |
+
+- **OE 收益在 MoE 上保持**：E1 −0.038、E2 −0.042（dense 上 −0.050/−0.053）——局部条件记忆与稀疏 expert 的收益**近似可加**，未见相互吃掉；E3 是 forking 是否上 MoE 的关键读数（moe E3 自身 gap −0.009 干净，dense 也只有 −0.037/+0.037 量级）。
+- moe E3 完成：val 2.5326，gap −0.009（E2 中段瞬时 gap 曾到 +0.124，末段收敛——MoE 的 forking 形态是 E3 中段冲高再回收，与 dense 单调累积不同）。
+- **noinit LR 探针**：L025noinit@2× E3 = −0.039（gap +0.019）vs @1× −0.045 → noinit 配方峰值同样在 1×，LR 包络结论跨配方一致。
+- 已铺 Step-2 配方臂：`v26fl_moe_oe_exact`（MoE+exact974k，db36，GPU1）与 `v26fl_dense_oe_exact`（dense+exact974k，GPU4）——把 §104 最优配方接进家族网格；exact974k@1× s43/s44（GPU6/360-2 GPU0）补齐部署臂 3 seed；x1m-noinit s43（360-2 GPU1）。
