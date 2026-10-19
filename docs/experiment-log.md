@@ -5478,3 +5478,25 @@ Note: nogram reference for M-scan = v26 s42/s43 (same frame); ophis v26 nogram s
 
 3-seed E1/E3 Δval: H2 -0.040/-0.022, -0.036/-0.023, -0.011/-0.008 (mean -0.029/-0.018, always negative); C1 -0.040/-0.017, -0.021/-0.012, -0.018/+0.089 (E3 unstable); S1 +0.04~+0.06 baseline + s44 EOS divergence (+3.955); C2/H1 dead.
 **Key meta-finding**: nogram E1 val across seeds: 2.870 / 2.853 / 2.851 — the reference frame itself moves ±0.02 per seed; per-arm seed-3 noise of the same order. All W1 deltas must be read with this band. M-scan second/third seeds launched: h2-m256k/m512k s43 (360-2 GPU0/1), s44 (360-1 GPU1/4); v26 nogram s42 on ophis GPU2 (local reference for the ophis M-scan column). c3-512k builder still on 360-2 CPU.
+
+### §97 M-scan 3-seed complete + LR x budget cross + C3@512k rematch: semantic routing comes back at 512k (2026-10-19 17:30)
+
+All Δval vs v26 nogram same host+seed (x360 = 360-1<->360-2 cross-host, same torch stack, ±0.01). DONE arms only — an interim audit this morning mistook mid-run probe rows for finals (probe and train_log val agree bitwise at the same step, verified at 20300/20343); all earlier "+0.03/+0.05 H2@1x E3" readings were mid-run artifacts.
+
+**M-scan H2@4x, E1/E3 Δval (s42/s43/s44)**:
+
+| M | E1 (3 seeds) | E3 (3 seeds) | E3 mean |
+|---|---|---|---|
+| 128k | -0.039/-0.039/-0.010 | -0.022/-0.023/-0.008 | -0.018 |
+| 256k | -0.039/-0.054/-0.041 | +0.078 EOS / -0.012 / -0.027 | -0.020 (excl. EOS) |
+| 512k | -0.051/-0.060/-0.037 | -0.030/-0.039/-0.016 | -0.028 |
+| 974k | -0.083/-0.057/-0.061 | -0.049/-0.021/-0.021 | -0.030 |
+| exact974k | -0.089/-0.073/— | +0.447 EOS / +0.070 / — | diverged |
+
+E1 benefit grows monotonically with budget (-0.03 -> -0.05 -> -0.08); E3 benefit saturates around -0.03 at 512k+ under 4x. **exact974k (zero-collision) is systematically E3-unstable at 4x** (s42 EOS +0.447, s43 +0.070) while H2@974k is 3/3 clean: collision pairs act as free gradient-averaging regularization for the unclipped RMSProp table optimizer — over-specialized one-context-per-row tables overshoot on replay. This is the H2 mechanism at the table-size level, complementing the 128k over-subscription story.
+
+**LR x budget cross (v26 frame, E3 Δval)**: H2@128k@1x: s42 -0.033, s43 -0.034, s44 +0.081 EOS. H2@512k@1x s42: **-0.040** (vs 4x -0.030). Combined with the v25 dict-frame dose response (f256@0.5x -0.037, k256k@1x -0.038/-0.036 best-in-frame; >=8x EOS-diverges; 128x suppresses), low table-LR (1x) beats 4x at every budget tested, at the price of occasional stochastic EOS onset (s44). EOS onset is stochastic across seeds (256k: s42 yes s43/s44 no; 128k@1x: s44 only), consistent with the §87 edge-of-stability anatomy, not a deterministic LR threshold.
+
+**C3@512k rematch (3 seeds, E1/E3 Δval)**: C3 -0.072/-0.033, -0.054/-0.042, -0.041/-0.023 (mean **-0.056/-0.033**) vs H2@512k -0.051/-0.030, -0.060/-0.039, -0.037/-0.016 (mean **-0.049/-0.028**). At 128k C3 lost E3 (-0.001 vs H2 -0.022); at 512k C3 wins both epochs on the mean. **Semantic (continuation-KL) routing comes back once the budget fits the context count** — the W1 verdict is budget-dependent, not routing-fundamental. W1.5 gate: if deployment targets 512k rows, C3 is the candidate routing; H2 remains the robust default under tight budgets.
+
+**Fleet status**: e1v s42 (E1-vector clustering, experiment A final arm) mid-run 360-1; H2@256k@1x s42/s43 + k256k@0.5x + nogram s43 on ophis (~1h left); interim: 256k@1x does NOT diverge at step 16.9k where 4x s42 had — LR-cause hypothesis for the 256k EOS holding so far.
