@@ -5622,3 +5622,11 @@ Step-2 anchor: v26fl·dense (73mA FLAME twin, no table) completed E3: val 2.7117
 **Infra 修复四连**（全部 commit + 双机同步）：① `--save_epoch_checkpoints` 末轮保存（原实现只在「下一 epoch 已开始」的步骤触发，E=1 恰好停在边界时一个 ckpt 都不存；已加训练结束兜底 + 完整性守卫，2-epoch/1-epoch 冒烟验证）；② launcher `NGLAB_EPOCH_BATCHES`（与 train_max_tokens 互斥的精确 epoch 长度入口）；③ layer-0 泛型表在 assign 下按 exact-R 建表（原按 clean_table 全宽建，每阶留 clean_table−R_n 死行；寻址/梯度不变，参数账本按 exact-R 报告；无 assign 旧路径逐位不变）；④ launcher `w2r` tag。教训：训练中的 launcher 脚本不能异地覆盖（bash 增量读文件 → EOF 语法错），同步代码须避开在跑 launcher。
 
 **在训舰队（01:55）**：360-2 GPU5 `v26w1_w2r_L025ac_tls1`（旗舰 L0+L2+L5 = 500k/300k/200k 总宽 ~96.5 万行，三层质心初始化，adam+clip@1×，E3）；GPU4 `v26w1_w2r_L0only5ac_tls1`（L0-only @500k 消融：旗舰减去上两层，隔离多层贡献）；GPU1 c3ac 尾段；ophis GPU4/5 exact974k 加深（tls1 s42 / tls2 s43）；GPU2/3 moe(E2 末)/moe_oe(E2)。
+
+### §103 C3@tls4×adam+clip 发散判决：EOS 的风险因子是路由相干性而非占用结构（2026-10-20 02:20）
+
+`v26w1_c3ac_tls4_p1b_s42_e3_fd`（C3 语义路由 @512k，adam+clip@4×）：E1 健康（6780 步 train 2.805/val 2.796，Δval −0.057，与 RMSProp 时代 C3 E1 均值 −0.056 一致），**step ~12760 骤裂**（10 步内 train 2.86→3.38，E3 终点 train 5.12/val 5.24，gap +0.129）。表 RMS 全程正常（0.05–0.13），非全表膨胀形态。
+
+**判决性对照**：PERM-ac@tls4（§101，同预算/同优化器/同 LR、占用结构逐行相同）全程干净。assign 负载审计：C3 与 PERM 的 top1 行流量占比（0.0021）、max/mean（931）**完全一致**（PERM 本身就是 C3 行号在同阶 count-bin 内的打乱）。因此发散差异不来自负载不均，而来自**共享同一行的 context 是否语义相干**：C3 行内 context 续接分布相似 → 共享行梯度方向相干 → 持续单向更新 → 单行走飞；PERM 行内随机 → 梯度互消 → 稳定。**这是 W1.5「碰撞=正则」机制在簇级的推广：相干路由本身就是 EOS 风险因子，adam+clip@4× 不足以压住相干路由。**
+
+部署含义：语义路由的表 LR 上限低于随机路由——C3@tls1（RMSProp 时代 3 seed 干净，E3 −0.033）vs C3@tls4（发散）。已铺 `v26w1_c3ac_tls1_p1b_s42_e3_fd`（360-2 GPU1）完成 adam+clip 口径下的 C3-vs-PERM 终判。当前候选部署臂排序（E3 Δval）：exact974k@2× −0.040 > PERM512k@4× −0.018；C3 待 tls1 读数。
