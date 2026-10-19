@@ -5604,3 +5604,21 @@ Step-2 anchor: v26fl·dense (73mA FLAME twin, no table) completed E3: val 2.7117
 3. 两臂 gap（−0.001 / +0.022）均远好于 128× RMSProp 时代同族臂，adam+clip 配方在 512k/974k 表上同样稳。
 
 **舰队快照**：360-2 GPU4 teacher（teachac E1+epoch ckpt，step 3290/6781）→ w2_dump(L0/2/5)→w2_cluster(500k/300k/200k) 链条在跑；GPU1 c3ac step 7000 E2；ophis GPU2 moe step 11640 E2、GPU3 moe_oe step 7090 已入 E2（val 2.642，gap +0.031）。
+
+### §102 W2 残差聚类管线全通；多层 OE 旗舰 + L0-only 消融开训（2026-10-20 01:55）
+
+**管线全链路跑通**（360-2）：teacher（`v26w1_nogram_teachac_tls1_p1b_s42_e1_fd`，E1 完成，final gap −0.050，epoch1_model.pt 已存）→ `w2_dump_residuals`（3500 batches × dev144 = 1 epoch，L0/L2/L5 三层，f≥256 选集覆盖率全层 ≈1.0，7 分钟）→ `w2_cluster_residuals`（流量加权两级 k-means，每层 ~20s）。
+
+**选集与分配**（与 exact974k 同一 974,333 contexts：n2 368,957 / n3 408,220 / n4 151,514 / n5 45,642）：
+
+| 层 | 预算 | R={n2,n3,n4,n5} | 负载熵 | max/mean | >4× 流量占比 |
+|---|---|---|---|---|---|
+| L0 | 500k | 177,202 / 206,787 / 75,828 / 22,005（计 481,822） | 9.1–11.4 | 350–831 | 0.31–0.36 |
+| L2 | 300k | 106,083 / 124,307 / 45,193 / 13,220（计 288,803） | 8.9–11.2 | 208–498 | 0.14–0.25 |
+| L5 | 200k | 72,705 / 82,589 / 30,252 / 8,809（计 194,355） | 8.5–10.9 | 139–341 | 0.11–0.23 |
+
+负载不均按 v2 §7.3 只测量不强制（单超高频 context 豁免），账本随 assign npz 的 meta_json 落盘。L0@1M 补算（L0-only 等宽对照用）在 GPU4 续跑（局部 kmeans 大组较慢，不阻塞舰队）。
+
+**Infra 修复四连**（全部 commit + 双机同步）：① `--save_epoch_checkpoints` 末轮保存（原实现只在「下一 epoch 已开始」的步骤触发，E=1 恰好停在边界时一个 ckpt 都不存；已加训练结束兜底 + 完整性守卫，2-epoch/1-epoch 冒烟验证）；② launcher `NGLAB_EPOCH_BATCHES`（与 train_max_tokens 互斥的精确 epoch 长度入口）；③ layer-0 泛型表在 assign 下按 exact-R 建表（原按 clean_table 全宽建，每阶留 clean_table−R_n 死行；寻址/梯度不变，参数账本按 exact-R 报告；无 assign 旧路径逐位不变）；④ launcher `w2r` tag。教训：训练中的 launcher 脚本不能异地覆盖（bash 增量读文件 → EOF 语法错），同步代码须避开在跑 launcher。
+
+**在训舰队（01:55）**：360-2 GPU5 `v26w1_w2r_L025ac_tls1`（旗舰 L0+L2+L5 = 500k/300k/200k 总宽 ~96.5 万行，三层质心初始化，adam+clip@1×，E3）；GPU4 `v26w1_w2r_L0only5ac_tls1`（L0-only @500k 消融：旗舰减去上两层，隔离多层贡献）；GPU1 c3ac 尾段；ophis GPU4/5 exact974k 加深（tls1 s42 / tls2 s43）；GPU2/3 moe(E2 末)/moe_oe(E2)。
