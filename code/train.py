@@ -2382,6 +2382,26 @@ def compute_shared_contexts(model: NanoGPT, train_probe, val_probe,
     return {"shared_total": len(shared), "per_f": out, "branch": branch}
 
 
+def table_init_from_npz(model, npz_path: str, log=print) -> None:
+    """Overwrite clean-table embeddings with externally supplied row content
+    (experiment B / e1v+o): npz must hold table_<n> arrays shaped
+    (R_n, n_embd) matching each order's physical row count.  Content is
+    treated as frozen teacher rows; pair with --freeze_table."""
+    z = np.load(npz_path)
+    for n in model.ngram_orders:
+        key = f"table_{n}"
+        if key not in z:
+            raise SystemExit(f"--table_init_npz: missing {key}")
+        arr = torch.from_numpy(np.ascontiguousarray(z[key])).to(torch.float32)
+        tbl = model.ngram_ves[str(n)]
+        if arr.shape != tbl.weight.shape:
+            raise SystemExit(f"--table_init_npz {key}: shape {tuple(arr.shape)} "
+                             f"!= table {tuple(tbl.weight.shape)}")
+        with torch.no_grad():
+            tbl.weight.copy_(arr.to(tbl.weight.device, tbl.weight.dtype))
+        log(f"[nglab] table_init_npz n={n}: loaded {tuple(arr.shape)} from {npz_path}")
+
+
 def count_init_clean_tables(model, npz_path: str, log=print) -> dict:
     """Overwrite clean single-table embeddings with deterministic count-based
     content (§80 golf-equivalent arm): each row becomes the count-weighted
@@ -2711,6 +2731,15 @@ def main():
                              "each hash bucket, from a freq_index npz of the TRAIN text; "
                              "§80 golf-equivalent arm). Pair with --freeze_table. "
                              "Standard input injection, K=1, single layer only")
+    parser.add_argument("--table_init_npz", default="",
+                        help="overwrite clean-table embeddings with external row content "
+                             "(npz with table_<n> arrays, (R_n, n_embd); experiment B "
+                             "teacher-row init). Pair with --freeze_table")
+    parser.add_argument("--ogd_wte_topk", type=int, default=0,
+                        help=">0: orthogonal-gradient-descent on wte - project wte's "
+                             "AdamW gradient off the top-K principal subspace of the "
+                             "(frozen) n-gram table rows before every optimizer step "
+                             "(experiment B: block backbone re-encoding of table content)")
     parser.add_argument("--freeze_table", action="store_true",
                         help="freeze n-gram tables and gates after initialization; optimizer state starts empty")
     parser.add_argument("--freeze_embeddings_only", action="store_true",
@@ -3089,6 +3118,10 @@ def main():
             raise SystemExit("--table_init_count is incompatible with hash_reseed "
                              "(count content is tied to the base hash families)")
         count_init_clean_tables(model, os.path.abspath(args.table_init_count))
+    if args.table_init_npz:
+        if not os.path.isfile(args.table_init_npz):
+            raise SystemExit(f"--table_init_npz not found: {args.table_init_npz}")
+        table_init_from_npz(model, os.path.abspath(args.table_init_npz))
     if model.moe_active:
         from moe import params_ledger, format_ledger
         oe_params = 0
@@ -3291,6 +3324,24 @@ def main():
                                table_betas=cfg.table_betas)
     if args.table_diag:
         optimizer.enable_table_diag()
+
+    ogd_U = None
+    if args.ogd_wte_topk > 0:
+        # experiment B: principal subspace of the (frozen) table rows; wte's
+        # gradient is projected off this subspace every step so the backbone
+        # cannot re-encode what the table already injects.
+        rows = []
+        for n in model.ngram_orders:
+            rows.append(model.ngram_ves[str(n)].weight.detach().to(torch.float32))
+            nb = getattr(model, "ngram_ves_b", None)
+            if isinstance(nb, nn.ModuleDict) and str(n) in nb:
+                rows.append(nb[str(n)].weight.detach().to(torch.float32))
+        V = torch.cat(rows, dim=0)
+        _, _, Vh = torch.pca_lowrank(V, q=args.ogd_wte_topk, center=True)
+        ogd_U = Vh.to(device)  # (n_embd, K), orthonormal columns
+        print(f"[nglab] ogd_wte_topk={args.ogd_wte_topk}: subspace from "
+              f"{V.shape[0]:,} table rows, |U|={tuple(ogd_U.shape)}")
+        del V, rows
 
     # logs
     train_log = open(os.path.join(cfg.out_dir, "train_log.jsonl"), "w")
@@ -3627,6 +3678,12 @@ def main():
             warmup_start_lr_mult=cfg.warmup_start_lr_mult,
             cosine_min_lr_mult=cfg.cosine_min_lr_mult,
         )
+        if ogd_U is not None:
+            wte_p = model.transformer.wte.weight
+            if wte_p.grad is not None:
+                g = wte_p.grad
+                g32 = g.float()
+                g.sub_(((g32 @ ogd_U) @ ogd_U.T).to(g.dtype))
         optimizer.step(lr_mult=lr_mult)
 
         # per-step table-update diagnostics (replay-shock fingerprint)
