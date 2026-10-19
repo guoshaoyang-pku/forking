@@ -3146,8 +3146,6 @@ def main():
               f"d_ff(layer0)={cfg.d_ff}, MoE d_e={cfg.moe_d_e} "
               f"64R/top-6 + 2 shared units"
               + (" [dense-twin P2]" if cfg.flame_dense_twin else ""))
-    if cfg.pos_type == "rope" and cfg.ngram_orders:
-        pass  # RoPE changes attention position encoding only; n-gram tables are unaffected
 
     if args.table_betas:
         parts = [float(x) for x in args.table_betas.replace(";", ",").split(",") if x.strip()]
@@ -4317,11 +4315,17 @@ def main():
         "final_fixed_gap": last_fixed_val_loss - last_fixed_train_loss,
         "n_params": n_params,
         # plan-9 MoE accounting (None on the dense path)
-        "moe": ({
+        "moe": (({
+            "flame": True,
+            "params": cfg_moe_ledger,
+            "final_aux_raw": moe_aux_last,
+            "final_z_raw": moe_z_last,
+        } if "arch" not in cfg_moe_ledger else {
             "arch": cfg_moe_ledger["arch"],
             "params": cfg_moe_ledger["params"],
             "final_aux_raw": moe_aux_last,
             "final_z_raw": moe_z_last,
+        }) | {
             "tokens_per_s": (cfg.total_batch_size * cfg.max_steps
                              / max(1e-9, time.time() - t0)),
             "peak_mem_gb": (torch.cuda.max_memory_allocated() / 2**30
