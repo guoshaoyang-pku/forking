@@ -5500,3 +5500,26 @@ E1 benefit grows monotonically with budget (-0.03 -> -0.05 -> -0.08); E3 benefit
 **C3@512k rematch (3 seeds, E1/E3 Δval)**: C3 -0.072/-0.033, -0.054/-0.042, -0.041/-0.023 (mean **-0.056/-0.033**) vs H2@512k -0.051/-0.030, -0.060/-0.039, -0.037/-0.016 (mean **-0.049/-0.028**). At 128k C3 lost E3 (-0.001 vs H2 -0.022); at 512k C3 wins both epochs on the mean. **Semantic (continuation-KL) routing comes back once the budget fits the context count** — the W1 verdict is budget-dependent, not routing-fundamental. W1.5 gate: if deployment targets 512k rows, C3 is the candidate routing; H2 remains the robust default under tight budgets.
 
 **Fleet status**: e1v s42 (E1-vector clustering, experiment A final arm) mid-run 360-1; H2@256k@1x s42/s43 + k256k@0.5x + nogram s43 on ophis (~1h left); interim: 256k@1x does NOT diverge at step 16.9k where 4x s42 had — LR-cause hypothesis for the 256k EOS holding so far.
+
+### §89 1×/0.5× column harvested — benefit plateau extends to 1×; recipe frontier finalized; Step 1 closed (2026-10-19 13:45)
+
+All 13 arms done (360-2 s42 @1×/0.5×, finished 23:10–23:37; 360-1 s43 @1× by parallel session, finished 23:34–23:36; adopted per §88). E1/E3 Δval (Δtrain), 2-seed where available:
+
+| arm | LR | E1 Δval | E3 Δval | E3 Δtrain | notes |
+|---|---|---|---|---|---|
+| d1m | 0.5× | −0.075 | −0.035 | −0.149 | s42 |
+| d1m | 1× | −0.093/−0.091 | **−0.011/−0.008** | −0.197/−0.185 | 2-seed, biggest benefit surviving E3 |
+| f256 | 0.5× | −0.049 | −0.037 | −0.079 | s42 |
+| f256 | 1× | −0.045/−0.056 | **−0.028/−0.029** | −0.089/−0.090 | 2-seed |
+| k256k | 1× | −0.048/−0.053 | **−0.038/−0.036** | −0.077/−0.077 | 2-seed, best stable E3 net |
+| k64k | 1× | +0.005/−0.009 | +0.002/−0.009 | — | 2-seed, no benefit at any LR |
+| hash1m | 1× | −0.055/−0.064 | +0.181 / **diverged** | −0.270/+0.381 | s42 stable-forks, s43 diverges (~step 12730, same EOS morphology) |
+
+**Conclusions (Step 1 closed).**
+1. **E1 benefit plateau is 0.5×–16×** (d1m: −0.075/−0.092/−0.100/−0.088/−0.092 at 0.5/1/4/8/16×; only 128× kills it). Remarkably LR-insensitive; below 0.5× it decays. So forking-vs-benefit is decoupled by the LR dial: benefit needs any sane LR, forking dies with LR.
+2. **Forking decreases monotonically with LR for every selection**; at 1× even top-1M (d1m) keeps a net E3 win (Δval −0.01) despite a residual gap ~0.18.
+3. **Recipe frontier** (objective = keep E1 benefit AND E3 Δval ≤ 0 AND gap ≈ 0): **k256k@1×** (E1 −0.05, E3 −0.037, gap ~0.04) and **f256@1×** (−0.05, −0.029, ~0.06) are the best all-around; **f256@4×** (E1 −0.067, E3 −0.022, gap 0.02–0.04) is the most conservative; **d1m@1×** gives the largest benefit (−0.09) that survives E3 (−0.01) but leaves gap 0.18 unmitigated. All selection arms stable at ≤4× (12 arm-seeds, zero divergence).
+4. **Divergence is EOS-lottery down to 1×** for the full hash table (hash1m@1: s42 stable, s43 diverged). Selected tables never diverged at ≤4×. Confirms selection is also a *stability* mechanism, not just a forking one.
+5. **Step-1 verdict**: 50M × 1B unique ClimbMix, matched active FLOPs (table = gather only; cost is params/VRAM): OE E1 benefit −0.05~−0.10 (2-seed, multiple configs) — real and stable; with per-order high-freq selection + table LR 1–4× the benefit survives E3 with gap ≤ 0.06. The benefit magnitude matches the external-baseline expectation (0.03–0.10, §88).
+
+**Next: Step 2** — family {Dense, Dense+OE, FLAME-MoE, FLAME-MoE+OE} on standard residual at Small (50M) scale, corpus = full-163 ClimbMix (1B pool, E=3), OE arm = k256k or f256 @ 1×–4×, n=2–5 joint. mHC on/off at an intermediate scale is an extension, not a gate.
