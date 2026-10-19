@@ -5522,4 +5522,25 @@ All 13 arms done (360-2 s42 @1×/0.5×, finished 23:10–23:37; 360-1 s43 @1× b
 4. **Divergence is EOS-lottery down to 1×** for the full hash table (hash1m@1: s42 stable, s43 diverged). Selected tables never diverged at ≤4×. Confirms selection is also a *stability* mechanism, not just a forking one.
 5. **Step-1 verdict**: 50M × 1B unique ClimbMix, matched active FLOPs (table = gather only; cost is params/VRAM): OE E1 benefit −0.05~−0.10 (2-seed, multiple configs) — real and stable; with per-order high-freq selection + table LR 1–4× the benefit survives E3 with gap ≤ 0.06. The benefit magnitude matches the external-baseline expectation (0.03–0.10, §88).
 
+### §98 EOS-divergence optimizer fix (adam+clip) lands; Step-2 family + decisive arms launched (2026-10-19 16:40)
+
+**Optimizer fix (user directive 2026-10-19, all new experiments).** Table optimizer switched from hand-written RMSProp(0,0.99) eps=1e-10 no-clip to **Adam(wd=0, betas 0.9/0.95, eps 1e-8) + global table-grad clip 1.0** — the Engram production recipe (arXiv 2601.07372 Table 5: backbone Muon, table Adam ×5, wd 0.0). Rationale (divergence-problem-brief-20261019 §2/§7/§8): dense Embedding grad decays v on unhit rows → single-hit displacement amplifies up to 10×lr_t on sparse rows (f≈256 row @tls4 ≈ 1.47 weight-units/hit); Adam momentum is a natural brake on sparse rows (steady-state step ~0.4–0.5×lr, opposite direction), and Adam/RMSProp scale-invariance makes clip a pure spike suppressor. Code: `MixedOptimizer` gains `table_grad_clip` (clip before table step); `--table_optimizer adamw` now defaults betas to (0.9,0.95); `--val_device_batch_size` pins val batch shape when train uses grad-accum microbatches (val口径 preserved); `summary.json` moe block handles the FLAME ledger shape (fixes KeyError:'arch' that killed both smoke summaries). 12/12+5/5 CPU tests green; md5-verified on ophis.
+
+**Low-value cleanup (user directive).** Killed+deleted: `v26fl_dense_oe_p1b_s42_e3_fd` (RMSProp OE arm, superseded by adamc), `v26fl_moe_oe` OOM残骸×2 + db24 version (11.4s/step → relaunched db36 at 5.5s/step). Nothing else was running anywhere: 360-1/360-2 ngram queues empty (360-1 GPUs 0-2 run the user's structance project, untouched); a100_t1/a100_perm empty (earlier keephash queue gone); w1 fleet complete.
+
+**W1 fleet tail.** `v26w1_c3_m512k_tls1_p1b_s44_e3_fd` completed step 20343: train 2.656 / val 2.650, **gap −0.006** (C3 semantic routing @512k, tls1, RMSProp era — mechanism-line result, stands as evidence).
+
+**Running fleet (ophis, all H200, seed 42).**
+
+| run_id | GPU | arm | protocol | step rate | ETA |
+|---|---|---|---|---|---|
+| v26fl_dense_p1b_s42_e3_fd | 0 | FLAME dense twin (no table) | 1B×E3 | 0.51 s/st | ~19:00 |
+| v26fl_dense_oe_p1b_s42_e3adamc_fd | 1 | dense+OE k256k **adam+clip@1×** | 1B×E3 | 0.57 s/st | ~19:30 |
+| v26fl_moe_p1b_s42_e3_fd | 2 | FLAME MoE 73mA/418mT (no table) | 1B×E3 | 4.7 s/st | ~27h |
+| v26fl_moe_oe_p1b_s42_e3adamc_fd_db36 | 3 | MoE+OE k256k **adam+clip@1×**, microbatch 36×2 (val pinned 72) | 1B×E3 | 5.5 s/st | ~31h |
+| v26fix_k256k_adamc_tls16_p1b_s42_e3_fd | 4 | **decisive**: k256k@16× + adam+clip (diverged 2/2 under RMSProp, §87) | 50M 1B×E3 | 0.39 s/st | ~19:00 |
+| v26fix_k256k_rclip_tls16_p1b_s42_e3_fd | 5 | **decisive control**: k256k@16× RMSProp + clip only | 50M 1B×E3 | 0.44 s/st | ~19:30 |
+
+Decisive read (tonight ~19:30): if adamc is E3-clean and keeps the E1 benefit (k256k@16× E1 Δval ≈ −0.09) → optimizer hypothesis confirmed, adam+clip is the deployment recipe and the W1.5 "collision-as-necessary-regularizer" lock is reopened (exact974k zero-collision may be deployable under adam+clip); rclip splits the contribution (clip-only sufficient vs Adam required). If either still diverges → infra hypothesis upgraded, add per-step max|Δrow|/min-v/hit-histogram instrumentation (brief §6).
+
 **Next: Step 2** — family {Dense, Dense+OE, FLAME-MoE, FLAME-MoE+OE} on standard residual at Small (50M) scale, corpus = full-163 ClimbMix (1B pool, E=3), OE arm = k256k or f256 @ 1×–4×, n=2–5 joint. mHC on/off at an intermediate scale is an extension, not a gate.

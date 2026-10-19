@@ -81,6 +81,7 @@ class Config:
     table_optimizer: str = "rmsprop"  # rmsprop | adamw | sgd
     table_lr_scale: float = 2.0       # multiplier on the n-gram table LR
     table_betas: tuple = (0.0, 0.99)  # (beta1, beta2) for adamw; beta1 = momentum for sgd
+    table_grad_clip: float = 0.0      # >0: global-norm clip on all n-gram table grads (EOS-divergence fix, Engram-style)
     table_mult: int = 64              # legacy multi-layer/two-hash path only
     bigram_clean_table: int = 0       # clean single-table rows R (0=off); SSOT: clean-table-rework.md
     trigram_clean_table: int = 0      # clean single-table rows R for trigram (0=off); same SSOT
@@ -113,6 +114,7 @@ class Config:
     val_interval_steps: int = 10
     val_steps: list = field(default_factory=list)  # exact steps to eval val (overrides interval if set)
     val_batches: int = 4
+    val_device_batch_size: int = 0  # 0 = follow device_batch_size; >0 pins val batch shape
     table_norm_interval_steps: int = 10
     warmup_steps: int = 100       # step 1..100: warmup_start_lr_mult -> 1.0x
     warmup_start_lr_mult: float = 0.25
@@ -1674,13 +1676,15 @@ class MixedOptimizer:
 
     def __init__(self, model: nn.Module, lr: float, ngram_betas, adam_betas,
                  weight_decay: float, table_optimizer: str = "rmsprop",
-                 table_lr_scale: float = 1.0, table_betas=None):
+                 table_lr_scale: float = 1.0, table_betas=None,
+                 table_grad_clip: float = 0.0):
         self.model = model
         self.lr = lr
         self.ngram_beta2 = ngram_betas[1]
         self.table_optimizer = table_optimizer
         self.table_lr_scale = table_lr_scale
         self.table_betas = tuple(table_betas) if table_betas is not None else tuple(ngram_betas)
+        self.table_grad_clip = float(table_grad_clip)
         self.adam_betas = adam_betas
         self.weight_decay = weight_decay
         self.adam_steps = {}
@@ -1857,6 +1861,15 @@ class MixedOptimizer:
         lr_t = self.lr * lr_mult
         table_lr_t = lr_t * self.table_lr_scale
         with torch.no_grad():
+            if self.table_grad_clip > 0:
+                grads = [p.grad for _, p in self.ngram_params
+                         if p.requires_grad and p.grad is not None]
+                if grads:
+                    total_norm = torch.norm(torch.stack([g.norm() for g in grads]))
+                    clip_coef = self.table_grad_clip / (total_norm + 1e-6)
+                    if clip_coef < 1:
+                        for g in grads:
+                            g.mul_(clip_coef)
             for name, p in self.adam_params:
                 if p.requires_grad:
                     self._adamw_step(name, p, lr_t)
@@ -2704,6 +2717,10 @@ def main():
                              "e.g. '1000' to measure gap only at the end; "
                              "overrides --val_interval when set")
     parser.add_argument("--val_batches", type=int, default=4)
+    parser.add_argument("--val_device_batch_size", type=int, default=0,
+                        help=">0: build fixed val batches at this batch size regardless "
+                             "of --device_batch_size (keeps val口径 identical when train "
+                             "uses grad accumulation microbatches)")
     parser.add_argument("--table_norm_interval", type=int, default=10)
     parser.add_argument("--table_diag", type=int, default=0,
                         help="1: log per-step table-update diagnostics to table_diag.jsonl "
@@ -2726,6 +2743,11 @@ def main():
                         help="multiplier on the n-gram table LR (default 2.0; the SSOT standard)")
     parser.add_argument("--table_betas", default=None,
                         help="beta1,beta2 for table (adamw: both; sgd: beta1=momentum); default 0.0,0.99")
+    parser.add_argument("--table_grad_clip", type=float, default=0.0,
+                        help=">0: global-norm clip over all n-gram table grads before the "
+                             "table optimizer step (EOS-divergence fix; Engram-style Adam+clip. "
+                             "Adam/RMSProp are scale-invariant in steady state, so this mainly "
+                             "suppresses transient spikes)")
     parser.add_argument("--table_mult", type=int, default=64,
                         help="[legacy only] multi-layer/two-hash table multiplier (default 64)")
     parser.add_argument("--bigram_clean_table", type=int, default=0,
@@ -3077,6 +3099,7 @@ def main():
         val_interval_steps=args.val_interval,
         val_steps=[int(x) for x in args.val_steps.split(",") if x.strip()],
         val_batches=args.val_batches,
+        val_device_batch_size=args.val_device_batch_size,
         table_norm_interval_steps=args.table_norm_interval,
         warmup_steps=args.warmup_steps,
         warmup_start_lr_mult=args.warmup_start_lr_mult,
@@ -3087,6 +3110,7 @@ def main():
         weight_decay=args.weight_decay,
         table_optimizer=args.table_optimizer,
         table_lr_scale=args.table_lr_scale,
+        table_grad_clip=args.table_grad_clip,
         table_mult=args.table_mult,
         bigram_clean_table=args.bigram_clean_table,
         trigram_clean_table=args.trigram_clean_table,
@@ -3152,6 +3176,8 @@ def main():
         assert len(parts) == 2 and all(0.0 <= b < 1.0 for b in parts), \
             "table_betas must be two values in [0, 1)"
         cfg.table_betas = tuple(parts)
+    elif cfg.table_optimizer == "adamw":
+        cfg.table_betas = (0.9, 0.95)  # Engram-style table Adam (EOS-divergence fix)
     else:
         cfg.table_betas = (0.0, 0.99)  # β₂=0.99 is the scaling default (plan §1)
     # X2: narrow table rows are a clean-table-only variable
@@ -3207,7 +3233,8 @@ def main():
               f"{train_ds._batches_per_epoch * cfg.device_batch_size * cfg.sequence_len:,} "
               f"tok/epoch -> steps={_ep_steps}")
     val_ds = TokenizedShardDataset(cfg.data_dir, cfg.val_shards, cfg.sequence_len,
-                                   cfg.device_batch_size, cfg.data_seed,
+                                   cfg.val_device_batch_size or cfg.device_batch_size,
+                                   cfg.data_seed,
                                    token_dtype=cfg.token_dtype)
     train_iter = train_ds.iter_batches(device, with_rows=cfg.row_index)
     val_iter = val_ds.iter_batches(device)
@@ -3531,7 +3558,8 @@ def main():
                                weight_decay=cfg.weight_decay,
                                table_optimizer=cfg.table_optimizer,
                                table_lr_scale=cfg.table_lr_scale,
-                               table_betas=cfg.table_betas)
+                               table_betas=cfg.table_betas,
+                               table_grad_clip=cfg.table_grad_clip)
     if args.table_diag:
         optimizer.enable_table_diag()
 
