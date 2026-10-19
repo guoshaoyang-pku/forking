@@ -35,6 +35,9 @@ case "$TAG" in
   *) echo "tag: nogram|h1|h2|s1|c1|c2|c3" >&2; exit 2 ;;
 esac
 
+SAVE_ARGS=()
+[[ "${NGLAB_SAVE_FINAL:-0}" == "1" ]] && SAVE_ARGS=(--save_final_model)
+
 echo "[v26] run=$RUN_ID gpu=$GPU tag=$TAG assign=$ASSIGN tls=$TLS heads=$HEADS E=$EPOCHS"
 CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --run_id "${RUN_ID}_fixed" --out_dir "$OUT_DIR" --data_dir "$DATA_DIR" \
@@ -48,6 +51,7 @@ CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --val_interval 10 --val_batches 4 --table_norm_interval 50 \
   --fixed_train_probe 4 --train_probe_mode uniform --probe_eval_interval 100 \
   --freq_eval_interval 1000000 --exact_freq_eval_interval 1000000 --diag_interval 1000000 \
+  ${SAVE_ARGS[@]+"${SAVE_ARGS[@]}"} \
   > "$RESULT_DIR/train.log" 2>&1
 test -s "$RESULT_DIR/summary.json"
 echo "[v26] complete: $RESULT_DIR"
