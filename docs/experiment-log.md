@@ -5588,3 +5588,19 @@ Step-2 anchor: v26fl·dense (73mA FLAME twin, no table) completed E3: val 2.7117
 | v26fl·dense_oe k256k@1× | 2.8453 (**−0.050**) | 2.7205 (**−0.053**) | 2.6725 (**−0.039**) | −0.021 |
 
 50M+OE 在 Step-2 家族口径下 E1–E3 全程净收益 −0.04~−0.05 且 gap 比基线更小——adam+clip@1× 配方在 FLAME twin 上同样成立。等 moe/moe_oe 完成后四格齐读。
+
+### §101 PERM@512k 与 exact974k 判决臂收割：exact974k×adam+clip 成 W1 家族最强臂（2026-10-20 00:35）
+
+两判决臂（ophis GPU4/5，adam+clip 配方，n=2-5 联合，1B×E3，f≥256，s42）完成。Δval 对照 nogram s42（E1/E2/E3 = 2.8527/2.7397/2.6930）：
+
+| arm | E1 Δ | E2 Δ | E3 Δ | final gap | 状态 |
+|---|---|---|---|---|---|
+| v26w1_permac_tls4（PERM@512k，同阶 bin 内打乱） | −0.049 | −0.039 | −0.018 | −0.001 | clean 20343 |
+| v26w1_exactac_tls2（exact974k 零碰撞） | **−0.067** | **−0.059** | **−0.040** | +0.022 | clean 20343 |
+
+**判读**：
+1. **exact974k × adam+clip@2× 是 W1 家族全场最强**（E1/E2/E3 三项均为已测臂最大收益），且全程干净。§96 的「exact974k E3 不稳」（RMSProp@4× 下 s42 EOS +0.447/s43 +0.070）在修复配方下不复现——**W1.5「碰撞=必要正则」锁定被完全推翻**：碰撞对 RMSProp 无 clip 是免费的梯度平均正则，对 adam+clip 不再需要；零碰撞的表容量优势（974k 行全用满）转为纯收益。
+2. PERM@512k（打乱占用结构、破坏语义→行对齐）E1 −0.049 仍有收益，说明 C3@512k 的收益大头来自「高频 context 获得独立行」本身而非语义聚类；但 PERM 的 E3 衰减（−0.018）与同预算 C3（RMSProp 时代 −0.033）相比待同优化器对照——**c3ac@tls4（360-2 GPU1，已入 E2，gap −0.104）完成后给出语义 vs 占位的最终判决**。
+3. 两臂 gap（−0.001 / +0.022）均远好于 128× RMSProp 时代同族臂，adam+clip 配方在 512k/974k 表上同样稳。
+
+**舰队快照**：360-2 GPU4 teacher（teachac E1+epoch ckpt，step 3290/6781）→ w2_dump(L0/2/5)→w2_cluster(500k/300k/200k) 链条在跑；GPU1 c3ac step 7000 E2；ophis GPU2 moe step 11640 E2、GPU3 moe_oe step 7090 已入 E2（val 2.642，gap +0.031）。
