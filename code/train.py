@@ -4327,6 +4327,22 @@ def main():
             torch.save(raw_model.state_dict(), path)
             print(f"[nglab] saved epoch checkpoint {path}")
 
+    # Final weights snapshot at training end. The in-loop save above only
+    # fires on the first step of a *subsequent* epoch (the generator resets
+    # _batch_in_epoch when it rolls over), so a run ending exactly on an
+    # epoch boundary (e.g. E=1 teacher) would otherwise save nothing.
+    # Skipped when the last step was itself the first of a new epoch
+    # (_batch_in_epoch == 0), which the in-loop save already covered, and
+    # when the final epoch is incomplete (smoke/partial runs).
+    if (args.save_epoch_checkpoints and cfg.epoch_batches > 0
+            and train_ds._batch_in_epoch > 0
+            and train_ds._batch_in_epoch + 1 >= cfg.epoch_batches):
+        raw_model = getattr(model, "_orig_mod", model)
+        epoch_no = train_ds._epoch + 1
+        path = os.path.join(cfg.out_dir, f"epoch{epoch_no}_model.pt")
+        torch.save(raw_model.state_dict(), path)
+        print(f"[nglab] saved final epoch checkpoint {path}")
+
     # flush any diagnostics still queued in the background worker
     if diag_pool is not None:
         diag_pool.close_and_drain(on_diag_rows, on_logit_rows=on_logit_rows)
