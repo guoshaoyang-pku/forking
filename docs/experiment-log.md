@@ -5558,3 +5558,33 @@ The arm that diverged 2/2 seeds under RMSProp-no-clip (k256k@tls16, s42 ~17100 /
 Read-out: ① **optimizer hypothesis confirmed** — identical data/order/LR/selection, only optimizer+clip changed; divergence gone on the exact failure arm. ② **clip is the key ingredient** (rclip alone suffices); Adam adds a small extra E1 benefit and the smaller final gap. ③ The fixed @16× arms even beat the pre-divergence RMSProp trajectory at E2 (−0.042 vs −0.037). ④ @16×-adamc E3 net (−0.020) still trails @1× (−0.037, §89), so the deployment recipe is **adam+clip with table LR 1–4×**; the high-aggression 8–16× regime is now safe but not better at E3. ⑤ Consequence: the W1.5 "collision-as-necessary-regularizer" lock is **reopened** — exact974k zero-collision routing becomes testable under the fixed optimizer.
 
 Step-2 anchor: v26fl·dense (73mA FLAME twin, no table) completed E3: val 2.7117, gap −0.037 — the family baseline for Dense+OE/MoE/MoE+OE comparisons. dense_oe at step 14710 (E3, ETA ~19:30); moe step 3980 (2.95 s/st, ETA ~13h); moe_oe step 1590 (5.1 s/st, ETA ~26h).
+
+### §100 W2 残差聚类多层 OE 线启动；v26fl dense_oe 首个 OE 格子落数（2026-10-19 23:55）
+
+**用户拍板（2026-10-19 22:14）**：放弃 (a)「先训超大表再聚合」（欠训练不一致），主线改 (b)：**以部分层的 residual 为聚类对象 → 初始化+冻结路由 → 多层 OE**，负载均衡只测量/软约束。标准 setting = 50M 模型 / 1B unique / 总表宽 1M，沿此做 scaling。
+
+**已实现（commit 8d6381f，全测试绿，ophis/360-2 md5 同步）**：
+- `train.py` 多层注入：`--ngram_inject_layers 0,2,5`（0=input，l≥1=第 l-1 块输出后）+ `--ngram_layer_assign`（每层独立 assignment，exact-R 建表）+ `--ngram_layer_init`（质心初始化，backbone-informed，报告须披露）。
+- `code/tools/w2_dump_residuals.py`：nogram teacher 单遍前向，在候选注入层对每个 context（f≥256 选集，与训练逐位同 key 打包）累积 mean residual（sum/count，fp32，按层落盘）。
+- `code/tools/w2_cluster_residuals.py`：流量加权两级 k-means（COARSE_K=256 粗分→组内局部 kmeans，组间预算按组流量最大余数分配，不构造 N×R 矩阵）→ 该层 assignment + 质心 init npz；负载均衡账本（L_j、负载熵、max/mean、>4×占比）随 meta 落盘。
+- `w1_make_perm.py`：同阶 log2-count bin 内打乱 rows 的 PERM 对照生成器；`w1_make_exact.py`：identity（零碰撞）生成器。
+- w1 launcher：adam+clip 为默认（NGLAB_TABLE_OPT=rmsprop|rclip 复现旧口径；run_id 自动加 ac/rc 后缀）、smoke 步数模式、NGLAB_SAVE_EPOCH、NGLAB_EXTRA_ARGS 透传。
+- 冒烟：ophis GPU6 多层（L0+L2，dummy 聚类）40 步全链路 PASS（建表/加载/init/训练/summary）；期间修 `table_init_from_npz` 的 ngram_orders→ngram_extra_orders bug。
+
+**在训舰队（2026-10-19 23:55 快照）**：
+- ophis GPU4 `v26w1_permac_tls4_p1b_s42_e3_fd`（PERM@512k 语义判决，adam+clip@4×）：step 17030，~1h 完。
+- ophis GPU5 `v26w1_exactac_tls2_p1b_s42_e3_fd`（exact974k 零碰撞 × adam+clip 复测）：step 17060，~1h 完。
+- ophis GPU2/3 `v26fl_moe`（step 11010, E2）/ `v26fl_moe_oe`（step 6630, E1 末）：续跑。
+- 360-2 GPU0 `v26w1_nogramac_tls1_p1b_s42_e1_fd`（nogram teacher，E1 + epoch ckpt）：step 5340，~1h 完 → 完成后同卡跑 w2_dump（L0/L2/L5）→ w2_cluster → 铺 W2 舰队。
+- 360-2 GPU1 `v26w1_c3ac_tls4_p1b_s42_e3_fd`（C3@512k × adam+clip@4×，PERM 的同优化器对照）：在训。
+- 360-2 GPU4/5/7：预留 W2 舰队（w2resid L0+L2+L5 每层 333k（总 1M）adam+clip@1× E3 / L0-only 1M / 单层消融）。
+- 注意：360-2 ssh 断开会杀 nohup 后台任务（linger 关、atd 停、tmux 同死）；前台 ssh 或持久会话有效——后续 360-2 启动一律用持久会话或前台。
+
+**v26fl dense_oe（dense twin + k256k OE，adam+clip@1×）完成**（对照 dense 基线 val E1/E2/E3 2.8951/2.7733/2.7117）：
+
+| arm (s42) | E1 val (Δ) | E2 val (Δ) | E3 val (Δ) | final gap |
+|---|---|---|---|---|
+| v26fl·dense（无表） | 2.8951 | 2.7733 | 2.7117 | −0.037 |
+| v26fl·dense_oe k256k@1× | 2.8453 (**−0.050**) | 2.7205 (**−0.053**) | 2.6725 (**−0.039**) | −0.021 |
+
+50M+OE 在 Step-2 家族口径下 E1–E3 全程净收益 −0.04~−0.05 且 gap 比基线更小——adam+clip@1× 配方在 FLAME twin 上同样成立。等 moe/moe_oe 完成后四格齐读。
