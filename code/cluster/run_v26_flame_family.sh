@@ -34,9 +34,18 @@ case "$ARM" in
 esac
 
 if [[ "$OE" == 1 ]]; then
-  NG=(--enable_unigram 0 --ngram_orders 2,3,4,5 --ngram_clean_table 1048576
-      --ngram_dict_topk 1048576 --freq_index "$FREQ_INDEX"
-      --ngram_dict_per_order "2:k=262144,3:k=262144,4:k=65536,5:k=16384")
+  if [[ -n "${NGLAB_OE_ASSIGN:-}" ]]; then
+    # assign-driven OE (e.g. exact974k zero-collision / w2resid routing):
+    # exact-R table sizing via train.py cfg._assign_R0; heads=1.
+    NG=(--enable_unigram 0 --ngram_orders 2,3,4,5 --ngram_clean_table 1048576
+        --ngram_assign_file "$NGLAB_OE_ASSIGN" --freq_index "$FREQ_INDEX")
+    RUN_ID_SUFFIX="${NGLAB_OE_SUFFIX:-assign}"
+  else
+    NG=(--enable_unigram 0 --ngram_orders 2,3,4,5 --ngram_clean_table 1048576
+        --ngram_dict_topk 1048576 --freq_index "$FREQ_INDEX"
+        --ngram_dict_per_order "2:k=262144,3:k=262144,4:k=65536,5:k=16384")
+    RUN_ID_SUFFIX="adamc"
+  fi
   # EOS-divergence fix (user 2026-10-19, divergence-problem-brief §8): table
   # optimizer = Adam(wd=0, betas 0.9/0.95, eps 1e-8) + global grad clip 1.0,
   # replacing hand-written RMSProp(0,0.99) whose dense-grad v-decay amplifies
@@ -55,7 +64,7 @@ else
   SCHED=(--train_max_tokens 1000000000 --steps "$MODE")
   RUN_ID="v26fl_${ARM}_p1b_s${SEED}_smoke${MODE}_fd"
 fi
-[[ "$OE" == 1 ]] && RUN_ID="${RUN_ID/e3_fd/e3adamc_fd}"
+[[ "$OE" == 1 ]] && RUN_ID="${RUN_ID/e3_fd/e3${RUN_ID_SUFFIX}_fd}"
 [[ "$DBATCH" == 72 ]] || RUN_ID="${RUN_ID}_db${DBATCH}"
 BATCH=(--device_batch_size "$DBATCH" --total_batch_size 147456
        --val_device_batch_size 72)
