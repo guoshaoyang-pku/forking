@@ -95,6 +95,9 @@ class Config:
     ngram_keep_rows: str = "dict"     # with ngram_dict_topk: dict = unique rows | hash = hash rows under the same top-K membership (coverage control)
     ngram_dict_per_order: str = ""    # v2.5: per-order selection, e.g. "2:k=262144,4:f=64" (k = top-K cap, f = min train count); unlisted orders use ngram_dict_topk
     ngram_assign_file: str = ""       # v26: explicit context->row assignment npz (keys_<n>, rows_<n> [(2,K) if heads=2], R_<n>); replaces dict_topk
+    ngram_inject_layers: str = "0"    # W2 multi-layer OE: comma list, 0 = input, l>=1 = after block l-1 output
+    ngram_layer_assign: str = ""      # "2:path,5:path" per-layer assignment npz for layers >0
+    ngram_layer_init: str = ""        # "2:path,5:path" per-layer centroid init npz (table_<n>)
     ngram_heads: int = 1              # v26: 2 = two half-width tables per order (matched-budget multi-hash / H2)
     intervention: str = "none"        # none | freeze_table | freeze_backbone | freeze_both | hash_reseed | mask_low_freq | mask_high_freq | random_context_loss_mask
     intervention_epoch: int = 1       # fire when 0-indexed epoch reaches this value (1 = start of epoch 2)
@@ -756,6 +759,29 @@ class NanoGPT(nn.Module):
         self.ngram_dict_keys: dict = {}
         self.ngram_assign_rows: dict = {}   # v26: order -> int64 tensor (K,) or (2,K)
         self.ngram_assign_R: dict = {}      # v26: order -> physical rows R_n
+        # W2 multi-layer OE: per-layer (l>=1) table sets with own assignments.
+        # Layer tables are full-width single-head and built at the exact R_n
+        # read from that layer's assignment npz (cfg._layer_R, set in main).
+        self.inject_layers_L = tuple(sorted(
+            int(x) for x in config.ngram_inject_layers.split(",")
+            if x.strip() and int(x) > 0))
+        self.ngram_ves_L = nn.ModuleDict()
+        self.ngram_assign_rows_L: dict = {}
+        self.ngram_assign_R_L: dict = {}
+        self.ngram_dict_keys_L: dict = {}
+        for li in self.inject_layers_L:
+            layer_R = getattr(config, "_layer_R", {}).get(li)
+            if not layer_R:
+                raise ValueError(f"multi-layer OE layer {li}: missing per-order R "
+                                 "(cfg._layer_R); pass --ngram_layer_assign")
+            self.ngram_ves_L[str(li)] = nn.ModuleDict({
+                str(n): nn.Embedding(layer_R[n], config.n_embd,
+                                     _weight=torch.empty(layer_R[n], config.n_embd))
+                for n in self.ngram_extra_orders
+            })
+            self.ngram_assign_rows_L[li] = {}
+            self.ngram_assign_R_L[li] = {}
+            self.ngram_dict_keys_L[li] = {}
         self._freq_mask_index = None
         self._freq_mask_mode = "none"
         self._freq_mask_threshold = 0
@@ -1248,7 +1274,7 @@ class NanoGPT(nn.Module):
             log(f"[nglab] dict n={n}: {keys.size:,} distinct -> kept {dkeys.size:,} "
                 f"(k={k_n}, f>={f_n}, min kept count {min_kept}), position coverage {coverage:.4f}")
 
-    def load_ngram_assignment(self, path: str, log=print):
+    def load_ngram_assignment(self, path: str, log=print, layer: int = 0):
         """v26 explicit context->row assignment (teacher-free algorithm search).
 
         npz format per order n in ngram_extra_orders:
@@ -1257,11 +1283,16 @@ class NanoGPT(nn.Module):
           R_<n>     int64 scalar physical row count (rows < R <= ngram_clean_table)
           counts_<n> (optional) int64 train counts for coverage logging
         Collisions (two keys -> same row) are the routing algorithm's choice.
+        layer=0 is the input-injection set; layer>0 loads into the W2
+        multi-layer dicts (single-head only, R unchecked vs clean_table since
+        layer tables are built at exact R).
         """
         z = np.load(path)
-        heads = self.config.ngram_heads
+        heads = self.config.ngram_heads if layer == 0 else 1
         device = next(self.parameters()).device
-        self.ngram_assign_stats = {}
+        stats = getattr(self, "ngram_assign_stats", None)
+        if layer == 0 or stats is None:
+            self.ngram_assign_stats = {}
         for n in self.ngram_extra_orders:
             keys = np.ascontiguousarray(z[f"keys_{n}"], dtype=np.int64)
             rows = np.asarray(z[f"rows_{n}"], dtype=np.int64)
@@ -1274,13 +1305,18 @@ class NanoGPT(nn.Module):
                     raise SystemExit(f"assign n={n}: rows shape {rows.shape} != ({keys.size},)")
             if keys.size and not np.all(np.diff(keys) > 0):
                 raise SystemExit(f"assign n={n}: keys not strictly increasing")
-            if R > self.config.ngram_clean_table:
+            if layer == 0 and R > self.config.ngram_clean_table:
                 raise SystemExit(f"assign n={n}: R={R} exceeds --ngram_clean_table")
             if rows.size and (rows.min() < 0 or rows.max() >= R):
                 raise SystemExit(f"assign n={n}: rows out of [0, {R})")
-            self.ngram_dict_keys[n] = torch.from_numpy(keys).to(device)
-            self.ngram_assign_rows[n] = torch.from_numpy(rows).to(device)
-            self.ngram_assign_R[n] = R
+            if layer == 0:
+                self.ngram_dict_keys[n] = torch.from_numpy(keys).to(device)
+                self.ngram_assign_rows[n] = torch.from_numpy(rows).to(device)
+                self.ngram_assign_R[n] = R
+            else:
+                self.ngram_dict_keys_L[layer][n] = torch.from_numpy(keys).to(device)
+                self.ngram_assign_rows_L[layer][n] = torch.from_numpy(rows).to(device)
+                self.ngram_assign_R_L[layer][n] = R
             if heads == 2:
                 used = int(np.unique(rows[0]).size + np.unique(rows[1]).size)
             else:
@@ -1288,27 +1324,43 @@ class NanoGPT(nn.Module):
             cnt = z[f"counts_{n}"] if f"counts_{n}" in z else None
             cov = float(cnt.sum()) / float(z["counts_total"]) \
                 if cnt is not None and "counts_total" in z else float("nan")
-            self.ngram_assign_stats[n] = dict(K=int(keys.size), R=R, rows_used=used,
-                                              collisions=int(keys.size * heads - used),
-                                              coverage=cov)
-            log(f"[nglab] assign n={n}: {keys.size:,} keys -> {used:,}/{R:,} rows "
+            self.ngram_assign_stats[n if layer == 0 else f"L{layer}_n{n}"] = dict(
+                K=int(keys.size), R=R, rows_used=used,
+                collisions=int(keys.size * heads - used), coverage=cov)
+            log(f"[nglab] assign L{layer} n={n}: {keys.size:,} keys -> {used:,}/{R:,} rows "
                 f"(heads={heads}, collisions {keys.size * heads - used:,}, coverage {cov:.4f})")
-        log(f"[nglab] assignment loaded from {path} "
+        log(f"[nglab] assignment loaded from {path} (layer {layer}) "
             f"(meta: {str(z['meta_json'])[:200] if 'meta_json' in z else 'n/a'})")
 
-    def _ngram_assign_lookup(self, n, idx):
+    def _ngram_assign_lookup(self, n, idx, layer: int = 0):
         """(rows, valid) with explicit assignment: rows = assign_rows[..., pos]."""
         keys = self._ngram_context_keys_torch(idx, n)
-        table = self.ngram_dict_keys[n]
+        if layer == 0:
+            table = self.ngram_dict_keys[n]
+            ar = self.ngram_assign_rows[n]
+        else:
+            table = self.ngram_dict_keys_L[layer][n]
+            ar = self.ngram_assign_rows_L[layer][n]
         pos = torch.searchsorted(table, keys.reshape(-1))
         pos_c = pos.clamp(max=table.numel() - 1)
         valid = table[pos_c] == keys.reshape(-1)
-        ar = self.ngram_assign_rows[n]
         if ar.dim() == 2:  # heads=2: (2, K) -> (2, B*T)
             rows = ar[:, pos_c].view(2, *keys.shape)
         else:
             rows = ar[pos_c].view_as(keys)
         return rows, valid.view_as(keys)
+
+    def _compute_layer_ngram_residual(self, idx, layer: int):
+        """W2 multi-layer OE: full-width single-head table residual for layer>0
+        (added after block layer-1's output). Zero for unselected contexts."""
+        residual = None
+        for n in self.ngram_extra_orders:
+            rows, valid = self._ngram_assign_lookup(n, idx, layer=layer)
+            contrib = self.ngram_ves_L[str(layer)][str(n)](rows)
+            if residual is None:
+                residual = torch.zeros_like(contrib)
+            residual[valid] += contrib[valid]
+        return residual
 
     def _check_pre_rows_supported(self):
         """Precomputed rows are only valid for the clean single-table mainline.
@@ -1501,6 +1553,8 @@ class NanoGPT(nn.Module):
                     if tmask is not None:
                         tgve = tgve.masked_fill(tmask.unsqueeze(-1), 0)
             x = block(x, ve=ve, bigram_ve=bgve, trigram_ve=tgve)
+            if (i + 1) in self.inject_layers_L:
+                x = x + self._compute_layer_ngram_residual(idx, i + 1)
         x = self.transformer.ln_f(x)
         return x, ngram_residual
 
@@ -2558,24 +2612,28 @@ def compute_shared_contexts(model: NanoGPT, train_probe, val_probe,
     return {"shared_total": len(shared), "per_f": out, "branch": branch}
 
 
-def table_init_from_npz(model, npz_path: str, log=print) -> None:
+def table_init_from_npz(model, npz_path: str, log=print, layer: int = 0) -> None:
     """Overwrite clean-table embeddings with externally supplied row content
     (experiment B / e1v+o): npz must hold table_<n> arrays shaped
     (R_n, n_embd) matching each order's physical row count.  Content is
-    treated as frozen teacher rows; pair with --freeze_table."""
+    treated as frozen teacher rows; pair with --freeze_table.
+    layer>0 targets the W2 multi-layer table set for that injection layer."""
     z = np.load(npz_path)
-    for n in model.ngram_orders:
+    for n in model.ngram_extra_orders:
         key = f"table_{n}"
         if key not in z:
             raise SystemExit(f"--table_init_npz: missing {key}")
         arr = torch.from_numpy(np.ascontiguousarray(z[key])).to(torch.float32)
-        tbl = model.ngram_ves[str(n)]
+        if layer == 0:
+            tbl = model.ngram_ves[str(n)]
+        else:
+            tbl = model.ngram_ves_L[str(layer)][str(n)]
         if arr.shape != tbl.weight.shape:
             raise SystemExit(f"--table_init_npz {key}: shape {tuple(arr.shape)} "
                              f"!= table {tuple(tbl.weight.shape)}")
         with torch.no_grad():
             tbl.weight.copy_(arr.to(tbl.weight.device, tbl.weight.dtype))
-        log(f"[nglab] table_init_npz n={n}: loaded {tuple(arr.shape)} from {npz_path}")
+        log(f"[nglab] table_init_npz L{layer} n={n}: loaded {tuple(arr.shape)} from {npz_path}")
 
 
 def count_init_clean_tables(model, npz_path: str, log=print) -> dict:
@@ -2826,6 +2884,15 @@ def main():
                              "rows_<n> int32 [(2,K) with --ngram_heads 2], R_<n> int64; optional "
                              "counts_<n>). Replaces --ngram_dict_topk; collisions are the routing "
                              "algorithm's choice")
+    parser.add_argument("--ngram_inject_layers", default="0",
+                        help="W2 multi-layer OE: comma list of injection layers; 0 = input, "
+                             "l>=1 = after block l-1 output. Layers >0 need --ngram_layer_assign")
+    parser.add_argument("--ngram_layer_assign", default="",
+                        help="'2:path,5:path': per-layer assignment npz for each inject layer >0 "
+                             "(single-head full-width tables built at that file's R_n)")
+    parser.add_argument("--ngram_layer_init", default="",
+                        help="'2:path,5:path': per-layer centroid init npz (table_<n>) for each "
+                             "inject layer >0; backbone-informed init, disclose in reports")
     parser.add_argument("--ngram_heads", type=int, default=1, choices=[1, 2],
                         help="with --ngram_assign_file: 2 = two half-width tables per order, "
                              "same total params and active width (H2 matched-budget multi-hash)")
@@ -3060,6 +3127,38 @@ def main():
             parser.error("--ngram_assign_file is incompatible with --row_index")
         if args.ngram_clean_table <= 0:
             parser.error("--ngram_assign_file requires --ngram_clean_table >= max R_n")
+    inject_layers = tuple(sorted({int(x) for x in args.ngram_inject_layers.split(",") if x.strip()}))
+    if inject_layers != (0,):
+        if not ngram_orders:
+            parser.error("--ngram_inject_layers requires --ngram_orders")
+        if not args.ngram_assign_file:
+            parser.error("--ngram_inject_layers requires the layer-0 --ngram_assign_file")
+        layer_assign_files = {}
+        for part in args.ngram_layer_assign.split(","):
+            part = part.strip()
+            if part:
+                li_s, path = part.split(":", 1)
+                layer_assign_files[int(li_s)] = path
+        for li in inject_layers:
+            if li == 0:
+                continue
+            if li not in layer_assign_files:
+                parser.error(f"--ngram_layer_assign missing layer {li}")
+            if not os.path.isfile(layer_assign_files[li]):
+                parser.error(f"--ngram_layer_assign not found: {layer_assign_files[li]}")
+        args.ngram_layer_assign_map = layer_assign_files
+        layer_init_files = {}
+        for part in args.ngram_layer_init.split(","):
+            part = part.strip()
+            if part:
+                li_s, path = part.split(":", 1)
+                layer_init_files[int(li_s)] = path
+        for li, p in layer_init_files.items():
+            if li not in layer_assign_files:
+                parser.error(f"--ngram_layer_init layer {li} has no --ngram_layer_assign entry")
+            if not os.path.isfile(p):
+                parser.error(f"--ngram_layer_init not found: {p}")
+        args.ngram_layer_init_map = layer_init_files
     if ngram_orders:
         if min(ngram_orders) < 2 or max(ngram_orders) > 16:
             parser.error("--ngram_orders must lie in [2, 16]")
@@ -3125,6 +3224,7 @@ def main():
         ngram_dict_per_order=args.ngram_dict_per_order if args.ngram_dict_topk > 0 else "",
         ngram_assign_file=args.ngram_assign_file if extra_orders else "",
         ngram_heads=args.ngram_heads if args.ngram_assign_file else 1,
+        ngram_inject_layers=args.ngram_inject_layers if extra_orders else "0",
         intervention=args.intervention,
         intervention_epoch=args.intervention_epoch,
         intervention_epochs=tuple(
@@ -3303,12 +3403,23 @@ def main():
           f"val_chunks={val_ds.total_chunks()}")
 
     # model
+    if getattr(args, "ngram_layer_assign_map", None):
+        # W2: pre-read each injection layer's per-order R so tables are built
+        # at the exact physical row counts of that layer's assignment.
+        cfg._layer_R = {}
+        for li, p in args.ngram_layer_assign_map.items():
+            zz = np.load(p)
+            cfg._layer_R[li] = {n: int(zz[f"R_{n}"]) for n in extra_orders}
+        print(f"[nglab] multi-layer OE layers={sorted(cfg._layer_R)} "
+              f"R={cfg._layer_R}")
     model = NanoGPT(cfg).to(device)
     model.init_weights()
     if cfg.ngram_assign_file:
         if not os.path.isfile(cfg.ngram_assign_file):
             raise SystemExit(f"--ngram_assign_file not found: {cfg.ngram_assign_file}")
         model.load_ngram_assignment(os.path.abspath(cfg.ngram_assign_file))
+    for li, p in getattr(args, "ngram_layer_assign_map", {}).items():
+        model.load_ngram_assignment(os.path.abspath(p), layer=li)
     # paired-seed audit: backbone init must be identical across arms that share
     # a seed (n-gram tables consume no RNG before this point; log to verify)
     import hashlib as _hashlib
@@ -3341,11 +3452,14 @@ def main():
         if not os.path.isfile(args.table_init_npz):
             raise SystemExit(f"--table_init_npz not found: {args.table_init_npz}")
         table_init_from_npz(model, os.path.abspath(args.table_init_npz))
+    for li, p in getattr(args, "ngram_layer_init_map", {}).items():
+        table_init_from_npz(model, os.path.abspath(p), layer=li)
     if cfg.flame_profile:
         # plan-9 FLAME pivot: exact pre-run accounting, printed BEFORE training
         from moe import flame_param_counts, format_flame_ledger
         oe_params = 0
-        for attr in ("ngram_ves", "bigram_ves", "trigram_ves", "value_embeds"):
+        for attr in ("ngram_ves", "bigram_ves", "trigram_ves", "value_embeds",
+                     "ngram_ves_L"):
             mod = getattr(model, attr, None)
             if isinstance(mod, nn.ModuleDict):
                 oe_params += sum(p.numel() for m in mod.values()
@@ -3361,7 +3475,8 @@ def main():
     elif model.moe_active:
         from moe import params_ledger, format_ledger
         oe_params = 0
-        for attr in ("ngram_ves", "bigram_ves", "trigram_ves", "value_embeds"):
+        for attr in ("ngram_ves", "bigram_ves", "trigram_ves", "value_embeds",
+                     "ngram_ves_L"):
             mod = getattr(model, attr, None)
             if isinstance(mod, nn.ModuleDict):
                 oe_params += sum(p.numel() for m in mod.values()
