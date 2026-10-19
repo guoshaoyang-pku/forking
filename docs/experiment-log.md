@@ -5544,3 +5544,17 @@ All 13 arms done (360-2 s42 @1×/0.5×, finished 23:10–23:37; 360-1 s43 @1× b
 Decisive read (tonight ~19:30): if adamc is E3-clean and keeps the E1 benefit (k256k@16× E1 Δval ≈ −0.09) → optimizer hypothesis confirmed, adam+clip is the deployment recipe and the W1.5 "collision-as-necessary-regularizer" lock is reopened (exact974k zero-collision may be deployable under adam+clip); rclip splits the contribution (clip-only sufficient vs Adam required). If either still diverges → infra hypothesis upgraded, add per-step max|Δrow|/min-v/hit-histogram instrumentation (brief §6).
 
 **Next: Step 2** — family {Dense, Dense+OE, FLAME-MoE, FLAME-MoE+OE} on standard residual at Small (50M) scale, corpus = full-163 ClimbMix (1B pool, E=3), OE arm = k256k or f256 @ 1×–4×, n=2–5 joint. mHC on/off at an intermediate scale is an extension, not a gate.
+
+### §99 Verdict: adam+clip fixes EOS divergence (decisive arms read out 2026-10-19 18:33)
+
+The arm that diverged 2/2 seeds under RMSProp-no-clip (k256k@tls16, s42 ~17100 / s43 ~15310, §87) now completes E3 clean under **both** fix variants, with the E1 benefit fully preserved (nogram s42 baseline: E1/E2/E3 val 2.8527 / 2.7397 / 2.6930):
+
+| arm (s42, 1B×E3) | E1 Δval | E2 Δval | E3 Δval | final gap | outcome |
+|---|---|---|---|---|---|
+| k256k@16× RMSProp no-clip (old, §87) | −0.060 | −0.037 | — | — | **diverged ~17100** |
+| v26fix adamc: @16× **adam+clip** | **−0.062** | **−0.042** | **−0.020** | +0.024 | clean 20343 |
+| v26fix rclip: @16× RMSProp+clip | −0.058 | −0.042 | −0.018 | +0.038 | clean 20343 |
+
+Read-out: ① **optimizer hypothesis confirmed** — identical data/order/LR/selection, only optimizer+clip changed; divergence gone on the exact failure arm. ② **clip is the key ingredient** (rclip alone suffices); Adam adds a small extra E1 benefit and the smaller final gap. ③ The fixed @16× arms even beat the pre-divergence RMSProp trajectory at E2 (−0.042 vs −0.037). ④ @16×-adamc E3 net (−0.020) still trails @1× (−0.037, §89), so the deployment recipe is **adam+clip with table LR 1–4×**; the high-aggression 8–16× regime is now safe but not better at E3. ⑤ Consequence: the W1.5 "collision-as-necessary-regularizer" lock is **reopened** — exact974k zero-collision routing becomes testable under the fixed optimizer.
+
+Step-2 anchor: v26fl·dense (73mA FLAME twin, no table) completed E3: val 2.7117, gap −0.037 — the family baseline for Dense+OE/MoE/MoE+OE comparisons. dense_oe at step 14710 (E3, ETA ~19:30); moe step 3980 (2.95 s/st, ETA ~13h); moe_oe step 1590 (5.1 s/st, ETA ~26h).
