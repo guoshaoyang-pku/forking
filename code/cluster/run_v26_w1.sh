@@ -27,12 +27,12 @@ mkdir -p "$RESULT_DIR"
 
 case "$TAG" in
   nogram) NG=(--enable_bigram 0 --enable_trigram 0 --enable_unigram 0) ;;
-  h1|h2|s1|c1|c2|c3)
+  h1|h2|s1|c1|c2|c3|e1v)
       [[ -f "$ASSIGN" ]] || { echo "assign npz missing: $ASSIGN" >&2; exit 2; }
       NG=(--enable_unigram 0 --ngram_orders 2,3,4,5 --ngram_clean_table "${NGLAB_CLEAN_TABLE:-65536}" \
           --ngram_assign_file "$ASSIGN" --ngram_heads "$HEADS" \
           --freq_index "$FREQ_INDEX") ;;
-  *) echo "tag: nogram|h1|h2|s1|c1|c2|c3" >&2; exit 2 ;;
+  *) echo "tag: nogram|h1|h2|s1|c1|c2|c3|e1v" >&2; exit 2 ;;
 esac
 
 SAVE_ARGS=()
