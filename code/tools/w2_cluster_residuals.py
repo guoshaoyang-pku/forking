@@ -142,6 +142,33 @@ def main():
     # budget split across orders by largest remainder on #selected contexts
     sizes = {n: sel[n][0].size for n in ORDERS}
     tot = sum(sizes.values())
+    if args.budget >= tot:
+        # identity short-circuit: every live context gets its own row; k-means
+        # at K>=N is both pointless and pathologically slow (multinomial init
+        # without replacement at K~N).
+        rows_map, init_map, lb_report = {}, {}, {}
+        for n in ORDERS:
+            rows_map[n] = np.arange(sizes[n], dtype=np.int32)
+            init_map[n] = feats[n]
+            Lj = weights[n]
+            p = Lj / max(Lj.sum(), 1e-12)
+            lb_report[n] = dict(K=int(sizes[n]), R=int(sizes[n]),
+                                budget=int(sizes[n]), shortfall_groups=0,
+                                load_entropy=round(float(-(p * np.log(np.maximum(p, 1e-12))).sum()), 3),
+                                load_max_over_mean=round(float(Lj.max() / Lj.mean()), 2),
+                                load_over4x_share=round(float(Lj[Lj > 4 * Lj.mean()].sum() / Lj.sum()), 4),
+                                rows_used=int(sizes[n]))
+            print(f"[w2] n={n}: identity (budget {args.budget} >= contexts {tot})", flush=True)
+        counts_total = int(sum(weights[n].sum() for n in ORDERS))
+        R_actual = {n: int(sizes[n]) for n in ORDERS}
+        meta = {"algo": "w2resid-identity", "src": args.resid_npz,
+                "seed": args.seed, "budget": args.budget,
+                "load_balance": lb_report}
+        write_assignment(args.out_assign, sel, R_actual, rows_map, counts_total, meta)
+        out_init = {f"table_{n}": init_map[n].astype(np.float32) for n in ORDERS}
+        np.savez(args.out_init, **out_init)
+        print(f"[w2] wrote {args.out_assign} + {args.out_init}", flush=True)
+        return
     raw = {n: args.budget * sizes[n] / tot for n in ORDERS}
     R = {n: max(1, min(int(np.floor(raw[n])), sizes[n])) for n in ORDERS}
     rem = args.budget - sum(R.values())
