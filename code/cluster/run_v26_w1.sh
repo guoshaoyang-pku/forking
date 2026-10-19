@@ -44,7 +44,7 @@ fi
 
 case "$TAG" in
   nogram) NG=(--enable_bigram 0 --enable_trigram 0 --enable_unigram 0) ;;
-  h1|h2|s1|c1|c2|c3|e1v|e1vo|perm|exact)
+  h1|h2|s1|c1|c2|c3|e1v|e1vo|perm|exact|w2r)
       [[ -f "$ASSIGN" ]] || { echo "assign npz missing: $ASSIGN" >&2; exit 2; }
       NG=(--enable_unigram 0 --ngram_orders 2,3,4,5 --ngram_clean_table "${NGLAB_CLEAN_TABLE:-65536}" \
           --ngram_assign_file "$ASSIGN" --ngram_heads "$HEADS" \
@@ -55,7 +55,7 @@ case "$TAG" in
         NG+=(--freeze_table --table_init_npz "$TABLE_NPZ" --ogd_wte_topk "${NGLAB_OGD_TOPK:-128}")
       fi
       ;;
-  *) echo "tag: nogram|h1|h2|s1|c1|c2|c3|e1v|e1vo|perm|exact" >&2; exit 2 ;;
+  *) echo "tag: nogram|h1|h2|s1|c1|c2|c3|e1v|e1vo|perm|exact|w2r" >&2; exit 2 ;;
 esac
 
 SAVE_ARGS=()
