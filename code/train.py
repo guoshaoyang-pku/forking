@@ -738,17 +738,22 @@ class NanoGPT(nn.Module):
                                            or config.enable_trigram_ve):
             raise ValueError("dictionary mode (--ngram_dict_topk) routes every order "
                              "through the generic path; legacy branches must be off")
+        _r0map = getattr(config, "_assign_R0", {})
+
+        def _r0(n):
+            return _r0map.get(n, config.ngram_clean_table)
+
         self.ngram_ves = nn.ModuleDict({
-            str(n): nn.Embedding(config.ngram_clean_table,
+            str(n): nn.Embedding(_r0(n),
                                  config.n_embd // 2 if config.ngram_heads == 2 else config.n_embd,
-                                 _weight=torch.empty(config.ngram_clean_table,
+                                 _weight=torch.empty(_r0(n),
                                                      config.n_embd // 2 if config.ngram_heads == 2 else config.n_embd))
             for n in self.ngram_extra_orders
         })
         self.ngram_ves_b = nn.ModuleDict({
-            str(n): nn.Embedding(config.ngram_clean_table,
+            str(n): nn.Embedding(_r0(n),
                                  config.n_embd - config.n_embd // 2,
-                                 _weight=torch.empty(config.ngram_clean_table,
+                                 _weight=torch.empty(_r0(n),
                                                      config.n_embd - config.n_embd // 2))
             for n in self.ngram_extra_orders
         }) if config.ngram_heads == 2 else nn.ModuleDict()
@@ -3412,6 +3417,16 @@ def main():
             cfg._layer_R[li] = {n: int(zz[f"R_{n}"]) for n in extra_orders}
         print(f"[nglab] multi-layer OE layers={sorted(cfg._layer_R)} "
               f"R={cfg._layer_R}")
+    if cfg.ngram_assign_file and os.path.isfile(cfg.ngram_assign_file):
+        # Same exact-R sizing for the layer-0 (input) tables: without this the
+        # generic tables are built at --ngram_clean_table for every order,
+        # leaving (clean_table - R_n) dead rows per order and making
+        # --table_init_npz shape checks fail against the assign's R_n.
+        # Addressing/gradients are unchanged (dead rows were never reachable);
+        # param-count ledgers for new assign arms will report exact-R rows.
+        _zz0 = np.load(cfg.ngram_assign_file)
+        cfg._assign_R0 = {n: int(_zz0[f"R_{n}"]) for n in extra_orders
+                          if f"R_{n}" in _zz0.files}
     model = NanoGPT(cfg).to(device)
     model.init_weights()
     if cfg.ngram_assign_file:
