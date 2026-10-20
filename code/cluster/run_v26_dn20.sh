@@ -18,6 +18,7 @@ ASSIGN_DIR="${NGLAB_ASSIGN_DIR:-$ROOT/data/assignments}"
 BASE22="1,11,12,13,14,15,16,17,18,19,20,21,22,23,25,26,27,28,29,30,31,32"
 
 TLS_OVERRIDE="${NGLAB_TLS:-}"
+RK_OVERRIDE="${NGLAB_RK:-}"
 case "$MODEL" in
   35m)  NL=6;  NE=640;  NH=5; RK=280;  DTOK=700000000;  DTAG=d0p7b; TLS=0.5; DB=72
         SHARDS="1,11,12,13,14,15,16,17,18,19,20,21,22,23,25,26" ;;
@@ -30,6 +31,7 @@ case "$MODEL" in
   *) echo "model: 35m|50m|104m|159m" >&2; exit 2 ;;
 esac
 [[ -n "$TLS_OVERRIDE" ]] && TLS="$TLS_OVERRIDE"
+[[ -n "$RK_OVERRIDE" ]] && RK="$RK_OVERRIDE"
 
 case "$ARM" in
   nogram)
