@@ -5810,3 +5810,19 @@ W2 波 E3 全部落地（Δval 参照同 §105）：
 1. **matched-active-FLOPs 下 OE 增量**：dense→dense_oe = −0.052/−0.047/−0.039（E1/E2/E3）；MoE→MoE_oe = −0.038/−0.042/−0.037。OE 在两种 backbone 上都给出稳定正收益，且在 MoE 上**零衰减**（dense 上衰减 25%）——与 §113 结论一致，此处以 train/val 全读数坐实（moe_oe E1/E2 为本次 grep 补齐：2.6656/2.6543、2.5264/2.5332）。
 2. **OE 与 MoE 收益近似可加**：(dense_oe−dense)+(moe−dense) = (−0.039)+(−0.179) = −0.218 vs 实测 (moe_oe−dense) = −0.216 @E3，偏差 0.002 在噪声带内；E1 同样成立（−0.052−0.206=−0.258 vs 实测 −0.243，偏差 0.015）。局部条件记忆与稀疏 expert 走分离通道，互不侵蚀。
 3. **vs 50M 老家族 E1 收益平台（§89: −0.075~−0.100）**：FLAME dense twin 上 OE E1 增量为 **−0.052**（dense_oe 锚点是 FLAME dense 而非 50M nogram），落在 50M 平台下沿之下——同配方 k256k@1× 在 50M nogram 锚点上 E1 为 −0.048/−0.053（§89），两者量级一致，说明 OE 收益对 backbone 架构（50M GPT vs FLAME twin 73mA）在 matched-active-FLOPs 下是稳健的；50M 平台上沿（d1m −0.09~−0.10）来自更宽表，非架构差异。moe_oe 的 db36 microbatch 与 val pinned 72 口径一致（summary config val_shards=[2..10,6542] 核实），账本数字可直接与 dense/moe 对比。
+
+### §101 W1.5 零碰撞复测 + C3 语义 vs 占用结构判决（2026-10-20 19:30）
+
+§99 判决 adam+clip 救活 k256k@16× 发散臂之后，两条 assignment 结构臂同配方开铺（ophis GPU4/5，s42，1B×E3，adamw betas 0.9,0.95 + clip 1.0，db72）：
+
+| 臂 | run_id | assignment | tls | 问题 |
+|---|---|---|---|---|
+| exact974k 复测 | `v26fix_exact974k_adamc_tls2_p1b_s42_e3_fd` | assign_exact974k.npz（每 ngram 一行零碰撞） | 2.0 | RMSProp 时代 3/3 发散（W1.5）；adam+clip 是否同样救活零碰撞极限？ |
+| PERM@512k | `v26fix_perm512k_adamc_tls1_p1b_s42_e3_fd` | assign_perm_512k.npz（C3 同频 bin 内打乱：保 codebook 形状/流量、杀语义） | 1.0 | C3@512k E3 反超 H2 哈希 0.005–0.02（fork-summary-v3-comments-20261019）；PERM≈C3 → 收益来自占用结构；C3>PERM → 语义聚类本身值钱 |
+
+判读标准：
+1. **exact974k**：E3 全程干净（无发散、final gap 干净）→ W1.5 锁随 adam+clip 配方重开，零碰撞不再是禁区；若仍发散 → 零碰撞本身有独立失稳模态（与优化器无关），W1.5 锁维持。
+2. **PERM vs C3**（对照已有 C3@512k 3-seed E3 读数）：|PERM − C3| ≤ 0.005 → 占用结构（频率分桶 + 行共享形状）承载全部收益，语义标签是免费的；C3 − PERM ≥ 0.01 → 语义聚类（同频同义共行）本身贡献可测收益，assignment 设计应保语义。
+3. 两臂与 exact974k@1× 部署配方（E3 −0.048，3-seed −0.044）对照，判 tls 2.0 零碰撞是否提供超出部署配方的边际。
+
+launcher：`code/cluster/run_v26_assign_fix.sh <gpu> <arm:exact974k|perm512k> [seed] [epochs] [tls]`（md5 b92cc64c835c2544b6a8565000fa0851，ophis 已同步）。启动后 4 分钟读数：exact974k step 790 train 3.72 val 3.73 gap +0.008；perm512k step 860 train 3.83 val 3.76 gap −0.066；GPU 利用率均 100%，步速 ~3.7 step/s，ETA ~1.5h（20345 step E3）。
