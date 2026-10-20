@@ -17,6 +17,7 @@ FREQ_INDEX="${NGLAB_FREQ_INDEX:-$ROOT/data/freq_index_o2to5_1b.npz}"
 ASSIGN_DIR="${NGLAB_ASSIGN_DIR:-$ROOT/data/assignments}"
 BASE22="1,11,12,13,14,15,16,17,18,19,20,21,22,23,25,26,27,28,29,30,31,32"
 
+TLS_OVERRIDE="${NGLAB_TLS:-}"
 case "$MODEL" in
   35m)  NL=6;  NE=640;  NH=5; RK=280;  DTOK=700000000;  DTAG=d0p7b; TLS=0.5; DB=72
         SHARDS="1,11,12,13,14,15,16,17,18,19,20,21,22,23,25,26" ;;
@@ -28,6 +29,7 @@ case "$MODEL" in
         SHARDS="$BASE22,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84" ;;
   *) echo "model: 35m|50m|104m|159m" >&2; exit 2 ;;
 esac
+[[ -n "$TLS_OVERRIDE" ]] && TLS="$TLS_OVERRIDE"
 
 case "$ARM" in
   nogram)
