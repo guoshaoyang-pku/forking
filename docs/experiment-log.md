@@ -5714,3 +5714,18 @@ W2 波 E3 全部落地（Δval 参照同 §105）：
 - moe E3 完成：val 2.5326，gap −0.009（E2 中段瞬时 gap 曾到 +0.124，末段收敛——MoE 的 forking 形态是 E3 中段冲高再回收，与 dense 单调累积不同）。
 - **noinit LR 探针**：L025noinit@2× E3 = −0.039（gap +0.019）vs @1× −0.045 → noinit 配方峰值同样在 1×，LR 包络结论跨配方一致。
 - 已铺 Step-2 配方臂：`v26fl_moe_oe_exact`（MoE+exact974k，db36，GPU1）与 `v26fl_dense_oe_exact`（dense+exact974k，GPU4）——把 §104 最优配方接进家族网格；exact974k@1× s43/s44（GPU6/360-2 GPU0）补齐部署臂 3 seed；x1m-noinit s43（360-2 GPU1）。
+
+### §109 exact 配方进家族：dense_oe_exact 收益翻倍；部署臂 3 seed 定案（2026-10-20 11:10）
+
+**dense_oe_exact（dense twin + exact974k@1×，s42）完成**：E1 2.7843 / E2 2.6706 / E3 2.6297，gap −0.011。vs dense 基线 Δval = **−0.111 / −0.103 / −0.082**——是 k256k OE（−0.050/−0.053/−0.039）的 **2.1 倍**，且与 50M 主线上的 exact@1× 收益（−0.066/−0.062/−0.048）相比在 FLAME twin 上进一步放大。Step-2 网格（E3 Δval 汇总）：
+
+| arm | E3 Δ vs dense | E3 Δ vs moe |
+|---|---|---|
+| dense_oe k256k → exact974k | −0.039 → **−0.082** | — |
+| moe | −0.180 | — |
+| moe_oe k256k | ?（E3 在跑，E1/E2 −0.038/−0.042） | ? |
+| moe_oe exact974k | ?（E1 在跑） | ? |
+
+**部署臂 exact974k+adam+clip@1× 3 seed 定案**（E3 Δval）：s42 −0.048 / s43 −0.041 / s44 −0.042，mean **−0.044 ± 0.004**；E1 −0.066/−0.063/−0.066；全程零发散、final gap +0.011~+0.012。**v2 部署配方最终形态锁定**。
+
+**x1m-noinit s43 复制**：E1 2.7669（−0.083）/ E2 2.6669（−0.072）/ E3 2.6399（−0.053）——s42 是 −0.078/−0.067/−0.045，复制通过且略优；**1.48M noinit 在 E1/E2 是全场最强**（−0.08 量级），E3 与 exact@974k 打平。宽榜结论不变：宽度放大前 2 遍收益，第 3 遍被 forking 吃平。
