@@ -5860,3 +5860,22 @@ launcher：`code/cluster/run_v26_assign_fix.sh <gpu> <arm:exact974k|perm512k> [s
 | assign_exact_r400k.npz | 400,000 | 1,600,000 | 228 / 260 / 125 / 60 |
 | assign_exact_r832k.npz | 832,000 | 3,328,000 | 79 / 132 / 71 / 36 |
 | assign_exact_r1272k.npz | 1,272,000 | 5,088,000 | 42 / 88 / 51 / 26 |
+
+### §116 360-2 舰队开铺：D/N=20 梯子 5 臂 + W1 m974k 补点（2026-10-20 20:10）
+
+**工作树**：360-2 `/data/home/guoshaoyang/ngram-gap-lab-v26`（新建），code 自 Mac c08f01e rsync（`code/train.py` md5 a97b344a4714b97d58d30f354d491740 双端一致），`train_shards_1b.txt` md5 f69274429c8611243c2ec127652c80aa（与 ophis 一致）。env：系统 python3.10.12 + torch 2.13.0+cu130（CUDA 可用），NGLAB_FREQ_INDEX=freq_index_o2to5_1b_f30.npz（md5 b42b367984373c5179d35e226a97f6f6，与 ophis 一致），TMPDIR=/data/home/guoshaoyang/tmp。
+
+**数据核对**：val shards {2-10, 6542} 沿用 360-2 旧树软链，md5 与 ophis 金标准逐一比对全对（10/10）。train shards {1,11-23,25-32} 旧树已有（软链，shard_00001 md5 f0e978173187ec38b7f7f5c58987016a 抽检一致）；{33-59} 27 片本次经 ophis→Mac /tmp→360-2 中转补齐，每片 360-2 端 md5sum 与 ophis 源端逐一核对全对（27/27）；shard_00060 软链自旧树（md5 151bab7ee0aca719b4252d7c81fac50a 与 ophis 一致）。assign npz 四件（h2_974k + exact_r280k/r400k/r832k）md5 双端一致；exact_r 每阶 R 精确达成（280k/400k/832k ×4 阶），min_count 见 §115 表。GPU1 上 79GB vLLM::EngineCore 进程与本次无关，避开；GPU7 备用未动。159m 档按红线不铺。
+
+**在训 6 臂**（全部 seed 42、E3、adamw(0.9,0.95)+clip 1.0；启动后 4-8 分钟验证：train_log step 行连续、loss 自 ~8 正常下降、gap 全负）：
+
+| run_id | GPU | 臂 | 步速 | 已走步/总步 | ETA |
+|---|---|---|---|---|---|
+| v26w1_h2_m974kac_tls1_p1b_s42_e3_fd | 0 | W1 R-scaling 最大点（H2@974k，CLEAN_TABLE=1048576，tls1 对应 §104 最强臂口径） | 3.92 step/s | 6230/20343 | ~60 min |
+| v26dn_35m_nogram_r280k_d0p7b_tls0.5_s42_e3_fd | 2 | 梯子基线 35M，D=0.7B（16 shard 前缀） | 7.12 step/s | 10070/14244（E3） | ~10 min |
+| v26dn_35m_exact_r280k_d0p7b_tls0.5_s42_e3_fd | 3 | 35M exact_r280k，tls 自动 0.5 | 6.07 step/s | 8080/14244（E2） | ~17 min |
+| v26dn_104m_nogram_r832k_d2p1b_tls1_s42_e3_fd | 4 | 104M 基线，D=2.08B（50 shards） | 2.98 step/s | 970/42316 | ~3.8 h |
+| v26dn_104m_exact_r832k_d2p1b_tls1_s42_e3_fd | 5 | 104M exact_r832k | 2.44 step/s | 680/42316 | ~4.7 h |
+| v26dn_50m_exact_r400k_d1b_tls1_s42_e3_fd | 6 | 50M exact_r400k，D=1B（22 shards） | 3.84 step/s | 4940/20343 | ~67 min |
+
+35m 臂 db72 下显存/吞吐无异常（7.1 step/s 健康）；50m nogram 已有 v25oe_nogram_p1b_s42_e3_fd 不重跑。梯子读数将给出 D/N=20、R/N=8 不变量下 OE 收益与 forking gap 随 N（35m→50m→104m）的轨迹；W1 m974k 补 R-scaling 曲线 adamc 口径终点（ophis 侧 m64k-m512k 四臂在训，§115）。
