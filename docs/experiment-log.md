@@ -5826,3 +5826,37 @@ W2 波 E3 全部落地（Δval 参照同 §105）：
 3. 两臂与 exact974k@1× 部署配方（E3 −0.048，3-seed −0.044）对照，判 tls 2.0 零碰撞是否提供超出部署配方的边际。
 
 launcher：`code/cluster/run_v26_assign_fix.sh <gpu> <arm:exact974k|perm512k> [seed] [epochs] [tls]`（md5 b92cc64c835c2544b6a8565000fa0851，ophis 已同步）。启动后 4 分钟读数：exact974k step 790 train 3.72 val 3.73 gap +0.008；perm512k step 860 train 3.83 val 3.76 gap −0.066；GPU 利用率均 100%，步速 ~3.7 step/s，ETA ~1.5h（20345 step E3）。
+
+### §115 §101 判决双臂收割：W1.5 锁彻底打开；PERM≈C3 占用结构承载语义收益 + W1 R-scaling 四臂开铺（2026-10-20 22:30）
+
+**判决双臂收割**（nogram s42 锚点 E1 2.8527 / E2 2.7397 / E3 2.6930；epoch 边界 step 6780/13560/20343）：
+
+| run_id | arm | E1 tr/val (Δval) | E2 tr/val (Δval) | E3 tr/val (Δval) | final gap |
+|---|---|---|---|---|---|
+| v26fix_exact974k_adamc_tls2_p1b_s42_e3_fd | exact974k 零碰撞 @2× | 2.7917/2.7790 (**−0.0737**) | 2.6140/2.6843 (**−0.0554**) | 2.6329/2.6582 (**−0.0348**) | +0.025 |
+| v26fix_perm512k_adamc_tls1_p1b_s42_e3_fd | PERM@512k 杀语义 @1× | 2.8211/2.8094 (**−0.0433**) | 2.6463/2.7012 (**−0.0385**) | 2.6721/2.6648 (**−0.0282**) | −0.007 |
+
+判读（对照 §101 判读标准）：
+1. **W1.5 锁彻底打开**：exact974k@2× 全程干净（E1/E2/E3 gap −0.013/+0.070/+0.025，无骤裂、表 RMS 正常），对比 RMSProp 时代 exact974k 3/3 发散——零碰撞失稳模态是优化器问题而非 assignment 结构问题，adam+clip 配方下零碰撞极限可训。E3 Δ −0.0348 仍逊于部署配方 exact974k@1×（E3 −0.048，3-seed −0.044）——tls 2.0 不提供超出 1× 的边际，维持 1× 为部署点。
+2. **PERM≈C3 → 语义 vs 占用结构判决落锤**：PERM@512k@1× E3 Δ −0.0282 vs 同优化器口径 c3ac@tls1 E3 Δ −0.030（§104 终判），|PERM − C3| = 0.002 ≤ 0.005 判据成立——**C3@512k 的收益由占用结构（频率分桶 + 高频 context 独立行）承载，语义聚类标签免费**。E1 同样一致（PERM −0.0433 vs C3 −0.038，差 0.005 在判据边界内）。assignment 设计结论：512k 预算下无需保语义，随机/打乱占用即够；语义路由仅剩 tls 上限更低的劣势（C3@tls4 发散 vs PERM/H2 干净）。
+3. 两臂 gap 全部干净（+0.025 / −0.007），adam+clip 时代 50M 家族无一发散臂。
+
+**W1 R-scaling 四臂开铺**（H2 路由，f≥256 选择，n=2,3,4,5，50M 8L/768/6H，1B unique × E3，seed 42，adamw(0.9,0.95)+clip 1.0，tls 1×；ophis GPU 2/4/5/6 一臂一卡；clean_table = m_total/2 沿用 m256k/m512k 旧例）：
+
+| run_id | GPU | assign npz | m_total | clean_table | 模型参数 | 步速 | ETA |
+|---|---|---|---|---|---|---|---|
+| v26w1_h2_m64kac_tls1_p1b_s42_e3_fd | 2 | assign_h2_64k.npz（新生成，R={2:24817,3:27458,4:10191,5:3070}） | 65,536 | 32,768 | 114.9M | 0.270 s/step | ~1.4h |
+| v26w1_h2_m128kac_tls1_p1b_s42_e3_fd | 4 | assign_h2_128k.npz（新生成，R={2:49634,3:54916,4:20382,5:6140}） | 131,072 | 65,536 | 165.2M | 0.266 s/step | ~1.4h |
+| v26w1_h2_m256kac_tls1_p1b_s42_e3_fd | 5 | assign_h2_256k.npz（已有） | 262,144 | 131,072 | 265.9M | 0.263 s/step | ~1.4h |
+| v26w1_h2_m512kac_tls1_p1b_s42_e3_fd | 6 | assign_h2_512k.npz（已有） | 524,288 | 262,144 | 467.2M | 0.268 s/step | ~1.4h |
+
+启动后读数（step ~300-1170）：loss 自 ~8 正常下降、gap 全负干净、GPU 利用率 100%。曲线将给出 adamc 时代 H2 收益-vs-M 形状：m64k→m128k→m256k→m512k→（已有 m974k@tls1 RMSProp 时代点作废，待 adamc 口径 m974k 由 360-2 补），与 §97 预测的「128k(-0.040/-0.022)→…→974k(-0.070/-0.020)」对照。
+
+**360-2 六臂（另一 subagent 铺，登记在此）**：D/N=20 不变量梯子（run_v26_dn20.sh，D=20N tokens，R=8N/order exact top-R，adam+clip）——v26dn·35m nogram、v26dn·35m exact_r280k、v26dn·50m exact_r400k、v26dn·104m nogram、v26dn·104m exact_r832k、v26dn·159m exact_r1272k；外加 W1 补点 v26w1·h2_m974k（adamc 口径）。所需 exact 梯子 npz 已在 ophis `data/assignments/` 生成（全量 freq_index_o2to5_1b.npz 构建，每阶 top-R identity 零碰撞，R 全部达成）：
+
+| npz | R/order | total_rows | 每阶 min_count（n=2/3/4/5） |
+|---|---|---|---|
+| assign_exact_r280k.npz | 280,000 | 1,120,000 | 377 / 357 / 163 / 76 |
+| assign_exact_r400k.npz | 400,000 | 1,600,000 | 228 / 260 / 125 / 60 |
+| assign_exact_r832k.npz | 832,000 | 3,328,000 | 79 / 132 / 71 / 36 |
+| assign_exact_r1272k.npz | 1,272,000 | 5,088,000 | 42 / 88 / 51 / 26 |
