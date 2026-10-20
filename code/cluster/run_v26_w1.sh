@@ -24,9 +24,13 @@ case "${NGLAB_TABLE_OPT:-adamc}" in
   adamc) RUNTAG="${RUNTAG}ac" ;; rclip) RUNTAG="${RUNTAG}rc" ;; rmsprop) ;;
   *) : ;;
 esac
-RUN_ID="v26w1_${TAG}${RUNTAG}_tls${TLS}_p1b_s${NGLAB_SEED:-42}_e${EPOCHS}_fd"
+MTAG=""
+if [[ "${NGLAB_NL:-8}" != "8" || "${NGLAB_NE:-768}" != "768" ]]; then
+  MTAG="_m${NGLAB_NL}L${NGLAB_NE}"
+fi
+RUN_ID="v26w1_${TAG}${RUNTAG}${MTAG}_tls${TLS}_p1b_s${NGLAB_SEED:-42}_e${EPOCHS}_fd"
 if [[ "$MODE" != "E3" ]]; then
-  RUN_ID="v26w1_${TAG}${RUNTAG}_tls${TLS}_p1b_s${NGLAB_SEED:-42}_smoke${MODE}_fd"
+  RUN_ID="v26w1_${TAG}${RUNTAG}${MTAG}_tls${TLS}_p1b_s${NGLAB_SEED:-42}_smoke${MODE}_fd"
 fi
 RESULT_DIR="$OUT_DIR/${RUN_ID}_fixed"
 [[ ! -e "$RESULT_DIR" ]] || { echo "refusing existing run: $RESULT_DIR" >&2; exit 2; }
@@ -77,7 +81,7 @@ CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --train_shards "$SHARDS" "${SCHED[@]}" \
   --val_shards 2,3,4,5,6,7,8,9,10,6542 --seed "${NGLAB_SEED:-42}" \
   --dtype bf16 --injection_position input "${NG[@]}" \
-  --n_layer 8 --n_head 6 --n_embd 768 --vocab_size 8192 --sequence_len 2048 \
+  --n_layer "${NGLAB_NL:-8}" --n_head "${NGLAB_NH:-6}" --n_embd "${NGLAB_NE:-768}" --vocab_size 8192 --sequence_len 2048 \
   --device_batch_size 72 --total_batch_size 147456 \
   --lr 0.0006 --lr_schedule warmup_constant --warmup_steps 100 \
   "${TOPT[@]}" --table_lr_scale "$TLS" \
