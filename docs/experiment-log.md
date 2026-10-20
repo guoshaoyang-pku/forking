@@ -5786,3 +5786,27 @@ W2 波 E3 全部落地（Δval 参照同 §105）：
 1. **OE 与 MoE 收益近似可加且互不侵蚀**：MoE+OE（2.4960）= 全局最优，相对 dense 基线总优势 **−0.216**（E3）；MoE 结构收益在有无 OE 下几乎不变（−0.180 vs −0.177），OE 收益在有无 MoE 下也几乎不变（−0.039 vs −0.037）——局部条件记忆与稀疏 expert 走不同通道。
 2. **OE-on-MoE 跨 epoch 零衰减**（−0.038/−0.042/−0.037），优于 OE-on-dense（衰减 22%）与 50M 主线 exact@1×（衰减 27%）。假设：MoE 的 expert 稀疏化已分担了「条件路径重复 specialization」的压力，表行不再是唯一的局部容量 → forking 弱化。这是 v2「保收益防 fork」方向上第二个结构性杠杆（第一个是数据设计/宽度），待 moe_oe_exact（E1 在训，~9h）确认 exact 配方下是否更强。
 3. 四格 gap 全部干净（dense −0.037 / dense_oe −0.021 / moe −0.009 / moe_oe +0.004）——adam+clip 配方下无一发散。
+
+### §114 Step-2 FLAME Small 家族四格完成登记：账本 + 可加性 + 50M 平台对比（2026-10-20 21:00）
+
+四格全部完成（ophis `/data1/guoshaoyang/ngram-gap-lab-v25/data/runs_fixed/`，目录带 `_fixed` 后缀；1B unique ClimbMix、E3、seed 42、val shards 2-10+6542、fixed-val 口径；epoch 边界 step 6780/13560/20343，moe_oe 收尾步 20345）。本格正式登记四格表 + 参数/吞吐/显存账本（§113 已给结论，本节补账本与跨家族对比）：
+
+| run_id | arm | E1 tr/val | E2 tr/val | E3 tr/val | final gap | total/active params | tokens/s | peak mem GB |
+|---|---|---|---|---|---|---|---|---|
+| v26fl_dense_p1b_s42_e3_fd | dense twin 73mA | 2.9034/2.8975 | 2.7272/2.7677 | 2.7492/2.7117 | −0.037 | 72.8M/72.8M | 275,031 | 82.8 |
+| v26fl_dense_oe_p1b_s42_e3adamc_fd | dense+OE k256k@1× | 2.8481/2.8453 | 2.6708/2.7205 | 2.6931/2.6725 | −0.021 | 2,220.2M/2,220.2M（表 2,147.5M） | 252,128 | 106.8 |
+| v26fl_moe_p1b_s42_e3_fd | MoE 73mA/418mT | 2.7090/2.6918 | 2.5185/2.5756 | 2.5417/2.5326 | −0.009 | 418.1M/73.1M | 52,763 | 123.5 |
+| v26fl_moe_oe_p1b_s42_e3adamc_fd_db36 | MoE+OE k256k@1× | 2.6656/2.6543 | 2.5264/2.5332 | 2.4918/2.4960 | +0.004 | 2,565.6M/2,220.6M | 37,720 | 97.8 |
+
+Δval vs dense 锚点（负=收益）：
+
+| arm | E1 Δ | E2 Δ | E3 Δ |
+|---|---|---|---|
+| dense_oe | −0.052 | −0.047 | −0.039 |
+| moe | −0.206 | −0.192 | −0.179 |
+| moe_oe | −0.243 | −0.235 | −0.216 |
+
+三点判读：
+1. **matched-active-FLOPs 下 OE 增量**：dense→dense_oe = −0.052/−0.047/−0.039（E1/E2/E3）；MoE→MoE_oe = −0.038/−0.042/−0.037。OE 在两种 backbone 上都给出稳定正收益，且在 MoE 上**零衰减**（dense 上衰减 25%）——与 §113 结论一致，此处以 train/val 全读数坐实（moe_oe E1/E2 为本次 grep 补齐：2.6656/2.6543、2.5264/2.5332）。
+2. **OE 与 MoE 收益近似可加**：(dense_oe−dense)+(moe−dense) = (−0.039)+(−0.179) = −0.218 vs 实测 (moe_oe−dense) = −0.216 @E3，偏差 0.002 在噪声带内；E1 同样成立（−0.052−0.206=−0.258 vs 实测 −0.243，偏差 0.015）。局部条件记忆与稀疏 expert 走分离通道，互不侵蚀。
+3. **vs 50M 老家族 E1 收益平台（§89: −0.075~−0.100）**：FLAME dense twin 上 OE E1 增量为 **−0.052**（dense_oe 锚点是 FLAME dense 而非 50M nogram），落在 50M 平台下沿之下——同配方 k256k@1× 在 50M nogram 锚点上 E1 为 −0.048/−0.053（§89），两者量级一致，说明 OE 收益对 backbone 架构（50M GPT vs FLAME twin 73mA）在 matched-active-FLOPs 下是稳健的；50M 平台上沿（d1m −0.09~−0.10）来自更宽表，非架构差异。moe_oe 的 db36 microbatch 与 val pinned 72 口径一致（summary config val_shards=[2..10,6542] 核实），账本数字可直接与 dense/moe 对比。
