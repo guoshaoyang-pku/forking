@@ -31,6 +31,32 @@ reported both ways:
 Same-seed replicas cannot expose this noise: identical data order reproduces the
 same batch composition, so the artifact repeats exactly.
 
+Divergence screen (added 2026-10-21)
+-----------------------------------
+`status=done` does not mean the arm trained stably: an OE arm can blow up late and
+still write a summary. Measured 2026-10-21 across 57 v26dn arms (360-2 + ophis),
+9 arms re-inflate their train loss in the final epoch (final train up to 7.45 vs
+a 3.35 minimum inside the same epoch, i.e. back to the ~7.9 init loss), which
+invalidates their end-of-run gap/gain readings. The screen is the ratio
+
+    tail_drift_ratio = final_train_loss / min(train_loss over the final epoch)
+
+Flagged when `tail_drift_ratio >= 1.15` (`tail_flagged`). Healthy arms measure
+1.00-1.12 (e.g. 104m r400k s42 = 1.12, 50m r128k = 1.06); every observed blow-up
+measures 1.21-2.75, and the 159m val-plunge arms also land above the threshold.
+
+That ratio has a blind spot: an arm which enters its final epoch already blown up
+has ratio ~1.0. A second, absolute screen therefore compares the arm's final train
+loss with the median final train loss of the nogram arms of the *same model size*
+in the harvested tree (D/N=20 fixes the data budget, so nogram is the reference
+level):
+
+    level_ratio = final_train / median(final_train of nogram arms at the same N)
+
+Flagged when `level_ratio >= 1.10` (`level_flagged`). Measured 2026-10-21, healthy
+exact arms sit at 0.88-1.02 of their nogram level and every observed blow-up at
+1.11-2.59, so the two screens agree on all finished arms.
+
 Usage
 -----
     python3 docs/plot_scripts/v26dn_harvest.py [runs_fixed_dir] [--tsv]
@@ -42,10 +68,18 @@ Prints a human table by default, or TSV with --tsv for merging across machines.
 from __future__ import annotations
 
 import json
+import re
+import statistics
 import sys
 from pathlib import Path
 
 STUB_ROWS = 10
+# final_train / min(train over final epoch) at or above this flags a late blow-up
+TAIL_DRIFT_FLAG = 1.15
+# final_train / median(nogram final_train at the same N) at or above this flags it
+LEVEL_FLAG = 1.10
+# `v26dn_<size>m_<arm>_r<rows>k_...` -> model size in M
+RUN_ID = re.compile(r"^v26dn_(\d+)m_(\w+?)_r")
 
 
 def epoch_boundaries(rows: list[dict]) -> list[tuple[int, dict]]:
@@ -120,7 +154,38 @@ def harvest(root: Path, window: int) -> list[dict]:
         if summary:
             record["final_val"] = summary.get("final_val_loss")
             record["final_train"] = summary.get("final_train_loss")
+        last_epochs = epoch_boundaries(rows)
+        if last_epochs and record.get("final_train") is not None:
+            tail = groups[last_epochs[-1][0]]
+            trains = [r["train_loss"] for r in tail if r.get("train_loss") is not None]
+            if trains:
+                tail_min = min(trains)
+                record["tail_min_train"] = tail_min
+                if tail_min > 0:
+                    ratio = record["final_train"] / tail_min
+                    record["tail_drift_ratio"] = ratio
+                    record["tail_flagged"] = ratio >= TAIL_DRIFT_FLAG
         out.append(record)
+
+    # absolute level screen: the nogram arms of the same model size set the
+    # reference level (D/N=20 pins the data budget per model size).
+    nogram_level: dict[str, list[float]] = {}
+    for rec in out:
+        match = RUN_ID.match(rec["run_id"])
+        if match and match.group(2) == "nogram" and rec.get("final_train") is not None:
+            nogram_level.setdefault(match.group(1), []).append(rec["final_train"])
+    for rec in out:
+        match = RUN_ID.match(rec["run_id"])
+        if not match or rec.get("final_train") is None:
+            continue
+        refs = nogram_level.get(match.group(1))
+        if not refs:
+            continue
+        record_level = statistics.median(refs)
+        rec["nogram_level"] = record_level
+        ratio = rec["final_train"] / record_level
+        rec["level_ratio"] = ratio
+        rec["level_flagged"] = ratio >= LEVEL_FLAG
     return out
 
 
@@ -131,6 +196,18 @@ def fmt(value: float | None, width: int = 8) -> str:
 def print_table(records: list[dict]) -> None:
     for rec in records:
         head = f"{rec['run_id']:<52} {rec['status']:<7} st={rec['last_step']}"
+        flags = []
+        if rec.get("tail_flagged"):
+            flags.append(f"tail-drift final_train={rec['final_train']:.3f} / min={rec['tail_min_train']:.3f}"
+                         f" = {rec['tail_drift_ratio']:.2f}x")
+        if rec.get("level_flagged"):
+            flags.append(f"level final_train={rec['final_train']:.3f} / nogram={rec['nogram_level']:.3f}"
+                         f" = {rec['level_ratio']:.2f}x")
+        if flags:
+            head += "  UNSTABLE: " + "; ".join(flags)
+        elif rec.get("final_train") is not None:
+            head += (f"  stable (tail {rec.get('tail_drift_ratio', 0):.2f}x"
+                     f", level {rec.get('level_ratio', 0):.2f}x)")
         print(head)
         for epoch in sorted(rec["epochs"]):
             row = rec["epochs"][epoch]
@@ -147,7 +224,8 @@ def print_tsv(records: list[dict]) -> None:
         f"e{e}_{k}" for e in range(1, 7) for k in ("val", "train", "gap")
     ) + "\t" + "\t".join(
         f"e{e}_win_{k}" for e in range(1, 7) for k in ("val", "train", "gap")
-    ) + "\tfinal_val\tfinal_train")
+    ) + "\tfinal_val\tfinal_train\ttail_min_train\ttail_drift_ratio\ttail_flagged"
+        "\tnogram_level\tlevel_ratio\tlevel_flagged")
     for rec in records:
         cells = [rec["run_id"], rec["status"], str(rec["last_step"])]
         for epoch in range(1, 7):
@@ -162,6 +240,12 @@ def print_tsv(records: list[dict]) -> None:
                 cells.append("" if value is None else f"{value:.4f}")
         cells.append("" if rec.get("final_val") is None else f"{rec['final_val']:.4f}")
         cells.append("" if rec.get("final_train") is None else f"{rec['final_train']:.4f}")
+        cells.append("" if rec.get("tail_min_train") is None else f"{rec['tail_min_train']:.4f}")
+        cells.append("" if rec.get("tail_drift_ratio") is None else f"{rec['tail_drift_ratio']:.3f}")
+        cells.append("1" if rec.get("tail_flagged") else "0")
+        cells.append("" if rec.get("nogram_level") is None else f"{rec['nogram_level']:.4f}")
+        cells.append("" if rec.get("level_ratio") is None else f"{rec['level_ratio']:.3f}")
+        cells.append("1" if rec.get("level_flagged") else "0")
         print("\t".join(cells))
 
 
