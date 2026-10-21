@@ -6708,3 +6708,55 @@ nogram = `v26dn_50m_nogram_r400k_d1b_tls1_s42_e3_fd_fixed`（**同协议同 laun
 2. **#3/#11**：给出 50M 的 E5 nogram 水平 → 检验 E3→E4/E5 的 dGap 是否继续爬（§132(j) 外推表「净收益在 N≈4.3B 归零」完全依赖 dGap 斜率）。
 3. **#7/#8**：tls 地板臂在 E5 是否仍只压 gap 不伤收益（§130 的「免费旋钮」是否跨 epoch 成立）。
 4. **#1/#9**：104M ρ=8 从 2 seed 扩到 4 seed（含跨机），检验 +17.6/+33.7 的散度归属。
+
+---
+
+## §134 200M 档（iso-ratio 梯子第 9 级）与索引天花板（2026-10-21）
+
+**(a) 档位配置（新增到 `code/cluster/run_v26_dn20.sh`，`200m)` case）**
+
+沿用 §133 的 iso-ratio 不变量（D/N=20、R/N=8、E=3、同 seed 配对、own gap 用同机读数）：
+`NL=12 NE=1152 NH=9 RK=1600 DTOK=4.0e9 DTAG=d4b TLS=1 DB=12 SHARDS=1,11..111`。
+参数量 `12*NL*NE^2 + vocab*tied = 12*12*1152^2 + 8192*1152 = 200.5M`（`code/train.py` 公式）。NH=9 使 head_dim 保持 128，与梯子其余档一致（17m/35m/50m/104m/159m 的 head_dim 均为 128），
+避免「换 model 同时换 head_dim」的双变量。DB=12（`grad_accum=6`）比 159m 的 36 更保守：exact 表状态是静态显存主项，200M 档比 159m 档重 1.47×（见 (c)）。
+`--ngram_clean_table` 无需上调：launcher 分层 `RK>832 → CT=2097152 ≥ RK=1600k`，`load_ngram_assignment` 的 `R > CT` 检查通过（`code/train.py:1313`）。
+
+**(b) 索引天花板（本次 recon 的硬发现，200M 以上档位的真正边界）**
+
+`assign_exact_r1600k.npz`（两机 `data/assignments/` 均已就位，meta `src=data/freq_index_o2to5_1b_f30.npz`）：
+
+| order | R（实际行数） | distinct_total | min_count | 状态 |
+|---|---|---|---|---|
+| 2 | 1,600,000 | 1,620,113 | 30 | 逼近上界（余量 1.3%） |
+| 3 | 1,600,000 | 3,729,665 | 70 | 有裕量 |
+| 4 | 1,600,000 | 2,476,160 | 42 | 有裕量 |
+| 5 | **1,081,841** | 1,081,841 | 30 | **已饱和**（requested 1.6M，实际取满全部 distinct） |
+
+`total_rows` = 5,881,841。两条推论：
+1. **order-5 在 200M 档不是 R/N=8，而是 R/N=5.4**——不是设计选择，是 f30 索引下 order-5 的 distinct 总数只有 1.08M。200M 档因此不是「四个 order 都 ρ=8」的严格格，须按「2/3/4 阶 ρ=8、5 阶 ρ=5.4」读。
+2. **R/N=8 在 N ≳ 203M 之后不可能实现**：order-2 的 distinct_total 仅 1,620,113，R/N=8 要求 R=8N，在 N=203M 时 R 已达 1.62M 上界；300M/400M 需要 R=2400k/3200k，f30 索引给不出。**扩展 300M/400M 的前置条件是先重算索引（放宽 min_count 或扩大统计池），而不是加大算力。**
+
+**(c) 显存与语料账（发臂前核算，避免 §82 式写盘/显存挂起）**
+
+- 表状态（exact 臂主项）：rows=5,881,841 × NE=1152（`ngram_heads=1` 全宽）= **6.776B 参数**；bf16 权重 13.6GB + AdamW 两个 fp32 动量 54.2GB ≈ **68GB 静态**，比 159m 档（约 46GB）重 1.47×。DB=12 把激活压到可忽略，143GB 卡在 GPU0/1/3 分别已有 4.9/6.3/6.3GB 他人占用的情况下仍有余量。
+- 语料：360-2 `data/tokenized` = **111 shard / 4,698,183,123 B**（`.bin`，每 shard 42.3MB ≈ 21.2M uint16 token ≈ 2.35B token 总量）；ophis 侧同目录为 symlink，163 shard，`/data1` 余 3.8T。**D=4.0e9 已超过 2.35B unique 量**，即本档 E1 内部约 1.7 个语料 pass、E3 全程 5.1 pass。为与梯子其余档可比（159m 的 D=3.18e9 同样 > 2.35B），**保留名义 D/N=20 不动**，但本档的「unique D」含义须按此注记读，不得当作 4B unique。
+
+**(d) 前置阻塞的清理（两条都已查清，不再是阻塞）**
+
+1. **freq-index 传入方式**：live 进程 `cmdline` 显示 `--freq_index <root>/data/freq_index_o2to5_1b.npz`，而 **360-2 上该文件不存在**（只有 `freq_index_o2to5_1b_f30.npz`，106MB），`/proc/<pid>/fd` 也没有其打开的句柄——即 exact 臂在训练期并不依赖该文件（row 查找走 assignment npz），缺文件不致命。ophis 侧两个文件都在（`_f30` 106MB + 全量 15.8GB），故此差异只影响 360-2，且未影响在跑的 12 臂。**200M 在 ophis 启动不受影响。**
+2. **`df` 的 `500G 500G 0 100% /data` 双条目**：复测 `df -h /data` 只余一行（`/dev/mapper/vg01-data 7.9T 5.0T 3.0T 63%`），`/proc/mounts` 中 `/data` 只有 1 条（xfs, prjquota），`findmnt` 亦只有一条 → 早前条目为瞬时/陈旧记录，非真实写满。未经特权读 `xfs_quota`（`Operation not permitted`），但本仓 6.6G/3.0T 可用，风险低。
+
+**(e) 预注册：本档的读法（发臂前写定）**
+
+1. **存活**：200M exact s42 在 E3 末未发散 → iso-ratio 有效梯子由「50M–104M」上扩到「50M–200M」，且「N 越大越安全」在 200M 仍成立；发散 → iso-ratio 的**有效窗被两侧夹住**（下沿 50M、上沿 104M），这一轴只能报 50M–104M 的三点。
+2. **收益厚度**：存活时按 §133 的 `N^−0.3` 拟，104M 的 +32.9 mK 外推到 200M（×1.92）应为 **≈ +26.7 mK**。若实测落在 20–33 mK，判「收益单调变薄」延续；若 ≤10 mK 或转负，判「iso-ratio 保收益的能力在 200M 破」——这直接决定能否把 iso-ratio 作为向 1B 外推的载体。
+3. **order-5 饱和的副作用**：本档 5 阶只覆盖高频 1.08M 行，等价于对 5 阶做了一次「只留 top-R」。若本档 gap 相对 104M 反而**收窄**，候选解释是 (b)1 的高频截断而非模型变大——该解释须用后续「104M 也截到同比例」的对照臂分离，不在本档直接判。
+
+**(f) 臂与卡**
+
+| # | run_id | 机·卡 | 目的 |
+|---|---|---|---|
+| 1 | `200m_exact_r1600k_d4b_tls1_s42_e3_fd` | ophis·0 | 200M iso-ratio 格主臂（存活 + 收益厚度） |
+| 2 | `200m_nogram_r1600k_d4b_tls1_s42_e3_fd` | ophis·1 | #1 同机同 seed 配对基线（own gap 与 Δval 的唯一合法对照） |
+
+GPU 选择依据：ophis GPU0/1/3 util 0–6%、占用 4.9–6.3GB（他人小进程）；GPU2 被 zhaohaoran 占满 80GB；GPU4/5/6 是本项目 §133 在跑的臂；GPU7 有 6.7GB 陈旧占用。360-2 GPU0–7 全部被 §133 的 12 臂占满，故 200M 只在 ophis 起，**不跨机配对**（§133 已定：配对必须同机）。
