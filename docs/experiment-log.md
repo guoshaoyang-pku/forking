@@ -6742,7 +6742,7 @@ nogram = `v26dn_50m_nogram_r400k_d1b_tls1_s42_e3_fd_fixed`（**同协议同 laun
   由此反解表状态显存系数 ≈ **20 B/参数**（bf16 权重 2 + fp32 grad 4 + fp32 master 4 + 2×fp32 AdamW 动量 8）。用该系数回代已有档位与实测吻合：159m（rows 3×1,272,000 + order5 饱和 1,081,841 = 4,897,841 × 1024 = 5.02B → ≈100GB）对 GPU4 实测 107,487 MiB；104m（3,328,000 × 896 = 2.98B → ≈60GB）对 GPU5 实测 64,855 MiB。**故 (c) 原先的 68GB 静态估计是错的（低估约 2×），一律以实测为准。**
   **新硬边界（本档最重要的副产物）**：exact 臂在**单张 H200 上的显存天花板就是 N≈200M**。外推 300M/400M 需 rows≈8.28M × NE≥1152 × 20B ≈ **≥191GB**，单卡装不下——与 (b)2 的索引天花板（N≳203M）几乎落在同一个 N。**300M/400M 有两个互相独立的前置障碍（索引 + 显存），二者都须先解，加算力无解。**
   **对 A100-40GB 的直接限制**（用户将释放 32 张）：exact 臂 ≈ 表参数量 × 20B + backbone，故 **50M 档（rows 1.6M × 768 = 1.23B ≈ 25GB + 3GB backbone）勉强可跑，104M 档（2.98B ≈ 60GB）装不下**。A100 只能承接 **nogram 臂（任何档）与 ≤50M 的 exact 臂**；104M 及以上 exact 必须留在 H200。
-- 语料：360-2 `data/tokenized` = **111 shard / 4,698,183,123 B**（`.bin`，每 shard 42.3MB ≈ 21.2M uint16 token ≈ 2.35B token 总量）；ophis 侧同目录为 symlink，163 shard，`/data1` 余 3.8T。**D=4.0e9 已超过 2.35B unique 量**，即本档 E1 内部约 1.7 个语料 pass、E3 全程 5.1 pass。为与梯子其余档可比（159m 的 D=3.18e9 同样 > 2.35B），**保留名义 D/N=20 不动**，但本档的「unique D」含义须按此注记读，不得当作 4B unique。
+- 语料（**2026-10-21 23:30 订正**，原句「111 shard ≈ 2.35B token、D=4B 超过 unique 量」是错的——那是对 360-2 符号链接树做 `du -sb` 得到的字节数）：实测单 shard ≈ **98 MB ≈ 49M uint16 token**（`shard_00001.bin` 99,433,872 B；`shard_00111.bin` 98,548,704 B），ophis `tokenized_full163` = **163 shard / 15,626,022,328 B ≈ 7.8B unique token**（`du -sbL`）。200M 的 SHARDS=1,11..111（去 24）共 100 shard ≈ 4.9B ≥ D=4.0B → **本档 E1 内无重复，D/N=20 是真 unique 口径**；159m 同理（3.18B < 74 shard ≈ 3.6B）。360-2 只有 shard 1–84 + 6542，**200M 不能在 360-2 起**（缺 85–111，≈2.6GB，需经 Mac 中转）。D/N=20 的语料天花板仍是 **≈390M dense**（7.8B/20）。
 
 **(d) 前置阻塞的清理（两条都已查清，不再是阻塞）**
 
@@ -6801,3 +6801,21 @@ GPU 依据（实测复核）：ophis GPU0/1/3 在两次采样间**不是稳定�
 **(d) 159M 的 −340 mK 判为已知 val 异常，不采信为「OE 大幅增益」**
 
 159M 两 seed 的 exact−nogram 达 −333/−348 mK，比 104M（−29/−35 mK）大一个数量级。但 159M 档正是 §132(e2) 已登记「per-epoch val 下坠」并专门开 data-region 探针的那一档；且该档 exact 的 val 2.10 远低于同 ladder 的 104M exact 2.50，跨了 1.9× 模型应给的量级。**故本轮不把 −340 mK 记为收益，标为 canvas 异常待查**；§134 的 200M 档将为「收益随 N 的走向」提供不依赖 159M 的第二把尺。
+
+---
+
+## §136 E5 复本：低 tls 的 E3 收益能否撑到第 5 遍（2026-10-21 23:25，running）
+
+**问题**：§131 的部署推论「R/N=32 + tls0.25 的 E3 Δval +42 mK 最好」只有 s42 一个 seed；且已有的 s42 E5 臂（`50m_exact_r1600k_d1b_tls0.25_s42_e5_fd`，ophis）在 **E3 发散**（val 末窗 > 4，Δval −1682 mK），而同 R/N 的 E3-only 臂 s42/s43 健康 → 需要第 2 个 seed 判断这是抽签还是 E3+ 的系统性失稳。R/N=16 tls0.25 的 s42 E5 已完成（E1/E2/E3 Δval +51.0/+43.9/+39.1 mK，E4/E5 gap +0.035/−0.001，健康）。
+
+**臂**（360-2，代码 md5 与本地一致：train.py `a97b344a`、ngram_freq.py `3aa10c19`、launcher `9e043f77`；`NGLAB_EPOCHS=5`）：
+
+| GPU | run_id | 配对 |
+|---|---|---|
+| 3 | `v26dn_50m_exact_r1600k_d1b_tls0.25_s43_e5_fd` | R/N=32 |
+| 4 | `v26dn_50m_exact_r800k_d1b_tls0.25_s43_e5_fd` | R/N=16 |
+| 5 | `v26dn_50m_nogram_r400k_d1b_tls1_s43_e5_fd` | 同机 nogram 基线 |
+
+**预注册读法**：E5 末窗 Δval（同机 nogram − arm）> 0 且无发散 → 「低 tls + 大表」是 ≥5 遍的配方；R/N=32 s43 在 E3–E5 发散 → R/N=32 判为不稳定档，部署推荐退回 R/N=16 + tls0.25。约 5.5 h 完成（50M 一个 epoch ≈ 6780 步 ≈ 1.1 h）。
+
+**附带订正**：本批 harvest 发现 4 条 run 的 `train.log` 只有一行 `run_v26_dn20.sh: line 74: --device_batch_size: command not found`（launcher 在运行中被 rsync 覆盖时 bash 读到半截脚本的报错），但训练本身完整（`train_log.jsonl` 到末步、`summary.json` 在）。**这些臂的读数必须从 `train_log.jsonl` 取，不能从 `train.log` 取**；§135 的表因此漏了它们（如 `50m_exact_r1600k_d1b_tls0.25_s43_e3_fd` 末步 val 2.6683），不影响 §135 的判词。教训：**不要覆盖正在被 bash 执行的 launcher**——改用新文件名或等臂结束。
