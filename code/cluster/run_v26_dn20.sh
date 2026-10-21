@@ -19,6 +19,9 @@ BASE22="1,11,12,13,14,15,16,17,18,19,20,21,22,23,25,26,27,28,29,30,31,32"
 
 TLS_OVERRIDE="${NGLAB_TLS:-}"
 RK_OVERRIDE="${NGLAB_RK:-}"
+EPOCHS_OVERRIDE="${NGLAB_EPOCHS:-}"
+E=3
+[[ -n "$EPOCHS_OVERRIDE" ]] && E="$EPOCHS_OVERRIDE"
 case "$MODEL" in
   35m)  NL=6;  NE=640;  NH=5; RK=280;  DTOK=700000000;  DTAG=d0p7b; TLS=0.5; DB=72
         SHARDS="1,11,12,13,14,15,16,17,18,19,20,21,22,23,25,26" ;;
@@ -49,7 +52,7 @@ esac
 
 TABLE=(--table_optimizer adamw --table_betas 0.9,0.95 --table_grad_clip 1.0
        --table_lr_scale "$TLS")
-RUN_ID="v26dn_${MODEL}_${ARM}_r${RK}k_${DTAG}_tls${TLS}_s${SEED}_e3_fd"
+RUN_ID="v26dn_${MODEL}_${ARM}_r${RK}k_${DTAG}_tls${TLS}_s${SEED}_e${E}_fd"
 RESULT_DIR="$OUT_DIR/${RUN_ID}_fixed"
 [[ ! -e "$RESULT_DIR" ]] || { echo "refusing existing run: $RESULT_DIR" >&2; exit 2; }
 mkdir -p "$RESULT_DIR"
@@ -57,7 +60,7 @@ mkdir -p "$RESULT_DIR"
 echo "[v26dn] run=$RUN_ID gpu=$GPU model=$MODEL arm=$ARM seed=$SEED D=$DTOK R/order=${RK}k tls=$TLS db=$DB"
 CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --run_id "${RUN_ID}_fixed" --out_dir "$OUT_DIR" --data_dir "$DATA_DIR" \
-  --train_shards "$SHARDS" --train_max_tokens "$DTOK" --train_epochs 3 \
+  --train_shards "$SHARDS" --train_max_tokens "$DTOK" --train_epochs "$E" \
   --val_shards 2,3,4,5,6,7,8,9,10,6542 --seed "$SEED" \
   --dtype bf16 --injection_position input "${NG[@]}" \
   --n_layer "$NL" --n_head "$NH" --n_embd "$NE" --vocab_size 8192 --sequence_len 2048 \
