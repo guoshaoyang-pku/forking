@@ -37,6 +37,10 @@ case "$MODEL" in
 esac
 [[ -n "$TLS_OVERRIDE" ]] && TLS="$TLS_OVERRIDE"
 [[ -n "$RK_OVERRIDE" ]] && RK="$RK_OVERRIDE"
+# diagnostics-only overrides (defaults unchanged): DB -> grad_accum = 147456/(DB*2048),
+# SHARDS -> data-region probe (isolate the 159m per-epoch val plunge; see §132(e2)).
+DB="${NGLAB_DB:-$DB}"
+SHARDS="${NGLAB_SHARDS:-$SHARDS}"
 
 case "$ARM" in
   nogram)
@@ -54,7 +58,7 @@ esac
 
 TABLE=(--table_optimizer adamw --table_betas 0.9,0.95 --table_grad_clip 1.0
        --table_lr_scale "$TLS")
-RUN_ID="v26dn_${MODEL}_${ARM}_r${RK}k_${DTAG}_tls${TLS}_s${SEED}_e${E}_fd"
+RUN_ID="v26dn_${MODEL}_${ARM}_r${RK}k_${DTAG}_tls${TLS}_s${SEED}_e${E}${NGLAB_TAG:-}_fd"
 RESULT_DIR="$OUT_DIR/${RUN_ID}_fixed"
 [[ ! -e "$RESULT_DIR" ]] || { echo "refusing existing run: $RESULT_DIR" >&2; exit 2; }
 mkdir -p "$RESULT_DIR"
