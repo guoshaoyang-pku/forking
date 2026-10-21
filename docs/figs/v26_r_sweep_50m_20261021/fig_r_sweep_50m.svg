@@ -75,8 +75,8 @@
 <text x="547.95" y="721.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">32</text>
 <text x="333.12" y="782.00" font-size="20" fill="#343a40" text-anchor="middle" font-weight="400">R/N = 每阶表行数 / backbone 参数</text>
 <text x="30.12" y="474.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400" transform="rotate(-90 30.125 474.0)">验证损失（epoch 边界）</text>
-<g clip-path="url(#plot-0)"><polyline points="128.37,282.91 212.29,325.25 244.05,330.86 323.22,355.49 380.12,366.43 464.03,408.62 547.95,422.88" fill="none" stroke="#1f77b4" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="128.37" cy="282.91" r="7" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<g clip-path="url(#plot-0)"><polyline points="128.37,282.05 212.29,325.25 244.05,330.86 323.22,355.49 380.12,366.43 464.03,408.62 547.95,422.88" fill="none" stroke="#1f77b4" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="128.37" cy="282.05" r="7" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="212.29" cy="325.25" r="7" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="244.05" cy="330.86" r="7" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="323.22" cy="355.49" r="7" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
@@ -84,8 +84,8 @@
 <circle cx="464.03" cy="408.62" r="7" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="547.95" cy="422.88" r="7" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
 </g>
-<g clip-path="url(#plot-0)"><polyline points="128.37,445.63 212.29,479.33 244.05,491.42 323.22,506.83 380.12,514.90 464.03,543.26 547.95,539.95" fill="none" stroke="#2ca02c" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="128.37" cy="445.63" r="7" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
+<g clip-path="url(#plot-0)"><polyline points="128.37,436.99 212.29,479.33 244.05,491.42 323.22,506.83 380.12,514.90 464.03,543.26 547.95,539.95" fill="none" stroke="#2ca02c" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="128.37" cy="436.99" r="7" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="212.29" cy="479.33" r="7" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="244.05" cy="491.42" r="7" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="323.22" cy="506.83" r="7" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
@@ -93,8 +93,8 @@
 <circle cx="464.03" cy="543.26" r="7" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="547.95" cy="539.95" r="7" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
 </g>
-<g clip-path="url(#plot-0)"><polyline points="128.37,512.88 212.29,535.34 244.05,551.62 323.22,556.22 380.12,557.81 464.03,558.38 547.95,523.82" fill="none" stroke="#d62728" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="128.37" cy="512.88" r="7" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
+<g clip-path="url(#plot-0)"><polyline points="128.37,501.50 212.29,535.34 244.05,551.62 323.22,556.22 380.12,557.81 464.03,558.38 547.95,523.82" fill="none" stroke="#d62728" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="128.37" cy="501.50" r="7" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="212.29" cy="535.34" r="7" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="244.05" cy="551.62" r="7" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="323.22" cy="556.22" r="7" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
@@ -140,10 +140,10 @@
 <text x="1110.45" y="721.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">32</text>
 <text x="895.62" y="782.00" font-size="20" fill="#343a40" text-anchor="middle" font-weight="400">R/N = 每阶表行数 / backbone 参数</text>
 <text x="592.62" y="474.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400" transform="rotate(-90 592.625 474.0)">E3 损失（epoch 边界）</text>
-<line x1="655.62" y1="240.28" x2="1135.62" y2="240.28" stroke="#999999" stroke-width="2" stroke-dasharray="3 6" opacity="0.8" clip-path="url(#plot-1)"/>
-<line x1="655.62" y1="317.82" x2="1135.62" y2="317.82" stroke="#999999" stroke-width="2" stroke-dasharray="8 6" opacity="0.8" clip-path="url(#plot-1)"/>
-<g clip-path="url(#plot-1)"><polyline points="690.87,240.28 774.79,315.38 806.55,344.84 885.72,400.67 942.62,441.21 1026.53,551.98 1110.45,634.62" fill="none" stroke="#d62728" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="683.87" y="233.28" width="14" height="14" fill="#d62728" stroke="#ffffff" stroke-width="1.4"/>
+<line x1="655.62" y1="220.34" x2="1135.62" y2="220.34" stroke="#999999" stroke-width="2" stroke-dasharray="3 6" opacity="0.8" clip-path="url(#plot-1)"/>
+<line x1="655.62" y1="300.31" x2="1135.62" y2="300.31" stroke="#999999" stroke-width="2" stroke-dasharray="8 6" opacity="0.8" clip-path="url(#plot-1)"/>
+<g clip-path="url(#plot-1)"><polyline points="690.87,220.34 774.79,315.38 806.55,344.84 885.72,400.67 942.62,441.21 1026.53,551.98 1110.45,634.62" fill="none" stroke="#d62728" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="683.87" y="213.34" width="14" height="14" fill="#d62728" stroke="#ffffff" stroke-width="1.4"/>
 <rect x="767.79" y="308.38" width="14" height="14" fill="#d62728" stroke="#ffffff" stroke-width="1.4"/>
 <rect x="799.55" y="337.84" width="14" height="14" fill="#d62728" stroke="#ffffff" stroke-width="1.4"/>
 <rect x="878.72" y="393.67" width="14" height="14" fill="#d62728" stroke="#ffffff" stroke-width="1.4"/>
@@ -151,8 +151,8 @@
 <rect x="1019.53" y="544.98" width="14" height="14" fill="#d62728" stroke="#ffffff" stroke-width="1.4"/>
 <rect x="1103.45" y="627.62" width="14" height="14" fill="#d62728" stroke="#ffffff" stroke-width="1.4"/>
 </g>
-<g clip-path="url(#plot-1)"><polyline points="690.87,317.82 774.79,352.38 806.55,377.41 885.72,384.50 942.62,386.94 1026.53,387.82 1110.45,334.65" fill="none" stroke="#1f77b4" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="690.87" cy="317.82" r="7" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<g clip-path="url(#plot-1)"><polyline points="690.87,300.31 774.79,352.38 806.55,377.41 885.72,384.50 942.62,386.94 1026.53,387.82 1110.45,334.65" fill="none" stroke="#1f77b4" stroke-width="4.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="690.87" cy="300.31" r="7" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="774.79" cy="352.38" r="7" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="806.55" cy="377.41" r="7" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
 <circle cx="885.72" cy="384.50" r="7" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
@@ -210,8 +210,8 @@
 <text x="1672.95" y="721.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">32</text>
 <text x="1458.12" y="782.00" font-size="20" fill="#343a40" text-anchor="middle" font-weight="400">R/N = 每阶表行数 / backbone 参数</text>
 <text x="1155.12" y="474.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400" transform="rotate(-90 1155.125 474.0)">E3 gap（验证 − 训练）</text>
-<g clip-path="url(#plot-2)"><polyline points="1253.37,659.14 1337.29,621.50 1369.05,617.38 1448.22,572.13 1505.12,536.74 1589.03,434.71 1672.95,308.61" fill="none" stroke="#7d3c98" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M 1253.37 651.14 L 1261.37 659.14 L 1253.37 667.14 L 1245.37 659.14 Z" fill="#7d3c98" stroke="#ffffff" stroke-width="1.4"/>
+<g clip-path="url(#plot-2)"><polyline points="1253.37,661.41 1337.29,621.50 1369.05,617.38 1448.22,572.13 1505.12,536.74 1589.03,434.71 1672.95,308.61" fill="none" stroke="#7d3c98" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 1253.37 653.41 L 1261.37 661.41 L 1253.37 669.41 L 1245.37 661.41 Z" fill="#7d3c98" stroke="#ffffff" stroke-width="1.4"/>
 <path d="M 1337.29 613.50 L 1345.29 621.50 L 1337.29 629.50 L 1329.29 621.50 Z" fill="#7d3c98" stroke="#ffffff" stroke-width="1.4"/>
 <path d="M 1369.05 609.38 L 1377.05 617.38 L 1369.05 625.38 L 1361.05 617.38 Z" fill="#7d3c98" stroke="#ffffff" stroke-width="1.4"/>
 <path d="M 1448.22 564.13 L 1456.22 572.13 L 1448.22 580.13 L 1440.22 572.13 Z" fill="#7d3c98" stroke="#ffffff" stroke-width="1.4"/>
@@ -219,7 +219,7 @@
 <path d="M 1589.03 426.71 L 1597.03 434.71 L 1589.03 442.71 L 1581.03 434.71 Z" fill="#7d3c98" stroke="#ffffff" stroke-width="1.4"/>
 <path d="M 1672.95 300.61 L 1680.95 308.61 L 1672.95 316.61 L 1664.95 308.61 Z" fill="#7d3c98" stroke="#ffffff" stroke-width="1.4"/>
 </g>
-<text x="1253.37" y="640.14" font-size="18" fill="#7d3c98" text-anchor="middle" font-weight="600">−0.035</text>
+<text x="1253.37" y="642.41" font-size="18" fill="#7d3c98" text-anchor="middle" font-weight="600">−0.036</text>
 <text x="1334.29" y="592.50" font-size="18" fill="#7d3c98" text-anchor="middle" font-weight="600">−0.017</text>
 <text x="1373.05" y="655.38" font-size="18" fill="#7d3c98" text-anchor="middle" font-weight="600">−0.015</text>
 <text x="1448.22" y="547.13" font-size="18" fill="#7d3c98" text-anchor="middle" font-weight="600">+0.007</text>
@@ -227,14 +227,14 @@
 <text x="1581.03" y="411.71" font-size="18" fill="#7d3c98" text-anchor="middle" font-weight="600">+0.074</text>
 <text x="1664.95" y="285.61" font-size="18" fill="#7d3c98" text-anchor="middle" font-weight="600">+0.135</text>
 <text x="306.25" y="836.00" font-size="16.5" fill="#31363b" text-anchor="middle" font-weight="600">E1/E2 验证损失随 R 持续下降</text>
-<text x="306.25" y="861.00" font-size="16.5" fill="#31363b" text-anchor="middle" font-weight="600">E3 收益在 R/N=8–16 达峰；32 仍 −0.0076</text>
+<text x="306.25" y="861.00" font-size="16.5" fill="#31363b" text-anchor="middle" font-weight="600">E3 收益在 R/N=8–16 达峰；32 仍 −0.016</text>
 <text x="868.75" y="827.00" font-size="16.5" fill="#9d332d" text-anchor="middle" font-weight="600">8→16：Δtrain −0.0500，Δval −0.0004</text>
-<text x="868.75" y="852.00" font-size="16.5" fill="#9d332d" text-anchor="middle" font-weight="600">16→32：训练再降 0.0373，验证收益缩至 −0.0076</text>
+<text x="868.75" y="852.00" font-size="16.5" fill="#9d332d" text-anchor="middle" font-weight="600">16→32：训练再降 0.0373，验证收益缩至 −0.016</text>
 <text x="868.75" y="877.00" font-size="16.5" fill="#9d332d" text-anchor="middle" font-weight="600">额外容量主要增加训练拟合；验证仍小幅受益</text>
-<text x="1431.25" y="836.00" font-size="16.5" fill="#7d3c98" text-anchor="middle" font-weight="600">E3 Δgap 单调上升：+0.018 → +0.170</text>
-<text x="1431.25" y="861.00" font-size="16.5" fill="#7d3c98" text-anchor="middle" font-weight="600">R/N=32 仍优于 nogram：Δval = −0.0076</text>
+<text x="1431.25" y="836.00" font-size="16.5" fill="#7d3c98" text-anchor="middle" font-weight="600">E3 Δgap 单调上升：+0.019 → +0.172</text>
+<text x="1431.25" y="861.00" font-size="16.5" fill="#7d3c98" text-anchor="middle" font-weight="600">R/N=32 仍优于 nogram：Δval = −0.016</text>
 <line x1="28.125" y1="968" x2="1771.875" y2="968" stroke="#e5e7e9" stroke-width="1.2"/>
-<text x="900.00" y="1000.00" font-size="15.5" fill="#555d65" text-anchor="middle" font-weight="400">数据来源：docs/experiment-log.md §122(a) 七个端点（seed 42）；nogram v25oe_nogram_p1b_s42_e3_fd_fixed + exact arms v26dn_50m_exact_r{100k,128k,256k,400k,800k,1600k}_d1b_tls1_s42_e3_fd_fixed。</text>
+<text x="900.00" y="1000.00" font-size="15.5" fill="#555d65" text-anchor="middle" font-weight="400">数据来源：docs/experiment-log.md §122(a) 七个端点（seed 42）；基线 v26dn_50m_nogram_r400k_d1b_tls1_s42_e3_fd_fixed + exact arms v26dn_50m_exact_r{100k,128k,256k,400k,800k,1600k}_d1b_tls1_s42_e3_fd_fixed。</text>
 <text x="900.00" y="1028.00" font-size="15.5" fill="#555d65" text-anchor="middle" font-weight="400">读数 = 每个 epoch 的最后一个 logged step（6780 / 13560 / 20343）；R/N = 每阶表行数 ÷ (backbone 参数 / 1000)；gap = val − train。Lower loss is better.</text>
-<text x="900.00" y="1054.00" font-size="15.5" fill="#555d65" text-anchor="middle" font-weight="400">跨机拼接：r100k / r400k / r800k 在 360-2，r128k / r256k / r1600k 在 ophis（同 launcher、同 npz 口径；val 帧差 ±0.02）。</text>
+<text x="900.00" y="1054.00" font-size="15.5" fill="#555d65" text-anchor="middle" font-weight="400">跨机拼接：r100k / r400k / r800k 在 360-2，r128k / r256k / r1600k 在 ophis（同 launcher、同 npz 口径；跨机 val 帧差 ≤0.008）。</text>
 </svg>

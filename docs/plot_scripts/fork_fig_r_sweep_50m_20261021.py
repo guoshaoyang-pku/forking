@@ -354,16 +354,16 @@ for ratio, gap_exact_value in zip(XS, gap_exact):
 for index, lines, color in [
     (0, [
         "E1/E2 验证损失随 R 持续下降",
-        "E3 收益在 R/N=8–16 达峰；32 仍 −0.0076",
+        "E3 收益在 R/N=8–16 达峰；32 仍 −0.016",
     ], "#31363b"),
     (1, [
         "8→16：Δtrain −0.0500，Δval −0.0004",
-        "16→32：训练再降 0.0373，验证收益缩至 −0.0076",
+        "16→32：训练再降 0.0373，验证收益缩至 −0.016",
         "额外容量主要增加训练拟合；验证仍小幅受益",
     ], "#9d332d"),
     (2, [
-        "E3 Δgap 单调上升：+0.018 → +0.170",
-        "R/N=32 仍优于 nogram：Δval = −0.0076",
+        "E3 Δgap 单调上升：+0.019 → +0.172",
+        "R/N=32 仍优于 nogram：Δval = −0.016",
     ], C_GAP),
 ]:
     y0 = 827 if len(lines) == 3 else 836
@@ -374,7 +374,7 @@ for index, lines, color in [
 svg.append(f'<line x1="{MARGIN_X}" y1="968" x2="{W - MARGIN_X}" y2="968" stroke="#e5e7e9" stroke-width="1.2"/>')
 add_text(
     W / 2, 1000,
-    "数据来源：docs/experiment-log.md §122(a) 七个端点（seed 42）；nogram v25oe_nogram_p1b_s42_e3_fd_fixed + exact arms v26dn_50m_exact_r{100k,128k,256k,400k,800k,1600k}_d1b_tls1_s42_e3_fd_fixed。",
+    "数据来源：docs/experiment-log.md §122(a) 七个端点（seed 42）；基线 v26dn_50m_nogram_r400k_d1b_tls1_s42_e3_fd_fixed + exact arms v26dn_50m_exact_r{100k,128k,256k,400k,800k,1600k}_d1b_tls1_s42_e3_fd_fixed。",
     size=15.5, fill="#555d65", anchor="middle",
 )
 add_text(
@@ -384,7 +384,7 @@ add_text(
 )
 add_text(
     W / 2, 1054,
-    "跨机拼接：r100k / r400k / r800k 在 360-2，r128k / r256k / r1600k 在 ophis（同 launcher、同 npz 口径；val 帧差 ±0.02）。",
+    "跨机拼接：r100k / r400k / r800k 在 360-2，r128k / r256k / r1600k 在 ophis（同 launcher、同 npz 口径；跨机 val 帧差 ≤0.008）。",
     size=15.5, fill="#555d65", anchor="middle",
 )
 svg.append('</svg>')
