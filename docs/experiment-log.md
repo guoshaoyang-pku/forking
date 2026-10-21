@@ -6091,10 +6091,50 @@ nogram = `v25oe_nogram_p1b_s42_e3_fd_fixed`；exact 臂 = `v26dn_50m_exact_r{100
 
 **（b）新铺 6 臂（tls 轴；同 launcher，三机 md5 一致：run_v26_dn20.sh `435b82c6` / train.py `a97b344a`）**：
 - ophis：GPU4 `50m r1600k tls0.25 s42`、GPU5 `50m r800k tls0.5 s42`、GPU2 `50m r1600k tls0.5 s43`
-- 360-2（持久 ssh 会话持有，Linger=no）：GPU2 `159m r1272k tls0.5 s42`、GPU5 `104m r832k tls0.5 s42`、GPU6 `50m r800k tls0.25 s42`
+- 360-2：GPU2 `159m r1272k tls0.5 s42`、GPU5 `104m r832k tls0.5 s42`、GPU6 `50m r800k tls0.25 s42`
+
+**⚠ 归属更正（据 §125c）**：360-2 这 3 臂实为**并行会话**在 10:18/10:20 发起（`50m r800k tls0.25` 已 11:57 跑完）；本会话对 360-2 的重复启动被 launcher 既有-run 守卫拒绝（`run_v26_dn20.sh:54`），**无重复进程、无重复写日志**。ophis 三臂确为本会话 12:0x 发起。
 
 科学问题：**降低表 LR 能否在保住 E1–E3 收益的前提下按比例砍掉 forking penalty，且这个性质是否跨 R/N（16 vs 32）与跨模型（50m→104m→159m）成立**——即「防 fork 不丢收益」的部署问题。仅用 `NGLAB_TLS`/`NGLAB_RK` 覆写，无 setting 偏离（表优化器 adam+clip 已在 §98 定案）。
 
 **（c）infra 坑（新，供接力）**：ophis 用 `systemd-run --user` 起臂**必须**带 `--working-directory=$ROOT`、日志用绝对路径；否则单元在 `$HOME` 下执行相对路径 `bash code/cluster/run_v26_dn20.sh` → 秒退 status 127（本次 3 臂首启即此死法，日志落在 `~/logs/`，已删并重启）。
 
 **（d）飞书表（表 121×10）**：s43 同 seed Δval 回填（r400k −0.066/−0.036、r1600k E1 −0.084）；nogram s43 基线行转「完成」；新增 7 行（r800k s43 完成读数 + 6 个 tls 轴新臂）。
+
+---
+
+### §125 R/N=16 的表 LR 阶梯命中目标：forking 清零而收益保留；104m R 扫描饱和于 R/N≈8；360-2 磁盘审计（2026-10-21 12:30）
+
+**（a）关键正面结果：R/N=16、tls 1×→0.25×，E3 forking 消失而 val 不动**（同机 360-2，单变量 = 表 LR；`v26dn_50m_exact_r800k_d1b_tls0.25_s42_e3_fd_fixed` 11:57 完成）
+
+| epoch | tls0.25 train/val（own gap） | tls0.25 Δval | tls1 train/val（own gap） | tls1 Δval |
+|---|---|---|---|---|
+| E1 | 2.8252/2.8150（−0.010） | −0.038 | 2.7820/2.7654（−0.017） | −0.087 |
+| E2 | 2.6410/2.7016（+0.061） | −0.038 | 2.5821/2.6719（+0.090） | −0.068 |
+| E3 | 2.6580/2.6625（**+0.005**） | **−0.031** | 2.5873/2.6614（**+0.074**） | −0.032 |
+
+**判读（三条）**：
+1. **E3 的 forking 被清零**（own gap +0.074 → +0.005），而 E3 val 基本不动（2.6614 → 2.6625，差 +0.001）→ 这正是本线要找的「**防 fork 不丢收益**」；且两臂同机同 R/N，是干净单变量。
+2. **代价被推到早期**：tls0.25 的 E1 收益减半（−0.038 vs −0.087）、E2 仍留 +0.061 gap → 低表 LR 让表**学得更慢**，但到 E3 已追平。故 tls 是「**用早期收益换晚期不 fork**」的旋钮，不是无条件免费。
+3. **单点待证**：仅 1 seed × 1 个 R/N。ophis 在跑的 `50m r800k tls0.5 s42`（中档）与 `r1600k tls0.25`（R/N=32 第三点）将给出单调性；`r1600k tls0.5 s43` 给 seed 复本。**在三点齐前不写成定律**。
+
+**（b）104m R 扫描补全：E1/E3 收益均饱和于 R/N≈8，16 处回落**（360-2，s42，nogram E1/E2/E3 val = 2.6364/2.5607/2.5302）
+
+| 臂 | R/order | R/N | E1 Δval | E2 Δval | E3 Δval | E3 own gap |
+|---|---|---|---|---|---|---|
+| r400k | 400k | 3.8 | −0.046 | −0.042 | **+0.030** | −0.079 |
+| r832k | 832k | 8.0 | **−0.064** | −0.054 | **−0.018** | −0.049 |
+| r1600k | 1600k | 15.4 | −0.056 | −0.047 | −0.014 | +0.014 |
+
+**判读**：与 50m 不同（50m 的 E1 收益一路涨到 R/N=32、E3 峰值在 8–16），**104m 在 R/N≈8 就全面见顶**，再翻倍到 15–16 反而回落 → 随 backbone 增大，**边际表容量的可兑现上限下移**。这与 §122「收益随 N 放大、记忆化同步放大」合读：大模型的表容量预算应更紧，而不是更松。
+
+**（c）归属与并发安全（重要，供接力）**：360-2 的三个 tls 臂由**并行会话** 10:18/10:20 发起；本会话 12:0x 的重复启动被 `run_v26_dn20.sh:54` 的「既有 run 目录即拒绝」守卫挡下，`ps` 无重复进程、`train_log.jsonl` 无重复 step（逐条核对 1742/1210/2035 条，0 重复）→ **无重复计算、无日志污染**。教训：跨会话同仓协作时，**run 目录本身就是互斥锁**；报「已铺臂」前应核 `ps` 的 `lstart` 与 `.out` 日志 mtime，不能只看进程名匹配。
+
+**（d）360-2 磁盘审计（`/data`，单块 XFS local，prjquota）**：
+- 容量：7.9T 总 / 6.0T 用 / **1.9T 空（76%）**；inode 843M 只用 3%；2 GiB 写测试 1.8 GB/s 通过 → **当前可写，非阻塞**。
+- 占用归属：**全是我们自己**。13 个他人 home 中 `wangxingyun` = 0，其余 0 或 4.0K（`/etc/projects` 里每人一个 project id，但没人放数据）。
+- 我方 = 559G（home）+ 4.5T（`/data/shared/guoshaoyang`）≈ **5.06T，占已用 6.0T 的 84%**。
+- `/data/shared/guoshaoyang` 前六大：`aiq_rl_store` 2.9T（**活跃**，nemotron35_shortchain 1.3T / runs 449G / longrun_v4 248G / fp8_sprint 157G / models 147G / rl08b_eval 110G）、`rescue_360-1_20261012` 994G（360-1 救援副本，README 记载逐文件校验零错，**360-1 在检修、暂不可删**）、`ngram-gap-lab` 252G（multilayer_posttraining_*，9/25–26，闲置）、`new-scaling` 178G、`_trash_20260824` 80G（自标废弃：ophis_env.tar.gz 3.5G + setting_tree_cache）、`archives` 58G。
+- 另：root 侧 `pkg_cache` 7.1G、`miniconda3-py310` 847M；`docker` 权限不可测。
+- **机制澄清**：`/etc/projects` 只给 `/data/home/<user>` 建了 project quota；**`/data/shared/guoshaoyang` 不在配额表内**，它只吃设备空间 → 早期 03:21 那类 ENOSPC 挂起是**设备写满**，不是人均配额；当前 1.9T 余量已不构成风险，但按现增速（每 1B-token 臂 ≈ 数十 GB）需定期清。
+- 清理候选（待批，P5）：`_trash_20260824` 80G（无风险）、`ngram-gap-lab` 252G（闲置一个月，需确认非在用）、`new-scaling` 178G（需确认）→ 合计约 510G，可不删任何在跑数据。`aiq_rl_store` 2.9T 是唯一大杠杆，需按「已完成/废弃 run」逐项筛。
