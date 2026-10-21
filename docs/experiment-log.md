@@ -6738,7 +6738,10 @@ nogram = `v26dn_50m_nogram_r400k_d1b_tls1_s42_e3_fd_fixed`（**同协议同 laun
 
 **(c) 显存与语料账（发臂前核算，避免 §82 式写盘/显存挂起）**
 
-- 表状态（exact 臂主项）：rows=5,881,841 × NE=1152（`ngram_heads=1` 全宽）= **6.776B 参数**；bf16 权重 13.6GB + AdamW 两个 fp32 动量 54.2GB ≈ **68GB 静态**，比 159m 档（约 46GB）重 1.47×。DB=12 把激活压到可忽略，143GB 卡在 GPU0/1/3 分别已有 4.9/6.3/6.3GB 他人占用的情况下仍有余量。
+- 表状态（exact 臂主项，**实测口径**）：`[nglab] model params: 6979.0M`（表 6,776M + backbone 203.1M）。表 rows=5,881,841 × NE=1152（`ngram_heads=1` 全宽）= 6.776B 参数；实测常驻 **s42 142,205 MiB / s43 137,586 MiB（卡总 143,771 MiB）**，即 **96–99% 占用、余量仅 0.7–4.3GB**。
+  由此反解表状态显存系数 ≈ **20 B/参数**（bf16 权重 2 + fp32 grad 4 + fp32 master 4 + 2×fp32 AdamW 动量 8）。用该系数回代已有档位与实测吻合：159m（rows 3×1,272,000 + order5 饱和 1,081,841 = 4,897,841 × 1024 = 5.02B → ≈100GB）对 GPU4 实测 107,487 MiB；104m（3,328,000 × 896 = 2.98B → ≈60GB）对 GPU5 实测 64,855 MiB。**故 (c) 原先的 68GB 静态估计是错的（低估约 2×），一律以实测为准。**
+  **新硬边界（本档最重要的副产物）**：exact 臂在**单张 H200 上的显存天花板就是 N≈200M**。外推 300M/400M 需 rows≈8.28M × NE≥1152 × 20B ≈ **≥191GB**，单卡装不下——与 (b)2 的索引天花板（N≳203M）几乎落在同一个 N。**300M/400M 有两个互相独立的前置障碍（索引 + 显存），二者都须先解，加算力无解。**
+  **对 A100-40GB 的直接限制**（用户将释放 32 张）：exact 臂 ≈ 表参数量 × 20B + backbone，故 **50M 档（rows 1.6M × 768 = 1.23B ≈ 25GB + 3GB backbone）勉强可跑，104M 档（2.98B ≈ 60GB）装不下**。A100 只能承接 **nogram 臂（任何档）与 ≤50M 的 exact 臂**；104M 及以上 exact 必须留在 H200。
 - 语料：360-2 `data/tokenized` = **111 shard / 4,698,183,123 B**（`.bin`，每 shard 42.3MB ≈ 21.2M uint16 token ≈ 2.35B token 总量）；ophis 侧同目录为 symlink，163 shard，`/data1` 余 3.8T。**D=4.0e9 已超过 2.35B unique 量**，即本档 E1 内部约 1.7 个语料 pass、E3 全程 5.1 pass。为与梯子其余档可比（159m 的 D=3.18e9 同样 > 2.35B），**保留名义 D/N=20 不动**，但本档的「unique D」含义须按此注记读，不得当作 4B unique。
 
 **(d) 前置阻塞的清理（两条都已查清，不再是阻塞）**
@@ -6758,5 +6761,9 @@ nogram = `v26dn_50m_nogram_r400k_d1b_tls1_s42_e3_fd_fixed`（**同协议同 laun
 |---|---|---|---|
 | 1 | `200m_exact_r1600k_d4b_tls1_s42_e3_fd` | ophis·0 | 200M iso-ratio 格主臂（存活 + 收益厚度） |
 | 2 | `200m_nogram_r1600k_d4b_tls1_s42_e3_fd` | ophis·1 | #1 同机同 seed 配对基线（own gap 与 Δval 的唯一合法对照） |
+| 3 | `200m_exact_r1600k_d4b_tls1_s43_e3_fd` | ophis·3 | 200M exact 第 2 seed（存活率是本档一等指标，2/2 才算稳） |
+| 4 | `200m_nogram_r1600k_d4b_tls1_s43_e3_fd` | ophis·7 | #3 同机同 seed 配对基线 |
 
-GPU 选择依据：ophis GPU0/1/3 util 0–6%、占用 4.9–6.3GB（他人小进程）；GPU2 被 zhaohaoran 占满 80GB；GPU4/5/6 是本项目 §133 在跑的臂；GPU7 有 6.7GB 陈旧占用。360-2 GPU0–7 全部被 §133 的 12 臂占满，故 200M 只在 ophis 起，**不跨机配对**（§133 已定：配对必须同机）。
+四臂于 2026-10-21 启动并进入 epoch 1：exact s42 step 240 @218s（**0.91 s/step**）、nogram s42 step 410 @283s（0.69 s/step）、exact s43 与 nogram s43 同步跑起。E=3 × D=4B = 12B token = 81,380 步，**预计 16–21h 完成**。
+GPU 依据（实测复核）：ophis GPU0/1/3 在两次采样间**不是稳定空闲**——zhaohaoran 的 `thermalfield` 作业（pid 2645345/6/8）会以 24,496 MiB 脉冲式进出这三张卡，wangxingyun 的 1,398 MiB 常驻。因此 exact s42 抢在 GPU0 真空期装入（142,205 MiB），**余量仅 1.5GB：若 thermalfield 脉冲回来会 OOM，须监控**。s43 装在 GPU3（137,586 MiB，余量 4.3GB）。GPU2 被 zhaohaoran 占满 75GB；GPU4/5/6 是本项目 §133 在跑的臂；GPU7 有 6.8GB 陈旧占用（util 0%，未动）。360-2 GPU0–7 全被 §133 的 12 臂占满，故 200M 只在 ophis 起，**不跨机配对**（§133 已定：配对必须同机）。
+159M 档**无需在 ophis 重发**：360-2 已有 `159m_{exact,nogram}_r1272k_d3p2b_tls1_s4{2,3}_e3_fd` 配对 + `tls0.5_s42`，梯子该级已覆盖。
