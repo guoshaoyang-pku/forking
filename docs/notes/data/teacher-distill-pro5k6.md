@@ -99,8 +99,10 @@ counters equal):
 | `/data/distill_prod_v3.py` | v2 + producer/consumer overlap (encode in a producer thread, accumulate + all state in the consumer) | ~0.79 s |
 
 **PAUSED 2026-10-21 17:15 at the user's instruction.**  All four workers and both
-daemons (`milestone_watch.py`, `auto_restart_v2.py`) were stopped; all 8 GPUs are
-idle.  The graceful SIGTERM handler saved every worker's part + state, so nothing
+daemons (`milestone_watch.py`, `auto_restart_v2.py`) were stopped, so this line
+holds no GPU.  Note the box is shared: at 17:34:52 a **different session** started
+`/data/sweep.sh` (`distill_prod_pipe.py`, tags `sw16/32/64/128`) on all 8 GPUs, so
+check GPU availability before restarting anything here.  The graceful SIGTERM handler saved every worker's part + state, so nothing
 was lost: 16 of 210 shards are done (0.940B positions) and merged into
 `/data/distill_out/teacher_table_o2to5_partial.npz` (79.83GB, checked).
 

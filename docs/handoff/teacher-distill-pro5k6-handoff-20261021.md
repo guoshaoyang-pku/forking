@@ -3,7 +3,10 @@
 > 会话坐标：`pro5kvrdma6`（8×RTX PRO 5000 72GB，公网）。
 > 目标：用教师模型（Qwen3.6-35B-A3B）的中间层残差流蒸馏出**按位置对齐**的数据，
 > 用于 n-gram 表（order 2-5）的初始化 / 聚类 / 负载均衡。
-> 状态：**全部暂停**（8 卡空闲、所有 daemon 已停、数据与表都在盘上）。
+> 状态：**本会话这条线全部暂停**（我们的 4 个 worker 与两个 daemon 都已停，数据与表都在盘上）。
+> ⚠️ 机器不是空的：**另一个会话**从 17:34:52 起在 pro5k6 上跑 batch_rows 扫描
+> （`/data/sweep.sh` → `/data/distill_prod_pipe.py`，4 worker×TP2 占满 8 卡，tag `sw16/32/64/128`）。
+> 这不是本会话起的实验，本会话没有碰它，也没有杀它。**任何人要重启我们这条线，先确认卡是空的。**
 > 本文所有数字都带来源（命令 / 文件路径 / 时间戳），未验证的一律标 `未验证`。
 
 ---
@@ -23,9 +26,22 @@
    recall@10 = 0.73、k-means ARI = 0.60，int8 化几乎无损（§8.3）。
 5. **残差 dump 的代码已写但没验证、也没启动**（§10）：`distill_prod_v4/v5.py` +
    `dump_positions.py` + `validate_dump.py` 都在盘上，等价性/回读测试**没有留下证据**。
-6. **事故**：16:22:59 w3 的 EngineCore 收到外部 SIGTERM 死亡（同期本机在跑我们自己的
-   验证 harness）——优雅退出把数据保存到 16:22，**没有丢数据**，但这是必须记住的教训（§7.1）。
-7. 待决策：存储架构（RAID0 vs 3 副本）、1B 残差预算怎么放、fp8 要不要评估、push 确认（§11）。
+6. **事故**：16:22:59 w3 的 EngineCore 收到外部 SIGTERM 死亡。优雅退出把数据保存到 16:22，
+   **没有丢数据**。两个候选成因（本会话自己的验证 harness；另一个会话为腾卡而杀）——证据都
+   不足以定论，见 §7.1。教训不变：**同一台机器不要两个会话各自跑大实验**。
+7. 待决策：存储架构（RAID0 vs 3 副本）、1B 残差预算怎么放、fp8 要不要评估、push 确认、
+   以及**谁在什么时候用 pro5k6**（§11）。
+
+### 0.1 暂停确认（本会话，17:41 实测）
+
+```
+nvidia-smi:  8 卡已无我们的进程（17:15 我们的 4 worker 全部优雅退出并保存）
+pgrep distill_prod|milestone_watch|auto_restart  → 本会话的进程全部不存在
+crontab/atq  → 本会话没有留下任何定时任务
+```
+- 我们的 4 个 part + state 都已落盘（w0-w2 @17:15，w3 @16:22），合并表 17:20 写好、校验 17:2x 跑完。
+- 另一个会话的 `sweep.sh`（17:34:52 起）与 `distill_prod_pipe.py` **不是本会话产物、也没被本会话修改**；
+  它的 tag 是 `sw*`，与我们 `w3r` 的文件名不冲突（但共用 `/data/distill_out/` 与磁盘）。
 
 ---
 
@@ -191,11 +207,15 @@ python3 /data/merge_distill_parts.py --in_dir /data/distill_out --tag w3r \
 
 - 现象：w3 driver 的 EngineCore 收到 `SIGTERM`（`/data/distill_r3.log` 16:22:59），
   engine 优雅退出，driver 捕获后 **保存 part + state 到 16:22**（文件 mtime 可证）。
-- 病因**未定论**：时间窗与在本机跑的验证 harness（`equiv_v3.py` 16:16-16:26、
-  `validate_dump.py` 16:57）重叠；已 grep 确认 v3/harness 里**没有 pkill/killpg**，
-  dmesg 里也**没有 OOM**。最可能是 harness 的进程组/harness 导入的 vLLM 清理路径的副作用。
-- 教训：**重 CPU / 重内存的验证 harness 不要在跑生产的同一台机器上跑**，
-  或至少用独立 session 并把生产放在 `setsid` 外不可达的进程组里。
+- 病因**未定论**，两个候选，证据都不够：
+  (a) 本会话的验证 harness（`equiv_v3.py` 16:16-16:26、`validate_dump.py` 16:57）在同机跑；
+      已 grep 确认两者里**没有 pkill/killpg**，`dmesg` 里**没有 OOM**；
+  (b) **另一个会话**为腾 GPU 而杀进程——17:41 复查时发现 `/data/distill_out/` 里有
+      `state_w3_w4.json`(16:46) / `w4c`(16:55) / `w4m`(17:03) 等**不属于本会话**的 state 文件，
+      且 17:34 起有 `sweep.sh` 占满 8 卡。时间上 (b) 的**首个**痕迹（16:46）晚于 w3 死亡（16:22），
+      所以它解释不了这次；但两台会话同机竞争这个事实成立，同类事故随时会再发生。
+- 教训：**重 CPU / 重内存的验证 harness 不要在跑生产的同一台机器上跑**；
+  更重要的是**同一台机器不要有两个会话各自跑大实验**（见 §11.4 的协调要求）。
 - 数据损失：0（优雅退出会 save）；但 w3 只完成 2 个 shard，是四臂里最慢的。
 
 ### 7.2 其它已修的坑
@@ -396,7 +416,21 @@ counts 总和只有 1.357B → 反推该表是在 **≈1.0B 位置**的语料上
 - `fp8` 加速：本机无量化权重；且我们蒸馏的目标就是残差流本身，换精度等于换目标值，
   必须重做 §4 的逐元素校验。等 CPU 修好后前向（0.67s）成为最大单项再评估。
 - `/data/counts/` 479GB 的 npz 是否保留（建议留 summary + 按需重算）。
-- 本会话 5 个 commit 未 push（§12.3）。
+- 本会话的 commit 未 push（§12.3）。
+
+### 11.4 机器占用要协调（新增，必须解决）
+
+- 17:41 实测：pro5k6 上有**另一个会话**的 batch_rows 扫描在跑
+  （`/data/sweep.sh` → `/data/distill_prod_pipe.py`，4 worker×TP2 占满 8 卡，
+  tag `sw16/32/64/128`，17:34:52 起；前两个配置的结果是 `NA`，因为 engine init ~71s
+  还没跑出 `rate=` 行就被判超时——**这个扫描目前没产出有效数字**）。
+- 它的 `distill_prod_pipe.py` 是**进一步的管线优化版**（`batch_rows 64/128`、
+  `max_num_batched_tokens 131072/262144`、`kv_cache_memory_bytes 2e9`、`--orders 2,3,4`），
+  方向与本会话的 v2/v3 重叠但实现不同。**下一次启动前应先对齐这两条线**，
+  否则会出现两份互相抢卡的「最优版」，并把测量互相污染（本会话 v2 的 1.26s 就是在有负载的
+  机器上测的，偏保守）。
+- 需要你拍板：**pro5k6 的占用时间表**（谁在什么时候有独占权），以及是否让 `sw*` 那套
+  跑完再谈我们的续跑。
 
 ---
 
@@ -471,15 +505,18 @@ done; sleep 600; for w in 0 1 2 3; do grep -o "rate=[0-9]* lab tok/s" /data/dist
 #        --out /data/distill_out/teacher_table_full.npz --mean
 ```
 
-### 12.3 本地仓库
+### 12.3 本地仓库（注意：分支是共享的）
 
-本会话 commit（**均未 push**，P5 待批）：
-`a3637ea`（milestone watcher + 步时解剖）、`cb947d2`（auto-restart + merge --parts）、
-`800798e`（生产 worker/校验器/launcher 入库）、以及本文档的 commit。
-改动文件：`code/tools/{distill_prod,distill_prod.py…}`、`code/tools/milestone_watch.py`、
-`code/tools/auto_restart_v2.py`、`code/tools/merge_distill_parts.py`、
-`code/tools/check_distill_aggregate.py`、`code/cluster/run_w3_distill_prod.sh`、
-`docs/notes/data/teacher-distill-pro5k6.md`、本文档。
+- 本会话最终 commit：**`8a15bc1`** —— 本文档 + 远端工具同步 + 笔记更新（**未 push**，P5 待批）。
+- ⚠️ 本会话早先的 3 个 commit（`a3637ea` milestone watcher、`cb947d2` auto-restart + merge --parts、
+  `800798e` 生产脚本入库）**已经不在 `v2_main` 的分支祖先里**：并行的 §132 会话在同一分支上
+  连续提交（`43076e4` 等），把 HEAD 推到了我这些 commit 之外（对象仍在 reflog 可查，
+  内容已在 `8a15bc1` 里重新提交）。
+  **教训：这个仓库有多个会话同时提交，提交前先 `git log --oneline -3` 确认父节点，别假设 HEAD 是自己。**
+- 工作区里还有一批**不属于本会话**的改动（`agents.md`、`code/moe.py`、`docs/experiment-log.md`、
+  `docs/figs/*`、`code/cluster/*lora*`、未知的 `.claude/`、`.verdent/`），本会话一律没碰、也没提交。
+- 本次入库文件：`code/tools/{distill_prod_v2,v3,v4,v5,dump_positions,prj_sketch,count_ngrams,validate_dump}.py`、
+  `docs/notes/data/climbmix_ngram_counts_summary.json`、`docs/notes/data/teacher-distill-pro5k6.md`、本文档。
 
 ---
 
@@ -498,10 +535,12 @@ done; sleep 600; for w in 0 1 2 3; do grep -o "rate=[0-9]* lab tok/s" /data/dist
 | 16:41-17:29 | 语料级 n-gram 计数（210 shard，11 分钟）+ 合并（2180s） |
 | 16:43-17:11 | dump 集成（v4/v5）+ 投影器（`prj_sketch.py`）+ 各自的 bench |
 | 17:14 | 用户指示「暂停所有实验」→ 停 daemon、SIGTERM 四个 worker（w0-w2 优雅保存） |
-| 17:15 | 四 worker 全部退出，8 卡空闲 |
+| 17:15 | 四 worker 全部退出（空窗 17:15-17:34：8 卡确实都是空的） |
 | 17:20 | 合并表 `teacher_table_o2to5_partial.npz`（79.83GB）完成 |
 | 17:2x | 聚合级校验完成（§5.3） |
-| 17:33 | 确认无残留进程、GPU 0 MiB、磁盘 1.2T/7.0T |
+| 17:33 | 确认本会话无残留进程、GPU 0 MiB、磁盘 1.2T/7.0T |
+| 17:34:52 | **另一个会话**启动 `/data/sweep.sh`（`distill_prod_pipe.py`，tag `sw*`）占满 8 卡——不是本会话起，本会话未触碰 |
+| 17:41 | 本会话复查：本会话进程全无、无 cron/at；机器非空（见 §11.4） |
 
 ---
 
