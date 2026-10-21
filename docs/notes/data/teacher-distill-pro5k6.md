@@ -98,23 +98,28 @@ counters equal):
 | `/data/distill_prod_v2.py` | `torch.set_num_threads(32)` + reusable `ones` | ~1.26 s measured in a loaded-box replay |
 | `/data/distill_prod_v3.py` | v2 + producer/consumer overlap (encode in a producer thread, accumulate + all state in the consumer) | ~0.79 s |
 
-Timeline as deployed (all times CST, w3r run started 2026-10-21 09:34, w3 12:14):
+**PAUSED 2026-10-21 17:15 at the user's instruction.**  All four workers and both
+daemons (`milestone_watch.py`, `auto_restart_v2.py`) were stopped; all 8 GPUs are
+idle.  The graceful SIGTERM handler saved every worker's part + state, so nothing
+was lost: 16 of 210 shards are done (0.940B positions) and merged into
+`/data/distill_out/teacher_table_o2to5_partial.npz` (79.83GB, checked).
 
-| milestone | when | artefact |
-|---|---|---|
-| M1 aggregate check on real data | ~10-21 18:00 (coverage 0.95B) | `milestone_report_m1.txt` |
-| M2 keep the table | ~10-22 02:45-03:30 (coverage ~3.1B) | `teacher_table_o2to5_2b.npz` |
-| restart on v2/v3 at the next checkpoint boundary | ~10-22 05:20 | tag `w3s`, shards 60-209, 1.8e9 tok/worker |
-| run 2 ends | ~10-22 21:00-23:00 | `part_w*_w3s.npz` (7.15B) |
+The planned unattended restart (`auto_restart_v2.py` -> tag `w3s`) was therefore
+**never fired** and its M1/M2 gates are moot; the milestone watcher's reports were
+never written.  The two validation tiers it existed for are now done by hand: the
+aggregate-level check on real data is in `/data/check_partial.log` (structure sound,
+corpus-level RMS 5-28% below the single-document HF reference — see the handoff).
 
-For reference, without the restart the w3r run would have finished its 2.5e9-token
-budget around 10-23 19:30 (~51h from its start).  `auto_restart_v2.py` performs
-the switch unattended: it waits for M2's merge to have succeeded and for all four
-workers to sit on a fresh checkpoint (>=12 shards each), then kills them, drains
-the GPUs and relaunches with per-worker logs renamed to `distill_w3r_r<w>.log`.
-Worker 3 runs the overlapped `distill_prod_v3.py` as a canary while workers 0-2
-run v2, so the real-engine cost/benefit of the overlap is measured on the box
-rather than assumed; the verdict is written to `/data/restart_summary.txt`.
+Worker 3 died at 16:22:59 from an external SIGTERM that arrived while our own
+validation harness ran on the same box (no OOM in dmesg, no pkill in the harness
+sources; root cause not pinned down).  Lesson recorded: keep CPU/memory-heavy
+harnesses off the production box.
+
+Coverage gaps to be aware of when resuming: `shard_list()` is
+`range(shard_start+worker, shard_end, num_workers)`, and w3 stopped early, so
+shards **11, 15, 17, 19** were never processed (plus all of >=20).
+
+Full session record: `docs/handoff/teacher-distill-pro5k6-handoff-20261021.md`.
 
 
 
