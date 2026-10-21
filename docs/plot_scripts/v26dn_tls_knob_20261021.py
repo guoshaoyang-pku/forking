@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""§130 figure: who controls the E3 forking gap — R/N (level) and table LR (scale).
+"""§130/§131 figure: who controls the forking gap — R/N (level) and table LR (scale).
 
-Three panels, all numbers parsed from harvested TSV artifacts (never hand-copied):
+Four panels, all numbers parsed from harvested TSV artifacts (never hand-copied):
 
   A  E3 window gap vs R/N at tls = 1, one series per model size. 50m and 104m
      land on the same curve (R/N = 8: +0.0365 / +0.0356; R/N ~ 16: +0.0880 /
      +0.0889), i.e. at fixed table LR the gap is set by R/N (equivalently R/D
      here, because D/N is held at ~20) and not by the backbone size.
   B  E3 window gap vs table LR on three ladders. Halving tls multiplies the gap
-     by 0.41-0.56 (power exponent 0.87-1.28), while E3 dval stays flat.
+     by 0.41-0.56 (power exponent 0.87-1.28).
   C  E3 val benefit vs R/N. dval is *not* R/N-invariant (50m peaks at R/N 8-16,
-     104m peaks lower and saturates at R/N ~ 8) and is flat in tls.
+     104m peaks lower and saturates at R/N ~ 8). It is flat in tls only for
+     R/N <= 16; at R/N = 32 the default tls1 collapses to 4-16 mK while tls0.5 /
+     0.25 hold 31-43 mK, i.e. lowering the table LR *returns* the benefit that
+     forking ate (log §131).
+  D  dval by epoch at R/N = 32 (solid, tls 1 / 0.5 / 0.25) against R/N = 16
+     tls1 (grey dashed). tls1 starts highest (98.7 mK at E1) and ends lowest
+     (13.9 mK at E3); tls0.25 starts lowest (58.0) and ends highest (42.2) —
+     the ordering inverts, so the low-tls arm is not merely delayed.
 
 Divergent / non-stationary arms are excluded (log §129(g)). Every reading is the
 mean of the epoch's last 60 logged rows (`*_win` columns of v26dn_harvest.py).
@@ -158,7 +165,8 @@ def main(argv: list[str]) -> int:
     for m, b in base.items():
         print(f"  nogram {m} s42: E3 win gap {b['e3_gap']:+.4f}  final val {b['final_val']:.4f}")
 
-    fig, axes = plt.subplots(1, 3, figsize=(13.6, 4.3), dpi=160)
+    fig, axes = plt.subplots(2, 2, figsize=(13.2, 8.4), dpi=160)
+    axes = list(axes.flat)
     for ax in axes:
         ax.grid(alpha=0.22, linewidth=0.7)
         ax.set_axisbelow(True)
@@ -174,10 +182,10 @@ def main(argv: list[str]) -> int:
                 label=f"{model} exact tls1")
         for a in pts:
             if a["r_over_n"] in (8.0,) or abs(a["r_over_n"] - 15.4) < 0.6 or a["r_over_n"] == 16.0:
-                # 50m and 104m land on top of each other here: stagger the labels.
-                dy = 9 if model == "50m" else -15
+                # 50m and 104m land on top of each other here: stagger in x and y.
+                xoff, yoff = (-16, 10) if model == "50m" else (16, -16)
                 ax.annotate(f"{a['e3_gap']:+.4f}", (a["r_over_n"], a["e3_gap"]),
-                            textcoords="offset points", xytext=(0, dy), ha="center",
+                            textcoords="offset points", xytext=(xoff, yoff), ha="center",
                             fontsize=8, color=color)
     ax.axhline(base["50m"]["e3_gap"], color=C_NOGRAM, ls="--", lw=1.2,
                label=f"nogram 50m/104m ({base['50m']['e3_gap']:+.4f})")
@@ -254,12 +262,44 @@ def main(argv: list[str]) -> int:
     ax.set_xticklabels(["2", "4", "8", "16", "32"])
     ax.set_xlabel("R / N")
     ax.set_ylabel("E3 Δval（同 seed nogram 终值 − 本臂终值）")
-    ax.set_title("C  Δval：随 R 饱和、对 tls 不敏感\n104m 竖线 = s42/s43 nogram 配对区间", fontsize=10, loc="left")
+    ax.set_title("C  Δval：R/N ≤ 16 对 tls 不敏感；R/N=32 降 tls 把被吃掉的收益还回来\n104m 竖线 = s42/s43 nogram 配对区间", fontsize=10, loc="left")
     ax.legend(fontsize=7.5, frameon=False, loc="lower left")
 
-    fig.suptitle("tls 是免费旋钮：gap 由 R/N 定档（A），再由 table LR 线性缩放（B），Δval 不动（C）",
+    # ---- Panel D: Δval by epoch — at R/N = 32 the ordering inverts ----
+    ax = axes[3]
+    e3_dvals = []
+    for rn, tls_list, ls, lw, alpha in ((32.0, (1.0, 0.5, 0.25), "-", 2.2, 1.0),
+                                        (16.0, (1.0,), "--", 1.6, 0.55)):
+        for tls in tls_list:
+            for a in by_tls(arms["50m"], tls, seed=42):
+                if abs(a["r_over_n"] - rn) > 1e-9:
+                    continue
+                ys = []
+                for ep in ("e1", "e2", "e3"):
+                    av, bv = a.get(f"{ep}_val"), base["50m"].get(f"{ep}_val")
+                    ys.append(np.nan if av is None or bv is None else bv - av)
+                if np.isnan(ys).all():
+                    continue
+                ax.plot([1, 2, 3], ys, marker="o", ls=ls, lw=lw, ms=6.5, color=C_TLS[tls],
+                        mfc="white", mew=1.7, alpha=alpha,
+                        label=f"R/N={rn:g} tls{tls:g}")
+                if rn == 32.0:
+                    ax.annotate(f"{ys[2]*1000:+.1f}", (3, ys[2]), textcoords="offset points",
+                                xytext=(8, -2), fontsize=8, color=C_TLS[tls])
+    ax.axhline(0.0, color="#8f969d", lw=1.0)
+    ax.set_xticks([1, 2, 3])
+    ax.set_xticklabels(["E1", "E2", "E3"])
+    ax.set_xlim(0.85, 3.5)
+    ax.set_xlabel("epoch（每 epoch = 1B unique 数据的一遍）")
+    ax.set_ylabel("Δval（同 seed nogram − 本臂，末 600 步窗口）")
+    ax.set_title("D  Δval 随 epoch：R/N=32 高 tls 起最高、末最低（次序反转）\n实线 = R/N 32 三条 tls，灰虚线 = R/N 16 tls1 对照",
+                 fontsize=10, loc="left")
+    ax.legend(fontsize=7.5, frameon=False, loc="lower left")
+
+    fig.suptitle("tls 旋钮：gap 由 R/N 定档（A）且正比于 table LR（B）；"
+                 "Δval 在 R/N ≤ 16 上不动（C），在 R/N=32 上被 tls1 吃掉、由低 tls 归还（C/D）",
                  fontsize=12, y=0.99)
-    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
     for ext in ("svg", "png"):
         path = OUT / f"fig_tls_knob.{ext}"
         fig.savefig(path, bbox_inches="tight", facecolor="white")
@@ -271,6 +311,30 @@ def main(argv: list[str]) -> int:
     print("same-tls repeats (seed / duplicate-arm control):")
     for label, t1, t2, r in seed_ratios:
         print(f"  {label:<14} {t1:g}->{t2:g}: {r:.3f}")
+
+    print("\nE3 Δval vs tls, 50m exact arms (paired same-seed nogram, mK):")
+    print(f"  {'R/N':>5} {'tls':>6} {'seed':>4} {'E3 dval':>9} {'E3 gap':>9}")
+    for a in sorted(arms["50m"], key=lambda x: (x["r_over_n"], x["tls"], x["seed"])):
+        if a["kind"] != "exact":
+            continue
+        b = baseline(arms["50m"], a["seed"])
+        if b is None or a.get("e3_val") is None or b.get("e3_val") is None:
+            continue
+        print(f"  {a['r_over_n']:>5.1f} {a['tls']:>6g} {a['seed']:>4} "
+              f"{(b['e3_val'] - a['e3_val']) * 1000:>+9.1f} {a['e3_gap']:>+9.4f}")
+
+    print("\nΔval by epoch, R/N = 16 / 32 (paired nogram, mK):")
+    for a in sorted(arms["50m"], key=lambda x: (x["r_over_n"], x["tls"], x["seed"])):
+        if a["kind"] != "exact" or a["r_over_n"] not in (16.0, 32.0):
+            continue
+        b = baseline(arms["50m"], a["seed"])
+        if b is None:
+            continue
+        cells = []
+        for ep in ("e1", "e2", "e3"):
+            av, bv = a.get(f"{ep}_val"), b.get(f"{ep}_val")
+            cells.append("    ---" if av is None or bv is None else f"{(bv - av) * 1000:>+7.1f}")
+        print(f"  R/N={a['r_over_n']:>4.1f} tls={a['tls']:<5g} s{a['seed']} E1/E2/E3: " + " ".join(cells))
     return 0
 
 
