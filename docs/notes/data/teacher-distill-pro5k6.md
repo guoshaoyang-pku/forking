@@ -98,15 +98,24 @@ counters equal):
 | `/data/distill_prod_v2.py` | `torch.set_num_threads(32)` + reusable `ones` | ~1.26 s measured in a loaded-box replay |
 | `/data/distill_prod_v3.py` | v2 + producer/consumer overlap (encode in a producer thread, accumulate + all state in the consumer) | ~0.79 s |
 
-ETAs: at 49.5k tok/s, 2B (checkpoint coverage) lands ~2026-10-21 22:45 and its
-merge finishes ~23:30; 10B would need ~51h from the w3r start.  Restarting the
-workers on v2/v3 at the first checkpoint boundary makes the remaining ~7B tokens
-roughly 2-3x faster, so the 10B table is expected 2026-10-22 evening rather than
-10-23 evening.  `run_distill_v2.sh` (tag `w3s`, `--shard_start 48`,
-`--save_every_shards 1`, 1.8e9 tokens/worker) is prepared and validated but not
-launched; the restart must happen right after a checkpoint so no in-flight shard
-is lost, and the covered frontier has to be recomputed from
-`state_w*_w3r.json` at that moment.
+Timeline as deployed (all times CST, w3r run started 2026-10-21 09:34, w3 12:14):
+
+| milestone | when | artefact |
+|---|---|---|
+| M1 aggregate check on real data | ~10-21 18:00 (coverage 0.95B) | `milestone_report_m1.txt` |
+| M2 keep the table | ~10-22 02:45-03:30 (coverage ~3.1B) | `teacher_table_o2to5_2b.npz` |
+| restart on v2/v3 at the next checkpoint boundary | ~10-22 05:20 | tag `w3s`, shards 60-209, 1.8e9 tok/worker |
+| run 2 ends | ~10-22 21:00-23:00 | `part_w*_w3s.npz` (7.15B) |
+
+For reference, without the restart the w3r run would have finished its 2.5e9-token
+budget around 10-23 19:30 (~51h from its start).  `auto_restart_v2.py` performs
+the switch unattended: it waits for M2's merge to have succeeded and for all four
+workers to sit on a fresh checkpoint (>=12 shards each), then kills them, drains
+the GPUs and relaunches with per-worker logs renamed to `distill_w3r_r<w>.log`.
+Worker 3 runs the overlapped `distill_prod_v3.py` as a canary while workers 0-2
+run v2, so the real-engine cost/benefit of the overlap is measured on the box
+rather than assumed; the verdict is written to `/data/restart_summary.txt`.
+
 
 
 CUDA graphs are **not** usable with multi-layer capture: vLLM's graph runner
