@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="900" viewBox="0 0 1800 900" font-family="PingFang SC, PingFang HK, Hiragino Sans GB, Heiti TC, Microsoft YaHei, sans-serif" role="img" aria-labelledby="fig-title fig-desc">
+<title id="fig-title">50M table-LR ladder: forking gap collapse, E3 benefit, and the E1 cost</title>
+<desc id="fig-desc">Three panels over table LR 1x, 0.5x, 0.25x at R/N 16 and 32 show E3 own gap, E3 validation benefit against nogram, and E1 validation benefit.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text { font-family: PingFang SC, PingFang HK, Hiragino Sans GB, Heiti TC, Microsoft YaHei, sans-serif; } .axis { stroke: #555b61; stroke-width: 1.5; }</style>
+<text x="72.00" y="132.00" font-size="25" fill="#151719" text-anchor="start" font-weight="700">E3 own gap：表越大越在烧记忆</text>
+<text x="72.00" y="164.00" font-size="18" fill="#60666d" text-anchor="start" font-weight="400">own gap = val − train，末 600 步窗口均值（同机量，越低越健康）</text>
+<line x1="72.0" y1="200.0" x2="102.0" y2="200.0" stroke="#1f77b4" stroke-width="3.4"/>
+<circle cx="87.0" cy="200.0" r="5.2" fill="#1f77b4"/>
+<text x="112.00" y="206.00" font-size="17" fill="#343a40" text-anchor="start" font-weight="400">R/N=16（r800k）</text>
+<line x1="304.0" y1="200.0" x2="334.0" y2="200.0" stroke="#d62728" stroke-width="3.4"/>
+<rect x="314.0" y="195.0" width="10.4" height="10.4" fill="#d62728"/>
+<text x="344.00" y="206.00" font-size="17" fill="#343a40" text-anchor="start" font-weight="400">R/N=32（r1600k）</text>
+<text x="672.00" y="132.00" font-size="25" fill="#151719" text-anchor="start" font-weight="700">E3 Δval vs nogram：降表 LR 反而更赚</text>
+<text x="672.00" y="164.00" font-size="18" fill="#60666d" text-anchor="start" font-weight="400">Δval = 本臂 val − 同 seed nogram val（越低越好）</text>
+<line x1="672.0" y1="200.0" x2="702.0" y2="200.0" stroke="#1f77b4" stroke-width="3.4"/>
+<circle cx="687.0" cy="200.0" r="5.2" fill="#1f77b4"/>
+<text x="712.00" y="206.00" font-size="17" fill="#343a40" text-anchor="start" font-weight="400">R/N=16（r800k）</text>
+<line x1="904.0" y1="200.0" x2="934.0" y2="200.0" stroke="#d62728" stroke-width="3.4"/>
+<rect x="914.0" y="195.0" width="10.4" height="10.4" fill="#d62728"/>
+<text x="944.00" y="206.00" font-size="17" fill="#343a40" text-anchor="start" font-weight="400">R/N=32（r1600k）</text>
+<text x="1272.00" y="132.00" font-size="25" fill="#151719" text-anchor="start" font-weight="700">E1 Δval：代价全在早期</text>
+<text x="1272.00" y="164.00" font-size="18" fill="#60666d" text-anchor="start" font-weight="400">低表 LR 让表学得更慢，第 1 遍收益缩水</text>
+<line x1="1272.0" y1="200.0" x2="1302.0" y2="200.0" stroke="#1f77b4" stroke-width="3.4"/>
+<circle cx="1287.0" cy="200.0" r="5.2" fill="#1f77b4"/>
+<text x="1312.00" y="206.00" font-size="17" fill="#343a40" text-anchor="start" font-weight="400">R/N=16（r800k）</text>
+<line x1="1504.0" y1="200.0" x2="1534.0" y2="200.0" stroke="#d62728" stroke-width="3.4"/>
+<rect x="1514.0" y="195.0" width="10.4" height="10.4" fill="#d62728"/>
+<text x="1544.00" y="206.00" font-size="17" fill="#343a40" text-anchor="start" font-weight="400">R/N=32（r1600k）</text>
+<defs><clipPath id="clip-0"><rect x="156.00" y="258" width="360.00" height="302"/></clipPath></defs>
+<line x1="189.16" y1="258" x2="189.16" y2="560" stroke="#f0f2f4" stroke-width="1"/>
+<line x1="283.89" y1="258" x2="283.89" y2="560" stroke="#f0f2f4" stroke-width="1"/>
+<line x1="378.63" y1="258" x2="378.63" y2="560" stroke="#f0f2f4" stroke-width="1"/>
+<line x1="473.37" y1="258" x2="473.37" y2="560" stroke="#f0f2f4" stroke-width="1"/>
+<line x1="156.00" y1="545.62" x2="516.00" y2="545.62" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="143.00" y="551.62" font-size="18" fill="#596068" text-anchor="end" font-weight="400">-0.04</text>
+<line x1="156.00" y1="488.10" x2="516.00" y2="488.10" stroke="#8f969d" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="143.00" y="494.10" font-size="18" fill="#596068" text-anchor="end" font-weight="400">+0.00</text>
+<line x1="156.00" y1="430.57" x2="516.00" y2="430.57" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="143.00" y="436.57" font-size="18" fill="#596068" text-anchor="end" font-weight="400">+0.04</text>
+<line x1="156.00" y1="373.05" x2="516.00" y2="373.05" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="143.00" y="379.05" font-size="18" fill="#596068" text-anchor="end" font-weight="400">+0.08</text>
+<line x1="156.00" y1="315.52" x2="516.00" y2="315.52" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="143.00" y="321.52" font-size="18" fill="#596068" text-anchor="end" font-weight="400">+0.12</text>
+<line x1="156.00" y1="258.00" x2="516.00" y2="258.00" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="143.00" y="264.00" font-size="18" fill="#596068" text-anchor="end" font-weight="400">+0.16</text>
+<line class="axis" x1="156.00" y1="258" x2="156.00" y2="560"/>
+<line class="axis" x1="156.00" y1="560" x2="516.00" y2="560"/>
+<line x1="189.16" y1="560" x2="189.16" y2="567" stroke="#555b61" stroke-width="1.3"/>
+<text x="189.16" y="591.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">1×</text>
+<line x1="283.89" y1="560" x2="283.89" y2="567" stroke="#555b61" stroke-width="1.3"/>
+<text x="283.89" y="591.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">0.5×</text>
+<line x1="378.63" y1="560" x2="378.63" y2="567" stroke="#555b61" stroke-width="1.3"/>
+<text x="378.63" y="591.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">0.25×</text>
+<line x1="473.37" y1="560" x2="473.37" y2="567" stroke="#555b61" stroke-width="1.3"/>
+<text x="473.37" y="591.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">0.125×</text>
+<text x="336.00" y="620.00" font-size="18" fill="#343a40" text-anchor="middle" font-weight="400">table LR 倍数（表侧 RMSProp/AdamW 的 lr_scale）</text>
+<text x="64.00" y="409.00" font-size="18" fill="#343a40" text-anchor="middle" font-weight="400" transform="rotate(-90 64 409.0)">E3 own gap（val − train）</text>
+<defs><clipPath id="clip-1"><rect x="756.00" y="258" width="360.00" height="302"/></clipPath></defs>
+<line x1="789.16" y1="258" x2="789.16" y2="560" stroke="#f0f2f4" stroke-width="1"/>
+<line x1="883.89" y1="258" x2="883.89" y2="560" stroke="#f0f2f4" stroke-width="1"/>
+<line x1="978.63" y1="258" x2="978.63" y2="560" stroke="#f0f2f4" stroke-width="1"/>
+<line x1="1073.37" y1="258" x2="1073.37" y2="560" stroke="#f0f2f4" stroke-width="1"/>
+<line x1="756.00" y1="499.60" x2="1116.00" y2="499.60" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="743.00" y="505.60" font-size="18" fill="#596068" text-anchor="end" font-weight="400">-0.04</text>
+<line x1="756.00" y1="439.20" x2="1116.00" y2="439.20" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="743.00" y="445.20" font-size="18" fill="#596068" text-anchor="end" font-weight="400">-0.03</text>
+<line x1="756.00" y1="378.80" x2="1116.00" y2="378.80" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="743.00" y="384.80" font-size="18" fill="#596068" text-anchor="end" font-weight="400">-0.02</text>
+<line x1="756.00" y1="318.40" x2="1116.00" y2="318.40" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="743.00" y="324.40" font-size="18" fill="#596068" text-anchor="end" font-weight="400">-0.01</text>
+<line x1="756.00" y1="258.00" x2="1116.00" y2="258.00" stroke="#8f969d" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="743.00" y="264.00" font-size="18" fill="#596068" text-anchor="end" font-weight="400">+0.00</text>
+<line class="axis" x1="756.00" y1="258" x2="756.00" y2="560"/>
+<line class="axis" x1="756.00" y1="560" x2="1116.00" y2="560"/>
+<line x1="789.16" y1="560" x2="789.16" y2="567" stroke="#555b61" stroke-width="1.3"/>
+<text x="789.16" y="591.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">1×</text>
+<line x1="883.89" y1="560" x2="883.89" y2="567" stroke="#555b61" stroke-width="1.3"/>
+<text x="883.89" y="591.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">0.5×</text>
+<line x1="978.63" y1="560" x2="978.63" y2="567" stroke="#555b61" stroke-width="1.3"/>
+<text x="978.63" y="591.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">0.25×</text>
+<line x1="1073.37" y1="560" x2="1073.37" y2="567" stroke="#555b61" stroke-width="1.3"/>
+<text x="1073.37" y="591.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">0.125×</text>
+<text x="936.00" y="620.00" font-size="18" fill="#343a40" text-anchor="middle" font-weight="400">table LR 倍数（表侧 RMSProp/AdamW 的 lr_scale）</text>
+<text x="664.00" y="409.00" font-size="18" fill="#343a40" text-anchor="middle" font-weight="400" transform="rotate(-90 664 409.0)">E3 Δval vs nogram</text>
+<defs><clipPath id="clip-2"><rect x="1356.00" y="258" width="360.00" height="302"/></clipPath></defs>
+<line x1="1389.16" y1="258" x2="1389.16" y2="560" stroke="#f0f2f4" stroke-width="1"/>
+<line x1="1483.89" y1="258" x2="1483.89" y2="560" stroke="#f0f2f4" stroke-width="1"/>
+<line x1="1578.63" y1="258" x2="1578.63" y2="560" stroke="#f0f2f4" stroke-width="1"/>
+<line x1="1673.37" y1="258" x2="1673.37" y2="560" stroke="#f0f2f4" stroke-width="1"/>
+<line x1="1356.00" y1="499.60" x2="1716.00" y2="499.60" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="1343.00" y="505.60" font-size="18" fill="#596068" text-anchor="end" font-weight="400">-0.08</text>
+<line x1="1356.00" y1="439.20" x2="1716.00" y2="439.20" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="1343.00" y="445.20" font-size="18" fill="#596068" text-anchor="end" font-weight="400">-0.06</text>
+<line x1="1356.00" y1="378.80" x2="1716.00" y2="378.80" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="1343.00" y="384.80" font-size="18" fill="#596068" text-anchor="end" font-weight="400">-0.04</text>
+<line x1="1356.00" y1="318.40" x2="1716.00" y2="318.40" stroke="#dfe3e8" stroke-width="1.0"/>
+<text x="1343.00" y="324.40" font-size="18" fill="#596068" text-anchor="end" font-weight="400">-0.02</text>
+<line x1="1356.00" y1="258.00" x2="1716.00" y2="258.00" stroke="#8f969d" stroke-width="1.5" stroke-dasharray="7 6"/>
+<text x="1343.00" y="264.00" font-size="18" fill="#596068" text-anchor="end" font-weight="400">+0.00</text>
+<line class="axis" x1="1356.00" y1="258" x2="1356.00" y2="560"/>
+<line class="axis" x1="1356.00" y1="560" x2="1716.00" y2="560"/>
+<line x1="1389.16" y1="560" x2="1389.16" y2="567" stroke="#555b61" stroke-width="1.3"/>
+<text x="1389.16" y="591.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">1×</text>
+<line x1="1483.89" y1="560" x2="1483.89" y2="567" stroke="#555b61" stroke-width="1.3"/>
+<text x="1483.89" y="591.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">0.5×</text>
+<line x1="1578.63" y1="560" x2="1578.63" y2="567" stroke="#555b61" stroke-width="1.3"/>
+<text x="1578.63" y="591.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">0.25×</text>
+<line x1="1673.37" y1="560" x2="1673.37" y2="567" stroke="#555b61" stroke-width="1.3"/>
+<text x="1673.37" y="591.00" font-size="19" fill="#343a40" text-anchor="middle" font-weight="400">0.125×</text>
+<text x="1536.00" y="620.00" font-size="18" fill="#343a40" text-anchor="middle" font-weight="400">table LR 倍数（表侧 RMSProp/AdamW 的 lr_scale）</text>
+<text x="1264.00" y="409.00" font-size="18" fill="#343a40" text-anchor="middle" font-weight="400" transform="rotate(-90 1264 409.0)">E1 Δval vs nogram</text>
+<line x1="156.00" y1="531.96" x2="516.00" y2="531.96" stroke="#8f969d" stroke-width="2" stroke-dasharray="9 7"/>
+<text x="164.00" y="522.96" font-size="16" fill="#8f969d" text-anchor="start" font-weight="600">nogram -0.030</text>
+<g clip-path="url(#clip-0)"><polyline points="189.16,361.54 283.89,421.80 378.63,469.40" fill="none" stroke="#1f77b4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<circle cx="189.16" cy="361.54" r="6.2" fill="#ffffff" stroke="#1f77b4" stroke-width="3.2"/>
+<circle cx="283.89" cy="421.80" r="6.2" fill="#ffffff" stroke="#1f77b4" stroke-width="3.2"/>
+<circle cx="378.63" cy="469.40" r="6.2" fill="#ffffff" stroke="#1f77b4" stroke-width="3.2"/>
+<g clip-path="url(#clip-1)"><polyline points="789.16,496.58 883.89,459.74 978.63,489.94" fill="none" stroke="#1f77b4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<circle cx="789.16" cy="496.58" r="6.2" fill="#ffffff" stroke="#1f77b4" stroke-width="3.2"/>
+<circle cx="883.89" cy="459.74" r="6.2" fill="#ffffff" stroke="#1f77b4" stroke-width="3.2"/>
+<circle cx="978.63" cy="489.94" r="6.2" fill="#ffffff" stroke="#1f77b4" stroke-width="3.2"/>
+<g clip-path="url(#clip-2)"><polyline points="1389.16,523.46 1483.89,428.63 1578.63,373.67" fill="none" stroke="#1f77b4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<circle cx="1389.16" cy="523.46" r="6.2" fill="#ffffff" stroke="#1f77b4" stroke-width="3.2"/>
+<circle cx="1483.89" cy="428.63" r="6.2" fill="#ffffff" stroke="#1f77b4" stroke-width="3.2"/>
+<circle cx="1578.63" cy="373.67" r="6.2" fill="#ffffff" stroke="#1f77b4" stroke-width="3.2"/>
+<g clip-path="url(#clip-0)"><polyline points="189.16,270.22 283.89,365.43 378.63,438.62" fill="none" stroke="#d62728" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<rect x="183.56" y="264.62" width="11.2" height="11.2" fill="#ffffff" stroke="#d62728" stroke-width="3.2"/>
+<rect x="278.29" y="359.83" width="11.2" height="11.2" fill="#ffffff" stroke="#d62728" stroke-width="3.2"/>
+<rect x="373.03" y="433.02" width="11.2" height="11.2" fill="#ffffff" stroke="#d62728" stroke-width="3.2"/>
+<g clip-path="url(#clip-1)"><polyline points="789.16,351.62 883.89,456.72 978.63,515.91" fill="none" stroke="#d62728" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<rect x="783.56" y="346.02" width="11.2" height="11.2" fill="#ffffff" stroke="#d62728" stroke-width="3.2"/>
+<rect x="878.29" y="451.12" width="11.2" height="11.2" fill="#ffffff" stroke="#d62728" stroke-width="3.2"/>
+<rect x="973.03" y="510.31" width="11.2" height="11.2" fill="#ffffff" stroke="#d62728" stroke-width="3.2"/>
+<g clip-path="url(#clip-2)"><polyline points="1389.16,553.36 1483.89,457.62 1578.63,428.93" fill="none" stroke="#d62728" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<rect x="1383.56" y="547.76" width="11.2" height="11.2" fill="#ffffff" stroke="#d62728" stroke-width="3.2"/>
+<rect x="1478.29" y="452.02" width="11.2" height="11.2" fill="#ffffff" stroke="#d62728" stroke-width="3.2"/>
+<rect x="1573.03" y="423.33" width="11.2" height="11.2" fill="#ffffff" stroke="#d62728" stroke-width="3.2"/>
+<text x="201.16" y="276.22" font-size="17" fill="#d62728" text-anchor="start" font-weight="600">R/N=32：+0.152</text>
+<text x="203.16" y="327.54" font-size="17" fill="#1f77b4" text-anchor="start" font-weight="600">R/N=16：+0.088</text>
+<text x="348.63" y="472.62" font-size="17" fill="#d62728" text-anchor="end" font-weight="600">→ +0.034</text>
+<text x="356.63" y="499.40" font-size="17" fill="#1f77b4" text-anchor="end" font-weight="600">→ +0.013</text>
+<circle cx="974.63" cy="515.91" r="13" fill="none" stroke="#1a7f4b" stroke-width="2.6"/>
+<text x="956.63" y="549.91" font-size="17" fill="#1a7f4b" text-anchor="end" font-weight="600">当前最强单点 -0.043</text>
+<text x="775.16" y="357.62" font-size="16" fill="#d62728" text-anchor="end" font-weight="600">-0.015</text>
+<text x="803.16" y="502.58" font-size="16" fill="#1f77b4" text-anchor="start" font-weight="600">-0.039</text>
+<text x="1393.16" y="539.36" font-size="16" fill="#d62728" text-anchor="start" font-weight="600">-0.098</text>
+<text x="1568.63" y="458.93" font-size="16" fill="#d62728" text-anchor="end" font-weight="600">-0.057</text>
+<text x="1393.16" y="553.46" font-size="16" fill="#1f77b4" text-anchor="start" font-weight="600">-0.088</text>
+<text x="1568.63" y="359.67" font-size="16" fill="#1f77b4" text-anchor="end" font-weight="600">-0.038</text>
+<text x="300.00" y="668.00" font-size="16.5" fill="#9d332d" text-anchor="middle" font-weight="600">E3 own gap 随 tls 单调塌陷（每减半→约减半）</text>
+<text x="300.00" y="693.00" font-size="16.5" fill="#9d332d" text-anchor="middle" font-weight="600">R/N=32：+0.152 → +0.085 → +0.034</text>
+<text x="300.00" y="718.00" font-size="16.5" fill="#9d332d" text-anchor="middle" font-weight="600">R/N=16：+0.088 → +0.046 → +0.013</text>
+<text x="900.00" y="668.00" font-size="16.5" fill="#1a7f4b" text-anchor="middle" font-weight="600">R/N=32：−0.016 → −0.033 → −0.043（单调变好）</text>
+<text x="900.00" y="693.00" font-size="16.5" fill="#1a7f4b" text-anchor="middle" font-weight="600">R/N=16：−0.040 → −0.033 → −0.038（基本不动）</text>
+<text x="900.00" y="718.00" font-size="16.5" fill="#1a7f4b" text-anchor="middle" font-weight="600">→ 容量过剩越多，可回收的「记忆化」越多</text>
+<text x="1500.00" y="668.00" font-size="16.5" fill="#7d3c98" text-anchor="middle" font-weight="600">R/N=32：−0.098 → −0.066 → −0.057</text>
+<text x="1500.00" y="693.00" font-size="16.5" fill="#7d3c98" text-anchor="middle" font-weight="600">R/N=16：−0.088 → −0.057 → −0.038</text>
+<text x="1500.00" y="718.00" font-size="16.5" fill="#7d3c98" text-anchor="middle" font-weight="600">E1 收益缩水 30–57%；只用 1 个 epoch 时低 tls 不划算</text>
+<line x1="45" y1="768" x2="1755" y2="768" stroke="#e5e7e9" stroke-width="1.2"/>
+<text x="900.00" y="798.00" font-size="15.5" fill="#555d65" text-anchor="middle" font-weight="400">数据来源：docs/experiment-log.md §128（度量口径修正：own gap 改采末 600 步窗口均值；E3 Δval 取自各 run 的 summary.json）；harvest = docs/plot_scripts/v26dn_harvest.py。</text>
+<text x="900.00" y="826.00" font-size="15.5" fill="#555d65" text-anchor="middle" font-weight="400">臂：v26dn_50m_exact_r{800k,1600k}_d1b_tls{1,0.5,0.25}_s42_e3_fd_fixed + 基线 v26dn_50m_nogram_r400k_d1b_tls1_s42_e3_fd_fixed；own gap = val − train，Δval = 本臂 − 同 seed nogram（E3 2.7009）。</text>
+<text x="900.00" y="854.00" font-size="15.5" fill="#555d65" text-anchor="middle" font-weight="400">tls0.125 两点在跑（360-2 GPU1/GPU4，§127a），落数后追加；跨机拼接：r800k tls1 与 r1600k tls1/tls0.25 在 ophis，其余在 360-2（own gap 为同机量，作主读）。</text>
+<text x="900.00" y="880.00" font-size="15.5" fill="#555d65" text-anchor="middle" font-weight="400">单行读数噪声 ±0.05（train loss 逐步 std），故 own gap 用窗口均值：单行版为 +0.151/+0.085/+0.034（R/N=32）与 +0.088/+0.046/+0.013（R/N=16），排序与减半效应一致，仅整体偏移 +0.006…+0.016。seed 复本（s43，R/N=32）：tls1 Δval −0.004、tls0.5 Δval −0.031 → 减半效应可复现；tls1 侧 Δval 的 seed 噪声 ±0.012。</text>
+</svg>
