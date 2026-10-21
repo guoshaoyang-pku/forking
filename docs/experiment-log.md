@@ -6074,3 +6074,27 @@ nogram = `v25oe_nogram_p1b_s42_e3_fd_fixed`；exact 臂 = `v26dn_50m_exact_r{100
 **（d）在跑队列（截至本次收数，`train_log.jsonl` 末步）**：ophis `50m_r1600k_s43`（12490/20343）、`50m_nogram_s42`（17020）、`50m_nogram_s43`（18010）；360-2 `104m_nogram_s43`（14110/42315）、`159m_exact_s43`（7840/64697）、`159m_nogram_s43`（10000/64697）。全部无 `summary.json`，仍在推进。
 
 **口径**：除（c）注明的两个 s43 行外，所有 Δ 均对**同机同 seed** nogram（50m s42 基线 = ophis `v25oe_nogram_p1b_s42_e3_fd_fixed`；s43 同机基线仍在跑，勿跨 seed 借基线）；epoch 末步 = logged step 6780/13560/20343（D=1B）、4740/9490/14241（D=0.7B）、14100/28210/42315（D=2.08B）、21560/43130/64697（D=3.18B）。
+
+---
+
+### §124 s43 同机基线完成 → R 线 seed 稳健（±0.005）；tls 轴 6 臂开铺（2026-10-21 12:50）
+
+**（a）s43 基线完成**：`v26dn_50m_nogram_r400k_d1b_tls1_s43_e3_fd_fixed` 跑满 20343 步（E1/E2/E3 val = 2.8478/2.7347/2.6907）→ 三个 s43 exact 臂可算**同 seed** Δval：
+
+| arm | E1 Δval | E2 Δval | E3 Δval | E3 own gap | s42 对应值 |
+|---|---|---|---|---|---|
+| r400k s43 | −0.066 | −0.054 | −0.036 | +0.0242 | −0.058 / −0.048 / −0.031 / +0.0245 |
+| r800k s43 | −0.081 | −0.062 | −0.029 | +0.0687 | −0.087 / −0.068 / −0.032 / +0.0741 |
+| r1600k s43（在跑） | −0.084（已同 seed） | — | — | — | −0.097 / — / −0.008 / +0.135 |
+
+**判读**：R/N=8/16 两点的 Δval 与 own gap 在 s42/s43 间**差 ≤0.005** → R 扫描线（§122）不是单 seed 产物，可直接进论文；r1600k s43 将补上 R/N=32 的 seed 复本。
+
+**（b）新铺 6 臂（tls 轴；同 launcher，三机 md5 一致：run_v26_dn20.sh `435b82c6` / train.py `a97b344a`）**：
+- ophis：GPU4 `50m r1600k tls0.25 s42`、GPU5 `50m r800k tls0.5 s42`、GPU2 `50m r1600k tls0.5 s43`
+- 360-2（持久 ssh 会话持有，Linger=no）：GPU2 `159m r1272k tls0.5 s42`、GPU5 `104m r832k tls0.5 s42`、GPU6 `50m r800k tls0.25 s42`
+
+科学问题：**降低表 LR 能否在保住 E1–E3 收益的前提下按比例砍掉 forking penalty，且这个性质是否跨 R/N（16 vs 32）与跨模型（50m→104m→159m）成立**——即「防 fork 不丢收益」的部署问题。仅用 `NGLAB_TLS`/`NGLAB_RK` 覆写，无 setting 偏离（表优化器 adam+clip 已在 §98 定案）。
+
+**（c）infra 坑（新，供接力）**：ophis 用 `systemd-run --user` 起臂**必须**带 `--working-directory=$ROOT`、日志用绝对路径；否则单元在 `$HOME` 下执行相对路径 `bash code/cluster/run_v26_dn20.sh` → 秒退 status 127（本次 3 臂首启即此死法，日志落在 `~/logs/`，已删并重启）。
+
+**（d）飞书表（表 121×10）**：s43 同 seed Δval 回填（r400k −0.066/−0.036、r1600k E1 −0.084）；nogram s43 基线行转「完成」；新增 7 行（r800k s43 完成读数 + 6 个 tls 轴新臂）。
