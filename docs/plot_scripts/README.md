@@ -85,6 +85,8 @@ log 图只使用 train 和 validation 都有 token 且 gap 为正的 bucket。
 | `plot_v5_beta_by_R.py` | 用 62 条 formal single-branch table-size run 的 exact-frequency 日志重算 `β(R)`，输出完整 CSV，并显式降级 low-gap / low-R² 不可辨识点 |
 | `plot_l6_residual_response.py` | 读取两个 L6 exact-enumeration run 的 `metrics.csv` / `summary.json`，生成 count-table 渐近与 residual-response 矩对照图 |
 | `plot_appendix_c_parameter_selection.py` | 从归档的参数选择 `claims.json` 和 manifest 生成附录 C 四面板 PDF/PNG/SVG；图在 `docs/figs/appendix_c_parameter_selection/` |
+| `scale_envelope_20261022.py` | D/N 包络（E3 收益与 gap）+ R/N 下探与 V4.1-Flash 位置；图在 `docs/figs/scale_envelope_20261022/` |
+| `v2_experiment_array_20261022.py` | 实验阵列思维导图（加入蒸馏线 4 与 §137）；图在 `docs/figs/v2_experiment_array_20261022/` |
 | `v2_experiment_array_20261021.py` | Forking v2 实验阵列思维导图（目标 → 0 机制/1 scaling/2 缓解/3 收益 → 叶子，叶子标已做/在跑/未做/自做）；图在 `docs/figs/v2_experiment_array_20261021/` |
 | `param_sweep_mindmap_20261020.py` | 扫参逻辑思维导图 v2（线 A/B/C + 目标 D/N=20 外推）；产物在 `docs/figs/param_sweep_mindmap_20261020/` |
 | `param_sweep_mindmap_20261021.py` | 扫参思维导图 v3：主轴 = 口径锁（固定 epoch、E3 末尾窗口、同机同 seed nogram 配对、gap 只作诊断、dVal 才是验收、跨机门槛用语义量、run_id 约定）+ 五分支 + 依赖链；产物在 `docs/figs/param_sweep_mindmap_20261021/`；卡片配色绿=通过/红=失效/紫=口径注意/虚线=未跑 |
