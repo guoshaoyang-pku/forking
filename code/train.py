@@ -138,6 +138,10 @@ class Config:
                                 # rounded down to whole device batches); val unaffected
     replay_mix_passes: int = 0  # >0: one globally chunk-shuffled stream of N passes
                                 # (shuffle experiment mixed arm); overrides epoch replay
+    replay_subset_frac: float = 0.0  # >0 (needs train_max_tokens): production-form stream —
+                                # this fraction of the D-token stream is a small subset
+                                # replayed replay_subset_passes times, the rest is fresh
+    replay_subset_passes: int = 3
     # infra: precomputed n-gram row index / large vocab / precision (plan-8)
     row_index: bool = False     # consume offline row indices (pure-gather fast path)
     row_index_dir: str = ""     # where shard_<id>.{b,t}rows.u32.bin live (default data_dir)
@@ -2013,7 +2017,8 @@ class TokenizedShardDataset:
                  device_batch_size: int, seed: int = 42, epoch_batches: int = 0,
                  replay_mix_passes: int = 0, token_dtype: str = "u16",
                  row_index_dir: str = "", static_low_mask: int = 0,
-                 rows_requested: bool = False, max_tokens: int = 0):
+                 rows_requested: bool = False, max_tokens: int = 0,
+                 replay_subset_frac: float = 0.0, replay_subset_passes: int = 3):
         self.data_dir = data_dir
         self.shard_ids = list(shard_ids)
         self.sequence_len = sequence_len
@@ -2059,6 +2064,28 @@ class TokenizedShardDataset:
             self._chunk_budget = None
             self._batches_per_epoch = sum(
                 self.shard_chunks(sid) // self.device_batch_size for sid in self.shard_ids)
+        # Production-form stream (subset replay): of the C-chunk stream, P*S chunks
+        # are a subset of S chunks replayed P times and C-P*S chunks are fresh.
+        # Global chunk ids: fresh = [0, Fn), subset = [Fn, Fn+S) (both inside the
+        # D-token prefix). The stream is P equal segments; segment p holds the
+        # p-th slice of fresh plus one full subset pass, chunk-shuffled with a
+        # per-segment seed. Unique tokens = (Fn+S)*seq_len < D.
+        self.replay_subset_frac = float(replay_subset_frac)
+        self.replay_subset_passes = int(replay_subset_passes)
+        self._subset_order = None
+        self.subset_start = self.subset_chunks = 0
+        if self.replay_subset_frac > 0:
+            if max_tokens <= 0:
+                raise SystemExit("--replay_subset_frac requires --train_max_tokens")
+            if not (0 < self.replay_subset_frac < 1) or self.replay_subset_passes < 2:
+                raise SystemExit("--replay_subset_frac must be in (0,1) and "
+                                 "--replay_subset_passes >= 2")
+            C, P = self._chunk_budget, self.replay_subset_passes
+            S = int(round(self.replay_subset_frac * C / P))
+            if S < 1 or C - P * S < P:
+                raise SystemExit(f"replay subset of {S} chunks does not fit a "
+                                 f"{C}-chunk stream with {P} passes")
+            self.subset_start, self.subset_chunks = C - P * S, S
         if self._batches_per_epoch == 0:
             raise SystemExit(
                 f"shards {self.shard_ids} contain fewer than one device batch of "
@@ -2145,6 +2172,20 @@ class TokenizedShardDataset:
         boundaries, so `_epoch` stays 0 (no boundary interventions allowed on
         this arm).
         """
+        if self.replay_subset_frac > 0:
+            if self._subset_order is None:
+                P, Fn, S = self.replay_subset_passes, self.subset_start, self.subset_chunks
+                subset = np.arange(Fn, Fn + S)
+                bounds = np.linspace(0, Fn, P + 1).round().astype(np.int64)
+                segs = []
+                for p in range(P):
+                    seg = np.concatenate([np.arange(bounds[p], bounds[p + 1]), subset])
+                    segs.append(np.random.default_rng(self.seed * 1000 + p).permutation(seg))
+                self._subset_order = np.concatenate(segs)
+                assert self._subset_order.size == self._chunk_budget
+            for g in self._subset_order:
+                yield self.get_chunk(int(g), with_rows=with_rows)
+            return
         if self.replay_mix_passes > 0:
             per_pass = (self.epoch_batches * self.device_batch_size
                         if self.epoch_batches > 0 else self.total_chunks())
@@ -2961,11 +3002,17 @@ def main():
                         help=">0: shuffle experiment mixed arm — consume ONE globally "
                              "chunk-shuffled stream of N passes (chunk-level permutation "
                              "preserves n-gram continuity) instead of ordered epoch replay")
+    parser.add_argument("--replay_subset_frac", type=float, default=0.0,
+                        help=">0 (with --train_max_tokens, use --train_epochs 1): "
+                             "production-form stream — this fraction of the D tokens is "
+                             "a small subset replayed --replay_subset_passes times, the "
+                             "rest fresh (see TokenizedShardDataset)")
+    parser.add_argument("--replay_subset_passes", type=int, default=3)
     parser.add_argument("--fixed_train_probe", type=int, default=0,
                         help="number of fixed train batches to hold for the "
                              "fixed-train probe (0 disables)")
     parser.add_argument("--train_probe_mode", default="first",
-                        choices=["first", "uniform"],
+                        choices=["first", "uniform", "subset", "fresh"],
                         help="how the fixed train probe is sampled from the train "
                              "set: 'first' = head of the stream (default, backward "
                              "compatible); 'uniform' = evenly-spaced chunks across "
@@ -3246,6 +3293,8 @@ def main():
         epoch_batches=args.epoch_batches,
         train_max_tokens=args.train_max_tokens,
         replay_mix_passes=args.replay_mix_passes,
+        replay_subset_frac=args.replay_subset_frac,
+        replay_subset_passes=args.replay_subset_passes,
         row_index=bool(args.row_index),
         row_index_dir=args.row_index_dir,
         token_dtype=args.token_dtype,
@@ -3319,7 +3368,17 @@ def main():
                                      row_index_dir=cfg.row_index_dir,
                                      static_low_mask=cfg.static_low_mask,
                                      rows_requested=cfg.row_index,
-                                     max_tokens=cfg.train_max_tokens)
+                                     max_tokens=cfg.train_max_tokens,
+                                     replay_subset_frac=cfg.replay_subset_frac,
+                                     replay_subset_passes=cfg.replay_subset_passes)
+    if cfg.replay_subset_frac > 0:
+        print(f"[nglab] replay subset: {train_ds.subset_chunks} chunks x "
+              f"{cfg.replay_subset_passes} passes = "
+              f"{cfg.replay_subset_passes * train_ds.subset_chunks}/{train_ds._chunk_budget} "
+              f"stream chunks; fresh {train_ds.subset_start}; unique "
+              f"{(train_ds.subset_start + train_ds.subset_chunks) * cfg.sequence_len:,} tok")
+    if args.train_probe_mode in ("subset", "fresh") and cfg.replay_subset_frac <= 0:
+        raise SystemExit("--train_probe_mode subset/fresh requires --replay_subset_frac")
     if args.train_epochs > 0:
         if args.steps != 1000:
             raise SystemExit("--train_epochs and --steps are mutually exclusive "
@@ -3380,7 +3439,17 @@ def main():
                                          max_tokens=cfg.train_max_tokens)
         n_chunks = probe_ds.total_chunks()
         n_need = args.fixed_train_probe * cfg.device_batch_size
-        if args.train_probe_mode == "uniform" and n_need < n_chunks:
+        if args.train_probe_mode in ("subset", "fresh"):
+            # evenly spaced over the replayed subset (or the fresh region) of
+            # the production-form stream: subset probe loss is "train loss on
+            # data seen P times"; fresh probe = data seen once (late in the
+            # stream it is near-unseen).
+            lo, hi = ((train_ds.subset_start, train_ds.subset_start + train_ds.subset_chunks)
+                      if args.train_probe_mode == "subset" else (0, train_ds.subset_start))
+            n_need = min(n_need, hi - lo)
+            idx = [lo + int(round(i * (hi - lo - 1) / max(1, n_need - 1))) for i in range(n_need)]
+            chunks = [probe_ds.get_chunk(g) for g in idx]
+        elif args.train_probe_mode == "uniform" and n_need < n_chunks:
             # evenly-spaced chunk indices covering [0, n_chunks): use the probe
             # seed so the sample is deterministic but independent of training.
             idx = [int(round(i * (n_chunks - 1) / (n_need - 1)))
@@ -4415,6 +4484,9 @@ def main():
         "train_pool_content_tokens": train_ds.pool_content_tokens(),
         "dump_token_stats_steps": sorted(dump_steps) if dump_steps else "final_only",
         "replay_mix_passes": cfg.replay_mix_passes,
+        "replay_subset_frac": cfg.replay_subset_frac,
+        "replay_subset_passes": cfg.replay_subset_passes,
+        "replay_subset_chunks": train_ds.subset_chunks,
         "fixed_train_probe_sha256": probe_hash if args.fixed_train_probe > 0 else None,
         "fixed_train_probe_batches": len(fixed_train_probe),
         "train_probe_mode": args.train_probe_mode if args.fixed_train_probe > 0 else None,
