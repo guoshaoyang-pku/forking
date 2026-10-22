@@ -8,7 +8,10 @@ Sign  : dTrain = nog.train - arm.train, dVal = nog.val - arm.val (positive = OE 
 Units : mK = 1e-3 nat.
 Flags : diverged  = final train window / min train window of last epoch >= 1.15
                     or final val window >= min val window of the run + 0.15
+                    or E3 train window > E2 train window + 20 mK (partial blow-up)
         e1_dirty  = |dGap(E1)| > 25 mK (first pass should not fork; data-quality gate)
+        dup_pool  = D > 2.385B on manifest v27a (shards 60/62/63 are byte copies of shard 1;
+                    fixed in v27b, reruns tagged _p27b)
 Pairing: same model, dn, seed, epochs, subset tag; nogram tls is a no-op (any tls).
          Prefer a nogram on the same cluster family (a100 / h200).
 Output: .tmp/harvest/v27_a100/paired.csv and a printed summary.
@@ -92,6 +95,9 @@ def collect():
                            for i in range(0, len(rows) - WIN + 1, 10)]
                 if trs[-1] / min(trs) >= 1.15 or vas_all[-1] >= min(vas_all) + 0.15:
                     div = True
+        # partial blow-up: healthy runs drop train loss E2->E3 (median -115 mK); a rise is not forking
+        if ep_total >= 3 and 2 in ew and 3 in ew and ew[3][0] > ew[2][0] + 0.020:
+            div = True
         runs.append(dict(host=host, fam=family(host), rid=rid, done=done, rows=len(rows),
                          last_step=rows[-1]["step"], last_ep=last_ep, ew=ew, div=div,
                          model=g["model"], arm=g["arm"], rk=int(g["rk"]),
@@ -136,6 +142,8 @@ def pair(runs):
                 rec[f"nogval{e}"] = round(b[1], 5)
                 rec[f"noggap{e}"] = round(b[2] * 1000, 2)
         rec["e1_dirty"] = abs(rec.get("dgap1", 0)) > 25
+        # manifest v27a pools > 2.385B tokens contain shards 60/62/63 = byte copies of shard 1
+        rec["dup_pool"] = (r["dn"] * NN[r["model"]] > 2.385e9) and "_p27b" not in r["tag"]
         out.append(rec)
     return out
 
@@ -144,7 +152,7 @@ def main():
     runs = collect()
     paired = pair(runs)
     fields = ["rid", "host", "nog_host", "model", "arm", "rk", "rn", "dn", "tpp", "tls", "seed",
-              "ep", "tag", "done", "diverged", "e1_dirty", "cross_family"]
+              "ep", "tag", "done", "diverged", "e1_dirty", "dup_pool", "cross_family"]
     for e in (1, 2, 3):
         fields += [f"dtrain{e}", f"dgap{e}", f"dval{e}", f"val{e}", f"nogval{e}", f"noggap{e}"]
     out = os.path.join(ROOT, "paired.csv")
@@ -161,6 +169,7 @@ def main():
         if "dval3" not in r and "dval1" not in r:
             continue
         fl = ("DIV " if r["diverged"] else "") + ("E1DIRTY " if r["e1_dirty"] else "") + \
+             ("DUP " if r["dup_pool"] else "") + \
              ("xfam " if r["cross_family"] else "") + ("" if r["done"] else "run")
         g = lambda k: f"{r[k]:6.1f}" if k in r else "     -"
         print(f"{r['model']:5} {r['tag'] or '-':12} {r['dn']:5g} {r['rn']:6.2f} {r['tls']:>4} {r['seed']:>3} | "

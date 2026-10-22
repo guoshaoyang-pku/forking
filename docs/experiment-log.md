@@ -6972,3 +6972,25 @@ run_id `v26dn_50m_mh{H}k{K}k_r400k_d1b_tls{1,4}_s42_e3_fd`（ophis）。判读�
 **机制判词**：表以 128× LR 快速接管被覆盖的浅层局部条件，backbone 把整个「局部 n-gram 条件」模式家族外包给表、重新分配容量。覆盖率只有 20–30% 时，外包合约只在一小部分位置兑现——中频同类 context 既失去 backbone 的浅层建模又没有表兜底，全局受损。覆盖率 ≥40% 合约基本兑现，Δtrain 转正；覆盖越完整 backbone 越专注长程结构，收益越大。这就是 R 扫描收益侧的形状（覆盖率 Zipf 对数增长），与代价侧 gap ∝ (R/N)^0.85 共同决定最优 R/N≈5。
 
 **可检验预测**：①小 R 的伤害来自共适应而非注入本身 → frozen-random 表应无伤害（学生波 random 臂是其类比）；②table LR 降到 backbone 同量级应缓解（128× 是外包速度来源）；③与 mask_low 旧结论互洽（主动不外包 = 避免半覆盖）。证据：`data/harvest` 本地 `.tmp/harvest/mech_r6k/`（assign npz + token_stats npz + table_norm）。
+
+## §143 v27 数据完整性 + 发散普查 + (D/N × R/N) 二维面首读（2026-10-23 夜）
+
+**(a) 训练池里有一段整片重复（已修，manifest v27b）**。9 个 OE 臂的发散 onset 全挤在 step 16,500–16,770（E1 内，跨 35M/50M/104M/200M 与不同 R），同步窗内 nogram 与 exact 的 train loss 一齐骤降 ~0.3 nat 约 500 步、随后反弹；200M 的 nogram 也有同一形状。逐片 32-token 窗哈希比对（`dupscan_full.py`，每片 vs train_order 中所有更早的片）：**shard 60 / 62 / 63 的采样窗 100% 归属 shard 1，其余 144 片均 ≤2%**。三片合 36.2M token，起点 2.385B（idx 49–51，step 16,177–16,680）——凡 D>2.385B 的池在 E1 中段把 shard 1 原样再喂一遍，Adam 被拉进极低 loss 区后反冲。修复：manifest `train_order` 去掉 60/62/63（v27a md5 `25ae843b` → v27b `543cc8ae`，7.015B token，七台机原子替换并留 `manifest_v27a.json`）；`run_v27.sh` 记录 v27b 起点，D>2.385B 的重跑带 `_p27b` 标签；`v27_analyze.py` 新增 `dup_pool` 旗。处理：14 臂已停（9 个已发散 + 104M dn40/dn56 两对 + 35M dn80 s43、dn56 s43 等同池臂），`_p27b` 重跑 10 臂进 A100 队列（50M dn56/80、35M dn80/112/160 各一对），104M dn40 `_p27b` 一对在 ophis GPU6/7、dn56 一对进 360-2 队列；已存活且健康的 dup 池臂（perm 上 50M dn56/dn80 s42 三臂、360-2 的 200M dn20 一对）保留为带 caveat 读数，正式包络以 `_p27b` 为准。
+
+**(b) 发散普查（v27 全部 116 臂；新判据 = 末窗 train/最小 ≥1.15，或末窗 val ≥ 最小+0.15，或 E3 train 窗 > E2 train 窗 +20 mK——健康臂 E2→E3 train 中位数 −115 mK）**：排除 dup 池后仍有 11 个真发散：35M tls0.5 {r9k dn20, r35k dn20, r280k dn28 s43, r280k dn40 s42/s43}；35M tls1 {r70k dn5, r35k dn10, r140k dn10}；50M tls1 {r100k dn20 s43（s42 在跑）, r400k dn28 s42, r400k dn40 s42}。**发散不是 R/N 单变量的阈值**：50M r400k 在 dn2–20 全健康、dn28/40 s42 却坏；35M tls1 在 R/N=0.26–16 都有坏点。nogram 零发散（同池同 seed）。→ 预注册 D15「backbone 梯度裁剪」检验（新参数 `--grad_clip`，默认 0 时与历史逐位一致，CPU 单测验证；`NGLAB_CLIP=1.0` 加 `_clip1.0` 标签）：原样复跑 5 个真发散臂 + 2 个健康对照 + 3 个裁剪 nogram 配对。**预言**：若 clip 后 5/5 存活且健康对照 dVal 变化 <5 mK → 发散是 backbone 侧 Adam 尖峰、与表无关，可把 clip 1.0 并入部署配方；若仍发散 → 根在表-backbone 共适应（§142 的外包合约），需要从表侧下手。代码 `12c5415`，train.py `466c81ee` / run_v27.sh `b3459974` 七机一致（原子 mv 部署，正在跑的 bash 不受影响）。
+
+**(c) 二维面首读**（`docs/plot_scripts/v27_surface_20261023.py` → `docs/figs/v27_surface_20261023/`；E-末 60 行窗、同 seed nogram 配对、排除 div/e1_dirty/dup；mK，ΔVal = ΔTrain − ΔGap）。**forking 代价** ΔGap 的两变量幂律（E3）：
+
+| 档 | ΔGap ≈ A·(R/N)^a·(D/N)^b | n | log-rms |
+|---|---|---|---|
+| 50M tls1 | 25·(R/N)^**1.04**·(D/N)^**−0.34** | 19 | 0.22 |
+| 35M tls0.5 | 17·(R/N)^**0.85**·(D/N)^**−0.30** | 17 | 0.12 |
+| 35M tls1 | 46·(R/N)^**0.86**·(D/N)^**−0.60** | 13 | 0.22 |
+
+判词：①**tpp=D/R 不是充分统计量**——若 gap 只依赖 tpp 需 a=−b，实测 |a|≈0.85–1.04 远大于 |b|≈0.3–0.6，R/N 是代价侧的主变量，数据对代价的缓解远弱于表对代价的放大；②**同一 R/N、D/N 下 tls1 的代价是 tls0.5 的 ~2.7 倍**（A 46 vs 17），table LR 是第三个独立旋钮；③**D/N 单轴上指数形式更好**：R/N=8 时 50M 幂律 b=−0.34（rmse 9.6）vs 指数 k=−0.044/DN（rmse 5.9），35M 幂律 −0.31（5.9）vs 指数 −0.021/DN（4.2）——**更正**此前口头汇报的「ΔGap∝(D/N)^−0.5」（那是 summary 末点口径且含后来判为发散的点）；两族最优拟合仍都无平台。**训练侧收益** ΔTrain（正值部分）：50M ∝(R/N)^0.83·(D/N)^−0.32，35M ∝(R/N)^0.99·(D/N)^−0.07——表越大越能把训练集记住，几乎不靠数据量。**净收益 ΔVal**（验收）：35M tls0.5 在 R/N 8–16 × D/N 5–80 稳定 +37~+47；50M tls1 只在 D/N≥10 才过 +14，D/N=5 全 R 都 ≤+9，D/N=20 平台 R/N 2.5–8 为 +23~+27。小 R（R/N≤0.5）全区有害（−16~−39）且有害项在 ΔTrain，与 §142 一致。
+
+**(d) 生产形态（一遍内 frac 子集重复 P 次，其余全新；50M dn20 r400k s43，E1 协议）**：held-out val 全部为正 dVal +53/+63/+74/+75/+80 mK（0.1×2 / 0.1×3 / 0.1×4 / 0.3×3 / 0.03×3）；但重复子集上 OE 比 nogram 多出 +27~+135 mK 的 subset-gap（4 个探针点，噪声大）——**子集被记住，整体收益不被吃掉**。D8 扩展（0.01×4、0.1×6、0.1×8）在跑。
+
+**(e) 蒸馏线**：①波 1（pro5k，E1 边界 step 7355，现 ~6900）step 6500 val：nogram 3.572 / random_1_8 3.614 / trainable_1_8 3.716 / frozen_1_8 3.768 / trainable_1_32 3.725 / frozen_1_32 3.783 / random_1_32 3.778 / trainable tls0.25 3.748——**所有 OE 臂都还落后 nogram（−42~−211 mK），且蒸馏初始化落后于同 RMS 的随机初始化 ~100 mK**。差距在缩小（random_1_8：step 1000 −106 → 6500 −42）。②据此设计波 2（A100 a100_t1 ×8，fleet 队列 `nglab_stage/student_queue`，同协议 db8×accum9 = 72 blocks/step，val 54×8 = 同一组 432 blocks；3.9 s/step，E1 ~8h）：nogram / frozen_1_8 / **randfrozen_1_8**（冻结随机表 = frozen 蒸馏表的内容对照）/ **frozen_1_8_ctr**（去掉每阶公共均值后回缩到原 RMS——1_8 视图均值占能量 ~40%）/ random_1_8 / **trainable_1_8_ctr** / **random_1_8_rms0.036**（主线初始化量级）/ **frozen_9_16**（中层视图）。读法：frozen vs randfrozen 回答「蒸馏内容是否胜过随机特征」；ctr 回答「落后是否来自公共均值偏置」；rms0.036 回答「是否是初始化量级问题」。student_train.py 新增 `--value_norm center / --target_rms / --rand_per_order / --arm randfrozen`（默认值下与波 1 行为一致）。
+
+**(f) 勘误**：§142 机制段「表以 128× LR 快速接管」应为「表以与 backbone 同量级的 Adam LR（tls=1）快速接管」——v27 全部臂是 AdamW+clip、tls 0.5/1，不是 128× RMSProp。机制判词不变。
