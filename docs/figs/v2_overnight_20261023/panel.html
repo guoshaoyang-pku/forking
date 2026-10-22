@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>v2 夜间读数：发散靠梯度裁剪可治，蒸馏表去均值后反超无表基线</title>
+<style>
+  :root {
+    --dark: #141413; --light: #faf9f5; --mid: #b0aea5; --soft: #e8e6dc;
+    --muted: #5e5d59; --orange: #d97757; --blue: #6a9bcc; --green: #788c5d;
+    --red: #b54a32;
+    --head: "Poppins", "PingFang SC", "Noto Sans CJK SC", "Hiragino Sans GB", Arial, sans-serif;
+    --body: "Lora", "Noto Serif CJK SC", "Songti SC", Georgia, serif;
+    --mono: "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--light); color: var(--dark); font: 17px/1.8 var(--body); }
+  main { max-width: 780px; margin: 0 auto; padding: 72px 24px 96px; }
+  h1, h2 { font-family: var(--head); font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; }
+  h1 { font-size: 30px; margin: 0 0 16px; }
+  h2 { font-size: 22px; margin: 64px 0 12px; }
+  p { margin: 0 0 16px; }
+  .lede { font-size: 19px; }
+  code { font-family: var(--mono); font-size: 0.86em; background: var(--soft); padding: 1px 5px; border-radius: 4px; }
+  .settings { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; padding: 0; margin: 24px 0 0;
+              font: 14px/1.6 var(--head); color: var(--muted); }
+  .settings li { display: inline-flex; align-items: center; gap: 6px; }
+  .settings svg { width: 15px; height: 15px; stroke: var(--dark); fill: none; stroke-width: 1.6;
+                  stroke-linecap: round; stroke-linejoin: round; }
+  .settings b { color: var(--dark); font-weight: 500; }
+  figure { margin: 28px 0; padding: 20px; background: #fff; border: 1px solid var(--soft); border-radius: 10px; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { margin-top: 12px; font: 14px/1.6 var(--head); color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font: 14px/1.6 var(--head); margin: 16px 0; }
+  th, td { text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--soft); }
+  th { font-weight: 500; color: var(--muted); }
+  th:first-child, td:first-child { text-align: left; }
+  .pos { color: #5e7a45; font-weight: 600; }
+  .neg { color: var(--red); font-weight: 600; }
+  .tree { margin: 24px 0; font: 15px/1.65 var(--head); }
+  .tree .root { padding: 12px 16px; background: #fff; border: 1px solid var(--soft); border-radius: 10px; font-weight: 600; }
+  .tree .branches { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .tree .br { padding: 12px 14px; background: #fff; border: 1px solid var(--soft); border-radius: 10px; }
+  .tree .br b { display: block; margin-bottom: 4px; }
+  .tree .br .st { font-size: 13px; color: var(--muted); }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .dot.done { background: var(--green); }
+  .dot.run { background: var(--orange); }
+  .warn { border-left: 3px solid var(--orange); padding: 4px 0 4px 16px; margin: 24px 0; }
+  .warn strong { font-family: var(--head); }
+  details { margin: 16px 0; }
+  summary { cursor: pointer; font: 15px var(--head); color: var(--muted); }
+  footer { margin-top: 80px; font: 13px var(--head); color: var(--mid); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>夜间读数：发散靠主干梯度裁剪可治，蒸馏表去均值后反超无表基线</h1>
+<p class="lede">今晚定了四件事。训练池里有三片数据是另一片的原样拷贝，已剔除。所有健康之外的发散都能被主干网络的梯度裁剪消除。forking 代价主要由表大小决定，数据量只能缓解一部分。蒸馏表此前的落后来自每阶共有的均值偏置，去掉之后从第 500 步起就领先无表基线。</p>
+<ul class="settings">
+  <li><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/></svg>模型 <b>nanoGPT 35–200M · 学生 240M</b></li>
+  <li><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg>数据 <b>7.0B token 干净池</b></li>
+  <li><svg viewBox="0 0 24 24"><path d="M4 19l5-7 4 4 7-10"/></svg>协议 <b>E3：同一批数据训练 3 遍，第 3 遍末读数</b></li>
+  <li><svg viewBox="0 0 24 24"><path d="M6 3v18M18 3v18M6 12h12"/></svg>口径 <b>同 seed 与无表基线配对</b></li>
+  <li><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><b>2026-10-23 凌晨</b></li>
+</ul>
+
+<h2>四条支线：scaling 与蒸馏两条今晚各出一个判决</h2>
+<div class="tree">
+  <div class="root">v2 主线：消除 forking 的危害，保留 n-gram 注入（OE）的收益</div>
+  <div class="branches">
+    <div class="br"><b><span class="dot done"></span>支线 0 · 机制</b><span class="st">已发表结题。</span></div>
+    <div class="br"><b><span class="dot run"></span>支线 1 · scaling</b><span class="st">(D/N, R/N) 二维面已出首读；发散原因找到；104M/200M 补点在跑。</span></div>
+    <div class="br"><b><span class="dot run"></span>支线 2 · 消除危害</b><span class="st">梯度裁剪治发散（初读 5/5）；forking 频率分解给 gate 设计提供靶点。gate 由合作者在跑。</span></div>
+    <div class="br"><b><span class="dot run"></span>支线 3 · 蒸馏表</b><span class="st">去均值后反超无表基线；层视图扫描 4 臂与对照 8 臂在跑。</span></div>
+  </div>
+</div>
+<p>名词：OE 指把 n-gram（n=2~5）查表结果加到模型输入嵌入上的结构，每阶一张表。forking 指重复训练时训练 loss 继续下降而验证 loss 停滞或回升。gap 等于同一 step 的验证 loss 减训练 loss。ΔVal 是 OE 相对无表基线的验证集收益，正数表示 OE 更好，它是验收标准。ΔVal 恒等于 Δtrain（训练 loss 压低多少）减 Δgap（gap 比基线多多少，即 OE 额外带来的 forking）。单位 mK 等于 0.001 nat。N 是模型参数量，D 是不重复训练 token 数，R 是每阶表的行数。</p>
+
+<h2>训练池里三片数据是另一片的原样拷贝，已剔除</h2>
+<p>9 个注入臂的发散起点都挤在第 16,500–16,770 步，跨越 35M 到 200M 和不同表大小。这一窗口里无表基线的训练 loss 同样骤降约 0.3 nat。逐片比对 32-token 片段哈希后发现：第 60、62、63 片的采样片段 100% 与第 1 片相同，其余 144 片都不超过 2%。凡训练池超过 2.385B token 的配置，都在第一遍中段把第 1 片原样再学一遍。三片已从清单移除，14 个受影响的臂已停，重跑带 <code>_p27b</code> 标签。2.385B 以下的所有读数不受影响。</p>
+
+<h2>发散来自主干网络的梯度尖峰，裁剪主干梯度后全部平滑越过原发散点</h2>
+<p>剔除重复片之后仍有 11 个真发散臂，分布在不同的表大小与数据量上，无表基线一个都没有。原配方只裁剪表的梯度。新增一个默认关闭的主干梯度范数裁剪（阈值 1.0），原样复跑 5 个发散臂：其中 3 个已越过原发散点，验证 loss 平滑下降，另 2 个尚未到达。健康对照在同一时刻的验证 loss 没有变差。</p>
+<figure>
+  <img src="fig_clip.svg" alt="梯度裁剪前后的验证 loss 曲线">
+  <figcaption>红线为原配方，绿线为加主干梯度裁剪后的同配置复跑（20 点滑动平均）。右下为健康对照。</figcaption>
+</figure>
+<p>需要等第 3 遍末与裁剪版无表基线配对，才能确认裁剪对净收益的影响。若确认无损，主干梯度裁剪应进入默认配方。</p>
+
+<h2>forking 代价主要由表大小决定，数据量只能缓解一部分</h2>
+<p>在 35M 与 50M 两档上把表大小 R/N 与数据量 D/N 交叉扫描。代价项 Δgap 可以写成 A·(R/N)<sup>a</sup>·(D/N)<sup>b</sup>，三组拟合的 a 在 0.85–1.04，b 在 −0.30 到 −0.60。若代价只取决于每行分到的 token 数 D/R，应有 a=−b。实测 |a| 明显大于 |b|，所以每行 token 数不是充分变量：表加倍时代价几乎加倍，数据加倍只把代价压低 20–35%。</p>
+<figure>
+  <img src="../v27_surface_20261023/fig_surface.svg" alt="二维扫描面">
+  <figcaption>(a) R/N=8 时代价随数据量下降，第一遍末代价接近零。(b)(c)(d) 代价、训练收益、净收益随表大小。(e) R/N=8 下的三项分解。(f) 按每行 token 数 D/R 作图，点没有塌到一条线上。</figcaption>
+</figure>
+<table>
+  <tr><th>档</th><th>Δgap 拟合</th><th>点数</th></tr>
+  <tr><td>50M，表学习率 1 倍</td><td>25·(R/N)<sup>1.04</sup>·(D/N)<sup>−0.34</sup></td><td>19</td></tr>
+  <tr><td>35M，表学习率 0.5 倍</td><td>17·(R/N)<sup>0.85</sup>·(D/N)<sup>−0.30</sup></td><td>17</td></tr>
+  <tr><td>35M，表学习率 1 倍</td><td>46·(R/N)<sup>0.86</sup>·(D/N)<sup>−0.60</sup></td><td>13</td></tr>
+</table>
+<p>同一位置上表学习率减半，代价约缩小为 1/2.7，所以表学习率是第三个独立的调节量。沿数据量单轴看，指数衰减比幂律拟合得更好，两种形式都不支持存在一个降不下去的代价下限。此前口头汇报的 Δgap∝(D/N)<sup>−0.5</sup> 用的是包含后来判为发散点的末点口径，以本节为准。</p>
+
+<h2>forking 不集中在低频 context，没有被表覆盖的位置也在 fork</h2>
+<p>用第 3 遍末逐 token 的 loss 记录，按 context 在训练池中的出现次数分组，再按该位置最深被哪一阶的表覆盖分组。数据量充足（D/N=20）时，四阶的代价在出现 100 次到 10 万次之间大致持平，没有越稀有越 fork 的幂律。数据量小时代价整体抬高，峰值落在出现 10–100 次的 context 上。</p>
+<figure>
+  <img src="../v27_gapfreq_20261023/fig_gapfreq.svg" alt="逐阶 gap 频率分解">
+  <figcaption>50M。上排为代价 Δgap，下排为净收益 ΔVal，横轴为 context 在本 run 训练池中的出现次数，方块为 10 亿 token 中出现不到 30 次的稀有 context。单 seed、训练侧单个 batch，读形状。</figcaption>
+</figure>
+<table>
+  <tr><th>D/N=20，R/N=8：最深覆盖阶</th><th>位置占比</th><th>ΔVal</th><th>Δgap</th></tr>
+  <tr><td>无任何表覆盖</td><td>15%</td><td class="neg">−25</td><td class="neg">+35</td></tr>
+  <tr><td>2 阶</td><td>46%</td><td class="pos">+21</td><td class="neg">+58</td></tr>
+  <tr><td>3 阶</td><td>23%</td><td class="pos">+34</td><td class="neg">+66</td></tr>
+  <tr><td>4 阶</td><td>9%</td><td class="pos">+39</td><td class="neg">+101</td></tr>
+  <tr><td>5 阶</td><td>7%</td><td class="pos">+61</td><td class="neg">+130</td></tr>
+</table>
+<p>覆盖越深，收益越大，代价也越大。没有任何表覆盖的位置，gap 也比基线大 35 mK，验证集变差。这部分代价不在表行上，而在主干网络：表接管了局部条件后，主干在其他位置也更依赖训练集。由此可以推出，按频率屏蔽表行只能削掉表行上的代价，碰不到这 15% 位置上的外溢，这与此前「低频 mask 在 n=2~5 联合下不管用」的观察一致。可检验的分工：主干侧手段（裁剪、正则）应主要压低无覆盖位置的代价，表侧 gate 应主要压低 4–5 阶的代价。</p>
+
+<h2>等比放大：第一遍收益随模型变大而增大，第 3 遍末的净收益在变薄</h2>
+<p>固定 D/N=20、R/N=8，只改模型大小。第一遍末净收益从 35M 的 +55~60 升到 104M 的 +77 mK，代价接近零。到第 3 遍末，50M 的代价已涨到 +69~73 mK，净收益只剩 +22~28。104M 和 200M 的第 2、3 遍读数今天上午到下午陆续落地。</p>
+<figure>
+  <img src="fig_ladder.svg" alt="等比放大梯">
+  <figcaption>每点一个 seed。橙色圆为 ΔVal，蓝色方为 Δgap。空心表示该池含重复片（200M），只作参考。</figcaption>
+</figure>
+
+<h2>蒸馏表的落后来自每阶共有的均值，去均值后从第 500 步起就领先</h2>
+<p>蒸馏表用 Qwen3.5-4B 的残差在 10B token 上聚类得到，每阶 250 万行、64 维，经一个零初始化的投影加到学生模型输入上。原始蒸馏值在第 1000 步落后无表基线约 970 mK，此后缓慢追近，同等幅度的随机表几乎不落后。原始值里有一个每阶共有的均值方向，占能量约 40%。减去这个均值并缩放回原幅度后，第 500 步即领先基线 +120 mK（第 1–8 层视图）到 +290 mK（第 25–32 层视图）。越深的层视图领先越多。</p>
+<figure>
+  <img src="fig_distill.svg" alt="蒸馏表读数">
+  <figcaption>左：蒸馏机 8 卡，每 500 步验证集。右：A100 对照组，前 1000 步训练 loss，100 步窗口。冻结随机表与可训练随机表都在零附近，说明领先来自蒸馏内容本身。</figcaption>
+</figure>
+<div class="warn"><strong>还不能下结论：</strong>早期领先在衰减（A100 上去均值可训练臂从第 300 步的 +270 降到第 1000 步的 +80）。它能否保持到第一遍末（约第 7355 步，今天上午）和第 3 遍末（明天），决定蒸馏表是否成为学生模型的默认初始化。</div>
+
+<h2>在飞队列：62 张卡全满，上午到中午陆续出数</h2>
+<table>
+  <tr><th>机群</th><th>内容</th><th>预计</th></tr>
+  <tr><td>A100 ×30</td><td>二维面补点（D/N 2–40 × R/N 0.25–16）、梯度裁剪检验与追加、重复片重跑、子集重复的生产形态</td><td>快的组 06:00 前，慢的组中午</td></tr>
+  <tr><td>A100 ×8</td><td>蒸馏对照组 8 臂</td><td>第一遍末 ~10:30</td></tr>
+  <tr><td>360-2 H200 ×8</td><td>104M/200M 的 D/N 与 R 点、大表点</td><td>上午到傍晚</td></tr>
+  <tr><td>ophis H200 ×8</td><td>104M 表大小扫描（R/N 1/2/3.85/8）+ 第二 seed + D/N=40 重跑</td><td>上午 ~09:30</td></tr>
+  <tr><td>蒸馏机 ×8</td><td>无表基线、原始蒸馏与随机对照 4 臂 + 去均值层视图 4 臂</td><td>第一遍末 ~06:30，第 3 遍末明晚</td></tr>
+</table>
+
+<footer>来源：<code>docs/experiment-log.md</code> §143–§145 · 图脚本 <code>docs/plot_scripts/v27_surface_20261023.py</code>、<code>v27_gapfreq_20261023.py</code>、<code>v2_overnight_20261023.py</code> · 2026-10-23</footer>
+</main>
+</body>
+</html>
