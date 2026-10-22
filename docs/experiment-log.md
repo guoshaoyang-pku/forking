@@ -6994,3 +6994,23 @@ run_id `v26dn_50m_mh{H}k{K}k_r400k_d1b_tls{1,4}_s42_e3_fd`（ophis）。判读�
 **(e) 蒸馏线**：①波 1（pro5k，E1 边界 step 7355，现 ~6900）step 6500 val：nogram 3.572 / random_1_8 3.614 / trainable_1_8 3.716 / frozen_1_8 3.768 / trainable_1_32 3.725 / frozen_1_32 3.783 / random_1_32 3.778 / trainable tls0.25 3.748——**所有 OE 臂都还落后 nogram（−42~−211 mK），且蒸馏初始化落后于同 RMS 的随机初始化 ~100 mK**。差距在缩小（random_1_8：step 1000 −106 → 6500 −42）。②据此设计波 2（A100 a100_t1 ×8，fleet 队列 `nglab_stage/student_queue`，同协议 db8×accum9 = 72 blocks/step，val 54×8 = 同一组 432 blocks；3.9 s/step，E1 ~8h）：nogram / frozen_1_8 / **randfrozen_1_8**（冻结随机表 = frozen 蒸馏表的内容对照）/ **frozen_1_8_ctr**（去掉每阶公共均值后回缩到原 RMS——1_8 视图均值占能量 ~40%）/ random_1_8 / **trainable_1_8_ctr** / **random_1_8_rms0.036**（主线初始化量级）/ **frozen_9_16**（中层视图）。读法：frozen vs randfrozen 回答「蒸馏内容是否胜过随机特征」；ctr 回答「落后是否来自公共均值偏置」；rms0.036 回答「是否是初始化量级问题」。student_train.py 新增 `--value_norm center / --target_rms / --rand_per_order / --arm randfrozen`（默认值下与波 1 行为一致）。
 
 **(f) 勘误**：§142 机制段「表以 128× LR 快速接管」应为「表以与 backbone 同量级的 Adam LR（tls=1）快速接管」——v27 全部臂是 AdamW+clip、tls 0.5/1，不是 128× RMSProp。机制判词不变。
+
+## §144 forking 住在哪里：逐 token 的 gap–频率–覆盖深度分解（2026-10-23 夜，50M v27）
+
+数据：E3 末步（step 20345 或对应池的末步）同 seed 配对的逐 token dump（`--dump_token_stats_steps final_only`：val 589,824 token = 288 chunk 全量；train = 末步 batch 147,456 token），exact 与 nogram 位置逐位对齐（同 val chunk、同数据顺序）。频率轴 = 该 context 在本 run 自己训练池里的期望出现次数（1B 池 f30 索引计数 × D/1B；f30 外记作 rare）。脚本 `docs/plot_scripts/v27_gapfreq_20261023.py` → `docs/figs/v27_gapfreq_20261023/`。四组：50M R/N=8 × D/N {2 s42, 5 s42, 20 s43}，以及 D/N=20 R/N=1（r50k s43）。单 seed、train 侧单 batch，读形状不读小数。
+
+**(a) 代价不集中在低频**：D/N=20 R/N=8 时四阶的 ΔGap 在 context 频率 10²–10⁵ 上大致持平（n2 25–100、n3 52–96、n4 60–160、n5 20–126 mK），没有「越稀有越 fork」的幂律；D/N=2/5 时整体抬到 150–490 mK，峰值落在**本池出现 10–100 次**的中低频 context（每 epoch 重复 3 遍 → 30–300 次曝光，足够被背下、不足以泛化）。R/N=1 时几乎处处 ≤25 mK。→ 用户要的「不同 n 的 gap–freq 幂律」在 n=2–5 联合 + exact 表的设定下**不是幂律**：频率维度上近似平坦/单峰，主导变量是 D/N 与 R/N（§143c），不是单个 context 的频率。
+
+**(b) 收益集中在中频和深阶**：ΔVal 正区在 n2–n4 的 10²–10⁴ 次、以及 n=5 的全部有表区间（+40~+120 mK）；**最高频 context（>10⁴ 次）在小 D/N 下 ΔVal 为负**（n2 −85、n3 −60 @D/N=2）——这些 context 本来 backbone 就学得最好，表只带来额外记忆。
+
+**(c) 按「最深有表阶」切分（position 的最长被表覆盖的 context 阶数；r400k）**：
+
+| D/N | 无表行（depth 0，15%） | depth 2（46%） | depth 3（23%） | depth 4（9%） | depth 5（7%） |
+|---|---|---|---|---|---|
+| 2 | ΔVal −100 / ΔGap +98 | −19 / +178 | +10 / +252 | +38 / +357 | +93 / +414 |
+| 5 | −68 / +114 | −11 / +166 | +3 / +201 | +18 / +258 | +51 / +305 |
+| 20 | **−25 / +35** | +21 / +58 | +34 / +66 | +39 / +101 | +61 / +130 |
+
+判词：①**越深的表覆盖收益越大、代价也越大**，ΔGap 随深度近线性（D/N=20：35→58→66→101→130）；②**没有任何表行的 15% 位置也在 fork**（D/N=20 +35 mK、D/N=2 +98 mK）且 val 变差——forking 有相当一部分是 backbone 的共适应外溢，不是表行自己的记忆。这与 §142（小 R 的伤害是 backbone 整体变差）同一个机制：表把局部条件接走后，backbone 在未覆盖位置也变得更依赖训练集。③由此对「低频 mask」的预期打折：mask 掉低频 context 只能删掉表行上的那部分代价，管不到 depth-0 外溢（与 §82「mask 低频在 n=2–5 联合下不管用」一致）。
+
+**可检验预测**：frozen-backbone 或 backbone 侧正则（D15 clip、权重衰减）应主要压低 depth-0 的 ΔGap；表侧 gate（合作者的 f(n) sigmoid gate）应主要压低 depth 4–5 的 ΔGap。两者的分解可以直接用本节的切分口径验收。
