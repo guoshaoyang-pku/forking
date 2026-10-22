@@ -6928,3 +6928,13 @@ DeepSeek-V4.1-Flash 位置（HF config：Engram 行数 384,006,168 + 384,016,682
 run_id `v26dn_50m_mh{H}k{K}k_r400k_d1b_tls{1,4}_s42_e3_fd`（ophis）。判读（单 seed，假设）：**同覆盖下多头比无碰撞 exact 更好**（E3 +48/+53 vs +34，gap 更低）；4× 覆盖使 E1 收益最大（+82–91），但 E3 有 3/5 发散、存活的 gap 翻倍；Engram 的「表 LR 5×」在这里同样导致发散。s43 复本（6 个 mh 臂 + 同机 exact/nogram s43）已在 ophis GPU0–7 起跑。
 
 **(h) 360-2**：v27 池经 Mac 中转到 360-2（147 片 md5 全对），独立树 `ngram-gap-lab-v27`（不改动正在运行的 v26 树），本地 `fleet_queue` 12 臂：200M D/N=20 exact+nogram（GPU6/7 已起）、104M D/N 5/10/20/40、104M R 208k/1600k；其余 6 卡跑完 `_nl` 后自动接活。
+
+## §140 蒸馏线生产完成 + 学生 harness D0（2026-10-22 晚，pro5kvrdma6 ×8 + 本机）
+
+**(a) 蒸馏生产（另一会话产线，本会话验收接管）**：10B token 蒸馏产线 `production_4b_nvfp4_v3` 于 17:05 完成 182/182 chunk，final_ckpt EMA-freeze commit，重建 diff 为 0，`final_acceptance.json` PASS。`NgramVocab` 读出口径 = 运行时路由逐位一致（5B/10B 双侧、raw/committed 双路径、roundtrip + 采样 80 上下文全过）。导出七视图（layer_prefix {1,4,8,16,32} × merge {8,32}），9.4GB 已同步至 A100 hub（perm `/data2/guoshaoyang/nglab_hub/distill_export/`，rsync 22.7MB/s 7min）。**蒸馏的 n-gram table 就绪可用于训练。**
+
+**(b) 学生 harness（D0，新写）**：`forking_v2/student/student_train.py`（240M nanoGPT：8L×768×12H，seq 2048，**Qwen3.5-4B 词表 248,320**，tied wte）+ 四张 2,500,001×64 表（每阶 2.25M 语义 + 0.25M fallback + 1 零 padding 行），共享 W_V(64→768) **零初始化** ⇒ 所有 OE 臂 step-0 与 nogram 逐位相同。表优化器 AdamW(0.9,0.95) lr=6e-4×tls、clip 1.0（继承教师侧配方）；backbone 沿用主线 (0.8,0.95) wd0.1 warmup100 constant。**routing 预计算** `student_routing.py`：精确 18-bit packing（与非精确 reader 口径不同但容量内零碰撞，验收门 = 对 `NgramVocab` reader 采样上下文逐点比对，**GATE_PASS_ALL**，语义命中率 n2 0.876 / n3 0.483 / n4 0.205 / n5 0.076），block 起点 off<n-1 置 padding 行（与 reader 的跨文档边界语义差异：6/8190 位置，属预期口径）。84 个 slot 文件（21 parts×4 阶）pro5k 本地盘生成（~35min 全量）。
+
+**(c) 学生波 1（8 臂，E3 协议，1.087B Qwen token = part 0–19，part 20 固定 val）**：nogram / frozen-1_8 / trainable-1_8 / random-1_8 / frozen-1_32 / trainable-1_32 / random-1_32 / trainable-1_8-tls0.25，全 s42，DB18×accum4（72×2048/step）。smoke 实测 4.2s/step、显存 67.5/72GB（smoke DB24；波用 DB18 留余量）、step1 train 12.588≈ln(248320)、30 步 train 12.59→7.76。**D/N ≈ 4.5**（1.087B/240M，受 10B 蒸馏语料与 21 部分片限制；D/N=20 需扩蒸馏语料，见 HANDOFF D6）。E1 读数 ~8.6h、E3 全程 ~26h。读数口径与主线一致：同 seed 配对 nogram，ΔVal = nogram − arm，E3 末窗均值。**关键科学点**：本线首次在「教师语义聚类表」上测 forking——表行是 Qwen3.5-4B residual 流形 4M→64 的聚类质心，不是随机频率桶；frozen vs trainable 直接分离「内容先验」与「训练共适应」的贡献。
+
+**(d) 与主线交叉**：forking_v2 提交 `student harness D0`（student/ 三件套，本地 commit）；lab 侧 `code/cluster/harvest_v27.sh` + `parse_v27.py`（A100 无 rsync 的 tione 机走 tar-over-ssh 兜底）。蒸馏线已知债（沿用另一会话 HANDOFF）：committed-view 审计、worker_offset 口径、D6 语料扩容到 D/N=20、tokens.tar 66 部分（24/90）未同步。
