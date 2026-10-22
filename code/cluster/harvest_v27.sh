@@ -2,7 +2,7 @@
 # Harvest v27 train_log.jsonl + summary.json from all hosts to Mac.
 # usage: harvest_v27.sh [host ...]   (default: all)
 set -u
-ROOT=/Users/guoshaoyang/Desktop/workdir/ngram-gap-lab/data/harvest/v27_a100
+ROOT=/Users/guoshaoyang/Desktop/workdir/ngram-gap-lab/.tmp/harvest/v27_a100
 mkdir -p "$ROOT"
 HOSTS=${@:-"a100_perm a100_t1 a100_t1_2 a100_t1_3 a100_t1_4 360-2"}
 for h in $HOSTS; do
