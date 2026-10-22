@@ -56,7 +56,9 @@ def fig_ladder():
         for model in ("35m", "50m", "104m", "200m"):
             pts = [r for r in P if r["model"] == model and abs(float(r["dn"]) - 20) < 1e-6
                    and abs(float(r["rn"]) - 8) < 0.05 and r["tag"] in ("", "_p27b") and r.get(f"dval{e}")
-                   and r["diverged"] != "True"]
+                   and r["diverged"] != "True" and r["e1_dirty"] != "True"
+                   and r["tls"] == ("0.5" if model == "35m" else "1")
+                   and float(r[f"dval{e}"]) > -300]
             for r in pts:
                 hollow = r["dup_pool"] == "True"
                 ax.plot(NN[model], float(r[f"dval{e}"]), "o", ms=8, color=C["orange"],
