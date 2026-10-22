@@ -82,6 +82,7 @@ class Config:
     table_lr_scale: float = 2.0       # multiplier on the n-gram table LR
     table_betas: tuple = (0.0, 0.99)  # (beta1, beta2) for adamw; beta1 = momentum for sgd
     table_grad_clip: float = 0.0      # >0: global-norm clip on all n-gram table grads (EOS-divergence fix, Engram-style)
+    grad_clip: float = 0.0            # >0: global-norm clip on all NON-table (backbone) grads; 0 = off (historical default)
     table_mult: int = 64              # legacy multi-layer/two-hash path only
     bigram_clean_table: int = 0       # clean single-table rows R (0=off); SSOT: clean-table-rework.md
     trigram_clean_table: int = 0      # clean single-table rows R for trigram (0=off); same SSOT
@@ -1764,7 +1765,7 @@ class MixedOptimizer:
     def __init__(self, model: nn.Module, lr: float, ngram_betas, adam_betas,
                  weight_decay: float, table_optimizer: str = "rmsprop",
                  table_lr_scale: float = 1.0, table_betas=None,
-                 table_grad_clip: float = 0.0):
+                 table_grad_clip: float = 0.0, grad_clip: float = 0.0):
         self.model = model
         self.lr = lr
         self.ngram_beta2 = ngram_betas[1]
@@ -1772,6 +1773,7 @@ class MixedOptimizer:
         self.table_lr_scale = table_lr_scale
         self.table_betas = tuple(table_betas) if table_betas is not None else tuple(ngram_betas)
         self.table_grad_clip = float(table_grad_clip)
+        self.grad_clip = float(grad_clip)
         self.adam_betas = adam_betas
         self.weight_decay = weight_decay
         self.adam_steps = {}
@@ -1954,6 +1956,15 @@ class MixedOptimizer:
                 if grads:
                     total_norm = torch.norm(torch.stack([g.norm() for g in grads]))
                     clip_coef = self.table_grad_clip / (total_norm + 1e-6)
+                    if clip_coef < 1:
+                        for g in grads:
+                            g.mul_(clip_coef)
+            if self.grad_clip > 0:
+                grads = [p.grad for _, p in self.adam_params
+                         if p.requires_grad and p.grad is not None]
+                if grads:
+                    total_norm = torch.norm(torch.stack([g.float().norm() for g in grads]))
+                    clip_coef = self.grad_clip / (total_norm + 1e-6)
                     if clip_coef < 1:
                         for g in grads:
                             g.mul_(clip_coef)
@@ -2876,6 +2887,9 @@ def main():
                              "table optimizer step (EOS-divergence fix; Engram-style Adam+clip. "
                              "Adam/RMSProp are scale-invariant in steady state, so this mainly "
                              "suppresses transient spikes)")
+    parser.add_argument("--grad_clip", type=float, default=0.0,
+                        help=">0: global-norm clip over all non-table (backbone/wte/head) grads "
+                             "before the step; 0 = off (historical default)")
     parser.add_argument("--table_mult", type=int, default=64,
                         help="[legacy only] multi-layer/two-hash table multiplier (default 64)")
     parser.add_argument("--bigram_clean_table", type=int, default=0,
@@ -3286,6 +3300,7 @@ def main():
         table_optimizer=args.table_optimizer,
         table_lr_scale=args.table_lr_scale,
         table_grad_clip=args.table_grad_clip,
+        grad_clip=args.grad_clip,
         table_mult=args.table_mult,
         bigram_clean_table=args.bigram_clean_table,
         trigram_clean_table=args.trigram_clean_table,
@@ -3782,7 +3797,8 @@ def main():
                                table_optimizer=cfg.table_optimizer,
                                table_lr_scale=cfg.table_lr_scale,
                                table_betas=cfg.table_betas,
-                               table_grad_clip=cfg.table_grad_clip)
+                               table_grad_clip=cfg.table_grad_clip,
+                               grad_clip=cfg.grad_clip)
     if args.table_diag:
         optimizer.enable_table_diag()
 
