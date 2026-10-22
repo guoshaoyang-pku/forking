@@ -98,7 +98,7 @@ class Config:
     ngram_inject_layers: str = "0"    # W2 multi-layer OE: comma list, 0 = input, l>=1 = after block l-1 output
     ngram_layer_assign: str = ""      # "2:path,5:path" per-layer assignment npz for layers >0
     ngram_layer_init: str = ""        # "2:path,5:path" per-layer centroid init npz (table_<n>)
-    ngram_heads: int = 1              # v26: 2 = two half-width tables per order (matched-budget multi-hash / H2)
+    ngram_heads: int = 1              # v26: H tables per order (H in 1,2,4,8), each d/H wide (2: d//2 + rest), own rows per head; readout = concat (Engram-style multi-head)
     intervention: str = "none"        # none | freeze_table | freeze_backbone | freeze_both | hash_reseed | mask_low_freq | mask_high_freq | random_context_loss_mask
     intervention_epoch: int = 1       # fire when 0-indexed epoch reaches this value (1 = start of epoch 2)
     intervention_epochs: tuple = ()   # extra 0-indexed due epochs for multi-fire interventions (e.g. (1, 2))
@@ -761,6 +761,22 @@ class NanoGPT(nn.Module):
                                                      config.n_embd - config.n_embd // 2))
             for n in self.ngram_extra_orders
         }) if config.ngram_heads == 2 else nn.ModuleDict()
+        # H>2 heads: head 0 = ngram_ves (d/H wide, see above), heads 1..H-1 here
+        H = config.ngram_heads
+        if H > 2:
+            if config.n_embd % H:
+                raise ValueError(f"ngram_heads={H} must divide n_embd={config.n_embd}")
+            self.ngram_ves = nn.ModuleDict({
+                str(n): nn.Embedding(_r0(n), config.n_embd // H,
+                                     _weight=torch.empty(_r0(n), config.n_embd // H))
+                for n in self.ngram_extra_orders})
+        self.ngram_ves_x = nn.ModuleDict({
+            str(n): nn.ModuleList([
+                nn.Embedding(_r0(n), config.n_embd // H,
+                             _weight=torch.empty(_r0(n), config.n_embd // H))
+                for _ in range(H - 1)])
+            for n in self.ngram_extra_orders
+        }) if H > 2 else nn.ModuleDict()
         self.ngram_hash_constants = {n: ngram_hash_constants(n) for n in self.ngram_extra_orders}
         # v2.1 dictionary (no-collision) mode: per order, a sorted int64 tensor of
         # the top-ngram_dict_topk train contexts; rows come from searchsorted and
@@ -810,6 +826,7 @@ class NanoGPT(nn.Module):
         # identical to a run without them
         generic = {id(m) for m in self.ngram_ves.values()}
         generic |= {id(m) for m in self.ngram_ves_b.values()}
+        generic |= {id(m) for lst in self.ngram_ves_x.values() for m in lst}
         for m in self.modules():
             if id(m) in generic:
                 continue
@@ -848,6 +865,9 @@ class NanoGPT(nn.Module):
             torch.nn.init.uniform_(nve.weight, -s, s)
         for nve in self.ngram_ves_b.values():
             torch.nn.init.uniform_(nve.weight, -s, s)
+        for lst in self.ngram_ves_x.values():
+            for nve in lst:
+                torch.nn.init.uniform_(nve.weight, -s, s)
         for blk in self.transformer.h:
             for gname in ("ve_gate", "bigram_gate", "trigram_gate"):
                 g = getattr(blk.attn, gname, None)
@@ -1288,7 +1308,7 @@ class NanoGPT(nn.Module):
 
         npz format per order n in ngram_extra_orders:
           keys_<n>  int64 (K_n,) sorted ascending (same key semantics as dict mode)
-          rows_<n>  int32 (K_n,) for heads=1, or (2, K_n) for heads=2
+          rows_<n>  int32 (K_n,) for heads=1, or (H, K_n) for heads=H>=2
           R_<n>     int64 scalar physical row count (rows < R <= ngram_clean_table)
           counts_<n> (optional) int64 train counts for coverage logging
         Collisions (two keys -> same row) are the routing algorithm's choice.
@@ -1306,9 +1326,9 @@ class NanoGPT(nn.Module):
             keys = np.ascontiguousarray(z[f"keys_{n}"], dtype=np.int64)
             rows = np.asarray(z[f"rows_{n}"], dtype=np.int64)
             R = int(z[f"R_{n}"])
-            if heads == 2:
-                if rows.shape != (2, keys.size):
-                    raise SystemExit(f"assign n={n}: rows shape {rows.shape} != (2, {keys.size})")
+            if heads >= 2:
+                if rows.shape != (heads, keys.size):
+                    raise SystemExit(f"assign n={n}: rows shape {rows.shape} != ({heads}, {keys.size})")
             else:
                 if rows.shape != (keys.size,):
                     raise SystemExit(f"assign n={n}: rows shape {rows.shape} != ({keys.size},)")
@@ -1326,8 +1346,8 @@ class NanoGPT(nn.Module):
                 self.ngram_dict_keys_L[layer][n] = torch.from_numpy(keys).to(device)
                 self.ngram_assign_rows_L[layer][n] = torch.from_numpy(rows).to(device)
                 self.ngram_assign_R_L[layer][n] = R
-            if heads == 2:
-                used = int(np.unique(rows[0]).size + np.unique(rows[1]).size)
+            if heads >= 2:
+                used = int(sum(np.unique(rows[h]).size for h in range(heads)))
             else:
                 used = int(np.unique(rows.reshape(-1)).size)
             cnt = z[f"counts_{n}"] if f"counts_{n}" in z else None
@@ -1353,8 +1373,8 @@ class NanoGPT(nn.Module):
         pos = torch.searchsorted(table, keys.reshape(-1))
         pos_c = pos.clamp(max=table.numel() - 1)
         valid = table[pos_c] == keys.reshape(-1)
-        if ar.dim() == 2:  # heads=2: (2, K) -> (2, B*T)
-            rows = ar[:, pos_c].view(2, *keys.shape)
+        if ar.dim() == 2:  # heads=H: (H, K) -> (H, B, T)
+            rows = ar[:, pos_c].view(ar.shape[0], *keys.shape)
         else:
             rows = ar[pos_c].view_as(keys)
         return rows, valid.view_as(keys)
@@ -1471,6 +1491,10 @@ class NanoGPT(nn.Module):
                 if self.config.ngram_heads == 2:
                     nve = torch.cat([self.ngram_ves[str(n)](rows[0]),
                                      self.ngram_ves_b[str(n)](rows[1])], dim=-1)
+                elif self.config.ngram_heads > 2:
+                    nve = torch.cat([self.ngram_ves[str(n)](rows[0])]
+                                    + [t(rows[h + 1]) for h, t in
+                                       enumerate(self.ngram_ves_x[str(n)])], dim=-1)
                 else:
                     nve = self.ngram_ves[str(n)](rows)
                 nve = nve * valid.unsqueeze(-1).to(nve.dtype)
@@ -2939,7 +2963,7 @@ def main():
     parser.add_argument("--ngram_layer_init", default="",
                         help="'2:path,5:path': per-layer centroid init npz (table_<n>) for each "
                              "inject layer >0; backbone-informed init, disclose in reports")
-    parser.add_argument("--ngram_heads", type=int, default=1, choices=[1, 2],
+    parser.add_argument("--ngram_heads", type=int, default=1, choices=[1, 2, 4, 8],
                         help="with --ngram_assign_file: 2 = two half-width tables per order, "
                              "same total params and active width (H2 matched-budget multi-hash)")
     parser.add_argument("--diag_workers", type=int, default=1,
@@ -3542,8 +3566,8 @@ def main():
         # plan-9 FLAME pivot: exact pre-run accounting, printed BEFORE training
         from moe import flame_param_counts, format_flame_ledger
         oe_params = 0
-        for attr in ("ngram_ves", "bigram_ves", "trigram_ves", "value_embeds",
-                     "ngram_ves_L"):
+        for attr in ("ngram_ves", "ngram_ves_b", "ngram_ves_x", "bigram_ves", "trigram_ves",
+                     "value_embeds", "ngram_ves_L"):
             mod = getattr(model, attr, None)
             if isinstance(mod, nn.ModuleDict):
                 oe_params += sum(p.numel() for m in mod.values()
@@ -3559,8 +3583,8 @@ def main():
     elif model.moe_active:
         from moe import params_ledger, format_ledger
         oe_params = 0
-        for attr in ("ngram_ves", "bigram_ves", "trigram_ves", "value_embeds",
-                     "ngram_ves_L"):
+        for attr in ("ngram_ves", "ngram_ves_b", "ngram_ves_x", "bigram_ves", "trigram_ves",
+                     "value_embeds", "ngram_ves_L"):
             mod = getattr(model, attr, None)
             if isinstance(mod, nn.ModuleDict):
                 oe_params += sum(p.numel() for m in mod.values()
