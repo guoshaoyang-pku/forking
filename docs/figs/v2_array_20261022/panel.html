@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>v2 实验阵列第一批干净读数：表够大才有收益，最优点在 R/N≈5</title>
+<style>
+  :root {
+    --dark: #141413; --light: #faf9f5; --mid: #b0aea5; --soft: #e8e6dc;
+    --muted: #5e5d59; --orange: #d97757; --blue: #6a9bcc; --green: #788c5d;
+    --red: #b54a32;
+    --head: "Poppins", "PingFang SC", "Noto Sans CJK SC", "Hiragino Sans GB", Arial, sans-serif;
+    --body: "Lora", "Noto Serif CJK SC", "Songti SC", Georgia, serif;
+    --mono: "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--light); color: var(--dark); font: 17px/1.8 var(--body); }
+  main { max-width: 760px; margin: 0 auto; padding: 72px 24px 96px; }
+  h1, h2 { font-family: var(--head); font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; }
+  h1 { font-size: 30px; margin: 0 0 16px; }
+  h2 { font-size: 22px; margin: 64px 0 12px; }
+  p { margin: 0 0 16px; }
+  .lede { font-size: 19px; }
+  code { font-family: var(--mono); font-size: 0.86em; background: var(--soft); padding: 1px 5px; border-radius: 4px; }
+  .settings { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; padding: 0; margin: 24px 0 0;
+              font: 14px/1.6 var(--head); color: var(--muted); }
+  .settings li { display: inline-flex; align-items: center; gap: 6px; }
+  .settings svg { width: 15px; height: 15px; stroke: var(--dark); fill: none; stroke-width: 1.6;
+                  stroke-linecap: round; stroke-linejoin: round; }
+  .settings b { color: var(--dark); font-weight: 500; }
+  figure { margin: 28px 0; padding: 20px; background: #fff; border: 1px solid var(--soft); border-radius: 10px; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { margin-top: 12px; font: 14px/1.6 var(--head); color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font: 14px/1.6 var(--head); margin: 16px 0; }
+  th, td { text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--soft); }
+  th { font-weight: 500; color: var(--muted); }
+  th:first-child, td:first-child { text-align: left; }
+  .pos { color: #5e7a45; font-weight: 600; }
+  .neg { color: var(--red); font-weight: 600; }
+  .tree { margin: 24px 0; font: 15px/1.65 var(--head); }
+  .tree .root { padding: 12px 16px; background: #fff; border: 1px solid var(--soft); border-radius: 10px;
+                font-weight: 600; }
+  .tree .branches { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .tree .br { padding: 12px 14px; background: #fff; border: 1px solid var(--soft); border-radius: 10px; }
+  .tree .br b { display: block; margin-bottom: 4px; }
+  .tree .br .st { font-size: 13px; color: var(--muted); }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .dot.done { background: var(--green); }
+  .dot.run { background: var(--orange); }
+  .dot.off { background: var(--mid); }
+  .warn { border-left: 3px solid var(--orange); padding: 4px 0 4px 16px; margin: 24px 0; }
+  .warn strong { font-family: var(--head); }
+  details { margin: 16px 0; }
+  summary { cursor: pointer; font: 15px var(--head); color: var(--muted); }
+  footer { margin-top: 80px; font: 13px var(--head); color: var(--mid); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>第一批干净读数：表与模型的比值 R/N 决定成败，最优在 ≈5</h1>
+<p class="lede">表太小（R/N≤0.5）时注入反而有害；R/N≥2.5 后净收益进入 +24~30 mK（千分之一 nat）的平台。收益侧是覆盖率（幂律 ∝(R/N)^0.5），代价侧是 forking gap（∝(R/N)^0.85）。数据越多代价越小（∝(D/N)^−0.5）。</p>
+<ul class="settings">
+  <li><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/></svg>模型 <b>nanoGPT 35–200M</b></li>
+  <li><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg>数据 <b>7.1B token 干净池</b></li>
+  <li><svg viewBox="0 0 24 24"><path d="M4 19l5-7 4 4 7-10"/></svg>协议 <b>E3：同一批数据训练 3 遍</b></li>
+  <li><svg viewBox="0 0 24 24"><path d="M6 3v18M18 3v18M6 12h12"/></svg>口径 <b>同机同 seed 与 nogram 配对</b></li>
+  <li><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><b>2026-10-22</b></li>
+</ul>
+
+<h2>四条支线并行：机制已结题，scaling 支线出第一批读数</h2>
+<div class="tree">
+  <div class="root">v2 主线：消除 forking 的危害，保留 n-gram 注入（OE）的收益</div>
+  <div class="branches">
+    <div class="br"><b><span class="dot done"></span>支线 0 · 机制</b><span class="st">已发表结题。forking：重复数据让训练 loss 与验证 loss 分叉。</span></div>
+    <div class="br"><b><span class="dot run"></span>支线 1 · 生产级 scaling</b><span class="st">R/N、D/N、模型大小三个比值扫描。本页主体。</span></div>
+    <div class="br"><b><span class="dot run"></span>支线 2 · 消除危害</b><span class="st">multi-head 已定案（见下）。低频 mask 与可训练 gate 由合作者在跑。</span></div>
+    <div class="br"><b><span class="dot run"></span>支线 3 · 端到端收益</b><span class="st">10B token 蒸馏表已就绪。学生 8 臂在跑，明晚出 E3 读数。</span></div>
+  </div>
+</div>
+<p>名词：OE 指把 n-gram（n=2~5）查表结果注入模型输入端的结构。gap 指同一模型在同一 step 上验证 loss 减训练 loss，量度 forking 强度。ΔVal 指 OE 臂相对 nogram（无表）基线的验证集收益，正数表示 OE 更好，单位 mK。它恒等于两项之和：Δtrain（OE 把训练 loss 压低多少，收益项）减去 Δgap（OE 的 gap 比基线大多少，代价项）。干净池指剔除所有与验证集共享 32-token 片段之后的训练数据（内部代号 <code>v27</code>）。</p>
+
+<h2>R/N 扫描：R/N≤0.5 有害，R/N=1 盈亏平衡，≥2.5 进入平台</h2>
+<p>固定 50M 模型、D/N=20、训练 3 遍，只改表行数。R/N 是表行数与模型参数之比。净收益 ΔVal 在 R/N≈1 过零，在 ≈5 达到峰值 +27.6 mK。</p>
+<figure>
+  <img src="fig_rscan.svg" alt="R/N 扫描分解">
+  <figcaption>50M 模型，D/N=20，v27 干净池，seed 43。空心点是 seed 42 的独立复现（+29.8 mK）。R/N=2 一臂在训练后期发散，标记作废，其 seed 42 复本在队列中。</figcaption>
+</figure>
+<details>
+  <summary>逐项数字（绿色 = 收益，红色 = 损害）</summary>
+  <table>
+    <tr><th>R/N</th><th>bigram 覆盖率</th><th>Δtrain</th><th>Δgap</th><th>ΔVal</th></tr>
+    <tr><td>0.12</td><td>19%</td><td class="neg">−24.0</td><td class="neg">−1.3</td><td class="neg">−22.7</td></tr>
+    <tr><td>0.24</td><td>25%</td><td class="neg">−29.1</td><td class="pos">+2.6</td><td class="neg">−31.7</td></tr>
+    <tr><td>0.50</td><td>32%</td><td class="neg">−26.6</td><td class="pos">+4.4</td><td class="neg">−31.0</td></tr>
+    <tr><td>1.00</td><td>40%</td><td class="pos">+15.6</td><td class="pos">+10.8</td><td class="pos">+4.8</td></tr>
+    <tr><td>2.56</td><td>50%</td><td class="pos">+50.0</td><td class="pos">+25.7</td><td class="pos">+24.2</td></tr>
+    <tr><td>5.12</td><td>56%</td><td class="pos">+72.2</td><td class="pos">+44.6</td><td class="pos">+27.6</td></tr>
+    <tr><td>8.00</td><td>59%</td><td class="pos">+90.9</td><td class="pos">+67.0</td><td class="pos">+23.8</td></tr>
+  </table>
+  <p>覆盖率指训练 token 的 bigram context 落在表内的比例（1.44B 索引语料口径）。两条拟合：Δtrain ∝ (R/N)^0.5，Δgap ∝ (R/N)^0.85。</p>
+</details>
+
+<h2>小表有害的机理：不是碰撞拥挤，是「半覆盖合约」拖垮主干网络</h2>
+<p>exact 模式零碰撞，表外的 context 注入严格为零，不存在共享行被挤爆。逐位置切分显示：小表的伤害与覆盖无关，均匀分布在所有位置上——变差的是主干网络本身。表以 128 倍学习率快速接管被覆盖的浅层局部条件，主干把整个「局部 n-gram 条件」外包给表。覆盖率只有 20~30% 时，外包合约只在少数位置兑现：其余同类 context 既失去主干的浅层建模、又没有表兜底。覆盖率约 40% 时合约基本兑现，Δtrain 过零转正。</p>
+<details>
+  <summary>逐位置切分（同一批 14.7 万 token，小表 / 大表 / 无表三臂对齐，train loss 差）</summary>
+  <table>
+    <tr><th>位置组</th><th>6k 行表（R/N=0.12）− 基线</th><th>400k 行表（R/N=8）− 基线</th></tr>
+    <tr><td>小表覆盖的位置</td><td class="neg">+0.029</td><td class="pos">−0.092</td></tr>
+    <tr><td>仅大表覆盖的位置</td><td class="neg">+0.029</td><td class="pos">−0.102</td></tr>
+    <tr><td>四阶全未覆盖的位置</td><td class="neg">+0.020</td><td class="pos">−0.012</td></tr>
+  </table>
+  <p>小表在所有位置上都比基线差，包括它自己覆盖的位置。大表在所有位置上都更好。同一批高频 context 在两臂上符号相反，说明伤害来自两臂整体训练动力学的差异，不来自 context 本身。</p>
+</details>
+
+<h2>D/N 包络：数据越多净收益越大，gap 代价 ∝ (D/N)^−0.5</h2>
+<p>固定 50M 模型、R/N=8，只改数据量。代价项 Δgap 随数据量按 (D/N)^−0.5 缩小，收益项 Δtrain 只按 (D/N)^−0.2 缓慢衰减，净收益因此随数据量增大。对生产形态这是好消息：训练预算越大，forking 代价越薄。</p>
+<figure>
+  <img src="fig_dn.svg" alt="D/N 包络分解">
+  <figcaption>50M 模型，R/N=8，seed 42，双臂都跑完的配对。35M（表学习率减半）两点作为对照。明早 11 点包络全量落地后出定稿拟合。</figcaption>
+</figure>
+
+<h2>模型与数据等比放大：gap 不炸，但收益随模型变大变薄</h2>
+<p>固定 D/N=20、R/N=8，把模型参数量 N、数据、表行数同步放大 3 倍（35M→104M）。gap 代价近似不变（∝N^0.12），净收益从 +48.6 降到 +25.7 mK。放大是安全方向，但每单位代价买到的收益在缩水。</p>
+<figure>
+  <img src="fig_iso.svg" alt="等比放大梯">
+  <figcaption>D/N=20、R/N=8、训练 3 遍的配对读数，35M / 50M / 104M 三档。</figcaption>
+</figure>
+<div class="warn"><strong>注意：</strong>等比放大在 N≈200M 处撞上两条独立天花板，加卡不能解决。其一，频率索引里 bigram 独立条目只有 162 万，R/N=8 在 N≳203M 无 key 可用，需要重算索引。其二，exact 表显存约等于表参数乘 20 字节，200M 档已占 138~142GB，300M 档超过单卡容量，需要表分片。</div>
+
+<h2>multi-head 三 seed 定案：同表参数下，零碰撞 exact 就是甜点</h2>
+<p>把一张表拆成 4 或 8 张窄表（multi-head，Engram 式），总参数不变。三个 seed 上 multi-head 均值略高 +6 mK，但差距在 seed 噪声（±7~12 mK）之内。把覆盖扩大 4 倍的变体在每个头数下都恰有一个 seed 发散。结论：这个尺度上多头买不到稳定收益。</p>
+<figure>
+  <img src="fig_mh.svg" alt="multi-head 三 seed 矩阵">
+  <figcaption>50M，表参数与 exact 相同，D/N=20，训练 3 遍。柱为三 seed 均值，误差棒为标准差，黑点为单个 seed。</figcaption>
+</figure>
+
+<h2>支线 3 现状：蒸馏表就绪，学生 8 臂在跑</h2>
+<p>用 Qwen3.5-4B 在 10B token 上做残差聚类，产出 4 阶共 1000 万行的语义表（2.25M 聚类槽 + 0.25M 哈希兜底每阶），产线重建误差为零。学生模型 240M、Qwen 词表 24.8 万，8 臂矩阵（蒸馏初始化 / 随机初始化 / 冻结 / 可训练 × 两种视图）在 8 张卡上训练中，明晚出 3 遍末的配对读数。这是第一次用语义聚类表测 forking：冻结臂与可训练臂的差直接分离「内容先验」与「训练共适应」的贡献。</p>
+
+<h2>在飞队列与收割时间</h2>
+<table>
+  <tr><th>机群</th><th>内容</th><th>跑完时间</th></tr>
+  <tr><td>A100 机群 ×38</td><td>R/N、D/N 扫描 127 臂（已完成 32）</td><td>明早 ~08:00 清空</td></tr>
+  <tr><td>360-2 机群 ×8</td><td>104M / 200M 的 D/N 点 12 臂</td><td>明晚</td></tr>
+  <tr><td>ophis 机群 ×8</td><td>104M D/N=56 一对 + multi-head 收尾</td><td>明早 ~08:00</td></tr>
+  <tr><td>蒸馏机 ×8</td><td>学生波 8 臂</td><td>第一遍末 02:50，第三遍末明晚 ~18:30</td></tr>
+</table>
+
+<footer>来源：<code>docs/experiment-log.md</code> §135 / §141 / §142 与 v27 收割数据 · 2026-10-22</footer>
+</main>
+</body>
+</html>
