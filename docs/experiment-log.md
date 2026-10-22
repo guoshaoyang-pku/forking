@@ -6854,3 +6854,36 @@ DeepSeek-V4.1-Flash 位置（HF config：Engram 行数 384,006,168 + 384,016,682
 → **生产形态下 forking 复现**：重复 3 次的子集上 OE 的「见过 vs 没见过」差距是 nogram 的 4×，但**总体 val 仍显示 OE 有益**——正是「被平均稀释、单条曲线看不出」的情形。注意：两个 nogram 臂的末 val（2.887 / 2.855）比普通有序流的 nogram E1（2.864）一差一好，说明打乱顺序本身影响末端 val，**只比较同一流内的 exact−nogram**；s43 复本已排队。
 
 **(e) multi-head（Engram 式：每阶 H 张 d/H 宽的表、各自独立 hash、拼接读出，总表参数与 H=1 相同）**：`--ngram_heads 1/2/4/8` + `code/tools/mh_make_assign.py`（`cda3019`，CPU 测试 `test_ngram_multihead_cpu.py` 通过）。ophis GPU0–6 七臂在跑（预计 14:40 完成）：top-1.6M 上下文进 400k 行（每行 4 个上下文）× H=1/2/4/8；top-400k 进 400k 行 × H=4/8（与 exact r400k 同覆盖）；H=4 × tls4（Engram 的 5× 表 LR 对照）。对照：exact r400k（同覆盖无碰撞）与 exact r1600k（同覆盖、4× 参数）。
+
+---
+
+## §138 v27：val 系统性去泄漏 + 接管 A100 全集群（2026-10-22）
+
+**(a) 泄漏的真实形态（订正 §137a）**。被评估的 val 就是 `--val_shards` 读出的前 `val_batches×72 = 288` 个 chunk，全部来自 **shard 2 的开头**（`TokenizedShardDataset` 按固定顺序读）。`code/tools/val_leak_chunks.py`（对这 288 个 chunk 的**全部** 32-token 窗口逐一查 163 个 shard）：
+- shard **61 / 65 / 66 各含一份完整副本**（v27 审计 `val_frac = 1.000`）→ 159m/200m 旧池的 val 等于训练集，§135(d) 的 −340 mK 完全来自这里；
+- 去掉这 4 片后仍有**残余**：普通 shard 与 val 共享 32-gram 的窗口合计 4.16%（110/288 个 chunk 至少一处、34 个 chunk ≥10% 窗口；K=64 时仍 3.05%）。按池累加（上界）：35m 3.6%、50m 4.6%、104m 10.0%、159m_nl 14.5%、200m_nl 19.6% —— **残余泄漏随池增大而线性上升**，这正是 10B 计划下必须系统解决的点。≤104M 已有结论带 ≤10% 的残余重叠，量级小于 §135 的配方差异，但 D/N 包络右端（大池）会被系统性偏置，故 v27 起全部重跑。
+
+**(b) v27 干净池**（`code/tools/v27_clean_pool.py`，`33e981a`）：val = shard 2 的 288 个评估 chunk + 224 个备用（共 512 chunk ≈ 1.05M token，「不用很大」）；训练侧删除 4 个含副本的 shard（61/64/65/66）以及**与 val 共享任意 32-token 片段的每个训练 chunk**（16,565/3,526,092 = 0.47%）；输出 `tokenized_v27/` + `manifest.json`（训练顺序 = 旧前缀顺序 1,11–23,25–…，每片 chunk 数与 md5）。干净池 **7.089B token**。复验：512 个 val chunk 在全池中 32-gram 命中 **0.00000**。**规则：任何新 shard（10B 扩容）先过同一过滤再进 manifest。** 新 launcher `run_v27.sh`：D = DN × N 取 manifest 最短前缀（所有 D/N 共享同一数据顺序），`--val_shards 2`（与旧列表评估同一批 288 chunk），run_id 前缀 `v27_`。
+
+**(c) A100 集群（38 卡：perm 8、t1 8、t1_2 8、t1_3 6、t1_4 8）**：
+- 环境：perm 用既有 `.venv`；t1 的 `.venv` + uv Python（torch 2.9.1+cu126, numpy 2.2.6）经 CFS 拷到 t1_2/3/4，四台 `torch.cuda` 均验收；代码 `git archive`，train.py `4b4b71bb`、run_v27.sh `d822360c` 五台一致；干净池 manifest `25ae843b` 五台一致。
+- 数据通路：ophis → Mac → perm（6 路并行）→ CFS（15 GB / 53 s）→ 各机本地盘。
+- 显存实测（A100-40GB）：50M exact r400k **DB=72/36 OOM**，DB=24 峰值 38.1 GB、0.71 s/step（偏紧）→ 排期用 **DB=18**；50M nogram DB=72 OOM，DB=36 0.57 s/step；35M exact DB=36 0.44 s/step；35M nogram 0.36 s/step。前 600 步 loss 与 H200 同 setting 一致到 bf16 噪声（如 50M nogram step 500：A100 4.6141 / H200 4.6162）。
+- 调度：`code/cluster/fleet_queue.py`，job 文件在 CFS `nglab_queue_v27/jobs.txt`，`mkdir` 原子认领，每机一个 agent（空卡 <1.5 GB 即发，追加行即加活，`STOP_<host>` 排空）。122 个 job、≈457 A100·h，第一波按最长优先（LPT）：
+
+| 组 | 内容 | 臂 |
+|---|---|---|
+| A_dn | 35M/50M × D/N ∈ {2,3,5,7,10,14,20,28,40,56,80}（35M 另加 112、160）× exact(R/N=8)+nogram，s42，E=3 | 48 |
+| B_r50 | 50M D/N=20 R = 6/12/25/50/100/128/256/400k + nogram，s43 | 9 |
+| B_r35 | 35M D/N=20 R = 9/35/70/140/560k，s42 | 5 |
+| B_rxd | R × D/N 交互：50M D/N=5 × R 12/50/100k；D/N=80 × R 50/100/256k | 6 |
+| C_sub | 生产形态：子集 3%/10%/30% × 3 遍、10% × 4/2 遍，exact+nogram，s43 | 10 |
+| A_dn_s43 | 第二波：A_dn 的 s43 复本 | 44 |
+
+38 卡 15:43 起全部满载，预计第一波最长臂（50M D/N=80 exact，≈18 h）次日 10 时左右完成，总排期约 12–18 h。
+
+**(d) pro5k6（蒸馏构表机）通路**：A100 侧只能经公网 `1.15.34.147` 到达（内网 172.17.32.x 无路由），新加专用 key `nglab-a100perm-to-pro5k6-20261022`（只在 perm）；实测 18–20 MB/s（单路与 4 路并行相同，RTT 26 ms）。蒸馏 export 若为数十 GB 级需 ~1 h/50 GB；若要真正「高速互联」需在云控制台打通 VPC（云联网），A100 机侧无法自行配置。
+
+**(e) H200**：360-2 上 159m/200m `_nl` 六臂继续跑完（作为「去整片副本、留残余」对照）；v27 干净池正在中转到 360-2，用于其后的 104M+ 档 v27 重跑。ophis `/data1` 配额（1003/1012G 软限）放不下 15 GB 新池，ophis 暂只跑旧池实验（multi-head 七臂，E3 中）。
+
+**(f) 事故记录**：§137 后我在 ophis `/data1` 写 v27 临时池触发用户配额硬限（1112G），导致 multi-head 七臂全部 `OSError: Disk quota exceeded` 崩溃；已清理（3 个 34.6 GB 诊断 jsonl 原位 zstd 压到 8.9 GB 并校验，一个 32 GB smoke npz 移到 /data3）并重发七臂。今后大文件只写 A100 hub / 360-2。
