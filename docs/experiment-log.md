@@ -6958,3 +6958,17 @@ run_id `v26dn_50m_mh{H}k{K}k_r400k_d1b_tls{1,4}_s42_e3_fd`（ophis）。判读�
 **判词（2 seed）**：①同覆盖多头相对 exact 的优势（s42 +15~20 mK）在 s43 完全消失，seed 间散布 ±7–15 mK 与效应量同阶——**「多头更好」不成立（待定 s44 第三票）**；②4× 覆盖（k1600k，碰撞率 4×）每个 H 都恰在一个 seed 上发散——**碰撞压力是发散抽签，不是参数效率**；③mh2k1600k 两 seed 存活但收益 ≈ exact。**当前证据支持：同表参数下零碰撞 exact 就是甜点，Engram 式多头在这个尺度买不到稳定收益。** s44 四臂（mh4k400k/mh8k400k/exact/nogram，ophis GPU0–3，18:20 起）跑完后三 seed 定案。
 
 **(c) ophis v27 波（GPU4–7，19:00 起）**：104M 干净池 D/N 包络加密 dn{2, 56} 两对（D=0.208B / 5.82B），与 360-2 的 dn{5,10,20,40} 合为 104M 六点包络。v27 树经 git archive 部署（train.py `4b4b71bb` / run_v27.sh `d822360c` / manifest `25ae843b` 与 A100 集群一致）；tokenized_v27 15G 经 **ophis→perm 直连新通路**（专用 key `nglab-ophis-to-perm-20261022`，~11MB/s，25min）同步，免 Mac 中转。**至此 62 卡全满**：A100×38（127 job D/N+R 扫描）、360-2×8（12 job）、ophis×8（mh s44 + v27 104m）、pro5k×8（学生波）。
+
+## §142 小 R 有害机理：不是碰撞拥挤，是「半覆盖合约」拖垮 backbone（2026-10-22 晚）
+
+问题：v27 R 扫描发现 R/N≤0.5 时 OE 有害（ΔVal −23~−32 mK），且有害项几乎全在 Δtrain（train 本身比 nogram 差）。用户问：是不是共享词表太拥挤？
+
+**逐条否证拥挤假说**：①exact 模式零碰撞，未覆盖 context 注入严格为零（`train.py` `_ngram_assign_lookup` 返回 valid 掩码，`nve * valid`），不存在被挤爆的共享行；②表 RMS 正常（r6k 0.0858 vs r400k 0.0804）；③assign key 无陈旧：r6k/r12k/r25k/r50k 来自 f30 索引（404.7M token），r100k+ 来自 1b 全索引（1.44B token），但 r6k 的 6000 key 与 1.44B 语料真 top-6000 **100% 重合**，且全部嵌套于 r400k。
+
+**决定性实测**（step-20345 train batch 逐位置切分，同批 147,456 token 三臂对齐，nogram 相关 0.956）：r6k 的伤害**与覆盖无关**——r6k 覆盖位置 +0.0286、仅 r400k 覆盖位置 +0.0289、四阶全未覆盖位置 +0.0203（nat，相对 nogram）。连「同一批 top context」上 r6k +0.029 而 r400k −0.092。**backbone 本身整体变差，不是表伤害了某些位置。**
+
+**控制变量 = 覆盖率**（统一 1.44B 索引口径 bigram token 覆盖率）：r6k 19.3% → r12k 24.8% → r25k 32.2% → r50k 39.9% → r128k 49.8% → r400k 58.9%。Δtrain 随覆盖率单调上升，**在 ~40% 覆盖（R/N≈1）过零**：−24.0/−29.1/−26.6/+15.6/+50.0/+72.2/+90.9 mK。
+
+**机制判词**：表以 128× LR 快速接管被覆盖的浅层局部条件，backbone 把整个「局部 n-gram 条件」模式家族外包给表、重新分配容量。覆盖率只有 20–30% 时，外包合约只在一小部分位置兑现——中频同类 context 既失去 backbone 的浅层建模又没有表兜底，全局受损。覆盖率 ≥40% 合约基本兑现，Δtrain 转正；覆盖越完整 backbone 越专注长程结构，收益越大。这就是 R 扫描收益侧的形状（覆盖率 Zipf 对数增长），与代价侧 gap ∝ (R/N)^0.85 共同决定最优 R/N≈5。
+
+**可检验预测**：①小 R 的伤害来自共适应而非注入本身 → frozen-random 表应无伤害（学生波 random 臂是其类比）；②table LR 降到 backbone 同量级应缓解（128× 是外包速度来源）；③与 mask_low 旧结论互洽（主动不外包 = 避免半覆盖）。证据：`data/harvest` 本地 `.tmp/harvest/mech_r6k/`（assign npz + token_stats npz + table_norm）。
