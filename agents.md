@@ -123,9 +123,12 @@ ngram-gap-lab/
 | **ophis-gpu**（主） | SSH `guoshaoyang@223.167.85.180:50002`，别名 `ophis-gpu`/`ophis_gpu`/`fcloud-223` | 8×H200 (141GB) | ✅ | `uv` + torch 2.9.1 | ✅ |
 | **360-1** | VPN → `10.234.161.2:22`，`ssh 360-1` | 8×H200 (143.7GB) | ❌ | python3.10 + torch 2.13.0+cu130 | ✅ |
 | **360-2** | VPN → `10.234.161.3:22`，`ssh 360-2` | 8×H200 (143.7GB) | ❌ | 同上 | ✅ |
+| **a100_perm**（永久整机） | SSH `ubuntu@139.199.90.57:22`，`ssh a100_perm` | 8×A100-SXM4 (40GB) | ✅ | Python 3.10.12 + torch 2.9.1+cu126 + numpy 2.2.6；项目独立 `.venv` | 已迁移；验收见 infra |
+| **a100_t1**（Tione） | SSH `root@111.230.4.68:10925`，`ssh a100_t1` | 8×A100-SXM4 (40GB) | ✅ | 同上 | 已迁移；验收见 infra |
 
 - 360 系无公网且不能直连 ophis-gpu；跨集群搬运走 **ophis-gpu → Mac → 360** 中转。
-- 分工：主线 nanoGPT 三机均可（代码同步后口径一致）；不再启动 toy / synthetic harness。
+- 分工：主线 nanoGPT 可使用上述五机；同批实验须先核对代码、数据与软件版本。A100 每卡 40GB，H200 的 device batch 72 不代表已在 A100 验证；调整 microbatch/累积前须单独核验训练与诊断口径。不再启动 toy / synthetic harness。
+- A100 项目目录：永久机 `/data/guoshaoyang/ngram-gap-lab`；Tione `/home/tione/guoshaoyang/ngram-gap-lab`。进入后 `source ./env.sh`；详细迁移证据见 `docs/notes/data/a100-onboarding-20260925/`。
 
 **跑前强制检查**：① `nvidia-smi` 确认卡空闲，`CUDA_VISIBLE_DEVICES=<id>` 占卡，一 Agent 只用自己的卡；② 同步代码后 `md5sum` 核对 `code/train.py`/`ngram_freq.py`/`cluster/*.sh`（权威源=本地已 commit 版本；教训：360 曾残留旧 `train.py` `f9388473` 口径不一致）；③ 改代码先 commit 再同步，同批实验跨机用同一份代码。
 

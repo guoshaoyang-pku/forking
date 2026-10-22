@@ -12,14 +12,41 @@ def main():
     p=argparse.ArgumentParser()
     for key in ['root','data-root']:p.add_argument('--'+key,type=Path,required=True)
     p.add_argument('--admission-hours',type=float,default=8)
+    p.add_argument('--queue-name',default='queue',
+                   help='queue directory under --root; use a new name when relaunching')
     a=p.parse_args()
-    q=a.root/'queue';q.mkdir(exist_ok=False)
+    q=a.root/a.queue_name;q.mkdir(exist_ok=False)
     pending=[(s,arm) for s in ['id','math'] for arm in ['tableonly','module','trainable','nogram']]
     active={};done=[];failed=[];started=time.monotonic()
+    # Linux task names are limited to 15 bytes.  Keep source, arm, and the
+    # expected wall time visible in `ps` while retaining the full command in
+    # the queue state/log.
+    labels={
+        ('id','tableonly'):'ML-ID-TABLE25M',
+        ('id','module'):'ML-ID-MOD-25M',
+        ('id','trainable'):'ML-ID-TRN-25M',
+        ('id','nogram'):'ML-ID-NGR-25M',
+        ('math','tableonly'):'ML-MATH-TBL25M',
+        ('math','module'):'ML-MATH-MOD25M',
+        ('math','trainable'):'ML-MATH-TRN25M',
+        ('math','nogram'):'ML-MATH-NGR25M',
+    }
+    def set_task_name(pid,label):
+        # Write after exec: a pre-exec PR_SET_NAME would be reset to `python3`
+        # by execve. This names the supervising runner seen by other agents.
+        try:
+            Path(f'/proc/{pid}/task/{pid}/comm').write_text(label[:15]+'\n')
+        except OSError:
+            pass
     def write():
         state=dict(updated_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                    pending=pending,active={str(g):dict(source=x['source'],arm=x['arm'],
-                   phase=x['phase'],pid=x['process'].pid) for g,x in active.items()},done=done,failed=failed)
+                   phase=x['phase'],pid=x['process'].pid,task_name=x['task_name'])
+                   for g,x in active.items()},done=done,failed=failed,
+                   queue_name=a.queue_name,estimated_minutes=25,
+                   pending_task_names=[dict(source=s,arm=arm,
+                       name=f'MULTILAYER-{s.upper()}-{arm.upper()}-EST25MIN',
+                       linux_comm=labels[(s,arm)]) for s,arm in pending])
         tmp=q/'state.tmp';tmp.write_text(json.dumps(state,indent=2)+'\n');tmp.replace(q/'state.json')
     def launch(g,source,arm,smoke):
         phase='smoke' if smoke else 'formal'
@@ -30,8 +57,11 @@ def main():
              '--source',source,'--arm',arm,'--gpu',str(g)]
         if smoke:cmd+=['--smoke']
         f=(q/f'{source}_{arm}_{phase}.log').open('x')
-        proc=subprocess.Popen(cmd,stdout=f,stderr=subprocess.STDOUT);f.close()
-        active[g]=dict(source=source,arm=arm,phase=phase,process=proc)
+        label=labels[(source,arm)]
+        proc=subprocess.Popen(cmd,stdout=f,stderr=subprocess.STDOUT)
+        set_task_name(proc.pid,label)
+        f.close()
+        active[g]=dict(source=source,arm=arm,phase=phase,process=proc,task_name=label)
     while pending or active:
         for g,x in list(active.items()):
             rc=x['process'].poll()

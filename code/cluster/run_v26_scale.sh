@@ -105,9 +105,10 @@ CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --n_layer "$NL" --n_head "$NH" --n_embd "$NE" --vocab_size 8192 --sequence_len 2048 \
   --device_batch_size "$DB" --total_batch_size 147456 --val_device_batch_size 72 \
   --lr 0.0006 --lr_schedule warmup_constant --warmup_steps 100 \
-  "${TABLE[@]}" "${SUB[@]}" \
+  "${TABLE[@]}" \
   --val_interval 10 --val_batches 4 --table_norm_interval 50 --fixed_train_probe 0 \
   --freq_eval_interval 1000000 --exact_freq_eval_interval 1000000 --diag_interval 1000000 \
+  "${SUB[@]}" \
   > "$RESULT_DIR/train.log" 2>&1
 test -s "$RESULT_DIR/summary.json"
 echo "[v26dn] complete: $RESULT_DIR"

@@ -252,23 +252,40 @@ class MoEFFN(nn.Module):
         probs_flat = probs.reshape(n, arch.e_routed)
 
         flat_x = x.reshape(-1, d)
-        out = None   # created at the first expert output: accumulation dtype
-        # must match what the dense MLP would produce under the same context
-        # (bf16 under autocast, fp32 in eager), see test_moe_cpu T2.
-        # a top-k result never repeats an expert within one token, so
-        # (topk_idx == e) marks exactly one slot per (token, expert) pair
-        for e, expert in enumerate(self.experts):
-            sel = topk_idx == e                       # (N, K) bool
-            if not sel.any():
-                continue
-            rows = sel.any(-1)                        # (N,) tokens using expert e
-            w = (topk_probs * sel).sum(-1)            # per-token weight (one slot)
-            y = expert(flat_x[rows])
-            if out is None:
-                out = torch.zeros(n, d, dtype=y.dtype, device=x.device)
-            out[rows] += (y * w[rows].unsqueeze(-1)).to(out.dtype)
-        if out is None:  # unreachable for K >= 1, kept for safety
-            out = torch.zeros_like(flat_x)
+        # CUDA fast path: sort-by-expert grouped GEMM (plan-8 infra). Exact
+        # same math as the reference loop (weight applied after the expert,
+        # index_add accumulation over slots). Only for bias-free, dropout-0,
+        # bf16/fp16 experts; everything else falls back to the loop.
+        # NOTE (S0 observation): the loop dispatches on raw topk_probs; the
+        # renormed `weights` computed above is never consumed, i.e.
+        # norm_topk_prob=True has no dispatch effect in this codebase. The
+        # fast path replicates the loop's actual semantics.
+        p0 = self.experts[0].dropout.p
+        first = self.experts[0]
+        first_lin = first.w1 if first.ffn_type == "swiglu" else first.c_fc
+        bias_free = first_lin.bias is None
+        if (flat_x.is_cuda and hasattr(torch, "_grouped_mm")
+                and flat_x.dtype in (torch.bfloat16, torch.float16)
+                and p0 == 0 and bias_free):
+            out = self._dispatch_grouped(flat_x, topk_idx, topk_probs)
+        else:
+            out = None   # created at the first expert output: accumulation dtype
+            # must match what the dense MLP would produce under the same context
+            # (bf16 under autocast, fp32 in eager), see test_moe_cpu T2.
+            # a top-k result never repeats an expert within one token, so
+            # (topk_idx == e) marks exactly one slot per (token, expert) pair
+            for e, expert in enumerate(self.experts):
+                sel = topk_idx == e                       # (N, K) bool
+                if not sel.any():
+                    continue
+                rows = sel.any(-1)                        # (N,) tokens using expert e
+                w = (topk_probs * sel).sum(-1)            # per-token weight (one slot)
+                y = expert(flat_x[rows])
+                if out is None:
+                    out = torch.zeros(n, d, dtype=y.dtype, device=x.device)
+                out[rows] += (y * w[rows].unsqueeze(-1)).to(out.dtype)
+            if out is None:  # unreachable for K >= 1, kept for safety
+                out = torch.zeros_like(flat_x)
         for s_expert in self.shared_experts:          # always-on, weight 1.0
             out = out + s_expert(flat_x)
         out = out.view(B, T, d)
@@ -290,6 +307,45 @@ class MoEFFN(nn.Module):
                 self._n_tokens += n
                 self._topk_mass_sum += float(self.last_topk_mass)
                 self._n_forwards += 1
+        return out
+
+    def _dispatch_grouped(self, flat_x, topk_idx, topk_probs):
+        """CUDA grouped-GEMM dispatch; bit-semantics-equal to the loop path.
+
+        Tokens are repeated per top-k slot, sorted by expert id, run through
+        one torch._grouped_mm per FFN matrix (offs = per-group END offsets,
+        length E, int32 — verified by code/tmp parity check), scaled by the
+        raw top-k probability, and scattered back with index_add.
+        """
+        n, d = flat_x.shape
+        arch = self.arch
+        K, E = arch.k_routed, arch.e_routed
+        flat_idx = topk_idx.reshape(-1)                       # (n*K,)
+        flat_w = topk_probs.reshape(-1)                       # (n*K,) fp32
+        perm = torch.argsort(flat_idx)
+        a = flat_x.repeat_interleave(K, dim=0)[perm]          # (n*K, d), sorted
+        offs = torch.cumsum(torch.bincount(flat_idx, minlength=E), 0) \
+            .to(torch.int32)
+        if arch.ffn_type == "swiglu":
+            w1 = torch.stack([e.w1.weight for e in self.experts]) \
+                .transpose(1, 2).contiguous().to(a.dtype)
+            w3 = torch.stack([e.w3.weight for e in self.experts]) \
+                .transpose(1, 2).contiguous().to(a.dtype)
+            w2 = torch.stack([e.w2.weight for e in self.experts]) \
+                .transpose(1, 2).contiguous().to(a.dtype)
+            h = F.silu(torch._grouped_mm(a, w1, offs=offs)) \
+                * torch._grouped_mm(a, w3, offs=offs)
+            y = torch._grouped_mm(h, w2, offs=offs)
+        else:
+            wfc = torch.stack([e.c_fc.weight for e in self.experts]) \
+                .transpose(1, 2).contiguous().to(a.dtype)
+            wpr = torch.stack([e.c_proj.weight for e in self.experts]) \
+                .transpose(1, 2).contiguous().to(a.dtype)
+            h = F.gelu(torch._grouped_mm(a, wfc, offs=offs))
+            y = torch._grouped_mm(h, wpr, offs=offs)
+        y = y * flat_w[perm].unsqueeze(-1).to(y.dtype)
+        out = torch.zeros(n, d, dtype=y.dtype, device=flat_x.device)
+        out.index_add_(0, torch.div(perm, K, rounding_mode="floor"), y)
         return out
 
     def drain_load_stats(self) -> dict:
