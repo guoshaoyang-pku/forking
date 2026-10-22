@@ -6938,3 +6938,23 @@ run_id `v26dn_50m_mh{H}k{K}k_r400k_d1b_tls{1,4}_s42_e3_fd`（ophis）。判读�
 **(c) 学生波 1（8 臂，E3 协议，1.087B Qwen token = part 0–19，part 20 固定 val）**：nogram / frozen-1_8 / trainable-1_8 / random-1_8 / frozen-1_32 / trainable-1_32 / random-1_32 / trainable-1_8-tls0.25，全 s42，DB18×accum4（72×2048/step）。smoke 实测 4.2s/step、显存 67.5/72GB（smoke DB24；波用 DB18 留余量）、step1 train 12.588≈ln(248320)、30 步 train 12.59→7.76。**D/N ≈ 4.5**（1.087B/240M，受 10B 蒸馏语料与 21 部分片限制；D/N=20 需扩蒸馏语料，见 HANDOFF D6）。E1 读数 ~8.6h、E3 全程 ~26h。读数口径与主线一致：同 seed 配对 nogram，ΔVal = nogram − arm，E3 末窗均值。**关键科学点**：本线首次在「教师语义聚类表」上测 forking——表行是 Qwen3.5-4B residual 流形 4M→64 的聚类质心，不是随机频率桶；frozen vs trainable 直接分离「内容先验」与「训练共适应」的贡献。
 
 **(d) 与主线交叉**：forking_v2 提交 `student harness D0`（student/ 三件套，本地 commit）；lab 侧 `code/cluster/harvest_v27.sh` + `parse_v27.py`（A100 无 rsync 的 tione 机走 tar-over-ssh 兜底）。蒸馏线已知债（沿用另一会话 HANDOFF）：committed-view 审计、worker_offset 口径、D6 语料扩容到 D/N=20、tokens.tar 66 部分（24/90）未同步。
+
+## §141 学生波 1 全臂在训 + multi-head 三 seed 矩阵 + ophis v27 波（2026-10-22 晚）
+
+**(a) 学生波 1（pro5kvrdma6 GPU0–7，18:44 全臂在训）**：8 臂 = nogram / frozen / trainable / random × view {1_8, 1_32}（random 两臂补齐时修复 CPU-generator bug：`normal_(generator=)` 不能直接写 CUDA 张量，改 CPU 生成后 copy；`6b2cd54` 续）+ trainable-1_8-tls0.25。22065 步（7355/epoch × E3），steps_per_epoch=7355，total_blocks=529,628（1.085B token），val 26,529 blocks（part_00020 固定）。view 1_8 蒸馏值 RMS 0.723、view 1_32 RMS 6.360（random 臂按各自视图 RMS 匹配初始化）。smoke 60 步 val 7.757 健康。**E1 读数 ~03:30，E3 全程 ~21:00（10-23）。**
+
+**(b) multi-head 三 seed 矩阵（50M，表参数恒等于 exact r400k；E3 末窗均值，同机同 seed nogram 配对）**：
+
+| 臂 | s42 ΔVal (mK) | s43 ΔVal (mK) | 判定 |
+|---|---|---|---|
+| exact r400k | +33.7 (§138g) | +38.6 | 基线 |
+| mh4k400k（同覆盖 H=4） | +49.4 | +38.7 | s42 优势不复现 |
+| mh8k400k（同覆盖 H=8） | +54.1 | +32.6 | s42 优势不复现 |
+| mh1k1600k（4× 覆盖 H=1） | **−618.0** | +24.8 | 发散抽签 |
+| mh2k1600k（4× 覆盖 H=2） | +40.6 | +36.2 | 两 seed 存活但 ≈ exact |
+| mh4k1600k（4× 覆盖 H=4） | +46.2 | **−355.6** | 发散抽签 |
+| mh8k1600k（4× 覆盖 H=8） | **−205.4** | +36.5 | 发散抽签 |
+
+**判词（2 seed）**：①同覆盖多头相对 exact 的优势（s42 +15~20 mK）在 s43 完全消失，seed 间散布 ±7–15 mK 与效应量同阶——**「多头更好」不成立（待定 s44 第三票）**；②4× 覆盖（k1600k，碰撞率 4×）每个 H 都恰在一个 seed 上发散——**碰撞压力是发散抽签，不是参数效率**；③mh2k1600k 两 seed 存活但收益 ≈ exact。**当前证据支持：同表参数下零碰撞 exact 就是甜点，Engram 式多头在这个尺度买不到稳定收益。** s44 四臂（mh4k400k/mh8k400k/exact/nogram，ophis GPU0–3，18:20 起）跑完后三 seed 定案。
+
+**(c) ophis v27 波（GPU4–7，19:00 起）**：104M 干净池 D/N 包络加密 dn{2, 56} 两对（D=0.208B / 5.82B），与 360-2 的 dn{5,10,20,40} 合为 104M 六点包络。v27 树经 git archive 部署（train.py `4b4b71bb` / run_v27.sh `d822360c` / manifest `25ae843b` 与 A100 集群一致）；tokenized_v27 15G 经 **ophis→perm 直连新通路**（专用 key `nglab-ophis-to-perm-20261022`，~11MB/s，25min）同步，免 Mac 中转。**至此 62 卡全满**：A100×38（127 job D/N+R 扫描）、360-2×8（12 job）、ophis×8（mh s44 + v27 104m）、pro5k×8（学生波）。
