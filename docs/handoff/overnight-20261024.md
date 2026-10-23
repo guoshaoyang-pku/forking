@@ -71,6 +71,8 @@ python3 code/cluster/collect_overnight_20261024.py
 
 已创建本聊天的原生heartbeat `a100`，每20分钟巡检，有界至北京时间08:20。截止后只做最后查收并暂停，不继续开任务。远端接续已实际运行，不依赖本机聊天在线。heartbeat创建成功，首次自动唤醒尚未验收。
 
-部署证据在 `outputs/takeover_20261024/`：`deploy_receipts.json`、四份`fingerprint_*.json`、`launch_audit.json`、`launch_progress_verification.json`、`watchdog_verification.json`。最后一项是t1_2调度器退出恢复的实测，5个原训练wrapper保持且继续推进，无重复任务。训练/调度代码版本为`44fc73d`，整对迁移版本为`57b51b1`。清单的status是登记状态，运行状态只认新鲜claim、进程与训练日志。
+部署证据在 `outputs/takeover_20261024/`：`deploy_receipts.json`、四份`fingerprint_*.json`、`launch_audit.json`、`launch_progress_verification.json`、`watchdog_verification.json`。最后一项是t1_2调度器退出恢复的实测，5个原训练wrapper保持且继续推进，无重复任务。训练/调度代码版本为`44fc73d`，整对迁移版本为`57b51b1`。J39微批量修订版本为`9b6cf18`，队列内`schedule_commit.txt`记录此版本。清单的status是登记状态，运行状态只认新鲜claim、进程与训练日志。
 
 用户随后明确停止时，立即停止新领取；具体是否结束已跑训练按用户原话执行。禁止把此次彻夜授权扩展成无期限填卡。
+
+旧关键长训最后查收见 `outputs/takeover_20261024/legacy_final_check/20261024T013749/audit.json`：35M长训无表臂已完整结束，加表臂52,800/56,966步；两条50M长训配对尚未双臂完成。它们是原有任务，不在本次43条collector清单内。后续项目查收须按原handoff的host/run_id另收，不能把夜间collector的空清单解释为所有旧实验没有完成。

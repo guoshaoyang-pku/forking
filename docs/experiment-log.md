@@ -7160,7 +7160,7 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | 主干 | AdamW (0.8,0.95)，矩阵 wd0.1，无主干裁剪；默认 LR6e-4，带 `_lr0.0003` 的臂为 3e-4 |
 | 表优化器 | AdamW (0.9,0.95)，表梯度 clip1；表绝对 LR = 主干 LR × TLS；nogram 的 TLS 不影响训练 |
 | schedule / 精度 | 100 步 warmup 从0.25×升至1×后恒定；bf16，不 compile；不启用 v28/额外β1/额外clip |
-| batch / 测量 | 每优化步147456 token；50M exact DB18，其余 DB36；val DB24×12=固定288 chunks；val每10步，table norm每50步，stability每100步 |
+| batch / 测量 | 每优化步147456 token；50M exact及J39 DB18，其余 DB36；val DB24×12=固定288 chunks；val每10步，table norm每50步，stability每100步 |
 | 数据 | `data/tokenized_v27/manifest.json` 的 v27b，md5 `543cc8ae5779cbfaa7353836912d73e4`；train为足额最短前缀，val shard2；去整片副本60/62/63，过滤来源见§138b/§143a |
 | 索引/assignment | `data/freq_index_o2to5_1b_f30.npz` 与 `data/assignments/assign_exact_r<R>k.npz`；按实际 R、键、计数核对 |
 | root / Python | perm `/data2/guoshaoyang/ngram-gap-lab-v27`；各Tione节点 `/home/tione/guoshaoyang/ngram-gap-lab`；使用各root下`.venv/bin/python` |
@@ -7203,12 +7203,12 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J07 | `long_qkn_replication` | a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | running |
 | J08 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | running |
 | J09 | `main_setting_seed44` | a100_t1_2 | `v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | running |
-| J10 | `main_setting_seed44` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | planned |
+| J10 | `main_setting_seed44` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | running |
 | J11 | `repeat_budget_e6` | perm | `v27_50m_exact_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | running |
 | J12 | `repeat_budget_e6` | perm | `v27_50m_nogram_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | running |
 | J13 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | running |
 | J14 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed` | 1.02 | running |
-| J15 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed` | 1.02 | planned |
+| J15 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed` | 1.02 | running |
 | J16 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | planned |
 | J17 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | planned |
 | J18 | `lr_nogram_shared` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | planned |
@@ -7368,3 +7368,13 @@ NGLAB_DN=40 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGL
 50M dn40 的名义D=2B。DB18取整后pool=1,999,982,592 token、三遍40,690步；DB36为1,999,945,728 token、40,689步。每遍相差36,864 token，占名义2B的0.0018432%。共同step只能消除末点错位，不能消除每遍回放边界差异。
 
 J42/J43已启动，保留原run_id和全部数据，降为稳定性/探索证据，不作严格主收益配对，不因这个已知差异重跑。收割器应将其严格比较留为manual_review。J38/J39尚未领取，确认两个旧claim均不存在并排空t1_2 dispatcher后，仅将J39 nogram微批量改为18，使整对pool、三遍终点和有效batch完全一致。该修正不改名义token预算。DB18对nogram吞吐的影响尚未实测，259 GPU小时仍只是估计。完成时必须核验实际pool、chunks和终点相同。
+
+### 最后接管验收（北京时间01:41）
+
+调度器已经自然接续两张旧训练释放的卡：t1_2 GPU6领取J10，t1_4 GPU2领取J15。四机32卡均占用，19条新臂active、24条候选待领、13个旧训练保留。19条新臂在最近两快照中全部推进，未报nonfinite或no_progress。部署快照与当前状态分别保留，不能把运行状态当done。
+
+J39的启动前微批量修订已以`9b6cf18`提交并同步，旧/new claim均未存在，已恢复t1_2唯一dispatcher。证据 `outputs/takeover_20261024/dn40_revision_receipt.json`。旧队列STOP保持，新GPU锁和deadline保持，未中断训练。
+
+本地状态/收割工具已交接。调度器11项CPU测试及收割器10项CPU测试通过。已完成的真实50M qkn对通过收割器配置/登记预算核对，末60点复算仍为−36.0108 mnat。新清单当前无终止项，实跑collector生成0-run清单，不能伪报新结果。
+
+旧关键长训01:37追加查收：35M dn80 qkn nogram已完成56,966步，末val2.705249806；exact为52,800步，未完成。50M dn56 qkn exact/nogram为30,210/36,760步；50M dn56 v28为18,080/21,520步，均目标56,966、均未完成。三对都不能作完整最终收益。原始小文件及SHA在 `outputs/takeover_20261024/legacy_final_check/20261024T013749/audit.json`，不覆盖先前证据。
