@@ -41,3 +41,8 @@ runs/
 # nested repo). See docs/notes/method/paper-mirror.md.
 paper/
 output/
+outputs/
+checkpoints/
+wandb/
+artifacts/
+*.safetensors
