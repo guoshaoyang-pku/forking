@@ -7212,7 +7212,7 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J16 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
 | J17 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
 | J18 | `lr_nogram_shared` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
-| J19 | `small_table_qkn_seed43` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_qkn_fixed` | 1.02 | running |
+| J19 | `small_table_qkn_seed43` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_qkn_fixed` | 1.02 | done / 待科学复核 |
 | J20 | `lr_factorial_r136` | perm | `v27_17m_exact_r136k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
 | J21 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls0.5_s43_e3_fixed` | 1.02 | done / 待科学复核 |
 | J22 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
@@ -7220,15 +7220,15 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J24 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
 | J25 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
 | J26 | `long_lr_decoupling` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
-| J27 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
-| J28 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
+| J27 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
+| J28 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
 | J29 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
 | J30 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s42_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
 | J31 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_exact_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | running |
 | J32 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | running |
 | J33 | `same_host_controls` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed` | 3 | running |
 | J34 | `same_host_controls` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed` | 1.02 | done / 待科学复核 |
-| J35 | `same_host_controls` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed` | 1.02 | running |
+| J35 | `same_host_controls` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed` | 1.02 | done / 待科学复核 |
 | J36 | `reserve_repeat_budget` | perm | `v27_50m_exact_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
 | J37 | `reserve_repeat_budget` | perm | `v27_50m_nogram_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
 | J38 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_exact_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | running |
@@ -7416,3 +7416,9 @@ J15 `v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed`（t1_4，seed43）已完成691
 ### 03:07 heartbeat查收
 
 J34 `v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed`（t1_4，seed42）已结束6917步，完成文件、登记预算和SHA检查通过。最终val 5.511565049489339，末60点val 5.650165028042264，历史最低val 3.3169116775194802。只登记同机控制本身，不自动外推学习率原因。证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T190734.682542Z/review.json`。四机32卡均占用，新清单累计11臂结束、22臂active、10臂待领，可比较active全部推进，无告警；未重启或改配置。
+
+### 03:27 heartbeat：小表归一化同机配对完成
+
+J19 `v27_17m_exact_r35k_dn20_tls1_s43_e3_qkn_fixed` 与J35 `v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed` 均在t1_4、seed43完成6917步，DONE、summary、注册预算、配置和校验和通过。末60共同点加表/无表val为3.106789/3.131522，ΔVal=−24.733 mnat/token；最终单点差−23.837 mnat/token。全日志有限，末窗无明显失稳。这是该设置的一颗种子证据，不能称总体显著或永不发散；也不能沿用“稳定后小表必有害”的强命题。
+
+证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T192735.989683Z/review.json`。四机32卡满占，新清单13臂完成、22臂active、8臂待领，所有可比较active推进、无告警。空卡自动接续长训学习率对照，未人工改配置或重跑。
