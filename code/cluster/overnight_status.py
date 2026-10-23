@@ -24,9 +24,10 @@ cutoff=float(cutoff)
 q=Path(q); root=Path(root)
 result={'host':host,'jobs':[],'agents':[],'alerts':[]}
 for p in Path('/proc').glob('[0-9]*/cmdline'):
-    try: cmd=p.read_bytes().replace(b'\0',b' ').decode(errors='replace')
+    try: argv=[x.decode(errors='replace') for x in p.read_bytes().split(b'\0') if x]
     except OSError: continue
-    if 'fleet_queue.py' in cmd and str(q) in cmd and not 'bash -c' in cmd:
+    positions=[i for i,x in enumerate(argv) if Path(x).name=='fleet_queue.py']
+    if len(positions)==1 and len(argv)>positions[0]+1 and argv[positions[0]+1]==str(q):
         result['agents'].append(int(p.parent.name))
 try:
     smi=subprocess.check_output(['nvidia-smi','--query-gpu=index,memory.used,utilization.gpu','--format=csv,noheader,nounits'],text=True,timeout=12)

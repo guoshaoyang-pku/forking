@@ -23,11 +23,13 @@ for rel,expected in p['hashes'].items():
 assert not (q/f'STOP_{host}').exists(),'New queue is explicitly drained; inspect before resuming'
 old=[];current=[]
 for f in Path('/proc').glob('[0-9]*/cmdline'):
-    try:c=f.read_bytes().replace(b'\0',b' ').decode(errors='replace')
+    try:argv=[x.decode(errors='replace') for x in f.read_bytes().split(b'\0') if x]
     except OSError:continue
-    if 'fleet_queue.py' not in c or 'bash -c' in c:continue
-    if str(q) in c:current.append(int(f.parent.name))
-    elif 'nglab_queue_v27' in c or 'student_queue' in c:old.append(int(f.parent.name))
+    positions=[i for i,x in enumerate(argv) if Path(x).name=='fleet_queue.py']
+    if len(positions)!=1 or len(argv)<=positions[0]+1:continue
+    queue_arg=argv[positions[0]+1]
+    if queue_arg==str(q):current.append(int(f.parent.name))
+    elif Path(queue_arg).name in ('nglab_queue_v27','student_queue'):old.append(int(f.parent.name))
 assert not old,'Old dispatcher remains; wait for registered STOP drain'
 if current:
     print(json.dumps({'host':host,'state':'agent_already_running','pids':current}));sys.exit()
