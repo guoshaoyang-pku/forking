@@ -17,6 +17,7 @@
 #      NGLAB_LR (backbone LR override, run_id tag _lr<v>; unset = 0.0006 contract default)
 #      NGLAB_STAB (stability.jsonl every N steps; logging only, no tag; pair with NGLAB_TAG)
 #      NGLAB_QKN=1 (diagnostic qk-layernorm, tag _qkn)  NGLAB_B1 (backbone Adam beta1, tag _b1<v>)
+#      NGLAB_V28=1 (beta1 0.9 + backbone clip 1.0 + warmup min(2000,5%) + cosine to 0.05x; tag _v28)
 # 2026-10-23: manifest v27b drops shards 60/62/63 (byte copies of shard 1); pools > 2.385B
 #             launched after 01:40 carry NGLAB_TAG=_p27b.
 set -euo pipefail
@@ -102,6 +103,17 @@ if [[ -n "${NGLAB_B1:-}" ]]; then
   STAB+=(--adam_beta1 "$NGLAB_B1")
   TAG="${TAG}_b1${NGLAB_B1}"
 fi
+SCHED=(--lr_schedule warmup_constant --warmup_steps 100)
+if [[ -n "${NGLAB_V28:-}" ]]; then
+  # industry-default optimisation package: beta1 0.9, backbone clip 1.0,
+  # warmup min(2000, 5% of steps) then cosine to 0.05x at the last step
+  TOT=$("$PY" -c "print(int(round(float('$DN') * $NN)) * $E // 147456)")
+  WU=$("$PY" -c "print(max(100, min(2000, $TOT // 20)))")
+  SCHED=(--lr_schedule warmup_cosine --warmup_steps "$WU")
+  STAB+=(--adam_beta1 0.9)
+  CLIP=(--grad_clip 1.0)
+  TAG="${TAG}_v28"
+fi
 LR="0.0006"
 if [[ -n "${NGLAB_LR:-}" ]]; then
   LR="$NGLAB_LR"
@@ -120,7 +132,7 @@ CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --dtype bf16 --injection_position input "${NG[@]}" \
   --n_layer "$NL" --n_head "$NH" --n_embd "$NE" --vocab_size 8192 --sequence_len 2048 \
   --device_batch_size "$DB" --total_batch_size 147456 --val_device_batch_size "$VDB" \
-  --lr "$LR" --lr_schedule warmup_constant --warmup_steps 100 \
+  --lr "$LR" "${SCHED[@]}" \
   "${TABLE[@]}" "${CLIP[@]}" "${STAB[@]}" \
   --val_interval 10 --val_batches "$VB" --table_norm_interval 50 --fixed_train_probe 0 \
   --freq_eval_interval 1000000 --exact_freq_eval_interval 1000000 --diag_interval 1000000 \
