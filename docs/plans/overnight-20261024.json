@@ -50,9 +50,9 @@
       "estimated_gpu_hours": 96.32
     },
     "a100_t1": {
-      "jobs": 2,
-      "nominal_tokens": 16800000000,
-      "estimated_gpu_hours": 25.93
+      "jobs": 4,
+      "nominal_tokens": 28800000000,
+      "estimated_gpu_hours": 44.45
     },
     "a100_t1_2": {
       "jobs": 9,
@@ -60,9 +60,9 @@
       "estimated_gpu_hours": 63.26
     },
     "a100_t1_4": {
-      "jobs": 22,
-      "nominal_tokens": 74040000000,
-      "estimated_gpu_hours": 73.86
+      "jobs": 20,
+      "nominal_tokens": 62040000000,
+      "estimated_gpu_hours": 55.34
     }
   },
   "reused_nogram_audit": [
@@ -2063,7 +2063,7 @@
     {
       "id": "J42",
       "priority": 90,
-      "host": "a100_t1_4",
+      "host": "a100_t1",
       "model": "50m",
       "arm": "exact",
       "seed": 43,
@@ -2089,7 +2089,7 @@
       },
       "control_refs": [
         {
-          "host": "a100_t1_4",
+          "host": "a100_t1",
           "run_id": "v27_50m_nogram_r400k_dn40_tls1_s43_e3_qkn_fixed",
           "role": "new same-host paired arm",
           "status": "planned"
@@ -2103,7 +2103,7 @@
     {
       "id": "J43",
       "priority": 90,
-      "host": "a100_t1_4",
+      "host": "a100_t1",
       "model": "50m",
       "arm": "nogram",
       "seed": 43,
@@ -2129,7 +2129,7 @@
       },
       "control_refs": [
         {
-          "host": "a100_t1_4",
+          "host": "a100_t1",
           "run_id": "v27_50m_exact_r400k_dn40_tls1_s43_e3_qkn_fixed",
           "role": "new same-host paired arm",
           "status": "planned"
@@ -2140,5 +2140,8 @@
       "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
       "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
     }
+  ],
+  "migration_notes": [
+    "Before either claim, J42/J43 moved together from a100_t1_4 to a100_t1 as student GPU7 completed and GPU0 approached completion; both dispatchers drained for atomic queue revision."
   ]
 }

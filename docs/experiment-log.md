@@ -7235,8 +7235,8 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J39 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_nogram_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | planned |
 | J40 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_exact_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | planned |
 | J41 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_nogram_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | planned |
-| J42 | `reserve_data_envelope` | a100_t1_4 | `v27_50m_exact_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | planned |
-| J43 | `reserve_data_envelope` | a100_t1_4 | `v27_50m_nogram_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | planned |
+| J42 | `reserve_data_envelope` | a100_t1 | `v27_50m_exact_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | planned |
+| J43 | `reserve_data_envelope` | a100_t1 | `v27_50m_nogram_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | planned |
 
 ### 命令和完成验收
 
@@ -7325,9 +7325,9 @@ NGLAB_DN=40 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGL
 NGLAB_DN=20 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=6 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m exact 43
 # J41 / a100_t1_4
 NGLAB_DN=20 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=6 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m nogram 43
-# J42 / a100_t1_4
+# J42 / a100_t1
 NGLAB_DN=40 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m exact 43
-# J43 / a100_t1_4
+# J43 / a100_t1
 NGLAB_DN=40 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m nogram 43
 ```
 
@@ -7338,3 +7338,8 @@ NGLAB_DN=40 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGL
 **停止与失败**：08:00只停止新领取。非有限loss或外部失败保留证据并上报；有限loss坏结果按科学失败保留，不自行改LR/clip/seed。rc143、其他非零rc和summary缺失分别调查，不统一自动重试。基础设施复本必须先登记新后缀和原因，保留旧失败。接管模型按清单执行、核验和回填，不自行扩矩阵或改默认契约。
 
 **部署回填（开跑前待填）**：最终代码commit及各机指纹、dispatcher host/GPU白名单、deadline、实际claim、日志路径和首段推进证据由主线程填写。随后再将planned逐项更新为running/done或明确失败，不以进程存在代替训练完成。
+
+
+**§151 调度追加（2026-10-24，J42/J43 整对迁移）**：已启动实验的源代码 commit 为 `44fc73d`，四机完整输入 fingerprint 核验通过，证据仍为本节列出的 `fingerprint_{alias}.json`。主线程将尚未领取的 J42/J43（50M dn40、seed43、qkn exact/nogram）整对从 `a100_t1_4` 迁到 `a100_t1`，run_id、科学设置和总预算不变。队列两条 `FLEET_TARGET` 均须改为 `a100_t1`，由主线程二次核未 claim 后原子更新 manifest/jobs；本节只改登记，不替代队列提交。
+
+迁移原因：t1 的 `stu2_frozen_9_16_ctr_s42_e3`（GPU7）已自然完成、rc0；`stu2_random_1_8_rms0036_s42_e3`（GPU0）接近登记终点，等待自然收尾。计划使用两任务自然结束后释放的 GPU0/7，不中断学生训练。01:18 的读取估计其余四个学生臂约在12:42、20:47、20:47、21:36完成，均晚于08:00。**GPU0 在追加核验时尚未写 rc，须等终局产物/进程及空卡验收后领取**，不把预计结束当完成。两个相关新队列 dispatcher 已收到 STOP 排空请求，待自然退出后再恢复领取，避免迁移中的旧/新 job hash 同时启动。
