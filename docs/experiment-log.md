@@ -7202,7 +7202,7 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J06 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 8.4 | running |
 | J07 | `long_qkn_replication` | a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | running |
 | J08 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | running |
-| J09 | `main_setting_seed44` | a100_t1_2 | `v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | running |
+| J09 | `main_setting_seed44` | a100_t1_2 | `v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | done / 待科学复核 |
 | J10 | `main_setting_seed44` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | done / 待科学复核 |
 | J11 | `repeat_budget_e6` | perm | `v27_50m_exact_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | running |
 | J12 | `repeat_budget_e6` | perm | `v27_50m_nogram_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | running |
@@ -7442,3 +7442,9 @@ J33 `v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed`（t1_2、s
 J10 `v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed`（t1_2、seed44）完成20345步，完成文件、预算与SHA通过，最终val 2.672122538089752。证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T214746.564695Z/review.json`。对应加表尚在跑，暂不作最终表收益。
 
 当前31/32卡占用。t1_2一张卡自然释放且本机登记队列已全部领取，不是调度器缺失；其它三机仍满占，可比较active均推进，无告警。新清单累计17臂结束、24臂active、仅perm的2臂待领。遵守同机配对约束，不跨机搬动或新增填卡任务。旧任务保留，未操作借出节点。
+
+### 06:47 heartbeat：50M第三种子归一化配对完成
+
+J09 `v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed` 与J10 `v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed`，t1_2、seed44、dn20，均完成三遍20345步。DONE/summary/登记预算/配置/SHA核验通过。末60共同点加表/无表val=2.652865/2.673304，ΔVal=−20.438 mnat/token；最终单点差−20.724 mnat/token。末窗稳定，属于此seed与预算的配对收益。
+
+证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T224737.680990Z/review.json`。当前30/32卡占用，t1_2两卡因本机清单全部领取而释放。新清单18臂结束、23臂active、2臂仍在perm待领，可比较active均推进，无调度告警；不跨机搬动配对或新增任务。
