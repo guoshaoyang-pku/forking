@@ -68,7 +68,8 @@ for ax, (label, base, pattern) in zip(axs, PAIRS):
                         final_delta_mnat=final_delta))
 save(fig, str(OUT/'matched_validation'))
 (EVIDENCE/'report_metrics.json').write_text(json.dumps(metrics,ensure_ascii=False,indent=2)+'\n')
-svg=(OUT/'matched_validation.svg').read_text()
+svg='\n'.join(line.rstrip() for line in (OUT/'matched_validation.svg').read_text().splitlines())+'\n'
+(OUT/'matched_validation.svg').write_text(svg)
 svg=svg[svg.index('<svg'):].replace('<svg ', '<svg class="chart" role="img" aria-label="两对已完成训练的末轮固定验证曲线" ', 1)
 q, r = metrics
 body = f'''

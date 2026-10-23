@@ -1,0 +1,2144 @@
+{
+  "schema_version": 1,
+  "status": "planned_not_launched",
+  "date": "2026-10-24",
+  "timezone": "Asia/Shanghai",
+  "claim_cutoff": "2026-10-24T08:00:00+08:00",
+  "already_started_policy": "finish registered E3/E6 unless scientific nonfinite or external failure; no forced stop at cutoff",
+  "allowed_hosts": [
+    "perm",
+    "a100_t1_2",
+    "a100_t1_4",
+    "a100_t1"
+  ],
+  "excluded_hosts": [
+    "a100_t1_3"
+  ],
+  "host_roots": {
+    "perm": "/data2/guoshaoyang/ngram-gap-lab-v27",
+    "a100_t1_2": "/home/tione/guoshaoyang/ngram-gap-lab",
+    "a100_t1_4": "/home/tione/guoshaoyang/ngram-gap-lab",
+    "a100_t1": "/home/tione/guoshaoyang/ngram-gap-lab"
+  },
+  "student_host": "a100_t1: drain exhausted student dispatcher, preserve six active student runs; new scheduler may use all eight cards only as each becomes free",
+  "queue_policy": "Independent bounded queue; lower priority number first per host; all jobs explicitly assigned; reserved follow-ups only consume released capacity before 08:00; preserve existing training; no failed-run retries.",
+  "required_unset_env": [
+    "NGLAB_V28",
+    "NGLAB_B1",
+    "NGLAB_CLIP",
+    "NGLAB_LR",
+    "NGLAB_QKN",
+    "NGLAB_SUBSET",
+    "NGLAB_SUBSET_PASSES",
+    "NGLAB_HEADS",
+    "NGLAB_KK",
+    "NGLAB_TAG"
+  ],
+  "pairing_policy": "same host required for new comparisons; existing source code/data/config validation required; historical cross-host references explicitly marked; E3/E6 comparison is a budget intervention, not independent seed",
+  "duplicate_audit": "43 run IDs unique; new 8 reserve run IDs absent from old335 literal configs; remote collision gate remains mandatory before launch",
+  "total_nominal_tokens": 212460000000,
+  "total_estimated_gpu_hours": 259.37,
+  "estimation_sources": [
+    "outputs/takeover_20261024/live_a100/compact_summary.json",
+    "outputs/takeover_20261024/fleet_inventory/claims.csv"
+  ],
+  "budget_note": "Full completion cost, not guaranteed completion by 08:00. Estimate includes ordinary old-run overhead but new stability probes can increase elapsed time. No LR-based throughput scaling.",
+  "host_summary": {
+    "perm": {
+      "jobs": 10,
+      "nominal_tokens": 67020000000,
+      "estimated_gpu_hours": 96.32
+    },
+    "a100_t1": {
+      "jobs": 2,
+      "nominal_tokens": 16800000000,
+      "estimated_gpu_hours": 25.93
+    },
+    "a100_t1_2": {
+      "jobs": 9,
+      "nominal_tokens": 54600000000,
+      "estimated_gpu_hours": 63.26
+    },
+    "a100_t1_4": {
+      "jobs": 22,
+      "nominal_tokens": 74040000000,
+      "estimated_gpu_hours": 73.86
+    }
+  },
+  "reused_nogram_audit": [
+    {
+      "host": "a100_t1_4",
+      "run_id": "v27_50m_nogram_r400k_dn20_tls1_s43_e3_qkn_fixed",
+      "role": "Y3 same-host qkn baseline",
+      "status": "existing_claim_rc0_requires_artifact_validation"
+    },
+    {
+      "host": "a100_t1_4",
+      "run_id": "v27_50m_nogram_r400k_dn20_tls1_s43_e3_fixed",
+      "role": "B_r50 same-host no-qkn baseline",
+      "status": "existing_claim_rc0_requires_artifact_validation"
+    },
+    {
+      "host": "a100_t1_2",
+      "run_id": "v27_50m_nogram_r400k_dn20_tls1_s43_e3_qkn_fixed",
+      "role": "Y4 second same-name copy; keep host key, never overwrite Y3",
+      "status": "existing_claim_rc0_requires_artifact_validation"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "J01",
+      "priority": 10,
+      "host": "perm",
+      "model": "50m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 56,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "_p27b",
+      "group": "long_qkn_replication",
+      "question": "在已知长训练失稳设置中，注意力归一化的完整三遍存活与加表收益是否跨种子复现？",
+      "run_id": "v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "56",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 14.32,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J02",
+      "priority": 10,
+      "host": "perm",
+      "model": "50m",
+      "arm": "nogram",
+      "seed": 43,
+      "dn": 56,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "_p27b",
+      "group": "long_qkn_replication",
+      "question": "在已知长训练失稳设置中，注意力归一化的完整三遍存活与加表收益是否跨种子复现？",
+      "run_id": "v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "56",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 11.61,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J03",
+      "priority": 10,
+      "host": "a100_t1",
+      "model": "50m",
+      "arm": "exact",
+      "seed": 44,
+      "dn": 56,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "_p27b",
+      "group": "long_qkn_replication",
+      "question": "在已知长训练失稳设置中，注意力归一化的完整三遍存活与加表收益是否跨种子复现？",
+      "run_id": "v27_50m_exact_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "56",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_50m_nogram_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 14.32,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J04",
+      "priority": 10,
+      "host": "a100_t1",
+      "model": "50m",
+      "arm": "nogram",
+      "seed": 44,
+      "dn": 56,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "_p27b",
+      "group": "long_qkn_replication",
+      "question": "在已知长训练失稳设置中，注意力归一化的完整三遍存活与加表收益是否跨种子复现？",
+      "run_id": "v27_50m_nogram_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "56",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_50m_exact_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 11.61,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J05",
+      "priority": 10,
+      "host": "a100_t1_2",
+      "model": "35m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 80,
+      "rk": 280,
+      "tls": 0.5,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "_p27b",
+      "group": "long_qkn_replication",
+      "question": "在已知长训练失稳设置中，注意力归一化的完整三遍存活与加表收益是否跨种子复现？",
+      "run_id": "v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "80",
+        "NGLAB_RK": "280",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 8.62,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J06",
+      "priority": 10,
+      "host": "a100_t1_2",
+      "model": "35m",
+      "arm": "nogram",
+      "seed": 43,
+      "dn": 80,
+      "rk": 280,
+      "tls": 0.5,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "_p27b",
+      "group": "long_qkn_replication",
+      "question": "在已知长训练失稳设置中，注意力归一化的完整三遍存活与加表收益是否跨种子复现？",
+      "run_id": "v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "80",
+        "NGLAB_RK": "280",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 7.39,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J07",
+      "priority": 10,
+      "host": "a100_t1_2",
+      "model": "35m",
+      "arm": "exact",
+      "seed": 44,
+      "dn": 80,
+      "rk": 280,
+      "tls": 0.5,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "_p27b",
+      "group": "long_qkn_replication",
+      "question": "在已知长训练失稳设置中，注意力归一化的完整三遍存活与加表收益是否跨种子复现？",
+      "run_id": "v27_35m_exact_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "80",
+        "NGLAB_RK": "280",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_35m_nogram_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 8.62,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J08",
+      "priority": 10,
+      "host": "a100_t1_2",
+      "model": "35m",
+      "arm": "nogram",
+      "seed": 44,
+      "dn": 80,
+      "rk": 280,
+      "tls": 0.5,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "_p27b",
+      "group": "long_qkn_replication",
+      "question": "在已知长训练失稳设置中，注意力归一化的完整三遍存活与加表收益是否跨种子复现？",
+      "run_id": "v27_35m_nogram_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "80",
+        "NGLAB_RK": "280",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_35m_exact_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 7.39,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J09",
+      "priority": 20,
+      "host": "a100_t1_2",
+      "model": "50m",
+      "arm": "exact",
+      "seed": 44,
+      "dn": 20,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "main_setting_seed44",
+      "question": "第三颗种子是否保留主设置加表收益？同机无表开关对照同时检验归一化本身的性能代价。",
+      "run_id": "v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed",
+          "role": "new paired arm",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed",
+          "role": "new same-host no-qkn control",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_exact_r400k_dn20_tls1_s44_e3_fixed",
+          "role": "existing no-qkn exact",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        }
+      ],
+      "nominal_tokens": 3000000000,
+      "estimated_gpu_hours": 5.11,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J10",
+      "priority": 20,
+      "host": "a100_t1_2",
+      "model": "50m",
+      "arm": "nogram",
+      "seed": 44,
+      "dn": 20,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "main_setting_seed44",
+      "question": "第三颗种子是否保留主设置加表收益？同机无表开关对照同时检验归一化本身的性能代价。",
+      "run_id": "v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed",
+          "role": "new paired arm",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed",
+          "role": "new same-host no-qkn control",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_exact_r400k_dn20_tls1_s44_e3_fixed",
+          "role": "existing no-qkn exact",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        }
+      ],
+      "nominal_tokens": 3000000000,
+      "estimated_gpu_hours": 4.15,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J11",
+      "priority": 12,
+      "host": "perm",
+      "model": "50m",
+      "arm": "exact",
+      "seed": 42,
+      "dn": 20,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 6,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "repeat_budget_e6",
+      "question": "保持独立数据量不变，将重复次数从三遍延长到六遍后，归一化是否只是推迟失稳，或加表收益是否反转？",
+      "run_id": "v27_50m_exact_r400k_dn20_tls1_s42_e6_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "6",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r400k_dn20_tls1_s42_e3_qkn_fixed",
+          "role": "existing E3 same-seed budget anchor",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s42_e6_qkn_fixed",
+          "role": "new E6 pair",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 6000000000,
+      "estimated_gpu_hours": 10.23,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J12",
+      "priority": 12,
+      "host": "perm",
+      "model": "50m",
+      "arm": "nogram",
+      "seed": 42,
+      "dn": 20,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 6,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "repeat_budget_e6",
+      "question": "保持独立数据量不变，将重复次数从三遍延长到六遍后，归一化是否只是推迟失稳，或加表收益是否反转？",
+      "run_id": "v27_50m_nogram_r400k_dn20_tls1_s42_e6_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "6",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s42_e3_qkn_fixed",
+          "role": "existing E3 same-seed budget anchor",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r400k_dn20_tls1_s42_e6_qkn_fixed",
+          "role": "new E6 pair",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 6000000000,
+      "estimated_gpu_hours": 8.29,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J13",
+      "priority": 15,
+      "host": "a100_t1_4",
+      "model": "17m",
+      "arm": "exact",
+      "seed": 42,
+      "dn": 20,
+      "rk": 35,
+      "tls": 2,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "",
+      "group": "lr_factorial_r35",
+      "question": "在17M小表设置，分别改变主干绝对学习率和表绝对学习率，区分单独降主干与联合降低的稳定性作用。四角按实际表LR解释，失败保留。",
+      "run_id": "v27_17m_exact_r35k_dn20_tls2_s42_e3_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "35",
+        "NGLAB_TLS": "2",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls1_s42_e3_lr0.0003_fixed",
+          "role": "existing joint lower LR",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls0.5_s42_e3_fixed",
+          "role": "existing table-only lower LR",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed",
+          "role": "new same-host full LR corner",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.48,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures",
+      "factorial_coordinates": {
+        "backbone_lr": 0.0003,
+        "absolute_table_lr": 0.0006
+      }
+    },
+    {
+      "id": "J14",
+      "priority": 15,
+      "host": "a100_t1_4",
+      "model": "17m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 20,
+      "rk": 35,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "lr_factorial_r35",
+      "question": "在17M小表设置，分别改变主干绝对学习率和表绝对学习率，区分单独降主干与联合降低的稳定性作用。四角按实际表LR解释，失败保留。",
+      "run_id": "v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "35",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.48,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures",
+      "factorial_coordinates": {
+        "backbone_lr": 0.0006,
+        "absolute_table_lr": 0.0006
+      }
+    },
+    {
+      "id": "J15",
+      "priority": 15,
+      "host": "a100_t1_4",
+      "model": "17m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 20,
+      "rk": 35,
+      "tls": 0.5,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "lr_factorial_r35",
+      "question": "在17M小表设置，分别改变主干绝对学习率和表绝对学习率，区分单独降主干与联合降低的稳定性作用。四角按实际表LR解释，失败保留。",
+      "run_id": "v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "35",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.48,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures",
+      "factorial_coordinates": {
+        "backbone_lr": 0.0006,
+        "absolute_table_lr": 0.0003
+      }
+    },
+    {
+      "id": "J16",
+      "priority": 15,
+      "host": "a100_t1_4",
+      "model": "17m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 20,
+      "rk": 35,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "",
+      "group": "lr_factorial_r35",
+      "question": "在17M小表设置，分别改变主干绝对学习率和表绝对学习率，区分单独降主干与联合降低的稳定性作用。四角按实际表LR解释，失败保留。",
+      "run_id": "v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "35",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.48,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures",
+      "factorial_coordinates": {
+        "backbone_lr": 0.0003,
+        "absolute_table_lr": 0.0003
+      }
+    },
+    {
+      "id": "J17",
+      "priority": 15,
+      "host": "a100_t1_4",
+      "model": "17m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 20,
+      "rk": 35,
+      "tls": 2,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "",
+      "group": "lr_factorial_r35",
+      "question": "在17M小表设置，分别改变主干绝对学习率和表绝对学习率，区分单独降主干与联合降低的稳定性作用。四角按实际表LR解释，失败保留。",
+      "run_id": "v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "35",
+        "NGLAB_TLS": "2",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.48,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures",
+      "factorial_coordinates": {
+        "backbone_lr": 0.0003,
+        "absolute_table_lr": 0.0006
+      }
+    },
+    {
+      "id": "J18",
+      "priority": 15,
+      "host": "a100_t1_4",
+      "model": "17m",
+      "arm": "nogram",
+      "seed": 43,
+      "dn": 20,
+      "rk": 136,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "",
+      "group": "lr_nogram_shared",
+      "question": "17M降学习率对无表基线的绝对性能作用是什么？该臂由35k与136k两个表容量问题共享，不重复启动。",
+      "run_id": "v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s43_e3_fixed",
+          "role": "existing same-host full-LR nogram",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.41,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J19",
+      "priority": 16,
+      "host": "a100_t1_4",
+      "model": "17m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 20,
+      "rk": 35,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "small_table_qkn_seed43",
+      "question": "小表有害区在第二颗种子中经归一化稳定后，是否仍然劣于无表基线？",
+      "run_id": "v27_17m_exact_r35k_dn20_tls1_s43_e3_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "35",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed",
+          "role": "new same-host shared qkn nogram",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r35k_dn20_tls1_s42_e3_qkn_fixed",
+          "role": "existing first seed",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.59,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J20",
+      "priority": 5,
+      "host": "perm",
+      "model": "17m",
+      "arm": "exact",
+      "seed": 42,
+      "dn": 20,
+      "rk": 136,
+      "tls": 2,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "",
+      "group": "lr_factorial_r136",
+      "question": "在17M大表设置补齐实际主干LR×实际表LR四角，检验小表处得到的LR归因是否依赖表容量。复用已完成角点，不扩成LR扫描。",
+      "run_id": "v27_17m_exact_r136k_dn20_tls2_s42_e3_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "2",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_17m_exact_r136k_dn20_tls1_s42_e3_lr0.0003_fixed",
+          "role": "existing joint lower LR",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_17m_exact_r136k_dn20_tls0.5_s42_e3_fixed",
+          "role": "existing table-only lower LR",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r136k_dn20_tls1_s42_e3_fixed",
+          "role": "existing full LR; cross-host",
+          "status": "existing_claim_rc0_requires_artifact_validation",
+          "cross_host": true
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.48,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures",
+      "factorial_coordinates": {
+        "backbone_lr": 0.0003,
+        "absolute_table_lr": 0.0006
+      }
+    },
+    {
+      "id": "J21",
+      "priority": 15,
+      "host": "a100_t1_4",
+      "model": "17m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 20,
+      "rk": 136,
+      "tls": 0.5,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "lr_factorial_r136",
+      "question": "在17M大表设置补齐实际主干LR×实际表LR四角，检验小表处得到的LR归因是否依赖表容量。复用已完成角点，不扩成LR扫描。",
+      "run_id": "v27_17m_exact_r136k_dn20_tls0.5_s43_e3_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r136k_dn20_tls1_s43_e3_fixed",
+          "role": "existing same-host full LR",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed",
+          "role": "new shared low LR baseline",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.48,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures",
+      "factorial_coordinates": {
+        "backbone_lr": 0.0006,
+        "absolute_table_lr": 0.0003
+      }
+    },
+    {
+      "id": "J22",
+      "priority": 15,
+      "host": "a100_t1_4",
+      "model": "17m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 20,
+      "rk": 136,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "",
+      "group": "lr_factorial_r136",
+      "question": "在17M大表设置补齐实际主干LR×实际表LR四角，检验小表处得到的LR归因是否依赖表容量。复用已完成角点，不扩成LR扫描。",
+      "run_id": "v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r136k_dn20_tls1_s43_e3_fixed",
+          "role": "existing same-host full LR",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed",
+          "role": "new shared low LR baseline",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r136k_dn20_tls0.5_s43_e3_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.48,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures",
+      "factorial_coordinates": {
+        "backbone_lr": 0.0003,
+        "absolute_table_lr": 0.0003
+      }
+    },
+    {
+      "id": "J23",
+      "priority": 15,
+      "host": "a100_t1_4",
+      "model": "17m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 20,
+      "rk": 136,
+      "tls": 2,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "",
+      "group": "lr_factorial_r136",
+      "question": "在17M大表设置补齐实际主干LR×实际表LR四角，检验小表处得到的LR归因是否依赖表容量。复用已完成角点，不扩成LR扫描。",
+      "run_id": "v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "2",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r136k_dn20_tls1_s43_e3_fixed",
+          "role": "existing same-host full LR",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed",
+          "role": "new shared low LR baseline",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r136k_dn20_tls0.5_s43_e3_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed",
+          "role": "new factorial corner",
+          "status": "planned",
+          "cross_host": false
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.48,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures",
+      "factorial_coordinates": {
+        "backbone_lr": 0.0003,
+        "absolute_table_lr": 0.0006
+      }
+    },
+    {
+      "id": "J24",
+      "priority": 30,
+      "host": "perm",
+      "model": "50m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 56,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "_p27b",
+      "group": "long_lr_decoupling",
+      "question": "长训练中，保持表绝对学习率不变时仅降低主干LR能否稳定？与联合降LR共享同机无表基线比较收益。",
+      "run_id": "v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "56",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed",
+          "role": "joint lower LR",
+          "status": "planned"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed",
+          "role": "backbone lower LR, table absolute LR held",
+          "status": "planned"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed",
+          "role": "shared low LR baseline",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 11.59,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J25",
+      "priority": 30,
+      "host": "perm",
+      "model": "50m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 56,
+      "rk": 400,
+      "tls": 2,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "_p27b",
+      "group": "long_lr_decoupling",
+      "question": "长训练中，保持表绝对学习率不变时仅降低主干LR能否稳定？与联合降LR共享同机无表基线比较收益。",
+      "run_id": "v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "56",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "2",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed",
+          "role": "joint lower LR",
+          "status": "planned"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed",
+          "role": "backbone lower LR, table absolute LR held",
+          "status": "planned"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed",
+          "role": "shared low LR baseline",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 11.59,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J26",
+      "priority": 30,
+      "host": "perm",
+      "model": "50m",
+      "arm": "nogram",
+      "seed": 43,
+      "dn": 56,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "_p27b",
+      "group": "long_lr_decoupling",
+      "question": "长训练中，保持表绝对学习率不变时仅降低主干LR能否稳定？与联合降LR共享同机无表基线比较收益。",
+      "run_id": "v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "56",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed",
+          "role": "joint lower LR",
+          "status": "planned"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed",
+          "role": "backbone lower LR, table absolute LR held",
+          "status": "planned"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed",
+          "role": "shared low LR baseline",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 9.69,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J27",
+      "priority": 30,
+      "host": "a100_t1_4",
+      "model": "35m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 80,
+      "rk": 280,
+      "tls": 0.5,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "_p27b",
+      "group": "long_lr_decoupling",
+      "question": "长训练中，保持表绝对学习率不变时仅降低主干LR能否稳定？与联合降LR共享同机无表基线比较收益。",
+      "run_id": "v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "80",
+        "NGLAB_RK": "280",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed",
+          "role": "joint lower LR",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed",
+          "role": "backbone lower LR, table absolute LR held",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed",
+          "role": "shared low LR baseline",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 6.93,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J28",
+      "priority": 30,
+      "host": "a100_t1_4",
+      "model": "35m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 80,
+      "rk": 280,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "_p27b",
+      "group": "long_lr_decoupling",
+      "question": "长训练中，保持表绝对学习率不变时仅降低主干LR能否稳定？与联合降LR共享同机无表基线比较收益。",
+      "run_id": "v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "80",
+        "NGLAB_RK": "280",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed",
+          "role": "joint lower LR",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed",
+          "role": "backbone lower LR, table absolute LR held",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed",
+          "role": "shared low LR baseline",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 6.93,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J29",
+      "priority": 30,
+      "host": "a100_t1_4",
+      "model": "35m",
+      "arm": "nogram",
+      "seed": 43,
+      "dn": 80,
+      "rk": 280,
+      "tls": 0.5,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "_p27b",
+      "group": "long_lr_decoupling",
+      "question": "长训练中，保持表绝对学习率不变时仅降低主干LR能否稳定？与联合降LR共享同机无表基线比较收益。",
+      "run_id": "v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "80",
+        "NGLAB_RK": "280",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed",
+          "role": "joint lower LR",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed",
+          "role": "backbone lower LR, table absolute LR held",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed",
+          "role": "shared low LR baseline",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 6.19,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J30",
+      "priority": 30,
+      "host": "a100_t1_4",
+      "model": "35m",
+      "arm": "exact",
+      "seed": 42,
+      "dn": 80,
+      "rk": 280,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0003,
+      "tag": "_p27b",
+      "group": "long_lr_decoupling",
+      "question": "35M既有联合降LR结果的单变量补角：主干LR减半、表绝对LR保持原值。",
+      "run_id": "v27_35m_exact_r280k_dn80_tls1_s42_e3_p27b_lr0.0003_fixed",
+      "env": {
+        "NGLAB_DN": "80",
+        "NGLAB_RK": "280",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_p27b",
+        "NGLAB_LR": "0.0003"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r280k_dn80_tls0.5_s42_e3_p27b_lr0.0003_fixed",
+          "role": "existing joint lower LR",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn80_tls0.5_s42_e3_p27b_lr0.0003_fixed",
+          "role": "existing shared low LR nogram",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        }
+      ],
+      "nominal_tokens": 8400000000,
+      "estimated_gpu_hours": 6.93,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J31",
+      "priority": 25,
+      "host": "a100_t1_4",
+      "model": "35m",
+      "arm": "exact",
+      "seed": 42,
+      "dn": 20,
+      "rk": 280,
+      "tls": 0.5,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "healthy_baseline_35m",
+      "question": "在35M较短且原先可完成的设置，归一化是否改变无表性能以及加表净收益？这与长训救活是独立问题。",
+      "run_id": "v27_35m_exact_r280k_dn20_tls0.5_s42_e3_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "280",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_fixed",
+          "role": "existing same-host no-qkn nogram",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed",
+          "role": "new same-host qkn pair",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 2100000000,
+      "estimated_gpu_hours": 2.15,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J32",
+      "priority": 25,
+      "host": "a100_t1_4",
+      "model": "35m",
+      "arm": "nogram",
+      "seed": 42,
+      "dn": 20,
+      "rk": 280,
+      "tls": 0.5,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "healthy_baseline_35m",
+      "question": "在35M较短且原先可完成的设置，归一化是否改变无表性能以及加表净收益？这与长训救活是独立问题。",
+      "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "280",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_fixed",
+          "role": "existing same-host no-qkn nogram",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r280k_dn20_tls0.5_s42_e3_qkn_fixed",
+          "role": "new same-host qkn pair",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 2100000000,
+      "estimated_gpu_hours": 1.85,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J33",
+      "priority": 20,
+      "host": "a100_t1_2",
+      "model": "50m",
+      "arm": "nogram",
+      "seed": 44,
+      "dn": 20,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0006,
+      "tag": "_hostcontrol20261024",
+      "group": "same_host_controls",
+      "question": "旧seed44无表控制只登记在借出的节点，新增同机控制以检验qkn对基线的影响。保留旧结果，不替换科学失败。",
+      "run_id": "v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_hostcontrol20261024"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed",
+          "role": "new same-host qkn nogram",
+          "status": "planned"
+        },
+        {
+          "host": "a100_t1_3",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s44_e3_fixed",
+          "role": "historical reference only; do not access borrowed host",
+          "status": "existing_claim_rc0_requires_artifact_validation"
+        }
+      ],
+      "nominal_tokens": 3000000000,
+      "estimated_gpu_hours": 3.46,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J34",
+      "priority": 15,
+      "host": "a100_t1_4",
+      "model": "17m",
+      "arm": "exact",
+      "seed": 42,
+      "dn": 20,
+      "rk": 35,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": false,
+      "lr": 0.0006,
+      "tag": "_hostcontrol20261024",
+      "group": "same_host_controls",
+      "question": "小表LR四角的原始全LR臂在另一主机，新增同机控制消除主机来源差异。旧发散保留，新结果不得替换旧结果。",
+      "run_id": "v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "35",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_hostcontrol20261024"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_17m_exact_r35k_dn20_tls1_s42_e3_fixed",
+          "role": "historical full LR; cross-host",
+          "status": "existing_claim_rc0_requires_artifact_validation",
+          "cross_host": true
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.48,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J35",
+      "priority": 16,
+      "host": "a100_t1_4",
+      "model": "17m",
+      "arm": "nogram",
+      "seed": 43,
+      "dn": 20,
+      "rk": 136,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "_hostcontrol20261024",
+      "group": "same_host_controls",
+      "question": "第二种子小表qkn的旧无表控制只在另一主机；新增同机共享控制以判断小表有害是否独立于发散。",
+      "run_id": "v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_hostcontrol20261024",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s43_e3_qkn_fixed",
+          "role": "historical qkn nogram; cross-host",
+          "status": "existing_claim_rc0_requires_artifact_validation",
+          "cross_host": true
+        }
+      ],
+      "nominal_tokens": 1020000000,
+      "estimated_gpu_hours": 0.52,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J36",
+      "priority": 90,
+      "host": "perm",
+      "model": "50m",
+      "arm": "exact",
+      "seed": 44,
+      "dn": 20,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 6,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "reserve_repeat_budget",
+      "question": "容量释放后的有界后备：六遍重复的收益与稳定性是否跨种子保留？",
+      "run_id": "v27_50m_exact_r400k_dn20_tls1_s44_e6_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "6",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s44_e6_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 6000000000,
+      "estimated_gpu_hours": 10.22,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J37",
+      "priority": 90,
+      "host": "perm",
+      "model": "50m",
+      "arm": "nogram",
+      "seed": 44,
+      "dn": 20,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 6,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "reserve_repeat_budget",
+      "question": "容量释放后的有界后备：六遍重复的收益与稳定性是否跨种子保留？",
+      "run_id": "v27_50m_nogram_r400k_dn20_tls1_s44_e6_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "6",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r400k_dn20_tls1_s44_e6_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 6000000000,
+      "estimated_gpu_hours": 8.3,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J38",
+      "priority": 90,
+      "host": "a100_t1_2",
+      "model": "50m",
+      "arm": "exact",
+      "seed": 42,
+      "dn": 40,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "reserve_data_envelope",
+      "question": "容量释放后的有界后备：归一化后数据量/档位参数量=40的收益是否处于20与56之间？",
+      "run_id": "v27_50m_exact_r400k_dn40_tls1_s42_e3_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "40",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn40_tls1_s42_e3_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 6000000000,
+      "estimated_gpu_hours": 10.22,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J39",
+      "priority": 90,
+      "host": "a100_t1_2",
+      "model": "50m",
+      "arm": "nogram",
+      "seed": 42,
+      "dn": 40,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "reserve_data_envelope",
+      "question": "容量释放后的有界后备：归一化后数据量/档位参数量=40的收益是否处于20与56之间？",
+      "run_id": "v27_50m_nogram_r400k_dn40_tls1_s42_e3_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "40",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_exact_r400k_dn40_tls1_s42_e3_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 6000000000,
+      "estimated_gpu_hours": 8.3,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J40",
+      "priority": 90,
+      "host": "a100_t1_4",
+      "model": "50m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 20,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 6,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "reserve_repeat_budget",
+      "question": "容量释放后的有界后备：六遍重复的收益与稳定性是否跨种子保留？",
+      "run_id": "v27_50m_exact_r400k_dn20_tls1_s43_e6_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "6",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s43_e6_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 6000000000,
+      "estimated_gpu_hours": 10.22,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J41",
+      "priority": 90,
+      "host": "a100_t1_4",
+      "model": "50m",
+      "arm": "nogram",
+      "seed": 43,
+      "dn": 20,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 6,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "reserve_repeat_budget",
+      "question": "容量释放后的有界后备：六遍重复的收益与稳定性是否跨种子保留？",
+      "run_id": "v27_50m_nogram_r400k_dn20_tls1_s43_e6_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "6",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_50m_exact_r400k_dn20_tls1_s43_e6_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 6000000000,
+      "estimated_gpu_hours": 8.3,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J42",
+      "priority": 90,
+      "host": "a100_t1_4",
+      "model": "50m",
+      "arm": "exact",
+      "seed": 43,
+      "dn": 40,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "reserve_data_envelope",
+      "question": "容量释放后的有界后备：归一化后数据量/档位参数量=40的收益是否处于20与56之间？",
+      "run_id": "v27_50m_exact_r400k_dn40_tls1_s43_e3_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "40",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_50m_nogram_r400k_dn40_tls1_s43_e3_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 6000000000,
+      "estimated_gpu_hours": 10.22,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    },
+    {
+      "id": "J43",
+      "priority": 90,
+      "host": "a100_t1_4",
+      "model": "50m",
+      "arm": "nogram",
+      "seed": 43,
+      "dn": 40,
+      "rk": 400,
+      "tls": 1,
+      "epochs": 3,
+      "qkn": true,
+      "lr": 0.0006,
+      "tag": "",
+      "group": "reserve_data_envelope",
+      "question": "容量释放后的有界后备：归一化后数据量/档位参数量=40的收益是否处于20与56之间？",
+      "run_id": "v27_50m_nogram_r400k_dn40_tls1_s43_e3_qkn_fixed",
+      "env": {
+        "NGLAB_DN": "40",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "36",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_QKN": "1"
+      },
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_50m_exact_r400k_dn40_tls1_s43_e3_qkn_fixed",
+          "role": "new same-host paired arm",
+          "status": "planned"
+        }
+      ],
+      "nominal_tokens": 6000000000,
+      "estimated_gpu_hours": 8.3,
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+    }
+  ]
+}

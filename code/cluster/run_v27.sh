@@ -122,7 +122,8 @@ fi
 RUN_ID="v27_${MODEL}_${ARM}_r${RK}k_${DTAG}_tls${TLS}_s${SEED}_e${E}${TAG}"
 RESULT_DIR="$OUT_DIR/${RUN_ID}_fixed"
 [[ ! -e "$RESULT_DIR" ]] || { echo "refusing existing run: $RESULT_DIR" >&2; exit 2; }
-mkdir -p "$RESULT_DIR"
+mkdir -p "$OUT_DIR"
+mkdir "$RESULT_DIR"
 
 echo "[v27] run=$RUN_ID gpu=$GPU model=$MODEL arm=$ARM seed=$SEED D=$DTOK shards=$(echo "$SHARDS" | tr , '\n' | wc -l) R/order=${RK}k tls=$TLS db=$DB vdb=$VDB"
 CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \

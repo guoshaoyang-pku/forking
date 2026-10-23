@@ -7124,3 +7124,217 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 **(f) 基础设施**：a100_t1 6 卡仍被其他租户占用（keephash 7 臂继续排队，无新结果）；ophis 磁盘清理后 50M 表-LR×选择策略矩阵的原始 run 目录已删（读数以登记簿为准），矩阵重启未发生，ophis 现 GPU0–3 空闲、4–7 被其他租户占用；360-1/360-2 SSH 均拒绝（Connection closed）→ 200M 对、104M s44 对、3 个 s43 复本指纹核对全部待机器恢复；本地 `ddc981d..a22e23c` 7 个 commit 未 push（P5）。
 
 **(g) 待拍板（P5）**：契约修复三选一——qk-norm（零发散+保收益，改动最小）/ backbone LR 3e-4（救活长训，但牺牲一倍速度）/ v28 全包（救 OE 臂但 nogram 仍碎，且偏离极简）；v28 长训与 S2 exact 到 E3 末后收割定稿；矩阵臂是否重启。
+
+
+## §151 接管核验与 A100 夜间长训练登记（2026-10-24，planned）
+
+**授权与边界**：用户本轮明确授权 A100 彻夜排队执行，并要求由较轻量模型按登记清单接管监看。负责人为本次接管会话。登记 **43 臂**，含 35 个优先实验/同机控制与 8 个低优先级后备，均为 `planned`，不表示已经启动。使用 `perm`（SSH 别名 `a100_perm`）、`a100_t1`、`a100_t1_2`、`a100_t1_4`。**排除借出的 `a100_t1_3`，不登录、不占卡、不操作其旧进程。** `a100_t1` 学生队列此次 12/12 已领取、无待领项，保留六项旧训练，只接管 dispatcher 与空闲 GPU 2/6。
+
+新队列 `/home/cfs/guoshaoyang/nglab_queue_overnight_20261024` 与旧队列独立。**北京时间 2026-10-24 08:00 停止新领取**，已启动臂按登记的 3 遍或 6 遍完整结束。全候选完成预算上限 **212.46B token / 259.37 A100 GPU·h**，不承诺全部启动或在 08:00 前完成。截止未领取项保留 planned/待定，不自动延期，不通过新后缀绕过截止。
+
+机器可读清单为 `docs/plans/overnight-20261024.json`，包括每臂 env、host、run_id、control_refs、endpoint、预算与优先级。`FLEET_TARGET` 必须锁定对应主机。配对及共享控制不能独自跨机移动。下表给出最终初始分配，实际 GPU、代码 commit 与部署验证在开跑前回填。输出为各主机 `data/runs_fixed/<run_id>/`，不加入 git。
+
+### 新收割按共同末窗复核，不混用终行和窗口
+
+统一 **ΔVal = exact − nogram**，负数表示加表更好，**mnat = 0.001 nat**。最终收益取同机、同 seed、共同末 60 个 fixed-val 记录。下表两对均已有两臂 summary，与 planned 新实验分开。
+
+| run_id 配对 | host / seed / 共同末窗 | exact / nogram 窗均 val | 窗均 ΔVal / 终行 ΔVal |
+|---|---|---|---|
+| `v27_50m_{exact,nogram}_r400k_dn20_tls1_s42_e3_qkn_fixed` | perm / 42 / 19760–20345 | 2.635713 / 2.671724 | **−36.011 / −35.697 mnat** |
+| `v27_104m_{exact,nogram}_r832k_dn20_tls1_s44_e3_fixed` | 360-2 / 44 / 41730–42315 | 2.526305 / 2.548729 | **−22.424 / −26.551 mnat** |
+
+来源：`outputs/takeover_20261024/report_metrics.json` 与其中指向的原始 JSONL。360-2 的六个小文件共 3.17 MB，逐文件校验在 `outputs/takeover_20261024/360-2/harvest-manifest.json`。此次 360-2 SSH 可读，但项目所在 `/data` 已满。200M s43 p27b 两臂仍无 summary，nogram 快照末窗 59010–59600 的 val 5.959、train 5.980，不能构成健康收益对。未在该机启动、清理或终止任务。
+
+**§150 的证据限定**：长训 qkn 的 −63.8/−51.6、LR 3e-4 的 −27 是不同 step 的末端相减，不能作公平的最终配对收益。“未观察到发散”限于已观察预算和 seed。“nogram 健康”不等于归一化对其性能无损。注意力 logit 先失控有观测支持，整条“表接管→第一层闲置→BOS sink→失控”链仍待干预验证。学习率减半不意味着每步吞吐减半。
+
+**LR 归因修正**：代码使用 `table_lr = backbone_lr × TLS`，TLS 是 `NGLAB_TLS` 对应的倍率。旧 `lr0.0003` 且 TLS 不变同时降低主干与表的绝对 LR，不能称为主干单变量因果证据。今晚按历史 §42 的解耦原则补齐实际主干 LR × 实际表 LR 四角，再延伸到长训。
+
+### 固定 v27 协议与启动前来源核验
+
+本批沿用 §138–150 的 v27 协议，**不把它误记为 AGENTS §1 的旧 RMSProp/128× 配方**。D/N 中 N 为模型档位的名义参数数，独立 token 量 D = (D/N) × N，完整预算为 D × 遍数。qkn 是每层 attention 的 query/key LayerNorm，matched exact/nogram 同时打开。
+
+| 坐标 | 固定值或明确差异 |
+|---|---|
+| 模型 | 17M：4L/4H/512D；35M：6L/5H/640D；50M：8L/6H/768D；vocab8192、seq2048、learned absolute PE、LayerNorm、tied embedding |
+| 表 | exact 为 n=2,3,4,5 的逐阶 top-R 零碰撞表，input/wte 相加；nogram 关闭表；每阶 R 由 run_id 的 r35k/r136k/r280k/r400k 给出 |
+| 主干 | AdamW (0.8,0.95)，矩阵 wd0.1，无主干裁剪；默认 LR6e-4，带 `_lr0.0003` 的臂为 3e-4 |
+| 表优化器 | AdamW (0.9,0.95)，表梯度 clip1；表绝对 LR = 主干 LR × TLS；nogram 的 TLS 不影响训练 |
+| schedule / 精度 | 100 步 warmup 从0.25×升至1×后恒定；bf16，不 compile；不启用 v28/额外β1/额外clip |
+| batch / 测量 | 每优化步147456 token；50M exact DB18，其余 DB36；val DB24×12=固定288 chunks；val每10步，table norm每50步，stability每100步 |
+| 数据 | `data/tokenized_v27/manifest.json` 的 v27b，md5 `543cc8ae5779cbfaa7353836912d73e4`；train为足额最短前缀，val shard2；去整片副本60/62/63，过滤来源见§138b/§143a |
+| 索引/assignment | `data/freq_index_o2to5_1b_f30.npz` 与 `data/assignments/assign_exact_r<R>k.npz`；按实际 R、键、计数核对 |
+| root / Python | perm `/data2/guoshaoyang/ngram-gap-lab-v27`；各Tione节点 `/home/tione/guoshaoyang/ngram-gap-lab`；使用各root下`.venv/bin/python` |
+
+四机已逐文件核验每机 68 个输入/代码文件，共约 5.882 GB，SHA256 完全一致。覆盖 2.8B token 所需的全部训练前缀、val2、频次索引、四种 assignment，以及 train/ngram_freq/prefix 代码。来源为 `outputs/takeover_20261024/fingerprint_{alias}.json`。调度器与 launcher 的最终部署 commit/指纹另在开跑前记录，不用输入核验替代部署验收。
+
+17M 四角按（主干LR，表LR）解释：(6e-4,6e-4)→TLS1；(6e-4,3e-4)→TLS0.5；(3e-4,3e-4)→TLS1；(3e-4,6e-4)→TLS2。35M 长训原表LR=3e-4，主干减半后 TLS1 才保持表绝对LR，TLS0.5 是联合降低。
+
+### 各组的科学问题与判读边界
+
+| 组 | 新臂 | 科学问题 |
+|---|---|---|
+| `long_qkn_replication` | J01–J08 | 50M dn56、35M dn80 在seed43/44完整三遍是否稳定且有加表收益？越过旧onset不替代完整验收 |
+| `main_setting_seed44` | J09–J10 | 50M dn20第三seed是否保收益？结合J33和核验后的同机旧exact，分别判断基线变化与表收益变化 |
+| `repeat_budget_e6` | J11–J12 | 固定1B独立token，重复三遍变六遍后是否晚发散或收益反转？E3/E6不是两个独立seed |
+| `lr_factorial_r35` | J13–J17 | 17M小表四角区分主干降LR与表降LR，s42补角结合J34，s43完整四角新跑 |
+| `lr_nogram_shared` | J18 | 降主干LR对17M无表绝对性能的作用。小表/大表共用，不重复启动 |
+| `small_table_qkn_seed43` | J19 | 第二seed小表经qkn稳定后是否仍有害？只与同机J35配对 |
+| `lr_factorial_r136` | J20–J23 | 大表能否复现LR归因？s43同机四角；s42 J20的历史full-LR参考跨机，不能称同机完整四角 |
+| `long_lr_decoupling` | J24–J30 | 长训保持表绝对LR时，仅降主干能否稳定？与联合降LR共享同机低LR nogram |
+| `healthy_baseline_35m` | J31–J32 | 原可完成的较短35M设置中，qkn是否伤无表性能或改变表收益？不以长训存活率替代 |
+| `same_host_controls` | J33–J35 | 补足同机控制，使用新`_hostcontrol20261024`标识，不覆盖旧结果、不把新成功替换旧失败 |
+| `reserve_repeat_budget` | J36–J37、J40–J41 | 仅在截止前释放容量时，检查六遍结果能否跨seed保留；低优先级后备 |
+| `reserve_data_envelope` | J38–J39、J42–J43 | 仅在截止前释放容量时，补50M dn40的qkn数据量包络及第二seed；低优先级后备 |
+
+既有对照标为 `existing_claim_rc0_requires_artifact_validation`，rc0本身不构成复用验收。须读取summary、实际配置和完整JSONL。相同run_id的不同主机副本保留host键。J33对借出节点的历史引用仅来自本地登记，不授权访问该节点。发散对照不能制造收益。
+
+### 43 臂逐项登记
+
+每行状态初始为 planned。run_id已按launcher实际标签顺序核验；token预算为名义值，实际最终step按训练器与summary核验。实际GPU等待claim回填。
+
+| ID | 组 | 目标主机 | run_id | token预算（B） | 状态 |
+|---|---|---|---|---:|---|
+| J01 | `long_qkn_replication` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed` | 8.4 | planned |
+| J02 | `long_qkn_replication` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed` | 8.4 | planned |
+| J03 | `long_qkn_replication` | a100_t1 | `v27_50m_exact_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed` | 8.4 | planned |
+| J04 | `long_qkn_replication` | a100_t1 | `v27_50m_nogram_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed` | 8.4 | planned |
+| J05 | `long_qkn_replication` | a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 8.4 | planned |
+| J06 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 8.4 | planned |
+| J07 | `long_qkn_replication` | a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | planned |
+| J08 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | planned |
+| J09 | `main_setting_seed44` | a100_t1_2 | `v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | planned |
+| J10 | `main_setting_seed44` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | planned |
+| J11 | `repeat_budget_e6` | perm | `v27_50m_exact_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | planned |
+| J12 | `repeat_budget_e6` | perm | `v27_50m_nogram_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | planned |
+| J13 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | planned |
+| J14 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed` | 1.02 | planned |
+| J15 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed` | 1.02 | planned |
+| J16 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | planned |
+| J17 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | planned |
+| J18 | `lr_nogram_shared` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | planned |
+| J19 | `small_table_qkn_seed43` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_qkn_fixed` | 1.02 | planned |
+| J20 | `lr_factorial_r136` | perm | `v27_17m_exact_r136k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | planned |
+| J21 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls0.5_s43_e3_fixed` | 1.02 | planned |
+| J22 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | planned |
+| J23 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | planned |
+| J24 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
+| J25 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
+| J26 | `long_lr_decoupling` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
+| J27 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
+| J28 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
+| J29 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
+| J30 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s42_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
+| J31 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_exact_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | planned |
+| J32 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | planned |
+| J33 | `same_host_controls` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed` | 3 | planned |
+| J34 | `same_host_controls` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed` | 1.02 | planned |
+| J35 | `same_host_controls` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed` | 1.02 | planned |
+| J36 | `reserve_repeat_budget` | perm | `v27_50m_exact_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
+| J37 | `reserve_repeat_budget` | perm | `v27_50m_nogram_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
+| J38 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_exact_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | planned |
+| J39 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_nogram_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | planned |
+| J40 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_exact_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | planned |
+| J41 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_nogram_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | planned |
+| J42 | `reserve_data_envelope` | a100_t1_4 | `v27_50m_exact_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | planned |
+| J43 | `reserve_data_envelope` | a100_t1_4 | `v27_50m_nogram_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | planned |
+
+### 命令和完成验收
+
+精确env如下，同时保存在manifest。dispatcher先清除继承的`NGLAB_*`，再设对应root及Python，最后应用每行env。先`cd`对应项目root，`GPU`由已核空闲且授权的dispatcher指定。命令清单不是执行成功记录。
+
+```sh
+# J01 / perm
+NGLAB_DN=56 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m exact 43
+# J02 / perm
+NGLAB_DN=56 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m nogram 43
+# J03 / a100_t1
+NGLAB_DN=56 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m exact 44
+# J04 / a100_t1
+NGLAB_DN=56 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m nogram 44
+# J05 / a100_t1_2
+NGLAB_DN=80 NGLAB_RK=280 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 35m exact 43
+# J06 / a100_t1_2
+NGLAB_DN=80 NGLAB_RK=280 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 35m nogram 43
+# J07 / a100_t1_2
+NGLAB_DN=80 NGLAB_RK=280 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 35m exact 44
+# J08 / a100_t1_2
+NGLAB_DN=80 NGLAB_RK=280 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 35m nogram 44
+# J09 / a100_t1_2
+NGLAB_DN=20 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m exact 44
+# J10 / a100_t1_2
+NGLAB_DN=20 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m nogram 44
+# J11 / perm
+NGLAB_DN=20 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=6 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m exact 42
+# J12 / perm
+NGLAB_DN=20 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=6 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m nogram 42
+# J13 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=35 NGLAB_TLS=2 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 17m exact 42
+# J14 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=35 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 bash code/cluster/run_v27.sh "$GPU" 17m exact 43
+# J15 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=35 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 bash code/cluster/run_v27.sh "$GPU" 17m exact 43
+# J16 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=35 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 17m exact 43
+# J17 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=35 NGLAB_TLS=2 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 17m exact 43
+# J18 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=136 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 17m nogram 43
+# J19 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=35 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 17m exact 43
+# J20 / perm
+NGLAB_DN=20 NGLAB_RK=136 NGLAB_TLS=2 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 17m exact 42
+# J21 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=136 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 bash code/cluster/run_v27.sh "$GPU" 17m exact 43
+# J22 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=136 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 17m exact 43
+# J23 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=136 NGLAB_TLS=2 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 17m exact 43
+# J24 / perm
+NGLAB_DN=56 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 50m exact 43
+# J25 / perm
+NGLAB_DN=56 NGLAB_RK=400 NGLAB_TLS=2 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 50m exact 43
+# J26 / perm
+NGLAB_DN=56 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 50m nogram 43
+# J27 / a100_t1_4
+NGLAB_DN=80 NGLAB_RK=280 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 35m exact 43
+# J28 / a100_t1_4
+NGLAB_DN=80 NGLAB_RK=280 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 35m exact 43
+# J29 / a100_t1_4
+NGLAB_DN=80 NGLAB_RK=280 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 35m nogram 43
+# J30 / a100_t1_4
+NGLAB_DN=80 NGLAB_RK=280 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_p27b NGLAB_LR=0.0003 bash code/cluster/run_v27.sh "$GPU" 35m exact 42
+# J31 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=280 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 35m exact 42
+# J32 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=280 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 35m nogram 42
+# J33 / a100_t1_2
+NGLAB_DN=20 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_hostcontrol20261024 bash code/cluster/run_v27.sh "$GPU" 50m nogram 44
+# J34 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=35 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_hostcontrol20261024 bash code/cluster/run_v27.sh "$GPU" 17m exact 42
+# J35 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=136 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_hostcontrol20261024 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 17m nogram 43
+# J36 / perm
+NGLAB_DN=20 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=6 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m exact 44
+# J37 / perm
+NGLAB_DN=20 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=6 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m nogram 44
+# J38 / a100_t1_2
+NGLAB_DN=40 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m exact 42
+# J39 / a100_t1_2
+NGLAB_DN=40 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m nogram 42
+# J40 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=6 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m exact 43
+# J41 / a100_t1_4
+NGLAB_DN=20 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=6 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m nogram 43
+# J42 / a100_t1_4
+NGLAB_DN=40 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m exact 43
+# J43 / a100_t1_4
+NGLAB_DN=40 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_QKN=1 bash code/cluster/run_v27.sh "$GPU" 50m nogram 43
+```
+
+**启动门槛**：核commit和train/launcher/queue指纹、实际mount与空余空间、数据/assignment、预定run_id没有已有目录、对照可用、GPU白名单和dispatcher互斥。旧学生训练保留。已有目录必须调查，不删除后重跑。CPU队列测试不能替代GPU训练首段验收。
+
+**完成门槛**：核summary、JSONL、run_id/seed/实际配置、预定遍数与终步、必需stability记录和finite loss。列出所有已开始臂的完成、发散、基础设施失败，不只统计存活者。最终收益需两臂完成并取共同末60个fixed-val step；中途共同窗口只标interim。报告绝对train/val、online gap、配对ΔVal与稳定性轨迹。
+
+**停止与失败**：08:00只停止新领取。非有限loss或外部失败保留证据并上报；有限loss坏结果按科学失败保留，不自行改LR/clip/seed。rc143、其他非零rc和summary缺失分别调查，不统一自动重试。基础设施复本必须先登记新后缀和原因，保留旧失败。接管模型按清单执行、核验和回填，不自行扩矩阵或改默认契约。
+
+**部署回填（开跑前待填）**：最终代码commit及各机指纹、dispatcher host/GPU白名单、deadline、实际claim、日志路径和首段推进证据由主线程填写。随后再将planned逐项更新为running/done或明确失败，不以进程存在代替训练完成。
