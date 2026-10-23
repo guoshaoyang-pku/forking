@@ -7209,14 +7209,14 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J13 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
 | J14 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed` | 1.02 | done / 待科学复核 |
 | J15 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed` | 1.02 | done / 待科学复核 |
-| J16 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | running |
-| J17 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | running |
-| J18 | `lr_nogram_shared` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | running |
+| J16 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
+| J17 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
+| J18 | `lr_nogram_shared` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
 | J19 | `small_table_qkn_seed43` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_qkn_fixed` | 1.02 | planned |
 | J20 | `lr_factorial_r136` | perm | `v27_17m_exact_r136k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
 | J21 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls0.5_s43_e3_fixed` | 1.02 | running |
-| J22 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | planned |
-| J23 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | planned |
+| J22 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | running |
+| J23 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | running |
 | J24 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
 | J25 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
 | J26 | `long_lr_decoupling` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
@@ -7227,11 +7227,11 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J31 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_exact_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | planned |
 | J32 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | planned |
 | J33 | `same_host_controls` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed` | 3 | running |
-| J34 | `same_host_controls` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed` | 1.02 | planned |
+| J34 | `same_host_controls` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed` | 1.02 | running |
 | J35 | `same_host_controls` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed` | 1.02 | planned |
 | J36 | `reserve_repeat_budget` | perm | `v27_50m_exact_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
 | J37 | `reserve_repeat_budget` | perm | `v27_50m_nogram_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
-| J38 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_exact_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | planned |
+| J38 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_exact_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | running |
 | J39 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_nogram_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | planned |
 | J40 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_exact_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | planned |
 | J41 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_nogram_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | planned |
@@ -7392,3 +7392,13 @@ J14小表原设定seed43末端明显恶化，保留为失稳证据，不算健�
 ### 02:07 heartbeat查收
 
 J15 `v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed`（t1_4，seed43）已完成6917步，DONE/summary/预算及SHA检查通过。最终val 5.3743488391240435，末60点val均值 4.809495053688685，历史最低val 3.321488539377848。这是单臂完成，不自动形成学习率因果判决。证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T180737.112543Z/review.json`。四机32卡均占用，新清单累计4臂结束、21臂active、18臂待领，所有可比较active步数增长，无调度告警，未重启或改配置。
+
+### 02:27 heartbeat查收
+
+四机32卡占用，新清单累计7臂结束、22臂active、14臂待领，可比较active全部推进，无调度告警，无人工重启或配置修改。新增完成如下，均核对DONE/summary/预算及校验和。
+
+- J16 `v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed`，a100_t1_4，step6917：最终val3.365636，末60点val3.331415，历史最低val3.266853。证据完整性eligible=True，不等于科学健康。
+- J17 `v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed`，a100_t1_4，step6917：最终val3.815924，末60点val3.805739，历史最低val3.333087。证据完整性eligible=True，不等于科学健康。
+- J18 `v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed`，a100_t1_4，step6917：最终val3.288191，末60点val3.299423，历史最低val3.288036。证据完整性eligible=True，不等于科学健康。
+
+证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T182734.996240Z/review.json`。学习率四角需要按指定干预复核配置与完整曲线，collector不支持的比较仍保留manual_review，不绕过检查自动给出因果结论。
