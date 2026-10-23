@@ -7226,13 +7226,13 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J30 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s42_e3_p27b_lr0.0003_fixed` | 8.4 | running |
 | J31 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_exact_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | done / 待科学复核 |
 | J32 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | done / 待科学复核 |
-| J33 | `same_host_controls` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed` | 3 | running |
+| J33 | `same_host_controls` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed` | 3 | done / 待科学复核 |
 | J34 | `same_host_controls` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed` | 1.02 | done / 待科学复核 |
 | J35 | `same_host_controls` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed` | 1.02 | done / 待科学复核 |
 | J36 | `reserve_repeat_budget` | perm | `v27_50m_exact_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
 | J37 | `reserve_repeat_budget` | perm | `v27_50m_nogram_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
 | J38 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_exact_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | running |
-| J39 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_nogram_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | planned |
+| J39 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_nogram_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | running |
 | J40 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_exact_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | running |
 | J41 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_nogram_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | running |
 | J42 | `reserve_data_envelope` | a100_t1 | `v27_50m_exact_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | running |
@@ -7432,3 +7432,7 @@ J32 `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed`（t1_4，seed42）完成
 J31 `v27_35m_exact_r280k_dn20_tls0.5_s42_e3_qkn_fixed` 与J32 `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed`，t1_4、seed42、dn20，均完成三遍14241步，DONE/summary/登记预算/配置与SHA核验通过。末60共同点val为2.791373/2.833214，加表−无表为−41.841 mnat/token；最终单点差−41.556 mnat/token。末窗稳定，这是该seed和预算的配对收益，不代表归一化对原无表性能无损。与旧未归一化臂的比较仍缺配置字段，保留manual_review。
 
 证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T210735.988944Z/review.json`。四机32卡占用，新清单累计15臂结束、24臂active、4臂待领，可比较active全部推进，无调度告警。t1_4的六遍后备配对已自动领取，其本机队列已无待领；未扩大清单或延长截止。
+
+### 05:27 heartbeat查收
+
+J33 `v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed`（t1_2、seed44）已结束20345步，DONE/summary/预算与SHA通过。最终val 2.697884758313497，末60点val 2.700075634651714，历史最低val 2.6972089211146035。归一化配对仍未完整结束，不提前计算干预效应。引用中的借出节点对照标为blocked，未访问。证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T212736.829467Z/review.json`。四机32卡占用，新清单16臂结束、24臂active、3臂待领，可比较active均推进、无告警。J39已自动接续，其微批量使用启动前修订的18。未重启或改配置。
