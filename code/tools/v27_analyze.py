@@ -13,7 +13,8 @@ Flags : diverged  = final train window / min train window of last epoch >= 1.15
         dup_pool  = D > 2.385B on manifest v27a (shards 60/62/63 are byte copies of shard 1;
                     fixed in v27b, reruns tagged _p27b)
 Pairing: same model, dn, seed, epochs, subset tag; nogram tls is a no-op (any tls).
-         Prefer a nogram on the same cluster family (a100 / h200).
+         Prefer a nogram on the same host, then the same cluster family (a100 / h200);
+         ophis vs 360-2 nogram differ by ~12 mK at E3 (104M dn20 s42), so cross-host is noisier.
 Output: .tmp/harvest/v27_a100/paired.csv and a printed summary.
 """
 import csv
@@ -103,10 +104,14 @@ def collect():
                          model=g["model"], arm=g["arm"], rk=int(g["rk"]),
                          dn=float(g["dn"]), tls=g["tls"], seed=int(g["seed"]),
                          ep=ep_total, tag=g["tag"] or ""))
-    # de-duplicate the same run_id harvested from two hosts: keep the longer one
+    # de-duplicate the same run_id seen through several tione hosts (shared /home/tione):
+    # keep the longer copy. The same run_id on different storages (e.g. a nogram re-run on
+    # ophis and on 360-2) are distinct runs and are both kept.
     best = {}
     for r in runs:
-        k = r["rid"]
+        store = "tione" if r["host"].startswith("a100_t1") else (
+            "ophis" if r["host"].startswith("ophis") else r["host"])
+        k = (r["rid"], store)
         if k not in best or r["rows"] > best[k]["rows"]:
             best[k] = r
     return list(best.values())
@@ -124,7 +129,7 @@ def pair(runs):
         cands = nog.get((r["model"], r["dn"], r["seed"], r["ep"], r["tag"]), [])
         if not cands:
             continue
-        cands = sorted(cands, key=lambda c: (c["fam"] != r["fam"], -c["rows"]))
+        cands = sorted(cands, key=lambda c: (c["host"] != r["host"], c["fam"] != r["fam"], -c["rows"]))
         n = cands[0]
         rec = dict(rid=r["rid"], host=r["host"], nog_host=n["host"], model=r["model"],
                    arm=r["arm"], rk=r["rk"], dn=r["dn"], tls=r["tls"], seed=r["seed"],
