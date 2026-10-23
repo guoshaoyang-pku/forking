@@ -7225,9 +7225,9 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J29 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
 | J30 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s42_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
 | J31 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_exact_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | running |
-| J32 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | planned |
+| J32 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | running |
 | J33 | `same_host_controls` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed` | 3 | running |
-| J34 | `same_host_controls` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed` | 1.02 | running |
+| J34 | `same_host_controls` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed` | 1.02 | done / 待科学复核 |
 | J35 | `same_host_controls` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed` | 1.02 | running |
 | J36 | `reserve_repeat_budget` | perm | `v27_50m_exact_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
 | J37 | `reserve_repeat_budget` | perm | `v27_50m_nogram_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
@@ -7412,3 +7412,7 @@ J15 `v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed`（t1_4，seed43）已完成691
 - J23 `v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed`，a100_t1_4，step6917：最终val3.196740，末60点val3.168761，历史最低val3.153608。完成证据eligible=True，issues=[]。
 
 证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T184736.217198Z/review.json`。数值为各臂绝对loss，未把不同学习率干预冒充加表配对收益；完整因果结论继续按配置、共同窗口及曲线复核。
+
+### 03:07 heartbeat查收
+
+J34 `v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed`（t1_4，seed42）已结束6917步，完成文件、登记预算和SHA检查通过。最终val 5.511565049489339，末60点val 5.650165028042264，历史最低val 3.3169116775194802。只登记同机控制本身，不自动外推学习率原因。证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T190734.682542Z/review.json`。四机32卡均占用，新清单累计11臂结束、22臂active、10臂待领，可比较active全部推进，无告警；未重启或改配置。
