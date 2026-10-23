@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "planned_not_launched",
+  "status": "registered_schedule_runtime_state_in_claims",
   "date": "2026-10-24",
   "timezone": "Asia/Shanghai",
   "claim_cutoff": "2026-10-24T08:00:00+08:00",
@@ -1962,7 +1962,7 @@
         "NGLAB_RK": "400",
         "NGLAB_TLS": "1",
         "NGLAB_EPOCHS": "3",
-        "NGLAB_DB": "36",
+        "NGLAB_DB": "18",
         "NGLAB_VDB": "24",
         "NGLAB_STAB": "100",
         "NGLAB_QKN": "1"
@@ -1977,8 +1977,9 @@
       ],
       "nominal_tokens": 6000000000,
       "estimated_gpu_hours": 8.3,
-      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
-      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+      "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ; nogram DB18 now matches paired pool; extra overhead remains unmeasured",
+      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures",
+      "protocol_note": "Before claim, use DB18 to match J38 pool=1999982592 and steps=40690 at E3; total batch remains147456."
     },
     {
       "id": "J40",
@@ -2098,7 +2099,8 @@
       "nominal_tokens": 6000000000,
       "estimated_gpu_hours": 10.22,
       "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
-      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+      "endpoint": "complete scheduled budget; stability/exploratory only, not strict paired primary benefit: DB18/36 pool differs by36864 tokens (0.0018432% of2B); targets40690/40689; collector must leave strict comparison manual_review",
+      "protocol_note": "Already launched before pool-rounding audit. Retain original data and run IDs; do not restart or silently change config."
     },
     {
       "id": "J43",
@@ -2138,10 +2140,12 @@
       "nominal_tokens": 6000000000,
       "estimated_gpu_hours": 8.3,
       "estimate_basis": "nearby live elapsed_s/step or completed claim duration; probe and startup overhead may differ",
-      "endpoint": "complete scheduled budget; final 60 common fixed-val steps; report absolute loss, paired delta and scientific failures"
+      "endpoint": "complete scheduled budget; stability/exploratory only, not strict paired primary benefit: DB18/36 pool differs by36864 tokens (0.0018432% of2B); targets40690/40689; collector must leave strict comparison manual_review",
+      "protocol_note": "Already launched before pool-rounding audit. Retain original data and run IDs; do not restart or silently change config."
     }
   ],
   "migration_notes": [
-    "Before either claim, J42/J43 moved together from a100_t1_4 to a100_t1 as student GPU7 completed and GPU0 approached completion; both dispatchers drained for atomic queue revision."
+    "Before either claim, J42/J43 moved together from a100_t1_4 to a100_t1 as student GPU7 completed and GPU0 approached completion; both dispatchers drained for atomic queue revision.",
+    "Before claim, J39 DB36 -> DB18 to match J38 data pool and40690-step E3 endpoint. J42/J43 already active retain historical settings and become stability/exploratory evidence; strict comparison remains manual_review."
   ]
 }

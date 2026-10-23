@@ -7126,13 +7126,13 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 **(g) 待拍板（P5）**：契约修复三选一——qk-norm（零发散+保收益，改动最小）/ backbone LR 3e-4（救活长训，但牺牲一倍速度）/ v28 全包（救 OE 臂但 nogram 仍碎，且偏离极简）；v28 长训与 S2 exact 到 E3 末后收割定稿；矩阵臂是否重启。
 
 
-## §151 接管核验与 A100 夜间长训练登记（2026-10-24，planned）
+## §151 接管核验与 A100 夜间长训练登记（2026-10-24，已部署）
 
-**授权与边界**：用户本轮明确授权 A100 彻夜排队执行，并要求由较轻量模型按登记清单接管监看。负责人为本次接管会话。登记 **43 臂**，含 35 个优先实验/同机控制与 8 个低优先级后备，均为 `planned`，不表示已经启动。使用 `perm`（SSH 别名 `a100_perm`）、`a100_t1`、`a100_t1_2`、`a100_t1_4`。**排除借出的 `a100_t1_3`，不登录、不占卡、不操作其旧进程。** `a100_t1` 学生队列此次 12/12 已领取、无待领项，保留六项旧训练，只接管 dispatcher 与空闲 GPU 2/6。
+**授权与边界**：用户本轮明确授权 A100 彻夜排队执行，并要求由较轻量模型按登记清单接管监看。负责人为本次接管会话。登记 **43 臂**，含 35 个优先实验/同机控制与 8 个低优先级后备，先按 `planned` 登记，当前已核实的启动状态见下表与末尾部署回填。使用 `perm`（SSH 别名 `a100_perm`）、`a100_t1`、`a100_t1_2`、`a100_t1_4`。**排除借出的 `a100_t1_3`，不登录、不占卡、不操作其旧进程。** `a100_t1` 学生队列此次 12/12 已领取、无待领项，保留六项旧训练，先接管 dispatcher 与空闲 GPU 2/6，随后 GPU0/7 的学生任务自然完成，接续 J42/J43。
 
 新队列 `/home/cfs/guoshaoyang/nglab_queue_overnight_20261024` 与旧队列独立。**北京时间 2026-10-24 08:00 停止新领取**，已启动臂按登记的 3 遍或 6 遍完整结束。全候选完成预算上限 **212.46B token / 259.37 A100 GPU·h**，不承诺全部启动或在 08:00 前完成。截止未领取项保留 planned/待定，不自动延期，不通过新后缀绕过截止。
 
-机器可读清单为 `docs/plans/overnight-20261024.json`，包括每臂 env、host、run_id、control_refs、endpoint、预算与优先级。`FLEET_TARGET` 必须锁定对应主机。配对及共享控制不能独自跨机移动。下表给出最终初始分配，实际 GPU、代码 commit 与部署验证在开跑前回填。输出为各主机 `data/runs_fixed/<run_id>/`，不加入 git。
+机器可读清单为 `docs/plans/overnight-20261024.json`，包括每臂 env、host、run_id、control_refs、endpoint、预算与优先级。`FLEET_TARGET` 必须锁定对应主机。配对及共享控制不能独自跨机移动。下表给出最终初始分配，实际 GPU、代码 commit 与部署验证见末尾回填。输出为各主机 `data/runs_fixed/<run_id>/`，不加入 git。
 
 ### 新收割按共同末窗复核，不混用终行和窗口
 
@@ -7190,34 +7190,34 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 
 ### 43 臂逐项登记
 
-每行状态初始为 planned。run_id已按launcher实际标签顺序核验；token预算为名义值，实际最终step按训练器与summary核验。实际GPU等待claim回填。
+状态取自北京时间01:28部署验收。running只表示训练正在推进，未完成不写done。run_id已按launcher实际标签顺序核验；token预算为名义值，实际最终step按训练器与summary核验。实际GPU见末尾回填。
 
 | ID | 组 | 目标主机 | run_id | token预算（B） | 状态 |
 |---|---|---|---|---:|---|
-| J01 | `long_qkn_replication` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed` | 8.4 | planned |
-| J02 | `long_qkn_replication` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed` | 8.4 | planned |
-| J03 | `long_qkn_replication` | a100_t1 | `v27_50m_exact_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed` | 8.4 | planned |
-| J04 | `long_qkn_replication` | a100_t1 | `v27_50m_nogram_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed` | 8.4 | planned |
-| J05 | `long_qkn_replication` | a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 8.4 | planned |
-| J06 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 8.4 | planned |
-| J07 | `long_qkn_replication` | a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | planned |
-| J08 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | planned |
-| J09 | `main_setting_seed44` | a100_t1_2 | `v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | planned |
+| J01 | `long_qkn_replication` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed` | 8.4 | running |
+| J02 | `long_qkn_replication` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed` | 8.4 | running |
+| J03 | `long_qkn_replication` | a100_t1 | `v27_50m_exact_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed` | 8.4 | running |
+| J04 | `long_qkn_replication` | a100_t1 | `v27_50m_nogram_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed` | 8.4 | running |
+| J05 | `long_qkn_replication` | a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 8.4 | running |
+| J06 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 8.4 | running |
+| J07 | `long_qkn_replication` | a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | running |
+| J08 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | running |
+| J09 | `main_setting_seed44` | a100_t1_2 | `v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | running |
 | J10 | `main_setting_seed44` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | planned |
-| J11 | `repeat_budget_e6` | perm | `v27_50m_exact_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | planned |
-| J12 | `repeat_budget_e6` | perm | `v27_50m_nogram_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | planned |
-| J13 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | planned |
-| J14 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed` | 1.02 | planned |
+| J11 | `repeat_budget_e6` | perm | `v27_50m_exact_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | running |
+| J12 | `repeat_budget_e6` | perm | `v27_50m_nogram_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | running |
+| J13 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | running |
+| J14 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed` | 1.02 | running |
 | J15 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed` | 1.02 | planned |
 | J16 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | planned |
 | J17 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | planned |
 | J18 | `lr_nogram_shared` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | planned |
 | J19 | `small_table_qkn_seed43` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_qkn_fixed` | 1.02 | planned |
-| J20 | `lr_factorial_r136` | perm | `v27_17m_exact_r136k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | planned |
+| J20 | `lr_factorial_r136` | perm | `v27_17m_exact_r136k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | running |
 | J21 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls0.5_s43_e3_fixed` | 1.02 | planned |
 | J22 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | planned |
 | J23 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | planned |
-| J24 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
+| J24 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
 | J25 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
 | J26 | `long_lr_decoupling` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
 | J27 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
@@ -7235,8 +7235,8 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J39 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_nogram_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | planned |
 | J40 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_exact_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | planned |
 | J41 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_nogram_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | planned |
-| J42 | `reserve_data_envelope` | a100_t1 | `v27_50m_exact_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | planned |
-| J43 | `reserve_data_envelope` | a100_t1 | `v27_50m_nogram_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | planned |
+| J42 | `reserve_data_envelope` | a100_t1 | `v27_50m_exact_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | running |
+| J43 | `reserve_data_envelope` | a100_t1 | `v27_50m_nogram_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | running |
 
 ### 命令和完成验收
 
@@ -7337,9 +7337,34 @@ NGLAB_DN=40 NGLAB_RK=400 NGLAB_TLS=1 NGLAB_EPOCHS=3 NGLAB_DB=36 NGLAB_VDB=24 NGL
 
 **停止与失败**：08:00只停止新领取。非有限loss或外部失败保留证据并上报；有限loss坏结果按科学失败保留，不自行改LR/clip/seed。rc143、其他非零rc和summary缺失分别调查，不统一自动重试。基础设施复本必须先登记新后缀和原因，保留旧失败。接管模型按清单执行、核验和回填，不自行扩矩阵或改默认契约。
 
-**部署回填（开跑前待填）**：最终代码commit及各机指纹、dispatcher host/GPU白名单、deadline、实际claim、日志路径和首段推进证据由主线程填写。随后再将planned逐项更新为running/done或明确失败，不以进程存在代替训练完成。
+**部署回填**：见本节末尾的实机验收。未领取行保持 planned，已领取行只在步数推进后标 running。
 
 
 **§151 调度追加（2026-10-24，J42/J43 整对迁移）**：已启动实验的源代码 commit 为 `44fc73d`，四机完整输入 fingerprint 核验通过，证据仍为本节列出的 `fingerprint_{alias}.json`。主线程将尚未领取的 J42/J43（50M dn40、seed43、qkn exact/nogram）整对从 `a100_t1_4` 迁到 `a100_t1`，run_id、科学设置和总预算不变。队列两条 `FLEET_TARGET` 均须改为 `a100_t1`，由主线程二次核未 claim 后原子更新 manifest/jobs；本节只改登记，不替代队列提交。
 
 迁移原因：t1 的 `stu2_frozen_9_16_ctr_s42_e3`（GPU7）已自然完成、rc0；`stu2_random_1_8_rms0036_s42_e3`（GPU0）接近登记终点，等待自然收尾。计划使用两任务自然结束后释放的 GPU0/7，不中断学生训练。01:18 的读取估计其余四个学生臂约在12:42、20:47、20:47、21:36完成，均晚于08:00。**GPU0 在追加核验时尚未写 rc，须等终局产物/进程及空卡验收后领取**，不把预计结束当完成。两个相关新队列 dispatcher 已收到 STOP 排空请求，待自然退出后再恢复领取，避免迁移中的旧/新 job hash 同时启动。
+
+### 部署与推进验收（北京时间 2026-10-24 01:28）
+
+训练/调度源码来自已提交的 `44fc73d`。四机部署收据为 `outputs/takeover_20261024/deploy_receipts.json`。J42/J43 整对迁移来自 `57b51b1`，两台 dispatcher 先退出，核实两条未claim后原子替换共享队列，再恢复领取。迁移前的 jobs/manifest 已在队列内留存。17条新claim均在唯一目标host，没有重复run_id。
+
+四台各8张卡均被训练占用。两个相隔176秒的快照中，全部17条新训练的step增长，最新为380–2780步，loss有限。其余15张卡保留既有训练。26条候选等待释放容量。占卡和早期推进不代表完整训练成功。证据为 `launch_progress_verification.json`、`launch_audit.json` 与 `overnight_status_launch.json`，均在 `outputs/takeover_20261024/`。
+
+| host | 新训练 GPU | 保留旧训练 GPU | 待领取候选 |
+|---|---|---|---:|
+| perm | 0,2,3,4,5,6 | 1,7 | 4 |
+| a100_t1_2 | 0,1,2,3,4 | 5,6,7 | 4 |
+| a100_t1_4 | 0,5 | 1,2,3,4,6,7 | 18 |
+| a100_t1 | 0,2,6,7 | 1,3,4,5 | 0 |
+
+新队列全机GPU白名单为0–7，逐卡检查显存与本地flock，空卡才领新任务。旧主队列与学生队列仅排空dispatcher，未终止原训练。GPU0/7的两项学生训练已自然释放，J42/J43均已实跑。01:18迁移备注中的“等待自然收尾”已由本次验收更新。
+
+调度器恢复实测：仅终止t1_2 dispatcher，守护循环恢复为唯一新进程；5个wrapper PID原样存活、5条日志继续推进、无重复claim或主训练进程。证据 `watchdog_verification.json`。调度器CPU测试11项通过。该验证不代表主机重启后能自行恢复。
+
+所有新领取截止为北京时间08:00，已经启动的3遍/6遍预算继续结束。已创建每20分钟巡检的本聊天heartbeat `a100`，有界至08:20，只在完成/失败/持续空卡/恢复/需决策时通知。创建成功不等于首次自动唤醒已验证。手册为 `docs/handoff/overnight-20261024.md`。未push、未修改主线训练契约。
+
+### 数据池舍入复核：保留已跑探索对，修正未跑严格对
+
+50M dn40 的名义D=2B。DB18取整后pool=1,999,982,592 token、三遍40,690步；DB36为1,999,945,728 token、40,689步。每遍相差36,864 token，占名义2B的0.0018432%。共同step只能消除末点错位，不能消除每遍回放边界差异。
+
+J42/J43已启动，保留原run_id和全部数据，降为稳定性/探索证据，不作严格主收益配对，不因这个已知差异重跑。收割器应将其严格比较留为manual_review。J38/J39尚未领取，确认两个旧claim均不存在并排空t1_2 dispatcher后，仅将J39 nogram微批量改为18，使整对pool、三遍终点和有效batch完全一致。该修正不改名义token预算。DB18对nogram吞吐的影响尚未实测，259 GPU小时仍只是估计。完成时必须核验实际pool、chunks和终点相同。

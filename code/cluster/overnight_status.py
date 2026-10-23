@@ -3,8 +3,10 @@
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 import json
+import math
 from pathlib import Path
 import subprocess
+import tempfile
 import time
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -102,16 +104,76 @@ def inspect(item):
         out=json.loads(r.stdout);out['alias']=alias;return out
     except (subprocess.TimeoutExpired,json.JSONDecodeError):return {'host':alias,'alerts':['timeout_or_invalid_probe']}
 
+
+def annotate_progress(snapshot, previous):
+    prior = {}
+    elapsed = None
+    if isinstance(previous, dict):
+        before, after = previous.get('observed_epoch'), snapshot.get('observed_epoch')
+        if all(type(v) in (int, float) and math.isfinite(v) for v in (before, after)):
+            elapsed = after - before if after > before else None
+        for host in previous.get('hosts', []) or []:
+            if not isinstance(host, dict) or not host.get('host'):
+                continue
+            jobs = host.get('jobs')
+            if not isinstance(jobs, list):
+                continue
+            for job in jobs:
+                if (isinstance(job, dict) and job.get('run_id')
+                        and job.get('state') == 'active'):
+                    prior[(host.get('host'), job.get('run_id'))] = job.get('step')
+    for host in snapshot['hosts']:
+        progressed = comparable = 0
+        for job in host.get('jobs', []):
+            before = prior.get((host.get('host'), job.get('run_id')))
+            after = job.get('step')
+            if (elapsed is None or job.get('state') != 'active'
+                    or not all(type(v) in (int, float) and math.isfinite(v)
+                               for v in (before, after))):
+                continue
+            job['step_delta'] = after - before
+            job['elapsed_s'] = elapsed
+            comparable += 1
+            progressed += after > before
+        host['progressed'] = progressed
+        host['progress_comparable'] = comparable
+
+
+def save_snapshot(target, snapshot):
+    stream = tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=target.parent,
+                                         prefix=target.name + '.', suffix='.tmp', delete=False)
+    temporary = Path(stream.name)
+    try:
+        with stream:
+            json.dump(snapshot, stream, ensure_ascii=False, indent=2)
+            stream.write('\n')
+        temporary.replace(target)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
 if __name__=='__main__':
     ap=argparse.ArgumentParser();ap.add_argument('--json',action='store_true');args=ap.parse_args()
+    target=ROOT/'outputs/takeover_20261024/overnight_status.json'
+    try:
+        previous=json.loads(target.read_text())
+    except (OSError,json.JSONDecodeError):
+        previous=None
+    if not isinstance(previous,dict) or not isinstance(previous.get('hosts'),list):
+        previous=None
     with ThreadPoolExecutor(max_workers=4) as pool: results=list(pool.map(inspect,HOSTS.items()))
     snapshot={'observed_epoch':time.time(),'hosts':results}
-    target=ROOT/'outputs/takeover_20261024/overnight_status.json';target.parent.mkdir(parents=True,exist_ok=True)
-    target.write_text(json.dumps(snapshot,ensure_ascii=False,indent=2)+'\n')
+    annotate_progress(snapshot,previous)
+    target.parent.mkdir(parents=True,exist_ok=True)
+    if previous is not None:
+        save_snapshot(target.with_name('overnight_status.previous.json'),previous)
+    save_snapshot(target,snapshot)
     if args.json:print(json.dumps(snapshot,ensure_ascii=False,indent=2))
     else:
         for h in results:
             counts={s:sum(j['state']==s for j in h.get('jobs',[])) for s in sorted({j['state'] for j in h.get('jobs',[])})}
             occupied=sum(g['memory_mib']>=1500 for g in h.get('gpus',[]))
-            print(h.get('alias',h['host']),f'occupied={occupied}/{len(h.get("gpus",[]))}',counts,'alerts='+str(h['alerts']),'free_pending='+str(h.get('free_with_pending',[])))
+            print(h.get('alias',h['host']),f'occupied={occupied}/{len(h.get("gpus",[]))}',counts,
+                  f'progressed={h["progressed"]}/{h["progress_comparable"]}',
+                  'alerts='+str(h['alerts']),'free_pending='+str(h.get('free_with_pending',[])))
         print('Saved:',target)
