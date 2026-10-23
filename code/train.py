@@ -168,6 +168,7 @@ class Config:
     norm_type: str = "layernorm"    # layernorm | rmsnorm (flame: rmsnorm eps 1e-6)
     pos_type: str = "learned"       # learned wpe | rope (flame: rope)
     untied_head: bool = False       # flame: wte and lm_head not shared
+    qk_norm: bool = False           # diagnostic: LayerNorm(head_dim) on q and k before attention (off = vanilla)
     ffn_type: str = "gelu"          # gelu | swiglu
     d_ff: int = 0                   # explicit FFN width (0 = legacy 4*n_embd gelu)
     moe_d_e: int = 0                # explicit FLAME MoE spec (0 = legacy G/X path)
@@ -430,6 +431,11 @@ class CausalSelfAttention(nn.Module):
         )
         self.fourgram_gate = None  # fourgram not supported in minimal version
         self.pos_type = config.pos_type
+        if config.qk_norm:
+            self.q_ln = nn.LayerNorm(self.head_dim)
+            self.k_ln = nn.LayerNorm(self.head_dim)
+        else:
+            self.q_ln = self.k_ln = None
         if config.pos_type == "rope":
             # RoPE on the full head_dim (plan-9 FLAME pivot), precomputed once
             assert self.head_dim % 2 == 0, "RoPE requires even head_dim"
@@ -508,6 +514,9 @@ class CausalSelfAttention(nn.Module):
         q = q.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
         k = k.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
         v = v.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
+        if self.q_ln is not None:
+            q = self.q_ln(q)
+            k = self.k_ln(k)
         if self.pos_type == "rope":
             q, k = self._apply_rope(q, k)
         y = F.scaled_dot_product_attention(
@@ -2468,13 +2477,23 @@ def stability_stats(model: NanoGPT, idx, pre_rows=None) -> dict:
     out["x_tok_rms"] = float(tok.float().pow(2).mean().sqrt())
     out["x_ngram_rms"] = float(ngr.float().pow(2).mean().sqrt()) if ngr is not None else 0.0
     causal = torch.ones(T, T, device=idx1.device, dtype=torch.bool).tril()
+    ar = torch.arange(T, device=idx1.device)
     for i, blk in enumerate(raw.transformer.h):
-        out[f"x_rms{i}"] = float(caps[("x", i)].float().pow(2).mean().sqrt())
+        xi = caps[("x", i)].float()
+        out[f"x_rms{i}"] = float(xi.pow(2).mean().sqrt())
+        # massive-activation check: largest |entry| of the residual and the token rms spread
+        tok_rms = xi.pow(2).mean(-1).sqrt()[0]                     # (T,)
+        out[f"x_amax{i}"] = float(xi.abs().amax())
+        out[f"x_tokmax{i}"] = float(tok_rms.max())
+        out[f"x_tokmax_pos{i}"] = int(tok_rms.argmax())
         a = caps[("a", i)]
         nh = blk.attn.n_head
         q, k, _ = blk.attn.c_attn(a).float().split(C, dim=2)
         q = q.view(1, T, nh, C // nh).transpose(1, 2)
         k = k.view(1, T, nh, C // nh).transpose(1, 2)
+        if getattr(blk.attn, "q_ln", None) is not None:
+            q = F.layer_norm(q, (q.size(-1),), blk.attn.q_ln.weight.float(), blk.attn.q_ln.bias.float())
+            k = F.layer_norm(k, (k.size(-1),), blk.attn.k_ln.weight.float(), blk.attn.k_ln.bias.float())
         if raw.config.pos_type == "rope":
             q, k = blk.attn._apply_rope(q, k)
         s = (q @ k.transpose(-1, -2)) / math.sqrt(C // nh)
@@ -2483,7 +2502,20 @@ def stability_stats(model: NanoGPT, idx, pre_rows=None) -> dict:
         pr = torch.softmax(s, dim=-1)
         ent = -(pr * torch.log(pr.clamp_min(1e-30))).sum(-1)       # (1, nh, T)
         out[f"att_ent{i}"] = float(ent.mean())
-        out[f"att_entmin{i}"] = float(ent.mean(-1).min())         # most collapsed head
+        hmin = int(ent.mean(-1)[0].argmin())                       # most collapsed head
+        out[f"att_entmin{i}"] = float(ent.mean(-1)[0, hmin])
+        ph = pr[0, hmin, 8:]                                       # skip the first 8 queries
+        qi = ar[8:]
+        out[f"att_bos{i}"] = float(ph[:, 0].mean())                # mass on key position 0
+        out[f"att_prev{i}"] = float(ph[torch.arange(ph.size(0)), qi - 1].mean())
+        out[f"att_self{i}"] = float(ph[torch.arange(ph.size(0)), qi].mean())
+        top = ph.argmax(-1)                                        # most-attended key per query
+        vals, cnt = torch.unique(top, return_counts=True)
+        kpos = int(vals[cnt.argmax()])
+        out[f"att_topkey_frac{i}"] = float(cnt.max()) / float(top.numel())
+        out[f"att_topkey_pos{i}"] = kpos
+        out[f"att_topkey_tok{i}"] = int(idx1[0, kpos])
+        out[f"att_maxlogit_head{i}"] = int(s[0].flatten(1).amax(-1).argmax())
     logits = raw.lm_head(h).float()
     out["logit_max"] = float(logits.amax())
     out["logit_std"] = float(logits.std())
@@ -2953,6 +2985,11 @@ def main():
                              "of --device_batch_size (keeps val口径 identical when train "
                              "uses grad accumulation microbatches)")
     parser.add_argument("--table_norm_interval", type=int, default=10)
+    parser.add_argument("--qk_norm", action="store_true",
+                        help="diagnostic: LayerNorm(head_dim) on q and k before attention "
+                             "(Dehghani 2023 / Wortsman 2023 qk-layernorm); off = vanilla nanoGPT")
+    parser.add_argument("--adam_beta1", type=float, default=None,
+                        help="backbone AdamW beta1 override (contract 0.8; vanilla nanoGPT 0.9)")
     parser.add_argument("--stability_interval", type=int, default=0,
                         help=">0: every N steps log pre-clip grad norms, weight norms and a "
                              "1-sequence activation probe (residual RMS, max attention logit, "
@@ -3388,6 +3425,7 @@ def main():
         val_device_batch_size=args.val_device_batch_size,
         table_norm_interval_steps=args.table_norm_interval,
         stability_interval=args.stability_interval,
+        qk_norm=args.qk_norm,
         warmup_steps=args.warmup_steps,
         warmup_start_lr_mult=args.warmup_start_lr_mult,
         cosine_min_lr_mult=args.cosine_min_lr_mult,
@@ -3395,6 +3433,7 @@ def main():
         lr_schedule=args.lr_schedule,
         nanogpt_adam_lr=args.lr,
         weight_decay=args.weight_decay,
+        adam_betas=((args.adam_beta1, 0.95) if args.adam_beta1 is not None else (0.8, 0.95)),
         table_optimizer=args.table_optimizer,
         table_lr_scale=args.table_lr_scale,
         table_grad_clip=args.table_grad_clip,

@@ -60,10 +60,27 @@ def main():
         assert steps == sorted(set(list(range(1, 11)) + [12])), steps
         need = {"g_backbone", "g_tables", "g_wte", "g_q0", "g_k1", "w_wte_rms", "w_q1",
                 "x_tok_rms", "x_ngram_rms", "x_rms0", "x_rms1", "att_max0", "att_max1",
-                "att_ent1", "att_entmin0", "logit_max", "lse_mean"}
+                "att_ent1", "att_entmin0", "logit_max", "lse_mean", "x_amax1", "x_tokmax1",
+                "att_bos0", "att_prev1", "att_self0", "att_topkey_frac1", "att_topkey_tok0"}
         assert need <= set(st[-1]), need - set(st[-1])
         assert st[-1]["g_tables"] > 0 and st[-1]["x_ngram_rms"] > 0
         print(f"S1 ok ({len(la)} identical train/val rows; stability keys {len(st[-1])})")
+        # S2: --adam_beta1 0.8 (explicit = contract default) is bit-identical; 0.9 differs
+        c = run(tmp, data, idx_path, "b08", ["--adam_beta1", "0.8"])
+        lc = [json.loads(x) for x in open(os.path.join(c, "train_log.jsonl"))]
+        assert [x["train_loss"] for x in lc] == [x["train_loss"] for x in la]
+        d = run(tmp, data, idx_path, "b09", ["--adam_beta1", "0.9"])
+        ld = [json.loads(x) for x in open(os.path.join(d, "train_log.jsonl"))]
+        assert [x["train_loss"] for x in ld][1:] != [x["train_loss"] for x in la][1:]
+        print("S2 ok (beta1 0.8 explicit == default; 0.9 changes the run)")
+        # S3: --qk_norm runs, changes the run, and the probe sees the normalised q/k
+        e = run(tmp, data, idx_path, "qkn", ["--qk_norm", "--stability_interval", "3"])
+        le = [json.loads(x) for x in open(os.path.join(e, "train_log.jsonl"))]
+        assert [x["train_loss"] for x in le] != [x["train_loss"] for x in la]
+        se = [json.loads(x) for x in open(os.path.join(e, "stability.jsonl"))]
+        hd = 32 // 2
+        assert se[-1]["att_max0"] <= hd ** 0.5 * 1.5 + 1e-3, se[-1]["att_max0"]
+        print(f"S3 ok (qk_norm active; att_max0 {se[-1]['att_max0']:.2f} <= ~sqrt(head_dim))")
     print("ALL PASS")
 
 

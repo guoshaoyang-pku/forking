@@ -16,6 +16,7 @@
 #      NGLAB_CLIP (backbone grad-norm clip, run_id tag _clip<v>; unset = no clip)
 #      NGLAB_LR (backbone LR override, run_id tag _lr<v>; unset = 0.0006 contract default)
 #      NGLAB_STAB (stability.jsonl every N steps; logging only, no tag; pair with NGLAB_TAG)
+#      NGLAB_QKN=1 (diagnostic qk-layernorm, tag _qkn)  NGLAB_B1 (backbone Adam beta1, tag _b1<v>)
 # 2026-10-23: manifest v27b drops shards 60/62/63 (byte copies of shard 1); pools > 2.385B
 #             launched after 01:40 carry NGLAB_TAG=_p27b.
 set -euo pipefail
@@ -93,6 +94,14 @@ if [[ -n "${NGLAB_CLIP:-}" ]]; then
 fi
 STAB=()
 [[ -n "${NGLAB_STAB:-}" ]] && STAB=(--stability_interval "$NGLAB_STAB")
+if [[ -n "${NGLAB_QKN:-}" ]]; then
+  STAB+=(--qk_norm)
+  TAG="${TAG}_qkn"
+fi
+if [[ -n "${NGLAB_B1:-}" ]]; then
+  STAB+=(--adam_beta1 "$NGLAB_B1")
+  TAG="${TAG}_b1${NGLAB_B1}"
+fi
 LR="0.0006"
 if [[ -n "${NGLAB_LR:-}" ]]; then
   LR="$NGLAB_LR"
