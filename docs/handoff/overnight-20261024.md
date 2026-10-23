@@ -69,7 +69,7 @@ python3 code/cluster/collect_overnight_20261024.py
 
 远端守护循环负责在08:00前恢复意外退出的调度器；每个训练只领一次，不自动重试。它不是主机重启服务。机器重启、SSH中断、外部占卡或科学失败不能用“保证不空卡”掩盖，按状态表处理。人工/聊天巡检只在完成、失败、持续空卡或需要决策时通知。
 
-已创建本聊天的原生heartbeat `a100`，每20分钟巡检，有界至北京时间08:20。截止后只做最后查收并暂停，不继续开任务。远端接续已实际运行，不依赖本机聊天在线。heartbeat创建成功，首次自动唤醒尚未验收。
+已创建本聊天的原生heartbeat `a100`，每20分钟巡检，有界至北京时间08:20。截止后只做最后查收并暂停，不继续开任务。远端接续已实际运行，不依赖本机聊天在线。heartbeat已于01:47首次自动唤醒，执行状态检查并收割3条完成任务。
 
 部署证据在 `outputs/takeover_20261024/`：`deploy_receipts.json`、四份`fingerprint_*.json`、`launch_audit.json`、`launch_progress_verification.json`、`watchdog_verification.json`。最后一项是t1_2调度器退出恢复的实测，5个原训练wrapper保持且继续推进，无重复任务。训练/调度代码版本为`44fc73d`，整对迁移版本为`57b51b1`。J39微批量修订版本为`9b6cf18`，队列内`schedule_commit.txt`记录此版本。清单的status是登记状态，运行状态只认新鲜claim、进程与训练日志。
 

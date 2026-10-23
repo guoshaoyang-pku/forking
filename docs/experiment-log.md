@@ -7206,19 +7206,19 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J10 | `main_setting_seed44` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | running |
 | J11 | `repeat_budget_e6` | perm | `v27_50m_exact_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | running |
 | J12 | `repeat_budget_e6` | perm | `v27_50m_nogram_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | running |
-| J13 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | running |
-| J14 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed` | 1.02 | running |
+| J13 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
+| J14 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed` | 1.02 | done / 待科学复核 |
 | J15 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed` | 1.02 | running |
-| J16 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | planned |
-| J17 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | planned |
+| J16 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | running |
+| J17 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | running |
 | J18 | `lr_nogram_shared` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | planned |
 | J19 | `small_table_qkn_seed43` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_qkn_fixed` | 1.02 | planned |
-| J20 | `lr_factorial_r136` | perm | `v27_17m_exact_r136k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | running |
+| J20 | `lr_factorial_r136` | perm | `v27_17m_exact_r136k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
 | J21 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls0.5_s43_e3_fixed` | 1.02 | planned |
 | J22 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | planned |
 | J23 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | planned |
 | J24 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
-| J25 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
+| J25 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
 | J26 | `long_lr_decoupling` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
 | J27 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
 | J28 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
@@ -7378,3 +7378,13 @@ J39的启动前微批量修订已以`9b6cf18`提交并同步，旧/new claim均�
 本地状态/收割工具已交接。调度器11项CPU测试及收割器10项CPU测试通过。已完成的真实50M qkn对通过收割器配置/登记预算核对，末60点复算仍为−36.0108 mnat。新清单当前无终止项，实跑collector生成0-run清单，不能伪报新结果。
 
 旧关键长训01:37追加查收：35M dn80 qkn nogram已完成56,966步，末val2.705249806；exact为52,800步，未完成。50M dn56 qkn exact/nogram为30,210/36,760步；50M dn56 v28为18,080/21,520步，均目标56,966、均未完成。三对都不能作完整最终收益。原始小文件及SHA在 `outputs/takeover_20261024/legacy_final_check/20261024T013749/audit.json`，不覆盖先前证据。
+
+### 01:47 heartbeat查收
+
+首次原生heartbeat已实际唤醒并执行。四机32卡继续占用，新清单3臂完整结束、19臂active、21臂待领；调度器已接续，无告警。收割校验和、DONE、登记预算与终点通过，科学判决仍待对照。
+
+- J20 `v27_17m_exact_r136k_dn20_tls2_s42_e3_lr0.0003_fixed`，perm，step 6917：末60点val 3.442774、train 3.429702，最终val 3.471896，历史最低val 3.182667。
+- J13 `v27_17m_exact_r35k_dn20_tls2_s42_e3_lr0.0003_fixed`，a100_t1_4，step 6917：末60点val 3.239928、train 3.251656，最终val 3.334247，历史最低val 3.217583。
+- J14 `v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed`，a100_t1_4，step 6917：末60点val 4.860946、train 4.874306，最终val 5.853376，历史最低val 3.311351。
+
+J14小表原设定seed43末端明显恶化，保留为失稳证据，不算健康收尾。其它两臂完成不等于完整学习率归因已成立；当前collector没有放行数值配对。原始证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T174724.154519Z/review.json`。没有重跑或改变任何训练。
