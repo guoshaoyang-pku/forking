@@ -120,6 +120,7 @@ class Config:
     val_batches: int = 4
     val_device_batch_size: int = 0  # 0 = follow device_batch_size; >0 pins val batch shape
     table_norm_interval_steps: int = 10
+    stability_interval: int = 0   # >0: write stability.jsonl every N steps (logging only)
     warmup_steps: int = 100       # step 1..100: warmup_start_lr_mult -> 1.0x
     warmup_start_lr_mult: float = 0.25
     cosine_min_lr_mult: float = 0.05  # terminal multiplier for warmup_cosine
@@ -2399,6 +2400,97 @@ def table_param_rms(model: NanoGPT) -> dict:
     return out
 
 
+def _is_table_param(name: str) -> bool:
+    return ("ngram_ves" in name or "bigram_ves" in name or "trigram_ves" in name
+            or "value_embeds" in name)
+
+
+@torch.no_grad()
+def stability_stats(model: NanoGPT, idx, pre_rows=None) -> dict:
+    """Divergence diagnostics (logging only: no grad, no RNG, no state change).
+
+    Call after backward and before optimizer.step.  Grad norms are pre-clip.
+    The activation probe runs one extra forward on the first sequence of the
+    given batch and records per-layer residual RMS, max causal attention
+    logit, mean attention entropy, and output-logit statistics.
+    """
+    raw = getattr(model, "_orig_mod", model)
+    C = raw.config.n_embd
+    out = {}
+    sq = {"backbone": 0.0, "tables": 0.0}
+    for name, p in raw.named_parameters():
+        if p.grad is None:
+            continue
+        g2 = float(p.grad.float().pow(2).sum())
+        sq["tables" if _is_table_param(name) else "backbone"] += g2
+        if name.endswith("wte.weight"):
+            out["g_wte"] = g2 ** 0.5
+        elif name.endswith("wpe.weight"):
+            out["g_wpe"] = g2 ** 0.5
+        elif name.endswith("attn.c_attn.weight"):
+            li = name.split(".h.")[1].split(".")[0]
+            g = p.grad.float()
+            out[f"g_q{li}"] = float(g[:C].norm())
+            out[f"g_k{li}"] = float(g[C:2 * C].norm())
+    out["g_backbone"] = sq["backbone"] ** 0.5
+    out["g_tables"] = sq["tables"] ** 0.5
+    wte = raw.transformer.wte.weight.float()
+    rn = wte.norm(dim=1)
+    out["w_wte_rms"] = float(wte.pow(2).mean().sqrt())
+    out["w_wte_rowmax"] = float(rn.max())
+    for i, blk in enumerate(raw.transformer.h):
+        w = blk.attn.c_attn.weight.float()
+        out[f"w_q{i}"] = float(w[:C].norm())
+        out[f"w_k{i}"] = float(w[C:2 * C].norm())
+        out[f"w_ln1_{i}"] = float(blk.ln_1.weight.float().abs().mean())
+    out["w_lnf"] = float(raw.transformer.ln_f.weight.float().abs().mean())
+    # activation probe on one sequence
+    idx1 = idx[:1]
+    pr1 = None if pre_rows is None else tuple(
+        (t[:1] if t is not None else None) for t in pre_rows)
+    caps = {}
+    hooks = []
+    for i, blk in enumerate(raw.transformer.h):
+        hooks.append(blk.register_forward_pre_hook(
+            lambda m, a, i=i: caps.__setitem__(("x", i), a[0])))
+        hooks.append(blk.attn.register_forward_pre_hook(
+            lambda m, a, i=i: caps.__setitem__(("a", i), a[0])))
+    try:
+        h, ngr = raw._trunk(idx1, pre_rows=pr1)
+    finally:
+        for hk in hooks:
+            hk.remove()
+    T = idx1.size(1)
+    pos = torch.arange(T, device=idx1.device).unsqueeze(0)
+    tok = raw.transformer.wte(idx1)
+    if raw.config.pos_type == "learned":
+        tok = tok + raw.transformer.wpe(pos)
+    out["x_tok_rms"] = float(tok.float().pow(2).mean().sqrt())
+    out["x_ngram_rms"] = float(ngr.float().pow(2).mean().sqrt()) if ngr is not None else 0.0
+    causal = torch.ones(T, T, device=idx1.device, dtype=torch.bool).tril()
+    for i, blk in enumerate(raw.transformer.h):
+        out[f"x_rms{i}"] = float(caps[("x", i)].float().pow(2).mean().sqrt())
+        a = caps[("a", i)]
+        nh = blk.attn.n_head
+        q, k, _ = blk.attn.c_attn(a).float().split(C, dim=2)
+        q = q.view(1, T, nh, C // nh).transpose(1, 2)
+        k = k.view(1, T, nh, C // nh).transpose(1, 2)
+        if raw.config.pos_type == "rope":
+            q, k = blk.attn._apply_rope(q, k)
+        s = (q @ k.transpose(-1, -2)) / math.sqrt(C // nh)
+        s = s.masked_fill(~causal, float("-inf"))
+        out[f"att_max{i}"] = float(s.amax())
+        pr = torch.softmax(s, dim=-1)
+        ent = -(pr * torch.log(pr.clamp_min(1e-30))).sum(-1)       # (1, nh, T)
+        out[f"att_ent{i}"] = float(ent.mean())
+        out[f"att_entmin{i}"] = float(ent.mean(-1).min())         # most collapsed head
+    logits = raw.lm_head(h).float()
+    out["logit_max"] = float(logits.amax())
+    out["logit_std"] = float(logits.std())
+    out["lse_mean"] = float(torch.logsumexp(logits, dim=-1).mean())
+    return out
+
+
 # ---------------------------------------------------------------------------
 # 5. Training loop
 # ---------------------------------------------------------------------------
@@ -2861,6 +2953,11 @@ def main():
                              "of --device_batch_size (keeps val口径 identical when train "
                              "uses grad accumulation microbatches)")
     parser.add_argument("--table_norm_interval", type=int, default=10)
+    parser.add_argument("--stability_interval", type=int, default=0,
+                        help=">0: every N steps log pre-clip grad norms, weight norms and a "
+                             "1-sequence activation probe (residual RMS, max attention logit, "
+                             "attention entropy, output-logit stats) to stability.jsonl; "
+                             "logging only, training is unchanged")
     parser.add_argument("--table_diag", type=int, default=0,
                         help="1: log per-step table-update diagnostics to table_diag.jsonl "
                              "(replay-shock fingerprint: hit rows, |g|, denom, |g|/denom amplification)")
@@ -3290,6 +3387,7 @@ def main():
         val_batches=args.val_batches,
         val_device_batch_size=args.val_device_batch_size,
         table_norm_interval_steps=args.table_norm_interval,
+        stability_interval=args.stability_interval,
         warmup_steps=args.warmup_steps,
         warmup_start_lr_mult=args.warmup_start_lr_mult,
         cosine_min_lr_mult=args.cosine_min_lr_mult,
@@ -3828,6 +3926,8 @@ def main():
         with open(os.path.join(cfg.out_dir, "moe_ledger.json"), "w") as f:
             json.dump(cfg_moe_ledger, f, indent=2, default=_json_default)
     table_log = open(os.path.join(cfg.out_dir, "table_norm.jsonl"), "w")
+    stab_log = open(os.path.join(cfg.out_dir, "stability.jsonl"), "w") \
+        if cfg.stability_interval > 0 else None
     table_diag_log = open(os.path.join(cfg.out_dir, "table_diag.jsonl"), "w") \
         if args.table_diag else None
     probe_log = None
@@ -4161,6 +4261,14 @@ def main():
                 g = wte_p.grad
                 g32 = g.float()
                 g.sub_(((g32 @ ogd_U) @ ogd_U.T).to(g.dtype))
+        if stab_log is not None and ((step + 1) % cfg.stability_interval == 0 or step < 10):
+            with amp_ctx:
+                st = stability_stats(model, inp, pre_rows=pre_rows)
+            st.update({"step": step + 1, "epoch": train_ds._epoch + 1,
+                       "train_loss": train_loss, "lr_mult": lr_mult})
+            stab_log.write(json.dumps(st) + "\n")
+            if (step + 1) % (cfg.stability_interval * 10) == 0:
+                stab_log.flush()
         optimizer.step(lr_mult=lr_mult)
 
         # per-step table-update diagnostics (replay-shock fingerprint)
@@ -4480,6 +4588,8 @@ def main():
 
     train_log.close()
     table_log.close()
+    if stab_log is not None:
+        stab_log.close()
     if table_diag_log is not None:
         table_diag_log.close()
     if probe_log is not None:

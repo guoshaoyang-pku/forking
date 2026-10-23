@@ -15,6 +15,7 @@
 #      NGLAB_SUBSET NGLAB_SUBSET_PASSES NGLAB_HEADS NGLAB_KK NGLAB_TAG
 #      NGLAB_CLIP (backbone grad-norm clip, run_id tag _clip<v>; unset = no clip)
 #      NGLAB_LR (backbone LR override, run_id tag _lr<v>; unset = 0.0006 contract default)
+#      NGLAB_STAB (stability.jsonl every N steps; logging only, no tag; pair with NGLAB_TAG)
 # 2026-10-23: manifest v27b drops shards 60/62/63 (byte copies of shard 1); pools > 2.385B
 #             launched after 01:40 carry NGLAB_TAG=_p27b.
 set -euo pipefail
@@ -90,6 +91,8 @@ if [[ -n "${NGLAB_CLIP:-}" ]]; then
   CLIP=(--grad_clip "$NGLAB_CLIP")
   TAG="${TAG}_clip${NGLAB_CLIP}"
 fi
+STAB=()
+[[ -n "${NGLAB_STAB:-}" ]] && STAB=(--stability_interval "$NGLAB_STAB")
 LR="0.0006"
 if [[ -n "${NGLAB_LR:-}" ]]; then
   LR="$NGLAB_LR"
@@ -109,7 +112,7 @@ CUDA_VISIBLE_DEVICES="$GPU" "$PY" -u "$ROOT/code/train.py" \
   --n_layer "$NL" --n_head "$NH" --n_embd "$NE" --vocab_size 8192 --sequence_len 2048 \
   --device_batch_size "$DB" --total_batch_size 147456 --val_device_batch_size "$VDB" \
   --lr "$LR" --lr_schedule warmup_constant --warmup_steps 100 \
-  "${TABLE[@]}" "${CLIP[@]}" \
+  "${TABLE[@]}" "${CLIP[@]}" "${STAB[@]}" \
   --val_interval 10 --val_batches "$VB" --table_norm_interval 50 --fixed_train_probe 0 \
   --freq_eval_interval 1000000 --exact_freq_eval_interval 1000000 --diag_interval 1000000 \
   "${SUB[@]}" \
