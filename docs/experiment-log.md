@@ -7212,11 +7212,11 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J16 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
 | J17 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
 | J18 | `lr_nogram_shared` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
-| J19 | `small_table_qkn_seed43` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_qkn_fixed` | 1.02 | planned |
+| J19 | `small_table_qkn_seed43` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_qkn_fixed` | 1.02 | running |
 | J20 | `lr_factorial_r136` | perm | `v27_17m_exact_r136k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
-| J21 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls0.5_s43_e3_fixed` | 1.02 | running |
-| J22 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | running |
-| J23 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | running |
+| J21 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls0.5_s43_e3_fixed` | 1.02 | done / 待科学复核 |
+| J22 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
+| J23 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
 | J24 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
 | J25 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
 | J26 | `long_lr_decoupling` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
@@ -7224,11 +7224,11 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J28 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
 | J29 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
 | J30 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s42_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
-| J31 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_exact_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | planned |
+| J31 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_exact_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | running |
 | J32 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | planned |
 | J33 | `same_host_controls` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed` | 3 | running |
 | J34 | `same_host_controls` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed` | 1.02 | running |
-| J35 | `same_host_controls` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed` | 1.02 | planned |
+| J35 | `same_host_controls` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed` | 1.02 | running |
 | J36 | `reserve_repeat_budget` | perm | `v27_50m_exact_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
 | J37 | `reserve_repeat_budget` | perm | `v27_50m_nogram_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
 | J38 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_exact_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | running |
@@ -7402,3 +7402,13 @@ J15 `v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed`（t1_4，seed43）已完成691
 - J18 `v27_17m_nogram_r136k_dn20_tls1_s43_e3_lr0.0003_fixed`，a100_t1_4，step6917：最终val3.288191，末60点val3.299423，历史最低val3.288036。证据完整性eligible=True，不等于科学健康。
 
 证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T182734.996240Z/review.json`。学习率四角需要按指定干预复核配置与完整曲线，collector不支持的比较仍保留manual_review，不绕过检查自动给出因果结论。
+
+### 02:47 heartbeat查收
+
+四机32卡占用，新清单累计10臂结束、22臂active、11臂待领，可比较active全部推进，无调度告警，无人工重启或配置修改。新增完成：
+
+- J21 `v27_17m_exact_r136k_dn20_tls0.5_s43_e3_fixed`，a100_t1_4，step6917：最终val3.289774，末60点val3.349335，历史最低val3.289774。完成证据eligible=True，issues=[]。
+- J22 `v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed`，a100_t1_4，step6917：最终val4.218448，末60点val3.898568，历史最低val3.223056。完成证据eligible=True，issues=[]。
+- J23 `v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed`，a100_t1_4，step6917：最终val3.196740，末60点val3.168761，历史最低val3.153608。完成证据eligible=True，issues=[]。
+
+证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T184736.217198Z/review.json`。数值为各臂绝对loss，未把不同学习率干预冒充加表配对收益；完整因果结论继续按配置、共同窗口及曲线复核。
