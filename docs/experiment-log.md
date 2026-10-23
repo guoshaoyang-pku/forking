@@ -7222,10 +7222,10 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J26 | `long_lr_decoupling` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
 | J27 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
 | J28 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
-| J29 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
-| J30 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s42_e3_p27b_lr0.0003_fixed` | 8.4 | planned |
+| J29 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
+| J30 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s42_e3_p27b_lr0.0003_fixed` | 8.4 | running |
 | J31 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_exact_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | running |
-| J32 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | running |
+| J32 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | done / 待科学复核 |
 | J33 | `same_host_controls` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed` | 3 | running |
 | J34 | `same_host_controls` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed` | 1.02 | done / 待科学复核 |
 | J35 | `same_host_controls` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed` | 1.02 | done / 待科学复核 |
@@ -7422,3 +7422,7 @@ J34 `v27_17m_exact_r35k_dn20_tls1_s42_e3_hostcontrol20261024_fixed`（t1_4，see
 J19 `v27_17m_exact_r35k_dn20_tls1_s43_e3_qkn_fixed` 与J35 `v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed` 均在t1_4、seed43完成6917步，DONE、summary、注册预算、配置和校验和通过。末60共同点加表/无表val为3.106789/3.131522，ΔVal=−24.733 mnat/token；最终单点差−23.837 mnat/token。全日志有限，末窗无明显失稳。这是该设置的一颗种子证据，不能称总体显著或永不发散；也不能沿用“稳定后小表必有害”的强命题。
 
 证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T192735.989683Z/review.json`。四机32卡满占，新清单13臂完成、22臂active、8臂待领，所有可比较active推进、无告警。空卡自动接续长训学习率对照，未人工改配置或重跑。
+
+### 04:47 heartbeat查收
+
+J32 `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed`（t1_4，seed42）完成14241步，DONE/summary/预算及SHA检查通过。最终val 2.831355412801107，末60点val 2.8332139518525863。匹配加表臂尚未结束，暂不计算最终表收益，也不凭单臂收尾宣称归一化无损。证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T204734.619133Z/review.json`。四机32卡满占，新清单14臂结束、23臂active、6臂待领，可比较active均推进，无告警，未人为重启或改变配置。
