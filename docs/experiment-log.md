@@ -7092,3 +7092,35 @@ run_id `v26dn_50m_mh{H}k{K}k_r400k_d1b_tls{1,4}_s42_e3_fd`（ophis）。判读�
 - **Y1 qk-layernorm**：17M R/N=2 与 R/N=8 两个必发散配置都越过原 onset 后健康（step 5500 / 5030，val 3.139 / 3.110；qkn nogram @5770 3.152）。与机制一致：限制 q·k 的尺度即消除失控。
 - **Y2 β1=0.9（vanilla nanoGPT 默认）**：OE 两臂仍发散（3500 / 3540），**nogram 也在 1770 发散**（val 6.52）——单换回 vanilla β1 更不稳，契约的 β1=0.8 不是病因。
 - **Y4 已排**：qk-norm 在主设定（50M D/N=20 R/N=8，s42/s43，同机 qkn nogram 配对）是否改变 OE 收益；35M dn80 / 50M dn56 的 qkn nogram 配对；17M R/N=8 s42。
+
+## §150 隔夜收割：qk-norm 零发散 + 保收益；backbone LR 3e-4 救活 50M dn56 长训；v28 包救活 OE 臂但 nogram 仍碎；104M dn40 干净对首次全健康（2026-10-24 00:40）
+
+A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数值均为 train_log 末端读数，mK 口径同前（ΔVal = OE 赢为负）。
+
+**(a) qk-norm（Y1/Y4，契约 LR 6e-4）——当前唯一「零发散 + 保收益」的稳定线**：
+- 主设定 E3 末（50m dn20 s42，20345 步 DONE）：qkn exact 2.6337 vs qkn nogram 2.6694 → **−35.7**（run `v27_50m_exact_r400k_dn20_tls1_s42_e3_qkn_fixed` / `v27_50m_nogram_r400k_dn20_tls1_s42_e3_qkn_fixed`，同机同 seed）；不劣于契约对（§148 +22~+28），qkn 不吃收益。
+- 17M s43 E3 末（6917 步 DONE）：exact 3.063 vs nogram 3.116 → **−53**（`v27_17m_exact_r136k_dn20_tls1_s43_e3_qkn_fixed` / `v27_17m_nogram_r136k_dn20_tls1_s43_e3_qkn_fixed`，a100_perm）。
+- 长训练两配置双双健康并越过原 onset 2–3×：35M dn80 对 −63.8（exact 2.650@45.0k / nogram 2.714@48.3k，原 onset 8870）；50M dn56 p27b 对 −51.6（exact 2.573@25.5k / nogram 2.625@30.9k，原 onset 13970）。qkn nogram 对照臂（17m s42/s43、50m dn20 s42、35m dn80、50m dn56）也全部健康 → qkn 不伤无表基线。**qkn 臂至今 0 发散**。
+
+**(b) S2 long-run（backbone LR 3e-4，50m dn56 p27b，a100_t1_3）——LR 减半目前真正救活长训练**：
+- exact lr3e-4 val 2.564 @46.1k（E3 总 ~57k 的 81%）vs nogram lr3e-4 val 2.591 @55.2k（97%）→ **−27**，两臂健康（`v27_50m_exact_r400k_dn56_tls1_s42_e3_p27b_lr0.0003_fixed` / `v27_50m_nogram_r400k_dn56_tls1_s42_e3_p27b_lr0.0003_fixed`）。
+- clip-only 臂最终仍发散：exact clip0.25 train 5.51 @46.2k（§149 时 13.2k 健康，晚期失控）；exact tls0.5+clip1 3.39 @46.1k。**clip 只推迟不消除（50M 尺度确认），降 LR 目前消除**。
+
+**(c) v28 包（β1 0.9 + clip 1.0 + warmup min(2000,5%) + cosine→0.05×）**：
+- 17M 两个必发散配置全部跑完 E3 不发散（a100_perm，6917 步 DONE）：exact r136k s43 val 3.240、exact r35k s42 val 3.766。v28 对 OE 臂发散有效。
+- 但 v28 下 nogram 仍碎：17M nogram s43 v28 val 4.162（s42 3.200，同配置跨 seed 差近 1 nats）；35M dn80 nogram v28 已发散（val 5.512 @24.5k，a100_t1_4）。与 Y2（β1=0.9 单独使 nogram 1770 步发散）一致——**v28 不是完整解，β1 0.9 疑似对 nogram 有独立害处**。
+- v28 长训在跑（a100_t1_2/t1_4/perm）：35M dn80 exact v28 2.751 @20.4k 健康（原 onset 8870）；50M dn56 exact v28 2.705 @12.1k（逼近原 onset 13970，待过线）；50M dn20 v28 四臂（exact s42 r400k 2.681@12.2k、s43 r100k 2.708@13.9k + nogram s42 2.730@15.9k、s43 2.880@16.1k）60–80% 进度全部健康。
+- v28 17M 配对警告：s42 r35k exact 3.766 vs nogram 3.200 → 小-R 有害在 v28 下依旧（+566）；s43 exact 3.240 vs nogram 4.162 的 −922 不能当收益读（nogram 臂本身异常）。
+
+**(d) 104M 新完成（ophis，全部 DONE）**：
+- **dn40 p27b 对（84,633 步 E3 末）**：exact 2.4747 vs nogram 2.5158 → **−41.1**（`v27_104m_exact_r832k_dn40_tls1_s42_e3_p27b_fixed` / `v27_104m_nogram_r832k_dn40_tls1_s42_e3_p27b_fixed`）。首个全健康 D/N=40 长训练对：D/N 包络现有 dn2 +17（有害）/ dn20 −87/−59 / dn40 −41，净收益在 D/N≈20 峰值、D/N=40 仍保持。
+- dn20 R 扫描补点（s42，同 seed nogram 2.5494）：R/N=1 −14.4；R/N=2 **晚期发散**（7.36，呼应 §148「R/N=2 单臂晚期发散」）；R/N=4 +13.2（劣于 nogram）。R/N=8 s43 −87.1 与 §148 一致。**tpp 规则（峰 R/N≈8 @dn20）复现，小-R 有害区跨 size 复现**。
+- dn2 对（D/N=2，极端小数据）：exact 2.9669 vs nogram 2.9498 → +17.1，小数据端点首次有干净对（OE 有害）。
+
+**(e) 学生蒸馏（pro5k，50M 学生）**：
+- 去均值 4 臂（ctr_r072：1_8 / 9_16 / 17_24 / 25_32）到 ~20.0k 步全部健康，train 3.21–3.26；已出 val：1_8 3.402、9_16 3.376。nogram DONE（22064 步）val 3.357——**ctr 臂还没到 E3 末，现在比较 val 不公平，等跑完再下结论**。
+- wave-3 clip1 臂（raw 蒸馏修复）正进入波 1 onset 区（8.5–10k）：nogram_clip1 3.269@8.6k / random_1_8_clip1 3.303@8.5k / trainable_9_16_ctr_clip1 3.287@8.4k / randfrozen_1_8_clip1 3.502@5.8k，全部健康；clip 1.0 是否救 raw 臂几小时内见分晓。
+
+**(f) 基础设施**：a100_t1 6 卡仍被其他租户占用（keephash 7 臂继续排队，无新结果）；ophis 磁盘清理后 50M 表-LR×选择策略矩阵的原始 run 目录已删（读数以登记簿为准），矩阵重启未发生，ophis 现 GPU0–3 空闲、4–7 被其他租户占用；360-1/360-2 SSH 均拒绝（Connection closed）→ 200M 对、104M s44 对、3 个 s43 复本指纹核对全部待机器恢复；本地 `ddc981d..a22e23c` 7 个 commit 未 push（P5）。
+
+**(g) 待拍板（P5）**：契约修复三选一——qk-norm（零发散+保收益，改动最小）/ backbone LR 3e-4（救活长训，但牺牲一倍速度）/ v28 全包（救 OE 臂但 nogram 仍碎，且偏离极简）；v28 长训与 S2 exact 到 E3 末后收割定稿；矩阵臂是否重启。
