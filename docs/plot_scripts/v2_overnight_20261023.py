@@ -185,8 +185,47 @@ def fig_distill():
     plt.close(fig)
 
 
+def fig_tpp():
+    """dVal(E3) vs tokens-per-row tpp = D/R, one curve per (model, D/N), table LR 1x."""
+    P = list(csv.DictReader(open(f"{H}/paired.csv")))
+    fig, axs = plt.subplots(1, 2, figsize=(14, 4.8))
+    cols = {("50m", 5.0): C["blue"], ("50m", 10.0): C["green"], ("50m", 20.0): C["orange"],
+            ("104m", 5.0): C["blue"], ("104m", 20.0): C["orange"], ("104m", 10.0): C["green"]}
+    for (model, dn), col in cols.items():
+        pts = {}
+        for r in P:
+            if (r["model"] == model and float(r["dn"]) == dn and r["tls"] == "1" and r["tag"] == ""
+                    and r.get("dval3") and r["diverged"] != "True" and r["e1_dirty"] != "True"):
+                pts.setdefault(float(r["tpp"]), []).append((float(r["dval3"]), float(r["dgap3"]), float(r["dtrain3"])))
+        if len(pts) < 2:
+            continue
+        xs = sorted(pts)
+        ls = "-" if model == "50m" else "--"
+        lab = f"{model.upper()} D/N={dn:g}"
+        axs[0].plot(xs, [np.mean([p[0] for p in pts[x]]) for x in xs], ls, color=col, marker="o", ms=5, label=lab)
+        axs[1].plot(xs, [np.mean([p[2] for p in pts[x]]) for x in xs], ls, color=col, marker="o", ms=4, label=lab + " Δtrain")
+        axs[1].plot(xs, [np.mean([p[1] for p in pts[x]]) for x in xs], ls, color=col, marker="s", ms=4, mfc="none", label=lab + " Δgap")
+    for ax in axs:
+        style(ax)
+        ax.set_xscale("log")
+        ax.axhline(0, color=C["ink"], lw=0.7)
+        ax.axvspan(1800, 3500, color=C["soft"] if "soft" in C else "#e8e6dc", alpha=0.6, lw=0)
+        ax.set_xlabel("tokens per table row  tpp = D / R")
+    axs[0].set_ylabel("ΔVal at end of pass 3 (mK, + = OE wins)")
+    axs[0].set_title("net gain peaks near tpp ≈ 2–5k tokens per row (shaded: 1.8–3.5k)", loc="left", fontsize=10)
+    axs[1].set_ylabel("mK")
+    axs[1].set_title("gain (filled) and forking cost (hollow) vs tpp", loc="left", fontsize=10)
+    axs[0].legend(fontsize=8, frameon=False)
+    axs[1].legend(fontsize=6.5, frameon=False, ncol=2)
+    fig.tight_layout()
+    for ext in ("png", "svg"):
+        fig.savefig(f"{OUT}/fig_tpp.{ext}", dpi=150)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     fig_ladder()
     fig_clip()
     fig_distill()
+    fig_tpp()
     print("ok", OUT)
