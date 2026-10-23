@@ -7086,3 +7086,9 @@ run_id `v26dn_50m_mh{H}k{K}k_r400k_d1b_tls{1,4}_s42_e3_fd`（ophis）。判读�
 **(d) 契约与 vanilla nanoGPT / 工业默认的差异**（这是根本原因的「土壤」，不是补丁问题）：Karpathy nanoGPT 默认 AdamW β=(0.9, 0.95)、**grad_clip 1.0**、**warmup 2000 步 + cosine 衰减到 0.1×**；DeepSeek-V3 报告同样是 β1 0.9、clip 1.0、2000 步 warmup。本仓契约（§1，为 1000 步实验定的）是 β1 **0.8**、**无主干裁剪**、**warmup 100 步**、**恒定峰值 LR 禁衰减**。v27 的单臂步数是 7k–57k，相当于在峰值 LR 上停留 70–570 倍于 warmup 的时间，小模型被推到稳定边缘，OE 的闲置层先过线。
 **(e) Engram 对照**（官方 demo `engram_demo_v1.py`）：注入在中间层（`layer_ids`），表向量经 value 投影后乘一个**有界 sigmoid 门**（门 = RMSNorm(key)·RMSNorm(hidden)/√d），再加 short-conv；不是在 wte 上无门控裸加。论文正文里的优化器表我没拿到全文，是否报告过发散**未核**。
 **(f) 在跑（~1–3h）**：Y0 扩展探针复现；Y1 qk-layernorm（仅诊断，不进主线）；Y2 β1=0.9（vanilla nanoGPT 默认）；Y3 qk-norm 上三个长训练发散配置。**待用户拍板（P5）**：v28 契约是否回到 vanilla 默认（β1 0.9 + 主干 clip 1.0 + 更长 warmup），以及恒定 LR 与 LR 量级（3e-4）如何取舍。
+
+**§149 补（18:00）：机制链与两组诊断臂读数**
+- **Y0（扩展探针，17M R/N=2 s42 / R/N=8 s43）**：失控层都是第 1 层。onset 前 1500–4000 步，第 1 层的头**全部停在位置 0 的 BOS（token 8188）上**——每个 query 的最大注意 key 都是位置 0（top-key 占比 0.97–1.00），BOS 注意力质量 0.5–0.6，即「注意力 sink / 空操作头」；同期 BOS 位置的残差持续变大（第 1 层输入 max|x| 2.7 → 20，位置 0 的 token RMS 0.7 → 2.9，massive activation）。随后某个头从 sink 切到普通内容 token（307、354，高频词），最大 logit 在 ~300 步内从 ~200 涨到 10⁴–10⁵，熵塌到 ~0，‖W_q‖ 从 ~10 涨到 100+。同 seed nogram 的第 1 层则在 step 2000 前就形成一个低熵但有界的局部头（熵 0.33→0.13，最大 logit ~50），整个训练不失控。**机制链（数据支持，因果仍待注入层位置检验）**：表接管了第 1 层的局部上下文工作 → 第 1 层头闲置、停到 BOS sink 上 → sink 残差与 q/k 范数缓慢变大 → 在恒定峰值 LR 下越过阈值，logit 二次增长失控。
+- **Y1 qk-layernorm**：17M R/N=2 与 R/N=8 两个必发散配置都越过原 onset 后健康（step 5500 / 5030，val 3.139 / 3.110；qkn nogram @5770 3.152）。与机制一致：限制 q·k 的尺度即消除失控。
+- **Y2 β1=0.9（vanilla nanoGPT 默认）**：OE 两臂仍发散（3500 / 3540），**nogram 也在 1770 发散**（val 6.52）——单换回 vanilla β1 更不稳，契约的 β1=0.8 不是病因。
+- **Y4 已排**：qk-norm 在主设定（50M D/N=20 R/N=8，s42/s43，同机 qkn nogram 配对）是否改变 OE 收益；35M dn80 / 50M dn56 的 qkn nogram 配对；17M R/N=8 s42。
