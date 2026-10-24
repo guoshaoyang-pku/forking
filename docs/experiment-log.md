@@ -7195,17 +7195,17 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | ID | 组 | 目标主机 | run_id | token预算（B） | 状态 |
 |---|---|---|---|---:|---|
 | J01 | `long_qkn_replication` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed` | 8.4 | running |
-| J02 | `long_qkn_replication` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed` | 8.4 | running |
+| J02 | `long_qkn_replication` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed` | 8.4 | done / 待科学复核 |
 | J03 | `long_qkn_replication` | a100_t1 | `v27_50m_exact_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed` | 8.4 | running |
-| J04 | `long_qkn_replication` | a100_t1 | `v27_50m_nogram_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed` | 8.4 | running |
-| J05 | `long_qkn_replication` | a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 8.4 | running |
-| J06 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 8.4 | running |
-| J07 | `long_qkn_replication` | a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | running |
-| J08 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | running |
+| J04 | `long_qkn_replication` | a100_t1 | `v27_50m_nogram_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed` | 8.4 | done / 待科学复核 |
+| J05 | `long_qkn_replication` | a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 8.4 | done / 待科学复核 |
+| J06 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 8.4 | done / 待科学复核 |
+| J07 | `long_qkn_replication` | a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | done / 待科学复核 |
+| J08 | `long_qkn_replication` | a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 8.4 | done / 待科学复核 |
 | J09 | `main_setting_seed44` | a100_t1_2 | `v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | done / 待科学复核 |
 | J10 | `main_setting_seed44` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed` | 3 | done / 待科学复核 |
-| J11 | `repeat_budget_e6` | perm | `v27_50m_exact_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | running |
-| J12 | `repeat_budget_e6` | perm | `v27_50m_nogram_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | running |
+| J11 | `repeat_budget_e6` | perm | `v27_50m_exact_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | done / 待科学复核 |
+| J12 | `repeat_budget_e6` | perm | `v27_50m_nogram_r400k_dn20_tls1_s42_e6_qkn_fixed` | 6 | done / 待科学复核 |
 | J13 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls2_s42_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
 | J14 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls1_s43_e3_fixed` | 1.02 | done / 待科学复核 |
 | J15 | `lr_factorial_r35` | a100_t1_4 | `v27_17m_exact_r35k_dn20_tls0.5_s43_e3_fixed` | 1.02 | done / 待科学复核 |
@@ -7217,13 +7217,13 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J21 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls0.5_s43_e3_fixed` | 1.02 | done / 待科学复核 |
 | J22 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls1_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
 | J23 | `lr_factorial_r136` | a100_t1_4 | `v27_17m_exact_r136k_dn20_tls2_s43_e3_lr0.0003_fixed` | 1.02 | done / 待科学复核 |
-| J24 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
-| J25 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
+| J24 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | done / 待科学复核 |
+| J25 | `long_lr_decoupling` | perm | `v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed` | 8.4 | done / 待科学复核 |
 | J26 | `long_lr_decoupling` | perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
-| J27 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
-| J28 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
-| J29 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | running |
-| J30 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s42_e3_p27b_lr0.0003_fixed` | 8.4 | running |
+| J27 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | done / 待科学复核 |
+| J28 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed` | 8.4 | done / 待科学复核 |
+| J29 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 8.4 | done / 待科学复核 |
+| J30 | `long_lr_decoupling` | a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s42_e3_p27b_lr0.0003_fixed` | 8.4 | done / 待科学复核 |
 | J31 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_exact_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | done / 待科学复核 |
 | J32 | `healthy_baseline_35m` | a100_t1_4 | `v27_35m_nogram_r280k_dn20_tls0.5_s42_e3_qkn_fixed` | 2.1 | done / 待科学复核 |
 | J33 | `same_host_controls` | a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s44_e3_hostcontrol20261024_fixed` | 3 | done / 待科学复核 |
@@ -7231,12 +7231,12 @@ A100 舰队队列收割（335 任务：301 done / 17 running / 17 fail）。数�
 | J35 | `same_host_controls` | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s43_e3_hostcontrol20261024_qkn_fixed` | 1.02 | done / 待科学复核 |
 | J36 | `reserve_repeat_budget` | perm | `v27_50m_exact_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
 | J37 | `reserve_repeat_budget` | perm | `v27_50m_nogram_r400k_dn20_tls1_s44_e6_qkn_fixed` | 6 | planned |
-| J38 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_exact_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | running |
-| J39 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_nogram_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | running |
+| J38 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_exact_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | done / 待科学复核 |
+| J39 | `reserve_data_envelope` | a100_t1_2 | `v27_50m_nogram_r400k_dn40_tls1_s42_e3_qkn_fixed` | 6 | done / 待科学复核 |
 | J40 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_exact_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | running |
-| J41 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_nogram_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | running |
-| J42 | `reserve_data_envelope` | a100_t1 | `v27_50m_exact_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | running |
-| J43 | `reserve_data_envelope` | a100_t1 | `v27_50m_nogram_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | running |
+| J41 | `reserve_repeat_budget` | a100_t1_4 | `v27_50m_nogram_r400k_dn20_tls1_s43_e6_qkn_fixed` | 6 | done / 待科学复核 |
+| J42 | `reserve_data_envelope` | a100_t1 | `v27_50m_exact_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | done / 待科学复核 |
+| J43 | `reserve_data_envelope` | a100_t1 | `v27_50m_nogram_r400k_dn40_tls1_s43_e3_qkn_fixed` | 6 | done / 待科学复核 |
 
 ### 命令和完成验收
 
@@ -7448,3 +7448,72 @@ J10 `v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed`（t1_2、seed44）完成20
 J09 `v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed` 与J10 `v27_50m_nogram_r400k_dn20_tls1_s44_e3_qkn_fixed`，t1_2、seed44、dn20，均完成三遍20345步。DONE/summary/登记预算/配置/SHA核验通过。末60共同点加表/无表val=2.652865/2.673304，ΔVal=−20.438 mnat/token；最终单点差−20.724 mnat/token。末窗稳定，属于此seed与预算的配对收益。
 
 证据：`outputs/takeover_20261024/overnight_results/snapshots/20261023T224737.680990Z/review.json`。当前30/32卡占用，t1_2两卡因本机清单全部领取而释放。新清单18臂结束、23臂active、2臂仍在perm待领，可比较active均推进，无调度告警；不跨机搬动配对或新增任务。
+
+### 07:47 heartbeat：持续空卡确认
+
+与07:27相隔1195秒的快照确认，t1_4 GPU1持续空闲，该机20个登记任务全部已领取（14结束、6在跑），调度器存在且磁盘余量充足，无待领任务，因此不执行恢复或迁移。t1_2 GPU4/6保持空闲且同样无待领。合计29/32卡占用；清单18臂结束、23臂在跑、仅perm有2臂待领。全部23条可比较在跑任务步数推进，无新增结束、失败或调度告警。未改配置、预算或claim，未收割重复结果。状态证据为 outputs/takeover_20261024/overnight_status.json 及 overnight_status.previous.json；08:00后未领取项保持待定。
+
+### 08:07 heartbeat：领取截止已生效
+
+四机夜间dispatcher均已退出（agents为空），原有23条夜间训练全部继续推进，未延长预算。无新增结束、失败或告警，仍29/32卡占用。perm的两个六遍seed44任务未领取，保持待定：`v27_50m_exact_r400k_dn20_tls1_s44_e6_qkn_fixed` 与 `v27_50m_nogram_r400k_dn20_tls1_s44_e6_qkn_fixed`。累计18臂结束、23臂在跑、2臂未领取；结束不等于科学成功。截止快照已固定保存至 `outputs/takeover_20261024/cutoff_20261024_0807/`。未恢复调度器、未新增或迁移任务。原20分钟节拍无法命中08:20，已将本heartbeat调整为08:20最后一次巡检，结束后暂停。
+
+### 08:24 最终巡检：夜间heartbeat已暂停
+
+08:20计划的最后唤醒实际于08:24到达。四机dispatcher仍全部退出，与08:07比较无新增领取、完成或失败，23条在跑任务全部推进。累计18臂结束、23臂在跑、2臂未领取；结束数量不代表科学成功。当前28/32卡占用，perm新增一张空卡，但已过领取截止，不恢复调度器、不迁移或补跑。未领取的perm seed44六遍加表/无表任务继续待定；已启动训练保持原注册终点。
+
+最终及上一快照固定保存于 `outputs/takeover_20261024/final_20261024_0824/`。本轮无新增终止项，未重复收割。原生heartbeat `a100` 已通过工具确认为PAUSED，停止自动巡检；这不停止远端训练。后续接手者须重新查状态并收割新终止项，不能把本快照当作全清单完成。未push或发布。
+
+### 14:35 人工接续查收：稳定性与泛化分开判决
+
+最新只读状态：43臂中37臂结束、4臂继续原预算、2臂未领取；DONE与退出码成功不代表科学成功。四机调度器保持退出，未新增、恢复、迁移或改变预算。夜间heartbeat继续暂停。本次收割证据为 `outputs/takeover_20261024/overnight_results/snapshots/20261024T063619.273780Z/review.json`，保留小日志、summary及SHA-256；未访问借出的a100_t1_3。下表补登记自上次查收以来结束的新臂，绝对val为最终单点，不代替末60共同点配对。
+
+| 主机 | run_id | 最终步数 | 最终val |
+|---|---|---:|---:|
+| perm | `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed` | 56966 | 2.585804 |
+| perm | `v27_50m_exact_r400k_dn20_tls1_s42_e6_qkn_fixed` | 40689 | 2.694585 |
+| perm | `v27_50m_nogram_r400k_dn20_tls1_s42_e6_qkn_fixed` | 40689 | 2.620056 |
+| perm | `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed` | 56966 | 2.542257 |
+| perm | `v27_50m_exact_r400k_dn56_tls2_s43_e3_p27b_lr0.0003_fixed` | 56966 | 2.545594 |
+| a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 56966 | 2.640186 |
+| a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` | 56966 | 2.707636 |
+| a100_t1_2 | `v27_35m_exact_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 56966 | 2.635273 |
+| a100_t1_2 | `v27_35m_nogram_r280k_dn80_tls0.5_s44_e3_p27b_qkn_fixed` | 56966 | 2.711087 |
+| a100_t1_2 | `v27_50m_exact_r400k_dn40_tls1_s42_e3_qkn_fixed` | 40690 | 2.554432 |
+| a100_t1_2 | `v27_50m_nogram_r400k_dn40_tls1_s42_e3_qkn_fixed` | 40690 | 2.605962 |
+| a100_t1_4 | `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 56966 | 6.594295 |
+| a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed` | 56966 | 2.654931 |
+| a100_t1_4 | `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` | 56966 | 2.733554 |
+| a100_t1_4 | `v27_35m_exact_r280k_dn80_tls1_s42_e3_p27b_lr0.0003_fixed` | 56966 | 2.677102 |
+| a100_t1_4 | `v27_50m_nogram_r400k_dn20_tls1_s43_e6_qkn_fixed` | 40689 | 2.619326 |
+| a100_t1 | `v27_50m_nogram_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed` | 56966 | 2.578800 |
+| a100_t1 | `v27_50m_exact_r400k_dn40_tls1_s43_e3_qkn_fixed` | 40690 | 2.555129 |
+| a100_t1 | `v27_50m_nogram_r400k_dn40_tls1_s43_e3_qkn_fixed` | 40689 | 2.606270 |
+
+关键判决（Δ为加表减无表；负数更好，单位mnat/token）：
+
+- **六遍训练收益反转**：perm `v27_50m_{exact,nogram}_r400k_dn20_tls1_s42_e6_qkn_fixed` 同机完整40689步，末60共同点val 2.693086/2.620214，Δ=+72.872；同时train Δ=−185.108。exact最低val 2.633885@20200，此后E4/E5/E6尾点2.6407/2.6647/2.6946，而无表持续改善。与过拟合一致，不能称注意力发散或把qkn写作无条件“保收益”。seed43六遍加表尚在跑，不能提前合并。
+- **长训归一化两种子复现**：t1_2 `v27_35m_{exact,nogram}_r280k_dn80_tls0.5_s43_e3_p27b_qkn_fixed` 与同名s44均完成56966步。末60共同点Δ分别−67.768、−74.442，绝对val分别2.641622/2.709390及2.636940/2.711382；四臂末窗窄且继续改善。这支持该规模/预算/两颗种子的稳定收益，不证明所有规模或重复遍数均有效。
+- **降LR不是单旋钮保证**：t1_4 `v27_35m_exact_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed`（主干与表同时减半）最终val6.594295，末60均值6.648023，最低2.935992@18540后发散；同机同seed `v27_35m_exact_r280k_dn80_tls1_s43_e3_p27b_lr0.0003_fixed`（只降主干，保持表实际LR）最终2.654931，末60均值2.656090。对无表 `v27_35m_nogram_r280k_dn80_tls0.5_s43_e3_p27b_lr0.0003_fixed` 末60差为−77.246。实际表LR=主干LR×TLS，不能把两种处理混称“backbone LR 3e-4救活”。这是单seed对照，尚不能推广机制。
+- J42/J43 dn40 seed43数据池/步数不匹配，仍仅用于稳定性探索，不能作严格加表效应；旧缺失配置字段的比较保持manual_review。60个时序验证点不是60颗独立种子。
+
+仍在跑（本快照，不是最终结果）：
+- perm `v27_50m_exact_r400k_dn56_tls1_s43_e3_p27b_qkn_fixed`：53020步，最近val 2.525694，继续原登记预算。
+- perm `v27_50m_nogram_r400k_dn56_tls1_s43_e3_p27b_lr0.0003_fixed`：56520步，最近val 2.605701，继续原登记预算。
+- a100_t1_4 `v27_50m_exact_r400k_dn20_tls1_s43_e6_qkn_fixed`：38690步，最近val 2.692527，继续原登记预算。
+- a100_t1 `v27_50m_exact_r400k_dn56_tls1_s44_e3_p27b_qkn_fixed`：52680步，最近val 2.528424，继续原登记预算。
+
+未领取：perm seed44六遍加表/无表对保持待定，不自动补跑。下一接手者先运行status，再收割这四条的新终止项；配对未齐不算最终收益。
+
+
+### 14:38 旧长训另行查收（不计入夜间43臂）
+
+证据：`outputs/takeover_20261024/legacy_final_check/20261024T143858/audit.json`。以下六臂均有DONE、summary和完整56,966步，日志/summary保留SHA-256；是本次重新读取的旧任务完成证据，不能与夜间新清单完成数相加冒充新臂。
+
+| 设置及host | run_id（展开为加表/无表） | 末60共同点加表/无表val | Δ mnat/token |
+|---|---|---|---:|
+| 50M dn56 seed42 qkn，a100_perm | `v27_50m_{exact,nogram}_r400k_dn56_tls1_s42_e3_p27b_qkn_fixed` | 2.525462490 / 2.584698190 | −59.236 |
+| 50M dn56 seed42 v28，a100_t1_4 | `v27_50m_{exact,nogram}_r400k_dn56_tls1_s42_e3_p27b_v28_fixed` | 2.474061405 / 2.562517927 | −88.457 |
+
+两对共同窗口均为56,380–56,966；末窗loss范围窄，无晚期剧烈恶化。两对内部微批量分别18/36，但有效batch与每遍数据池2,799,968,256 token一致；稳定性探针频率100/0差异保留。人工配置差异核对见audit的config_differences，不能把文件完成检查等同于所有历史数据指纹已经重验。qkn与v28之间跨机、多项优化配置不同，不以这两个差值直接排名修复优劣。
+
+35M dn80 seed42：`v27_35m_exact_r280k_dn80_tls0.5_s42_e3_p27b_qkn_fixed`在a100_t1_2，末60val 2.638886078；`v27_35m_nogram_r280k_dn80_tls0.5_s42_e3_p27b_qkn_fixed`在a100_t1_4，末60val 2.706299662。两臂均完整结束，但跨机，不纳入严格同机主收益表。原版不同进度末值−63.8/−51.6不得继续作为完整终点效果。
