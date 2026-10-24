@@ -1,0 +1,3975 @@
+{
+  "schema_version": 1,
+  "status": "registered_not_launched",
+  "authorization": "Current user: prioritize restoring queues and directly schedule suitable experiments; root review/preflight required, no further user budget reconfirmation implied",
+  "queue_dir": "/home/cfs/guoshaoyang/nglab_queue_nightfill_20261024",
+  "claim_cutoff": "2026-10-25T16:56:48+08:00",
+  "after_cutoff": "no new claims; started runs finish registered E3; no automatic retry",
+  "allowed_hosts": [
+    "a100_t1",
+    "a100_t1_4",
+    "perm",
+    "a100_t1_2"
+  ],
+  "host_roots": {
+    "perm": "/data2/guoshaoyang/ngram-gap-lab-v27",
+    "a100_t1_2": "/home/tione/guoshaoyang/ngram-gap-lab",
+    "a100_t1_4": "/home/tione/guoshaoyang/ngram-gap-lab",
+    "a100_t1": "/home/tione/guoshaoyang/ngram-gap-lab"
+  },
+  "code_sha256": {
+    "code/train.py": "f8a1f1b31c4579de8a69b9f46d47d53168c59a95783fb3c5ab4d232de456a91d",
+    "code/ngram_freq.py": "3ab088d66d885fb436e991e408dd869df0dd4760a56bd4f566cf5c084b5b847d",
+    "code/moe.py": "2d92e5afd126bdb2de250bba7b67c8f98d28b2704458ef64364132ce691ec54e",
+    "code/tools/v27_prefix.py": "9bb97d27ddf4bcb7507dc7d63fc335a6faf2f0955b87d1ad8f0b8e5fcd2383a0",
+    "code/cluster/run_v27.sh": "5d4b57688caf9a917c96de7227b2615a7cae4f8a71369ab866509eafb7f99388",
+    "code/cluster/fleet_queue.py": "50abdb07222359181d8e09b3d4898d0a292bc8f5559590b213f3a226537cdd94",
+    "code/cluster/capnext_fleet_queue.py": "4ed9ef43806f490839ff333b9a6f421154496d4b2cb216c43f61e0b1cbaaf884",
+    "code/cluster/nightfill_fleet_queue.py": "266c85c501788baf3f80cb343b7aea147b255cab41869825af5b154281c6c5ef",
+    "code/cluster/run_nightfill_20261024.sh": "7e5b2ef8c53eceac257765d46ab45b1f07c1722426934cd3eefa932a2f447018"
+  },
+  "input_fingerprints": {
+    "data/assignments/assign_exact_r100k.npz": {
+      "bytes": 3061021,
+      "sha256": "10fbcb060ed6f5c996d21862fe5a61f7425154124ed5b95d19aadb2c190068e2"
+    },
+    "data/assignments/assign_exact_r12k.npz": {
+      "bytes": 401561,
+      "sha256": "c566315d6587201d734e8c96ef4fcd4f7233619e3ae108beed5cdaf4d030119a"
+    },
+    "data/assignments/assign_exact_r25k.npz": {
+      "bytes": 810988,
+      "sha256": "5d77971190370240b1b24fff8a0baba87115f8d543ce7a89b7571372cb55d2a4"
+    },
+    "data/assignments/assign_exact_r50k.npz": {
+      "bytes": 1575263,
+      "sha256": "69004c50b1d74df71d57b51b5edfd61ba7fa8d416cefe0dba513cffcf1dd21ca"
+    },
+    "data/assignments/assign_exact_r6k.npz": {
+      "bytes": 206815,
+      "sha256": "bc5e5133868c6d5ffb99fec49a3c453d1a41bc38930f1344953e6baa41a5a9eb"
+    },
+    "data/freq_index_o2to5_1b_f30.npz": {
+      "bytes": 106897508,
+      "sha256": "f6773ca851967387c41c1a9f396c029f1de429f512e0fddf94d67ad5d86d42e2"
+    },
+    "data/tokenized_v27/manifest.json": {
+      "bytes": 10399,
+      "sha256": "c879b0e7926d353e7cce23fc2c4440d2ae13f64813d69357d03f00fbd178d7aa"
+    },
+    "data/tokenized_v27/shard_00001.bin": {
+      "bytes": 99019974,
+      "sha256": "f0f0360868c1a2d766c55956e5e88bd6e3b8b9c4a52d224b22fd5d5a76fc7792"
+    },
+    "data/tokenized_v27/shard_00002.bin": {
+      "bytes": 98253648,
+      "sha256": "818f72cf97875ec11118f6332240f5431ed84485c4c95072c944b0fefe13f2c0"
+    },
+    "data/tokenized_v27/shard_00011.bin": {
+      "bytes": 96667722,
+      "sha256": "c55220e7f8314e89563dc8b4cd6bd496929aaec98283c49712a5bcca0eb29856"
+    },
+    "data/tokenized_v27/shard_00012.bin": {
+      "bytes": 96630840,
+      "sha256": "9b2fe34f0937828c71895ddeea5e3c3100e6f65fcdc8b9f8c1b64f877a8abe29"
+    },
+    "data/tokenized_v27/shard_00013.bin": {
+      "bytes": 97729104,
+      "sha256": "429e66d74cee3cbcc0a64cadce94360483431666c12eb1f19d3372443a879852"
+    },
+    "data/tokenized_v27/shard_00014.bin": {
+      "bytes": 97544694,
+      "sha256": "9c29545ca891ebbf9af168c1de03f211f7c9d5a77ffe85fbebca42378d14386e"
+    },
+    "data/tokenized_v27/shard_00015.bin": {
+      "bytes": 97462734,
+      "sha256": "0e19f7cd4371be46893d42d6918a5afe53234c9148c72e8ef543239033d14ee1"
+    },
+    "data/tokenized_v27/shard_00016.bin": {
+      "bytes": 98056944,
+      "sha256": "3a74cc96fe914ceabebdc09595744ec6273c5655a97a1ac1ab1b62e4234ad0a3"
+    },
+    "data/tokenized_v27/shard_00017.bin": {
+      "bytes": 98126610,
+      "sha256": "f67524830a92eda4516b49e5dab277f29b4fb23d749b8cd3ab683686dad789f7"
+    },
+    "data/tokenized_v27/shard_00018.bin": {
+      "bytes": 97798770,
+      "sha256": "3fb21b4ce061be8f5d7f5b1ed335ce2d89ade2459ddce0b29ffb6a78aee7e537"
+    },
+    "data/tokenized_v27/shard_00019.bin": {
+      "bytes": 96897210,
+      "sha256": "5c73fe73fe40a41f7d16bda5774788268e03fd7926050a2d62cb9ea8395cd33b"
+    },
+    "data/tokenized_v27/shard_00020.bin": {
+      "bytes": 98716722,
+      "sha256": "27520703052a8133e3dfd5b7e0b081360a761976ffdbcbff8108384ffb07a93d"
+    },
+    "data/tokenized_v27/shard_00021.bin": {
+      "bytes": 97815162,
+      "sha256": "6a3ac2e34cb29816b160f0c283d7a532e8a47bd04705e125d69fe53edb1c23ee"
+    },
+    "data/tokenized_v27/shard_00022.bin": {
+      "bytes": 98700330,
+      "sha256": "99b5b4418be711afe83ebc597a1b02cf640b517ad5ecbce341bf0948fb2d585f"
+    },
+    "data/tokenized_v27/shard_00023.bin": {
+      "bytes": 98134806,
+      "sha256": "f5824c020cf86b3dd49aaa81453d9b024c351d8d9fd3f6f04be6aaefe35638ac"
+    },
+    "data/tokenized_v27/shard_00025.bin": {
+      "bytes": 98380686,
+      "sha256": "6acc856ac2c29807fb08a669322708052dc40a888ff96f11f9777f41f1a290f2"
+    },
+    "data/tokenized_v27/shard_00026.bin": {
+      "bytes": 97790574,
+      "sha256": "6ee4ba0b4c438936d979ab5a50cc3d12f05594daf950b4e76030d7e3940aa465"
+    },
+    "data/tokenized_v27/shard_00027.bin": {
+      "bytes": 96614448,
+      "sha256": "e585c0f4fd353e37e58bd53e3ffb44b1307fab3f81760a4bc37eea21d87450b4"
+    },
+    "data/tokenized_v27/shard_00028.bin": {
+      "bytes": 98081532,
+      "sha256": "0371aaf41f4f196000b6a27a94489bf6a1388cc1b7e5f6bcbaecb5ee78bb6e7a"
+    },
+    "data/tokenized_v27/shard_00029.bin": {
+      "bytes": 96581664,
+      "sha256": "d2a7765c971384b0728cb2129efd14107d807fa58b9db88f07b6821945af9267"
+    },
+    "data/tokenized_v27/shard_00030.bin": {
+      "bytes": 97483224,
+      "sha256": "2d016efcb053b6c82fde8a28facbc3d05fab32d54341daa7f268c6b7a41fc76a"
+    },
+    "data/tokenized_v27/shard_00031.bin": {
+      "bytes": 96893112,
+      "sha256": "b3fb9d9d931f5e1affe3c81b547f8b65673ed09cd02d5e4b2c0c1a2b2010e1e6"
+    },
+    "data/tokenized_v27/shard_00032.bin": {
+      "bytes": 98110218,
+      "sha256": "d629139ca9ed1b46a86f2654682738892a357839eba8aeec09041c548e27d501"
+    },
+    "data/tokenized_v27/shard_00033.bin": {
+      "bytes": 97696320,
+      "sha256": "9b9de2d30f8d8df2e6ebb925ccc1c2cc21024bb01cc53a958c296b07d0a9d081"
+    },
+    "data/tokenized_v27/shard_00034.bin": {
+      "bytes": 98634762,
+      "sha256": "30c1ef45f964a96370596ab54dd05a3b94adbe2312e2bfc3c8e975c22467de30"
+    },
+    "data/tokenized_v27/shard_00035.bin": {
+      "bytes": 96979170,
+      "sha256": "42cafacab8397393daac419a9d441498def841779903b8fad177f1ea7fd50ba9"
+    },
+    "data/tokenized_v27/shard_00036.bin": {
+      "bytes": 96860328,
+      "sha256": "ca9daa2ee8f8bfc76cb69f927a3c1259d89f00a109a29779a586eec4e7d5493e"
+    },
+    "data/tokenized_v27/shard_00037.bin": {
+      "bytes": 96655428,
+      "sha256": "f4fbcc666081f3e0fd21277a0acd357c0f10cebbf54893233287b88bdc7488c8"
+    },
+    "data/tokenized_v27/shard_00038.bin": {
+      "bytes": 97548792,
+      "sha256": "a93c5bedad0cf8cac5713b8a7f900190abafbc537a5f8836e24f33e57c25cdd0"
+    },
+    "data/tokenized_v27/shard_00039.bin": {
+      "bytes": 97811064,
+      "sha256": "58dd8a2ec990648d34114b541456575930aa28138210478cdd15a4ce0c891a56"
+    },
+    "data/tokenized_v27/shard_00040.bin": {
+      "bytes": 96946386,
+      "sha256": "a7b70f07f3f562dfcedb5a326f3581b01f8498f92ad07d03931915cc3d4f1aa5"
+    },
+    "data/tokenized_v27/shard_00041.bin": {
+      "bytes": 97761888,
+      "sha256": "70d78de96c4c130242aea7dea7ca5e4fe72f5cc98f228b461d97e495dcd113c7"
+    },
+    "data/tokenized_v27/shard_00042.bin": {
+      "bytes": 96651330,
+      "sha256": "82b7eb28a1e21442709f9e43f42b98ad453e992fbb1ac87170f3b3933c2e8d39"
+    },
+    "data/tokenized_v27/shard_00043.bin": {
+      "bytes": 96893112,
+      "sha256": "2bf935945114cacbf1b4e7b6e2180ff179370cf4b211f45bafacd1369f82884f"
+    },
+    "data/tokenized_v27/shard_00044.bin": {
+      "bytes": 97442244,
+      "sha256": "605c6f8301e9c5ca2748c817ea186a94a0aeb076cb5ecd9d1651a9f098f5dac0"
+    },
+    "data/tokenized_v27/shard_00045.bin": {
+      "bytes": 95762064,
+      "sha256": "0c93ee929e510c7dc378edbedc178a608883581032d40c6a5ba26baa3147784c"
+    },
+    "data/tokenized_v27/shard_00046.bin": {
+      "bytes": 97761888,
+      "sha256": "24a85afa5f551c099efe48716a121bfc386d0362de8813dccbaaee781c775c76"
+    },
+    "data/tokenized_v27/shard_00047.bin": {
+      "bytes": 96995562,
+      "sha256": "a35727e0c0858c77ae293498e39460311f7671d032daa74e6fe66229c508e1e1"
+    },
+    "data/tokenized_v27/shard_00048.bin": {
+      "bytes": 98110218,
+      "sha256": "8355bba178659d64cf6f583fbe9a0b42c6b4cc1b32cd55bc323d80141aaf1488"
+    },
+    "data/tokenized_v27/shard_00049.bin": {
+      "bytes": 97839750,
+      "sha256": "f20c845a2dc08b1f80f277c04fce45b460209926c2c9967cab7b2a37f3a3da2c"
+    },
+    "data/tokenized_v27/shard_00050.bin": {
+      "bytes": 95639124,
+      "sha256": "f2ba1caeec5c886176ded10f394582f6588e7ace98cd3d663c8d8ec8eb69192d"
+    },
+    "data/tokenized_v27/shard_00051.bin": {
+      "bytes": 97147188,
+      "sha256": "2904f8e25825d2c5aeba44f1dfb122e90014b06072de4ef452ad6bb99ea8c552"
+    },
+    "data/tokenized_v27/shard_00052.bin": {
+      "bytes": 96618546,
+      "sha256": "0ca7160b04c4d5bbfcf0267b92e61c716959591da50033d95080ca125e78da94"
+    },
+    "data/tokenized_v27/shard_00053.bin": {
+      "bytes": 95749770,
+      "sha256": "f03324a3f6a18bedba84498ac4add21cb3e566aae374cf61fa506f1ac4cfeccc"
+    }
+  },
+  "jobs_sha256": "a5882b53ad14dcf8207ee175faa8c7a32749803ce144695bf6b33b18f34344c4",
+  "nominal_tokens_total": 126300000000,
+  "jobs": [
+    {
+      "id": "R01",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 45,
+      "arm": "nogram",
+      "rk": 136,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "17M matched non-QKN replication; only qkn toggled relative to existing arm",
+      "run_id": "v27_17m_nogram_r136k_dn20_tls1_s45_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_nogram_r136k_dn20_tls1_s45_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "17m",
+        "nogram",
+        "45"
+      ],
+      "nominal_tokens": 1020000000,
+      "table_parameters": 0,
+      "expected_pool_tokens": 339996672,
+      "expected_steps": 6918,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        }
+      ],
+      "source_job": "v27_17m_nogram_r136k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "paired_qkn_run": "v27_17m_nogram_r136k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "group": "17m_nonq",
+      "claim_key": "9d84883e91d2",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R02",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "17M matched non-QKN replication; only qkn toggled relative to existing arm",
+      "run_id": "v27_17m_exact_r6k_dn20_tls1_s45_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_exact_r6k_dn20_tls1_s45_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 1020000000,
+      "table_parameters": 12288000,
+      "expected_pool_tokens": 339996672,
+      "expected_steps": 6918,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_exact_r6k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s45_e3_nightfill24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "source_job": "v27_17m_exact_r6k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "paired_qkn_run": "v27_17m_exact_r6k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "group": "17m_nonq",
+      "claim_key": "d127d540083a",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R03",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "17M matched non-QKN replication; only qkn toggled relative to existing arm",
+      "run_id": "v27_17m_exact_r12k_dn20_tls1_s45_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_exact_r12k_dn20_tls1_s45_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 1020000000,
+      "table_parameters": 24576000,
+      "expected_pool_tokens": 339996672,
+      "expected_steps": 6918,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_exact_r12k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s45_e3_nightfill24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "source_job": "v27_17m_exact_r12k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "paired_qkn_run": "v27_17m_exact_r12k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "group": "17m_nonq",
+      "claim_key": "ac1f2482f7f1",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R04",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "17M matched non-QKN replication; only qkn toggled relative to existing arm",
+      "run_id": "v27_17m_exact_r25k_dn20_tls1_s45_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_exact_r25k_dn20_tls1_s45_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 1020000000,
+      "table_parameters": 51200000,
+      "expected_pool_tokens": 339996672,
+      "expected_steps": 6918,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_exact_r25k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s45_e3_nightfill24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "source_job": "v27_17m_exact_r25k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "paired_qkn_run": "v27_17m_exact_r25k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "group": "17m_nonq",
+      "claim_key": "19859434af7d",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R05",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 46,
+      "arm": "nogram",
+      "rk": 136,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "17M matched non-QKN replication; only qkn toggled relative to existing arm",
+      "run_id": "v27_17m_nogram_r136k_dn20_tls1_s46_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_nogram_r136k_dn20_tls1_s46_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "17m",
+        "nogram",
+        "46"
+      ],
+      "nominal_tokens": 1020000000,
+      "table_parameters": 0,
+      "expected_pool_tokens": 339996672,
+      "expected_steps": 6918,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        }
+      ],
+      "source_job": "v27_17m_nogram_r136k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+      "paired_qkn_run": "v27_17m_nogram_r136k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+      "group": "17m_nonq",
+      "claim_key": "01a76f1090b0",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R06",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "17M matched non-QKN replication; only qkn toggled relative to existing arm",
+      "run_id": "v27_17m_exact_r6k_dn20_tls1_s46_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_exact_r6k_dn20_tls1_s46_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 1020000000,
+      "table_parameters": 12288000,
+      "expected_pool_tokens": 339996672,
+      "expected_steps": 6918,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_exact_r6k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s46_e3_nightfill24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "source_job": "v27_17m_exact_r6k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+      "paired_qkn_run": "v27_17m_exact_r6k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+      "group": "17m_nonq",
+      "claim_key": "e4daf384ee4f",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R07",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "17M matched non-QKN replication; only qkn toggled relative to existing arm",
+      "run_id": "v27_17m_exact_r12k_dn20_tls1_s46_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_exact_r12k_dn20_tls1_s46_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 1020000000,
+      "table_parameters": 24576000,
+      "expected_pool_tokens": 339996672,
+      "expected_steps": 6918,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_exact_r12k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s46_e3_nightfill24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "source_job": "v27_17m_exact_r12k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+      "paired_qkn_run": "v27_17m_exact_r12k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+      "group": "17m_nonq",
+      "claim_key": "16d48b0a8071",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R08",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "17M matched non-QKN replication; only qkn toggled relative to existing arm",
+      "run_id": "v27_17m_exact_r25k_dn20_tls1_s46_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_exact_r25k_dn20_tls1_s46_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 1020000000,
+      "table_parameters": 51200000,
+      "expected_pool_tokens": 339996672,
+      "expected_steps": 6918,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_exact_r25k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s46_e3_nightfill24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "source_job": "v27_17m_exact_r25k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+      "paired_qkn_run": "v27_17m_exact_r25k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+      "group": "17m_nonq",
+      "claim_key": "922248b06d36",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R09",
+      "host": "a100_t1_4",
+      "model": "17m",
+      "seed": 47,
+      "arm": "nogram",
+      "rk": 136,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "17M matched non-QKN replication; only qkn toggled relative to existing arm",
+      "run_id": "v27_17m_nogram_r136k_dn20_tls1_s47_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_17m_nogram_r136k_dn20_tls1_s47_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "17m",
+        "nogram",
+        "47"
+      ],
+      "nominal_tokens": 1020000000,
+      "table_parameters": 0,
+      "expected_pool_tokens": 339996672,
+      "expected_steps": 6918,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        }
+      ],
+      "source_job": "v27_17m_nogram_r136k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "paired_qkn_run": "v27_17m_nogram_r136k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "group": "17m_nonq",
+      "claim_key": "a77e069e44a8",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R10",
+      "host": "a100_t1_4",
+      "model": "17m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "17M matched non-QKN replication; only qkn toggled relative to existing arm",
+      "run_id": "v27_17m_exact_r6k_dn20_tls1_s47_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_17m_exact_r6k_dn20_tls1_s47_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 1020000000,
+      "table_parameters": 12288000,
+      "expected_pool_tokens": 339996672,
+      "expected_steps": 6918,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r6k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s47_e3_nightfill24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "source_job": "v27_17m_exact_r6k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "paired_qkn_run": "v27_17m_exact_r6k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "group": "17m_nonq",
+      "claim_key": "8b1ba55c7f54",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R11",
+      "host": "a100_t1_4",
+      "model": "17m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "17M matched non-QKN replication; only qkn toggled relative to existing arm",
+      "run_id": "v27_17m_exact_r12k_dn20_tls1_s47_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_17m_exact_r12k_dn20_tls1_s47_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 1020000000,
+      "table_parameters": 24576000,
+      "expected_pool_tokens": 339996672,
+      "expected_steps": 6918,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r12k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s47_e3_nightfill24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "source_job": "v27_17m_exact_r12k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "paired_qkn_run": "v27_17m_exact_r12k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "group": "17m_nonq",
+      "claim_key": "6e4a434e7484",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R12",
+      "host": "a100_t1_4",
+      "model": "17m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "17M matched non-QKN replication; only qkn toggled relative to existing arm",
+      "run_id": "v27_17m_exact_r25k_dn20_tls1_s47_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_17m_exact_r25k_dn20_tls1_s47_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 1020000000,
+      "table_parameters": 51200000,
+      "expected_pool_tokens": 339996672,
+      "expected_steps": 6918,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r25k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s47_e3_nightfill24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "source_job": "v27_17m_exact_r25k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "paired_qkn_run": "v27_17m_exact_r25k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "group": "17m_nonq",
+      "claim_key": "1fb6e537090b",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R13",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r6k_dn20_tls1_s45_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r6k_dn20_tls1_s45_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 15360000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r6k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "table_lr": 0.0006,
+      "source_job": "v27_35m_exact_r6k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "04cac7a2a56e",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R14",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r12k_dn20_tls1_s45_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r12k_dn20_tls1_s45_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 30720000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r12k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "table_lr": 0.0006,
+      "source_job": "v27_35m_exact_r12k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "371ef1ee0ec4",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R15",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r25k_dn20_tls1_s45_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r25k_dn20_tls1_s45_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 64000000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r25k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "table_lr": 0.0006,
+      "source_job": "v27_35m_exact_r25k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "761e09fe8d78",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R16",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r6k_dn20_tls1_s46_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r6k_dn20_tls1_s46_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 15360000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r6k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "table_lr": 0.0006,
+      "source_job": "v27_35m_exact_r6k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "aaa8be53d3b9",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R17",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r12k_dn20_tls1_s46_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r12k_dn20_tls1_s46_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 30720000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r12k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "table_lr": 0.0006,
+      "source_job": "v27_35m_exact_r12k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "4e69af31bc32",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R18",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r25k_dn20_tls1_s46_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r25k_dn20_tls1_s46_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 64000000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r25k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "table_lr": 0.0006,
+      "source_job": "v27_35m_exact_r25k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "dcc5e0ab5b37",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R19",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r6k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r6k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 15360000,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r6k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "table_lr": 0.0006,
+      "source_job": "v27_35m_exact_r6k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "b32b66f9e02a",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R20",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r12k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r12k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 30720000,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r12k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "table_lr": 0.0006,
+      "source_job": "v27_35m_exact_r12k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "576447043dfe",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R21",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r25k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r25k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 64000000,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r25k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "table_lr": 0.0006,
+      "source_job": "v27_35m_exact_r25k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "af8a35a5ebdd",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R22",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.25,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r6k_dn20_tls0.25_s45_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r6k_dn20_tls0.25_s45_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "0.25",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 15360000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r6k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "table_lr": 0.00015,
+      "source_job": "v27_35m_exact_r6k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "1931cabeb872",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R23",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.25,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r12k_dn20_tls0.25_s45_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r12k_dn20_tls0.25_s45_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "0.25",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 30720000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r12k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "table_lr": 0.00015,
+      "source_job": "v27_35m_exact_r12k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "7063e04a0031",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R24",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.25,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r25k_dn20_tls0.25_s45_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r25k_dn20_tls0.25_s45_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "0.25",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 64000000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r25k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "table_lr": 0.00015,
+      "source_job": "v27_35m_exact_r25k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "9c2e3da7657a",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R25",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.25,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r6k_dn20_tls0.25_s46_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r6k_dn20_tls0.25_s46_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "0.25",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 15360000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r6k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "table_lr": 0.00015,
+      "source_job": "v27_35m_exact_r6k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "739a33d5f095",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R26",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.25,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r12k_dn20_tls0.25_s46_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r12k_dn20_tls0.25_s46_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "0.25",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 30720000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r12k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "table_lr": 0.00015,
+      "source_job": "v27_35m_exact_r12k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "9cc245d5af9b",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R27",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.25,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r25k_dn20_tls0.25_s46_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r25k_dn20_tls0.25_s46_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "0.25",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 64000000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r25k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "table_lr": 0.00015,
+      "source_job": "v27_35m_exact_r25k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "593eba889870",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R28",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.25,
+      "lr": 0.0006,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r6k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r6k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "0.25",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 15360000,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r6k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "table_lr": 0.00015,
+      "source_job": "v27_35m_exact_r6k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "a544d167ca63",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R29",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.25,
+      "lr": 0.0006,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r12k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r12k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "0.25",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 30720000,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r12k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "table_lr": 0.00015,
+      "source_job": "v27_35m_exact_r12k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "9d17f137a8b4",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R30",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.25,
+      "lr": 0.0006,
+      "role": "35M table-LR confound ablation; only table LR changes",
+      "run_id": "v27_35m_exact_r25k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r25k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "0.25",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 64000000,
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_exact_r25k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+          "contrast": "table_lr_intervention"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+          "contrast": "table_effect_same_backbone_recipe"
+        }
+      ],
+      "table_lr": 0.00015,
+      "source_job": "v27_35m_exact_r25k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed",
+      "group": "35m_table_lr",
+      "claim_key": "edf79c4c13c7",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R31",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 45,
+      "arm": "nogram",
+      "rk": 136,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 10,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Unique-data U scan at fixed E3 and R12k; total compute changes with U",
+      "run_id": "v27_17m_nogram_r136k_dn10_tls1_s45_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_nogram_r136k_dn10_tls1_s45_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "10",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "17m",
+        "nogram",
+        "45"
+      ],
+      "nominal_tokens": 510000000,
+      "table_parameters": 0,
+      "expected_pool_tokens": 169979904,
+      "expected_steps": 3459,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+          "contrast": "data_budget_intervention_vs_dn20"
+        }
+      ],
+      "group": "17m_data_budget",
+      "train_max_tokens": 170000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_17m_nogram_r136k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "claim_key": "f6848d8ec1dd",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R32",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 10,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Unique-data U scan at fixed E3 and R12k; total compute changes with U",
+      "run_id": "v27_17m_exact_r12k_dn10_tls1_s45_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_exact_r12k_dn10_tls1_s45_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "10",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 510000000,
+      "table_parameters": 24576000,
+      "expected_pool_tokens": 169979904,
+      "expected_steps": 3459,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_exact_r12k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+          "contrast": "data_budget_intervention_vs_dn20"
+        },
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn10_tls1_s45_e3_nightfill24_qkn_fixed",
+          "contrast": "table_effect_matched_data_budget"
+        }
+      ],
+      "group": "17m_data_budget",
+      "train_max_tokens": 170000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_17m_exact_r12k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "claim_key": "96370bb3532f",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R33",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 45,
+      "arm": "nogram",
+      "rk": 136,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 40,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Unique-data U scan at fixed E3 and R12k; total compute changes with U",
+      "run_id": "v27_17m_nogram_r136k_dn40_tls1_s45_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_nogram_r136k_dn40_tls1_s45_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "40",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "17m",
+        "nogram",
+        "45"
+      ],
+      "nominal_tokens": 2040000000,
+      "table_parameters": 0,
+      "expected_pool_tokens": 679993344,
+      "expected_steps": 13835,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+          "contrast": "data_budget_intervention_vs_dn20"
+        }
+      ],
+      "group": "17m_data_budget",
+      "train_max_tokens": 680000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_17m_nogram_r136k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "claim_key": "2caac2e71584",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R34",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 40,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Unique-data U scan at fixed E3 and R12k; total compute changes with U",
+      "run_id": "v27_17m_exact_r12k_dn40_tls1_s45_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_exact_r12k_dn40_tls1_s45_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "40",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 2040000000,
+      "table_parameters": 24576000,
+      "expected_pool_tokens": 679993344,
+      "expected_steps": 13835,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_exact_r12k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+          "contrast": "data_budget_intervention_vs_dn20"
+        },
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn40_tls1_s45_e3_nightfill24_qkn_fixed",
+          "contrast": "table_effect_matched_data_budget"
+        }
+      ],
+      "group": "17m_data_budget",
+      "train_max_tokens": 680000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_17m_exact_r12k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "claim_key": "19cf6b39360a",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R35",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 46,
+      "arm": "nogram",
+      "rk": 136,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 10,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Unique-data U scan at fixed E3 and R12k; total compute changes with U",
+      "run_id": "v27_17m_nogram_r136k_dn10_tls1_s46_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_nogram_r136k_dn10_tls1_s46_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "10",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "17m",
+        "nogram",
+        "46"
+      ],
+      "nominal_tokens": 510000000,
+      "table_parameters": 0,
+      "expected_pool_tokens": 169979904,
+      "expected_steps": 3459,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+          "contrast": "data_budget_intervention_vs_dn20"
+        }
+      ],
+      "group": "17m_data_budget",
+      "train_max_tokens": 170000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_17m_nogram_r136k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+      "claim_key": "99be9ab82bc3",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R36",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 10,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Unique-data U scan at fixed E3 and R12k; total compute changes with U",
+      "run_id": "v27_17m_exact_r12k_dn10_tls1_s46_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_exact_r12k_dn10_tls1_s46_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "10",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 510000000,
+      "table_parameters": 24576000,
+      "expected_pool_tokens": 169979904,
+      "expected_steps": 3459,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_exact_r12k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+          "contrast": "data_budget_intervention_vs_dn20"
+        },
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn10_tls1_s46_e3_nightfill24_qkn_fixed",
+          "contrast": "table_effect_matched_data_budget"
+        }
+      ],
+      "group": "17m_data_budget",
+      "train_max_tokens": 170000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_17m_exact_r12k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+      "claim_key": "3d66160982d9",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R37",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 46,
+      "arm": "nogram",
+      "rk": 136,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 40,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Unique-data U scan at fixed E3 and R12k; total compute changes with U",
+      "run_id": "v27_17m_nogram_r136k_dn40_tls1_s46_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_nogram_r136k_dn40_tls1_s46_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "40",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "17m",
+        "nogram",
+        "46"
+      ],
+      "nominal_tokens": 2040000000,
+      "table_parameters": 0,
+      "expected_pool_tokens": 679993344,
+      "expected_steps": 13835,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+          "contrast": "data_budget_intervention_vs_dn20"
+        }
+      ],
+      "group": "17m_data_budget",
+      "train_max_tokens": 680000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_17m_nogram_r136k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+      "claim_key": "e414a9a20e06",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R38",
+      "host": "a100_t1",
+      "model": "17m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 40,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Unique-data U scan at fixed E3 and R12k; total compute changes with U",
+      "run_id": "v27_17m_exact_r12k_dn40_tls1_s46_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1",
+        "FLEET_RUN_ID": "v27_17m_exact_r12k_dn40_tls1_s46_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "40",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 2040000000,
+      "table_parameters": 24576000,
+      "expected_pool_tokens": 679993344,
+      "expected_steps": 13835,
+      "control_refs": [
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_exact_r12k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+          "contrast": "data_budget_intervention_vs_dn20"
+        },
+        {
+          "host": "a100_t1",
+          "run_id": "v27_17m_nogram_r136k_dn40_tls1_s46_e3_nightfill24_qkn_fixed",
+          "contrast": "table_effect_matched_data_budget"
+        }
+      ],
+      "group": "17m_data_budget",
+      "train_max_tokens": 680000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_17m_exact_r12k_dn20_tls1_s46_e3_capnext24_qkn_fixed",
+      "claim_key": "128db1c2d965",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R39",
+      "host": "a100_t1_4",
+      "model": "17m",
+      "seed": 47,
+      "arm": "nogram",
+      "rk": 136,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 10,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Unique-data U scan at fixed E3 and R12k; total compute changes with U",
+      "run_id": "v27_17m_nogram_r136k_dn10_tls1_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_17m_nogram_r136k_dn10_tls1_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "10",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "17m",
+        "nogram",
+        "47"
+      ],
+      "nominal_tokens": 510000000,
+      "table_parameters": 0,
+      "expected_pool_tokens": 169979904,
+      "expected_steps": 3459,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+          "contrast": "data_budget_intervention_vs_dn20"
+        }
+      ],
+      "group": "17m_data_budget",
+      "train_max_tokens": 170000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_17m_nogram_r136k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "claim_key": "19a41af9acfd",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R40",
+      "host": "a100_t1_4",
+      "model": "17m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 10,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Unique-data U scan at fixed E3 and R12k; total compute changes with U",
+      "run_id": "v27_17m_exact_r12k_dn10_tls1_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_17m_exact_r12k_dn10_tls1_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "10",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 510000000,
+      "table_parameters": 24576000,
+      "expected_pool_tokens": 169979904,
+      "expected_steps": 3459,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r12k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+          "contrast": "data_budget_intervention_vs_dn20"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn10_tls1_s47_e3_nightfill24_qkn_fixed",
+          "contrast": "table_effect_matched_data_budget"
+        }
+      ],
+      "group": "17m_data_budget",
+      "train_max_tokens": 170000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_17m_exact_r12k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "claim_key": "3c4454338648",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R41",
+      "host": "a100_t1_4",
+      "model": "17m",
+      "seed": 47,
+      "arm": "nogram",
+      "rk": 136,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 40,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Unique-data U scan at fixed E3 and R12k; total compute changes with U",
+      "run_id": "v27_17m_nogram_r136k_dn40_tls1_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_17m_nogram_r136k_dn40_tls1_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "40",
+        "NGLAB_RK": "136",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "17m",
+        "nogram",
+        "47"
+      ],
+      "nominal_tokens": 2040000000,
+      "table_parameters": 0,
+      "expected_pool_tokens": 679993344,
+      "expected_steps": 13835,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+          "contrast": "data_budget_intervention_vs_dn20"
+        }
+      ],
+      "group": "17m_data_budget",
+      "train_max_tokens": 680000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_17m_nogram_r136k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "claim_key": "6017c0901298",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R42",
+      "host": "a100_t1_4",
+      "model": "17m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 40,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Unique-data U scan at fixed E3 and R12k; total compute changes with U",
+      "run_id": "v27_17m_exact_r12k_dn40_tls1_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_17m_exact_r12k_dn40_tls1_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "40",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "17m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 2040000000,
+      "table_parameters": 24576000,
+      "expected_pool_tokens": 679993344,
+      "expected_steps": 13835,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_exact_r12k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+          "contrast": "data_budget_intervention_vs_dn20"
+        },
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_17m_nogram_r136k_dn40_tls1_s47_e3_nightfill24_qkn_fixed",
+          "contrast": "table_effect_matched_data_budget"
+        }
+      ],
+      "group": "17m_data_budget",
+      "train_max_tokens": 680000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_17m_exact_r12k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "claim_key": "601a6932cfc2",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R43",
+      "host": "perm",
+      "model": "50m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "50M normalization x capacity; complete existing 3-seed grid",
+      "run_id": "v27_50m_exact_r6k_dn20_tls1_s45_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r6k_dn20_tls1_s45_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 18432000,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r6k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345,
+      "group": "50m_nonq_capacity",
+      "train_max_tokens": 1000000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_50m_exact_r6k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+      "claim_key": "0296c8e21b12",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R44",
+      "host": "perm",
+      "model": "50m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "50M normalization x capacity; complete existing 3-seed grid",
+      "run_id": "v27_50m_exact_r12k_dn20_tls1_s45_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r12k_dn20_tls1_s45_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 36864000,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r12k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345,
+      "group": "50m_nonq_capacity",
+      "train_max_tokens": 1000000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_50m_exact_r12k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+      "claim_key": "9c8f96245405",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R45",
+      "host": "perm",
+      "model": "50m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 50,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "50M normalization x capacity; complete existing 3-seed grid",
+      "run_id": "v27_50m_exact_r50k_dn20_tls1_s45_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r50k_dn20_tls1_s45_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "50",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 153600000,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r50k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345,
+      "group": "50m_nonq_capacity",
+      "train_max_tokens": 1000000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_50m_exact_r50k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+      "claim_key": "febcca15124b",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R46",
+      "host": "perm",
+      "model": "50m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 100,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "50M normalization x capacity; complete existing 3-seed grid",
+      "run_id": "v27_50m_exact_r100k_dn20_tls1_s45_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r100k_dn20_tls1_s45_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "100",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 307200000,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r100k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345,
+      "group": "50m_nonq_capacity",
+      "train_max_tokens": 1000000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_50m_exact_r100k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+      "claim_key": "1499d4088d04",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R47",
+      "host": "a100_t1_2",
+      "model": "50m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "50M normalization x capacity; complete existing 3-seed grid",
+      "run_id": "v27_50m_exact_r6k_dn20_tls1_s46_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_50m_exact_r6k_dn20_tls1_s46_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 18432000,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_exact_r6k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345,
+      "group": "50m_nonq_capacity",
+      "train_max_tokens": 1000000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_50m_exact_r6k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+      "claim_key": "dce66ec0e1c8",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R48",
+      "host": "a100_t1_2",
+      "model": "50m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "50M normalization x capacity; complete existing 3-seed grid",
+      "run_id": "v27_50m_exact_r12k_dn20_tls1_s46_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_50m_exact_r12k_dn20_tls1_s46_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 36864000,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_exact_r12k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345,
+      "group": "50m_nonq_capacity",
+      "train_max_tokens": 1000000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_50m_exact_r12k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+      "claim_key": "521e3a12421a",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R49",
+      "host": "a100_t1_2",
+      "model": "50m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 50,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "50M normalization x capacity; complete existing 3-seed grid",
+      "run_id": "v27_50m_exact_r50k_dn20_tls1_s46_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_50m_exact_r50k_dn20_tls1_s46_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "50",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 153600000,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_exact_r50k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345,
+      "group": "50m_nonq_capacity",
+      "train_max_tokens": 1000000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_50m_exact_r50k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+      "claim_key": "432f46f0c460",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R50",
+      "host": "a100_t1_2",
+      "model": "50m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 100,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "role": "50M normalization x capacity; complete existing 3-seed grid",
+      "run_id": "v27_50m_exact_r100k_dn20_tls1_s46_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_50m_exact_r100k_dn20_tls1_s46_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "100",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 307200000,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_exact_r100k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "lr": 0.0006,
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345,
+      "group": "50m_nonq_capacity",
+      "train_max_tokens": 1000000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_50m_exact_r100k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+      "claim_key": "c7d4b939cf82",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R51",
+      "host": "perm",
+      "model": "50m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "50M normalization x capacity; complete existing 3-seed grid",
+      "run_id": "v27_50m_exact_r6k_dn20_tls1_s47_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r6k_dn20_tls1_s47_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 18432000,
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r6k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s47_e3_capnext24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "group": "50m_nonq_capacity",
+      "train_max_tokens": 1000000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_50m_exact_r6k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "claim_key": "cd5268b9b033",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R52",
+      "host": "perm",
+      "model": "50m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "50M normalization x capacity; complete existing 3-seed grid",
+      "run_id": "v27_50m_exact_r12k_dn20_tls1_s47_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r12k_dn20_tls1_s47_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 36864000,
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r12k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s47_e3_capnext24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "group": "50m_nonq_capacity",
+      "train_max_tokens": 1000000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_50m_exact_r12k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "claim_key": "db09f14a9ccb",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R53",
+      "host": "perm",
+      "model": "50m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 50,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "50M normalization x capacity; complete existing 3-seed grid",
+      "run_id": "v27_50m_exact_r50k_dn20_tls1_s47_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r50k_dn20_tls1_s47_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "50",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 153600000,
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r50k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s47_e3_capnext24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "group": "50m_nonq_capacity",
+      "train_max_tokens": 1000000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_50m_exact_r50k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "claim_key": "1639a7ca0f4d",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R54",
+      "host": "perm",
+      "model": "50m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 100,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "50M normalization x capacity; complete existing 3-seed grid",
+      "run_id": "v27_50m_exact_r100k_dn20_tls1_s47_e3_nightfill24_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r100k_dn20_tls1_s47_e3_nightfill24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "100",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 307200000,
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r100k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+          "contrast": "normalization_intervention"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s47_e3_capnext24_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "group": "50m_nonq_capacity",
+      "train_max_tokens": 1000000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_50m_exact_r100k_dn20_tls1_s47_e3_capnext24_qkn_fixed",
+      "claim_key": "ae1254c42242",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R55",
+      "host": "a100_t1_2",
+      "model": "104m",
+      "seed": 47,
+      "arm": "nogram",
+      "rk": 832,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Third seed replication for current 104M scale boundary",
+      "run_id": "v27_104m_nogram_r832k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_104m_nogram_r832k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "832",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "104m",
+        "nogram",
+        "47"
+      ],
+      "nominal_tokens": 6240000000,
+      "table_parameters": 0,
+      "expected_pool_tokens": 2079977472,
+      "expected_steps": 42318,
+      "control_refs": [],
+      "group": "104m_seed47",
+      "train_max_tokens": 2080000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_104m_nogram_r832k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "admission_condition": "Root must first confirm current same-host 104M seed45/46 baseline loss finite, progressing, and no obvious instability; otherwise keep planned, not ready",
+      "claim_key": "325532048883",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R56",
+      "host": "a100_t1_2",
+      "model": "104m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Third seed replication for current 104M scale boundary",
+      "run_id": "v27_104m_exact_r12k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_104m_exact_r12k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "104m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 6240000000,
+      "table_parameters": 43008000,
+      "expected_pool_tokens": 2079977472,
+      "expected_steps": 42318,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_104m_nogram_r832k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "group": "104m_seed47",
+      "train_max_tokens": 2080000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_104m_exact_r12k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "admission_condition": "Root must first confirm current same-host 104M seed45/46 baseline loss finite, progressing, and no obvious instability; otherwise keep planned, not ready",
+      "claim_key": "25c7f6378f60",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R57",
+      "host": "a100_t1_2",
+      "model": "104m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Third seed replication for current 104M scale boundary",
+      "run_id": "v27_104m_exact_r25k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_104m_exact_r25k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "104m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 6240000000,
+      "table_parameters": 89600000,
+      "expected_pool_tokens": 2079977472,
+      "expected_steps": 42318,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_104m_nogram_r832k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "group": "104m_seed47",
+      "train_max_tokens": 2080000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_104m_exact_r25k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "admission_condition": "Root must first confirm current same-host 104M seed45/46 baseline loss finite, progressing, and no obvious instability; otherwise keep planned, not ready",
+      "claim_key": "4fa737a65834",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    },
+    {
+      "id": "R58",
+      "host": "a100_t1_2",
+      "model": "104m",
+      "seed": 47,
+      "arm": "exact",
+      "rk": 50,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1,
+      "lr": 0.0006,
+      "role": "Third seed replication for current 104M scale boundary",
+      "run_id": "v27_104m_exact_r50k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_104m_exact_r50k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "50",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_nightfill24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "104m",
+        "exact",
+        "47"
+      ],
+      "nominal_tokens": 6240000000,
+      "table_parameters": 179200000,
+      "expected_pool_tokens": 2079977472,
+      "expected_steps": 42318,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_104m_nogram_r832k_dn20_tls1_s47_e3_nightfill24_qkn_fixed",
+          "contrast": "table_effect_same_normalization"
+        }
+      ],
+      "group": "104m_seed47",
+      "train_max_tokens": 2080000000,
+      "table_lr": 0.0006,
+      "source_job": "v27_104m_exact_r50k_dn20_tls1_s45_e3_capnext24_qkn_fixed",
+      "admission_condition": "Root must first confirm current same-host 104M seed45/46 baseline loss finite, progressing, and no obvious instability; otherwise keep planned, not ready",
+      "claim_key": "510099fdb69e",
+      "extra_diagnostics": {
+        "fixed_train_probe": 16,
+        "fixed_train_blocks": 288,
+        "train_probe_mode": "uniform",
+        "probe_eval_interval": 500,
+        "primary_endpoint_unchanged": true,
+        "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+      }
+    }
+  ],
+  "critical_note": "run_v27 uses nonempty NGLAB_QKN as true: nonq jobs OMIT NGLAB_QKN, never set it to 0; inherited NGLAB_* removed by fleet queue",
+  "scientific_contract": {
+    "epochs": 3,
+    "dn": "20 except explicitly registered 17M data-budget groups dn10/40",
+    "backbone_lr": 0.0006,
+    "device_batch": 18,
+    "effective_batch_tokens": 147456,
+    "val_device_batch": 24,
+    "val_chunks": 288,
+    "val_interval": 10,
+    "table_orders": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "primary_endpoint": "last 60 common fixed-validation points after paired runs complete",
+    "secondary": "online train gain and induced gap on identical common points; final value secondary",
+    "all_failures_reported": true
+  },
+  "old_queue_policy": "do not modify old manifest/jobs/STOP/claims; same UID GPU flock; verify all prior host jobs claimed; no borrowed a100_t1_3",
+  "review_result": {
+    "duplicate_run_ids": 0,
+    "duplicate_scientific_conditions_vs_cap24_capnext": 0,
+    "cross_host_control_refs": 0,
+    "missing_control_references": 0,
+    "launcher_run_ids_reconstructed": 58,
+    "nonq_env_bug_avoided": true,
+    "host_counts": {
+      "a100_t1": 16,
+      "a100_t1_4": 26,
+      "perm": 8,
+      "a100_t1_2": 8
+    },
+    "group_counts": {
+      "17m_nonq": 12,
+      "35m_table_lr": 18,
+      "17m_data_budget": 12,
+      "50m_nonq_capacity": 12,
+      "104m_seed47": 4
+    },
+    "baseline104_gate_pending_root": false,
+    "baseline104_live_gate": {
+      "snapshot_observed_epoch": 1792852796.129364,
+      "source": "outputs/capnext_20261024/status.json",
+      "all_8_running_with_progress": true,
+      "all_last_train_and_val_finite": true,
+      "val_range": [
+        2.6964120070139566,
+        2.833074986934662
+      ],
+      "note": "intermediate stability admission, not completed scientific result"
+    }
+  },
+  "input_preflight_by_host": {
+    "a100_t1": "daytime input fingerprints (1B prefix; covers max registered pool)",
+    "a100_t1_4": "daytime input fingerprints (1B prefix; covers max registered pool)",
+    "perm": "daytime input fingerprints (1B prefix; covers max registered pool)",
+    "a100_t1_2": "capnext input fingerprints (2.08B prefix)"
+  },
+  "pool_derivation": "run_v27 DTOK=round(DN*N_nominal); v27_prefix chooses shortest manifest.train_order prefix covering DTOK; train_max_tokens limits chunks to requested prefix then DB18 rounds to full 18*2048 blocks. expected_pool=floor(DTOK/36864)*36864; steps=ceil(E3*pool/147456). Runtime configs must match these predictions before claiming valid results.",
+  "authorization_receipt": {
+    "authorized": true,
+    "source": "Current user message in this session",
+    "text": "请把Scaling law之类的东西都调查完毕，并且更优先的是先把对列都给恢复掉。然后直接把任务都排上。我大概二十分钟之后再来找你",
+    "recorded_at": "2026-10-24T14:46:39.345039+00:00",
+    "scope": "bounded E3 continuation on four authorized A100 hosts; no old-job changes, no push, no artifact deletion"
+  },
+  "launcher": "code/cluster/run_nightfill_20261024.sh",
+  "diagnostics": {
+    "fixed_train_probe": 16,
+    "fixed_train_blocks": 288,
+    "train_probe_mode": "uniform",
+    "probe_eval_interval": 500,
+    "primary_endpoint_unchanged": true,
+    "note": "Additional fixed train evaluation uses separate deterministic iterator; no change to online-gap measurement or optimizer updates. Compare fixed-gap only when probe identity matches."
+  },
+  "admission": {
+    "continuous_idle_seconds": 300,
+    "memory_below_mib": 512,
+    "no_compute_pid": true,
+    "same_uid_gpu_flock": true,
+    "old_claims_untouched": true,
+    "no_auto_retry": true
+  }
+}
