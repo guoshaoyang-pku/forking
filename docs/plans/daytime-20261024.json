@@ -1,0 +1,1346 @@
+{
+  "schema_version": 1,
+  "status": "registered_not_launched",
+  "authorization": "2026-10-24 side conversation: 是否有适合派发的队列？分发下去之后汇报给主进程",
+  "registered_beijing": "2026-10-24T16:06:52.565429+08:00",
+  "question": "在三遍且稳定化条件下，参数量接近主干的小表是否仍有可复现收益？qkn对无表有何代价？",
+  "allowed_hosts": [
+    "perm",
+    "a100_t1_2",
+    "a100_t1_4"
+  ],
+  "host_roots": {
+    "perm": "/data2/guoshaoyang/ngram-gap-lab-v27",
+    "a100_t1_2": "/home/tione/guoshaoyang/ngram-gap-lab",
+    "a100_t1_4": "/home/tione/guoshaoyang/ngram-gap-lab"
+  },
+  "queue_dir": "/home/cfs/guoshaoyang/nglab_queue_daytime_20261024",
+  "gpu_allowlist": {
+    "perm": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "a100_t1_2": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "a100_t1_4": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  },
+  "claim_cutoff": "2026-10-24T22:00:00+08:00",
+  "after_cutoff": "no new claims; started runs finish exactly E3; no automatic retry or extension",
+  "excluded_hosts": [
+    "a100_t1_3"
+  ],
+  "untouched_hosts": [
+    "a100_t1",
+    "pro5kvrdma1",
+    "pro5kvrdma2",
+    "pro5kvrdma3",
+    "pro5kvrdma4",
+    "pro5kvrdma5",
+    "pro5kvrdma6"
+  ],
+  "nominal_tokens_total": 64800000000,
+  "estimated_gpu_hours_range": [
+    60,
+    100
+  ],
+  "estimate_note": "Capacity-only v27 E3 historical throughput approximation; runtime not quality guarantee",
+  "frozen_settings": {
+    "epochs": 3,
+    "dn": 20,
+    "lr": 0.0006,
+    "table_lr_50m": 0.0006,
+    "table_lr_35m": 0.0003,
+    "device_batch": 18,
+    "effective_batch_tokens": 147456,
+    "val_device_batch": 24,
+    "val_chunks": 288,
+    "val_interval": 10,
+    "stability_interval": 100,
+    "new_seeds": [
+      45,
+      46
+    ],
+    "table_orders": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "table_mapping": "existing exact top-R maps; no new hashing or dimension changes"
+  },
+  "parameter_definition": {
+    "R": "rows per order",
+    "table_parameters": "4 * R * width",
+    "rho": "1000*R/N_nominal; not a parameter ratio",
+    "50m_nogram_actual_qkn": 64572928,
+    "35m_nogram_actual_qkn": 36099072
+  },
+  "pairing": "all comparisons same host + model + seed + normalization + data pool + batch, final60common validation points after both complete; also report absolute losses and failure",
+  "mechanism_limit": "qkn is stabilization intervention; no sink causality claim",
+  "jobs": [
+    {
+      "id": "C01",
+      "host": "perm",
+      "model": "50m",
+      "seed": 45,
+      "arm": "nogram",
+      "rk": 400,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "same-host same-seed qkn control for five table sizes",
+      "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "50m",
+        "nogram",
+        "45"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 0,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "8cbd948da6a1",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C02",
+      "host": "perm",
+      "model": "50m",
+      "seed": 45,
+      "arm": "nogram",
+      "rk": 400,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "qkn baseline cost control",
+      "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments"
+      },
+      "args": [
+        "50m",
+        "nogram",
+        "45"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 0,
+      "control_refs": [],
+      "lr": 0.0006,
+      "claim_key": "12320fbaf20a",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C03",
+      "host": "perm",
+      "model": "50m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "small-table capacity curve after stability intervention",
+      "run_id": "v27_50m_exact_r6k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r6k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 18432000,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "6d8e9bfafb40",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C04",
+      "host": "perm",
+      "model": "50m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "small-table capacity curve after stability intervention",
+      "run_id": "v27_50m_exact_r12k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r12k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 36864000,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "ff571ab1e192",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C05",
+      "host": "perm",
+      "model": "50m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "small-table capacity curve after stability intervention",
+      "run_id": "v27_50m_exact_r25k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r25k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 76800000,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_qkn_fixed"
+        },
+        {
+          "host": "perm",
+          "run_id": "v27_50m_exact_r25k_dn20_tls1_s45_e3_cap24_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "40f5e5a9ccca",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C06",
+      "host": "perm",
+      "model": "50m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 50,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "small-table capacity curve after stability intervention",
+      "run_id": "v27_50m_exact_r50k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r50k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "50",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 153600000,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "d144c6c7059b",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C07",
+      "host": "perm",
+      "model": "50m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 100,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "small-table capacity curve after stability intervention",
+      "run_id": "v27_50m_exact_r100k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r100k_dn20_tls1_s45_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "100",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 307200000,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "fad6e9e7631e",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C08",
+      "host": "perm",
+      "model": "50m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "qkn intervention control at approximately backbone-sized table",
+      "run_id": "v27_50m_exact_r25k_dn20_tls1_s45_e3_cap24_fixed",
+      "env": {
+        "FLEET_TARGET": "perm",
+        "FLEET_RUN_ID": "v27_50m_exact_r25k_dn20_tls1_s45_e3_cap24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/data2/guoshaoyang/ngram-gap-lab-v27/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/data2/guoshaoyang/ngram-gap-lab-v27/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/data2/guoshaoyang/ngram-gap-lab-v27/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 76800000,
+      "control_refs": [
+        {
+          "host": "perm",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "3051afe26f18",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C09",
+      "host": "a100_t1_2",
+      "model": "50m",
+      "seed": 46,
+      "arm": "nogram",
+      "rk": 400,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "same-host same-seed qkn control for five table sizes",
+      "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "50m",
+        "nogram",
+        "46"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 0,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "7da516e9d668",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C10",
+      "host": "a100_t1_2",
+      "model": "50m",
+      "seed": 46,
+      "arm": "nogram",
+      "rk": 400,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "qkn baseline cost control",
+      "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "400",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "50m",
+        "nogram",
+        "46"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 0,
+      "control_refs": [],
+      "lr": 0.0006,
+      "claim_key": "81c7524736d2",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C11",
+      "host": "a100_t1_2",
+      "model": "50m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "small-table capacity curve after stability intervention",
+      "run_id": "v27_50m_exact_r6k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_50m_exact_r6k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 18432000,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "c7f2797a02dd",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C12",
+      "host": "a100_t1_2",
+      "model": "50m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "small-table capacity curve after stability intervention",
+      "run_id": "v27_50m_exact_r12k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_50m_exact_r12k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 36864000,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "f59975b31203",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C13",
+      "host": "a100_t1_2",
+      "model": "50m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "small-table capacity curve after stability intervention",
+      "run_id": "v27_50m_exact_r25k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_50m_exact_r25k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 76800000,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_qkn_fixed"
+        },
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_exact_r25k_dn20_tls1_s46_e3_cap24_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "2308f83650ba",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C14",
+      "host": "a100_t1_2",
+      "model": "50m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 50,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "small-table capacity curve after stability intervention",
+      "run_id": "v27_50m_exact_r50k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_50m_exact_r50k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "50",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 153600000,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "22b49078ade6",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C15",
+      "host": "a100_t1_2",
+      "model": "50m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 100,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "small-table capacity curve after stability intervention",
+      "run_id": "v27_50m_exact_r100k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_50m_exact_r100k_dn20_tls1_s46_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "100",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 307200000,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "3da1d8d89f2c",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C16",
+      "host": "a100_t1_2",
+      "model": "50m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": false,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 1.0,
+      "role": "qkn intervention control at approximately backbone-sized table",
+      "run_id": "v27_50m_exact_r25k_dn20_tls1_s46_e3_cap24_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_2",
+        "FLEET_RUN_ID": "v27_50m_exact_r25k_dn20_tls1_s46_e3_cap24_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "1",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments"
+      },
+      "args": [
+        "50m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 3000000000,
+      "table_parameters": 76800000,
+      "control_refs": [
+        {
+          "host": "a100_t1_2",
+          "run_id": "v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "2ad57c8d0ca7",
+      "expected_pool_tokens": 999972864,
+      "expected_steps": 20345
+    },
+    {
+      "id": "C17",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 45,
+      "arm": "nogram",
+      "rk": 280,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.5,
+      "role": "same-host same-seed qkn control for three table sizes",
+      "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_nogram_r280k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "280",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "nogram",
+        "45"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 0,
+      "control_refs": [],
+      "lr": 0.0006,
+      "claim_key": "96470c8dbf20",
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241
+    },
+    {
+      "id": "C18",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.5,
+      "role": "cross-size small-table replication",
+      "run_id": "v27_35m_exact_r6k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r6k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 15360000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s45_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "e7976f4d539f",
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241
+    },
+    {
+      "id": "C19",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.5,
+      "role": "cross-size small-table replication",
+      "run_id": "v27_35m_exact_r12k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r12k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 30720000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s45_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "b46bf0eb6c39",
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241
+    },
+    {
+      "id": "C20",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 45,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.5,
+      "role": "cross-size small-table replication",
+      "run_id": "v27_35m_exact_r25k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r25k_dn20_tls0.5_s45_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "45"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 64000000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s45_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "bda2547e65e1",
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241
+    },
+    {
+      "id": "C21",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 46,
+      "arm": "nogram",
+      "rk": 280,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.5,
+      "role": "same-host same-seed qkn control for three table sizes",
+      "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_nogram_r280k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "280",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "nogram",
+        "46"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 0,
+      "control_refs": [],
+      "lr": 0.0006,
+      "claim_key": "4b12af36aba4",
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241
+    },
+    {
+      "id": "C22",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 6,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.5,
+      "role": "cross-size small-table replication",
+      "run_id": "v27_35m_exact_r6k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r6k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "6",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 15360000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s46_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "14958e276e6c",
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241
+    },
+    {
+      "id": "C23",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 12,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.5,
+      "role": "cross-size small-table replication",
+      "run_id": "v27_35m_exact_r12k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r12k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "12",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 30720000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s46_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "b4014afa2fca",
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241
+    },
+    {
+      "id": "C24",
+      "host": "a100_t1_4",
+      "model": "35m",
+      "seed": 46,
+      "arm": "exact",
+      "rk": 25,
+      "qkn": true,
+      "epochs": 3,
+      "dn": 20,
+      "tls": 0.5,
+      "role": "cross-size small-table replication",
+      "run_id": "v27_35m_exact_r25k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+      "env": {
+        "FLEET_TARGET": "a100_t1_4",
+        "FLEET_RUN_ID": "v27_35m_exact_r25k_dn20_tls0.5_s46_e3_cap24_qkn_fixed",
+        "NGLAB_DN": "20",
+        "NGLAB_RK": "25",
+        "NGLAB_TLS": "0.5",
+        "NGLAB_EPOCHS": "3",
+        "NGLAB_DB": "18",
+        "NGLAB_VDB": "24",
+        "NGLAB_STAB": "100",
+        "NGLAB_TAG": "_cap24",
+        "NGLAB_DATA_DIR_V27": "/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27",
+        "NGLAB_FREQ_INDEX": "/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz",
+        "NGLAB_ASSIGN_DIR": "/home/tione/guoshaoyang/ngram-gap-lab/data/assignments",
+        "NGLAB_QKN": "1"
+      },
+      "args": [
+        "35m",
+        "exact",
+        "46"
+      ],
+      "nominal_tokens": 2100000000,
+      "table_parameters": 64000000,
+      "control_refs": [
+        {
+          "host": "a100_t1_4",
+          "run_id": "v27_35m_nogram_r280k_dn20_tls0.5_s46_e3_cap24_qkn_fixed"
+        }
+      ],
+      "lr": 0.0006,
+      "claim_key": "e269d5ecf8c8",
+      "expected_pool_tokens": 699973632,
+      "expected_steps": 14241
+    }
+  ],
+  "code_sha256": {
+    "code/train.py": "f8a1f1b31c4579de8a69b9f46d47d53168c59a95783fb3c5ab4d232de456a91d",
+    "code/ngram_freq.py": "3ab088d66d885fb436e991e408dd869df0dd4760a56bd4f566cf5c084b5b847d",
+    "code/moe.py": "2d92e5afd126bdb2de250bba7b67c8f98d28b2704458ef64364132ce691ec54e",
+    "code/tools/v27_prefix.py": "9bb97d27ddf4bcb7507dc7d63fc335a6faf2f0955b87d1ad8f0b8e5fcd2383a0",
+    "code/cluster/run_v27.sh": "5d4b57688caf9a917c96de7227b2615a7cae4f8a71369ab866509eafb7f99388",
+    "code/cluster/fleet_queue.py": "50abdb07222359181d8e09b3d4898d0a292bc8f5559590b213f3a226537cdd94"
+  },
+  "code_base_commit": "0660ed62a2dba12c46558ac8fc78856dbfef2ef1",
+  "jobs_sha256": "d04c5d0d88caec375e87cf5e63883fd1c1e49be26b45344b4fc43ffd9c07c529",
+  "input_fingerprints": {
+    "data/tokenized_v27/manifest.json": {
+      "bytes": 10399,
+      "sha256": "c879b0e7926d353e7cce23fc2c4440d2ae13f64813d69357d03f00fbd178d7aa"
+    },
+    "data/freq_index_o2to5_1b_f30.npz": {
+      "bytes": 106897508,
+      "sha256": "f6773ca851967387c41c1a9f396c029f1de429f512e0fddf94d67ad5d86d42e2"
+    },
+    "data/tokenized_v27/shard_00001.bin": {
+      "bytes": 99019974,
+      "sha256": "f0f0360868c1a2d766c55956e5e88bd6e3b8b9c4a52d224b22fd5d5a76fc7792"
+    },
+    "data/tokenized_v27/shard_00002.bin": {
+      "bytes": 98253648,
+      "sha256": "818f72cf97875ec11118f6332240f5431ed84485c4c95072c944b0fefe13f2c0"
+    },
+    "data/tokenized_v27/shard_00011.bin": {
+      "bytes": 96667722,
+      "sha256": "c55220e7f8314e89563dc8b4cd6bd496929aaec98283c49712a5bcca0eb29856"
+    },
+    "data/tokenized_v27/shard_00012.bin": {
+      "bytes": 96630840,
+      "sha256": "9b2fe34f0937828c71895ddeea5e3c3100e6f65fcdc8b9f8c1b64f877a8abe29"
+    },
+    "data/tokenized_v27/shard_00013.bin": {
+      "bytes": 97729104,
+      "sha256": "429e66d74cee3cbcc0a64cadce94360483431666c12eb1f19d3372443a879852"
+    },
+    "data/tokenized_v27/shard_00014.bin": {
+      "bytes": 97544694,
+      "sha256": "9c29545ca891ebbf9af168c1de03f211f7c9d5a77ffe85fbebca42378d14386e"
+    },
+    "data/tokenized_v27/shard_00015.bin": {
+      "bytes": 97462734,
+      "sha256": "0e19f7cd4371be46893d42d6918a5afe53234c9148c72e8ef543239033d14ee1"
+    },
+    "data/tokenized_v27/shard_00016.bin": {
+      "bytes": 98056944,
+      "sha256": "3a74cc96fe914ceabebdc09595744ec6273c5655a97a1ac1ab1b62e4234ad0a3"
+    },
+    "data/tokenized_v27/shard_00017.bin": {
+      "bytes": 98126610,
+      "sha256": "f67524830a92eda4516b49e5dab277f29b4fb23d749b8cd3ab683686dad789f7"
+    },
+    "data/tokenized_v27/shard_00018.bin": {
+      "bytes": 97798770,
+      "sha256": "3fb21b4ce061be8f5d7f5b1ed335ce2d89ade2459ddce0b29ffb6a78aee7e537"
+    },
+    "data/tokenized_v27/shard_00019.bin": {
+      "bytes": 96897210,
+      "sha256": "5c73fe73fe40a41f7d16bda5774788268e03fd7926050a2d62cb9ea8395cd33b"
+    },
+    "data/tokenized_v27/shard_00020.bin": {
+      "bytes": 98716722,
+      "sha256": "27520703052a8133e3dfd5b7e0b081360a761976ffdbcbff8108384ffb07a93d"
+    },
+    "data/tokenized_v27/shard_00021.bin": {
+      "bytes": 97815162,
+      "sha256": "6a3ac2e34cb29816b160f0c283d7a532e8a47bd04705e125d69fe53edb1c23ee"
+    },
+    "data/tokenized_v27/shard_00022.bin": {
+      "bytes": 98700330,
+      "sha256": "99b5b4418be711afe83ebc597a1b02cf640b517ad5ecbce341bf0948fb2d585f"
+    },
+    "data/tokenized_v27/shard_00023.bin": {
+      "bytes": 98134806,
+      "sha256": "f5824c020cf86b3dd49aaa81453d9b024c351d8d9fd3f6f04be6aaefe35638ac"
+    },
+    "data/tokenized_v27/shard_00025.bin": {
+      "bytes": 98380686,
+      "sha256": "6acc856ac2c29807fb08a669322708052dc40a888ff96f11f9777f41f1a290f2"
+    },
+    "data/tokenized_v27/shard_00026.bin": {
+      "bytes": 97790574,
+      "sha256": "6ee4ba0b4c438936d979ab5a50cc3d12f05594daf950b4e76030d7e3940aa465"
+    },
+    "data/tokenized_v27/shard_00027.bin": {
+      "bytes": 96614448,
+      "sha256": "e585c0f4fd353e37e58bd53e3ffb44b1307fab3f81760a4bc37eea21d87450b4"
+    },
+    "data/tokenized_v27/shard_00028.bin": {
+      "bytes": 98081532,
+      "sha256": "0371aaf41f4f196000b6a27a94489bf6a1388cc1b7e5f6bcbaecb5ee78bb6e7a"
+    },
+    "data/tokenized_v27/shard_00029.bin": {
+      "bytes": 96581664,
+      "sha256": "d2a7765c971384b0728cb2129efd14107d807fa58b9db88f07b6821945af9267"
+    },
+    "data/tokenized_v27/shard_00030.bin": {
+      "bytes": 97483224,
+      "sha256": "2d016efcb053b6c82fde8a28facbc3d05fab32d54341daa7f268c6b7a41fc76a"
+    },
+    "data/tokenized_v27/shard_00031.bin": {
+      "bytes": 96893112,
+      "sha256": "b3fb9d9d931f5e1affe3c81b547f8b65673ed09cd02d5e4b2c0c1a2b2010e1e6"
+    },
+    "data/assignments/assign_exact_r6k.npz": {
+      "bytes": 206815,
+      "sha256": "bc5e5133868c6d5ffb99fec49a3c453d1a41bc38930f1344953e6baa41a5a9eb"
+    },
+    "data/assignments/assign_exact_r12k.npz": {
+      "bytes": 401561,
+      "sha256": "c566315d6587201d734e8c96ef4fcd4f7233619e3ae108beed5cdaf4d030119a"
+    },
+    "data/assignments/assign_exact_r25k.npz": {
+      "bytes": 810988,
+      "sha256": "5d77971190370240b1b24fff8a0baba87115f8d543ce7a89b7571372cb55d2a4"
+    },
+    "data/assignments/assign_exact_r50k.npz": {
+      "bytes": 1575263,
+      "sha256": "69004c50b1d74df71d57b51b5edfd61ba7fa8d416cefe0dba513cffcf1dd21ca"
+    },
+    "data/assignments/assign_exact_r100k.npz": {
+      "bytes": 3061021,
+      "sha256": "10fbcb060ed6f5c996d21862fe5a61f7425154124ed5b95d19aadb2c190068e2"
+    }
+  },
+  "preflight": "Three hosts matched all source/data/map SHA256; no collisions, no fleet dispatchers, all assigned GPUs 0MiB/0% at repeated checks"
+}
