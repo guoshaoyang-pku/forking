@@ -7526,3 +7526,7 @@ J09 `v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed` 与J10 `v27_50m_nogram_r400
 完整24个run_id、参数量、相同机器的对照关系、3遍步数、输入/代码SHA256、领取截止22:00均见 `docs/plans/daytime-20261024.json`；队列原文 `docs/plans/daytime-20261024.jobs`；操作与实际启动证据见 `docs/handoff/daytime-20261024.md`。启动前3机24卡重复确认为空、无fleet调度器、无run_id碰撞，代码/数据/映射指纹一致。
 
 预登记终点：每对完整收尾后，末60共同验证点 exact−nogram 或同arm qkn−原版；同机/seed/预算/数据/微批一致，并记录绝对loss及失败。该实验测现有exact表容量/覆盖与稳定性，不能替代全维语义蒸馏比较；不宣称sink因果。50M 20,345步、35M14,241步，未完成不得报最终收益。
+
+### cap24 实际启动回执
+
+2026-10-24 16:17–16:18已启动；16:19:40复核三机各8卡、24/24 active且步数增长，无失败/告警。3遍步数/数据池、相同seed与归一化下主干初始化md5均与登记匹配。注册提交ac065bb；证据 `outputs/daytime_20261024/startup_verified_status.json`、`bootstrap_*.json`。尚无完成结果。
