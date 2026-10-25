@@ -7530,3 +7530,863 @@ J09 `v27_50m_exact_r400k_dn20_tls1_s44_e3_qkn_fixed` 与J10 `v27_50m_nogram_r400
 ### cap24 实际启动回执
 
 2026-10-24 16:17–16:18已启动；16:19:40复核三机各8卡、24/24 active且步数增长，无失败/告警。3遍步数/数据池、相同seed与归一化下主干初始化md5均与登记匹配。注册提交ac065bb；证据 `outputs/daytime_20261024/startup_verified_status.json`、`bootstrap_*.json`。尚无完成结果。
+
+## §153 全机接续队列：A100 小表边界与 pro5k 学生稳定性控制（2026-10-24）
+
+授权：用户允许全部可用 pro5k/A100 填入有意义任务，队列受阻或接近耗尽时提前报告；再次明确 `a100_t1_3` 仍借出，继续排除。保留旧训练/STOP/claim，固定三遍，不自动变更配置补跑。
+
+A100 新独立批次 `capnext32`，逐 run_id/host/seed/行数/预算见 [登记](plans/capnext-20261024.json)，接管见 [手册](handoff/capnext-20261024.md)。17M seed45/46/47 × {无表、每阶6k/12k/25k} qkn共12臂；104M seed45/46 × {无表、12k/25k/50k} qkn共8臂；35M seed47 × {无表、6k/12k/25k} qkn共4臂；50M seed47的8臂延续cap24主容量与无qkn对照。合计32臂、名义94.56B token，E3。领取截止10/25 16:56:48北京。登记提交21c52b3，查收d6a0a51，未push。
+
+17:03:50核验：新5臂在a100_t1 GPU0/2/3/6/7由step30推进至270–290，另外27待领；旧cap24的24臂继续推进，t1旧学生占1/4/5保持。四台32/32卡占用，无新增失败。证据 `outputs/capnext_20261024/launch_progress_first.json`、`launch_progress_second.json`；不能把启动推进当完成或科学收益。
+
+pro5k 新独立控制组在相邻仓库登记：`/Users/guoshaoyang/Desktop/workdir/forking_v2/docs/plans/pro5k-controls-20261024.json`。6个seed、每机同seed五条件：LR6e-4/3e-4 × clip1/0，加LR6e-4 clip1的qkn，共30臂。主无表基线供未来同初始化蒸馏比较复用，稳定性干预独立分析。每臂8L/768D/6H、db18×accum4、22065步/三遍，训练20parts、固定432验证块。全部无表，不依赖旧64维语义表，也不把它们当第二版蒸馏完成。
+
+pro5k 新学生每500步验证，完整E3共45点，第三遍16个共同点作为均值比较；不套用本仓A100末60点统计。代码新增显式slot_free及不耗RNG的qk-norm开关，非有限loss失败即停，正常旧OE路径保持。CPU初始化/数据读取/调度器边界测试和六机两步GPU smoke通过（无qkn/qkn峰值47.70/50.89GiB），正式推进以fleet手册后续快照为准。
+
+全机监控改为同聊天15分钟巡检，读取 `forking_v2/docs/fleet-queue-20261024.md`，只在新增事件或接续不足时告警。pro5k新领取截止10/25 17:03:48，北京17:30最终巡检；各批预算独立。当前全维1B依赖仍是完成checkpoint→严格归并→固定压缩宽度与同容量路由→teacher/random初始化配对学生，不得拿采集或母库内重建误差充当下游结果。
+
+### §153 首批完成收割（2026-10-24 17:47，北京）
+
+capnext 在 a100_t1 新增5个完整E3收尾：seed45 的 qkn 无表、exact每阶6k/12k/25k，以及seed46 qkn无表。均6918/6918步、rc=0、完整文件/配置/预算校验通过；收割无错误，root独立复核小文件字节数、SHA与60点均值。其余3个seed46 exact臂仍运行，尚无完整seed46配对结果。
+
+同机seed45配对，负数表示加表更好，全部使用末60个共同验证点6330–6918：
+
+| 每阶行数 | 加表平均val | 无表平均val | 差值 mnat/token | 末点差值 mnat/token |
+|---|---:|---:|---:|---:|
+| 6k | 3.111320014 | 3.114790037 | −3.470 | −6.384 |
+| 12k | 3.108930343 | 3.114790037 | −5.860 | −7.563 |
+| 25k | 3.125068027 | 3.114790037 | +10.278 | +7.025 |
+
+这是一个种子的容量对照，不能据此宣称稳健最优容量、归一化因果机制或教师蒸馏收益。所有收割loss有限；“完成校验通过”也不单独等于稳定性判决。原始run_id、日志、receipt与SHA见 `outputs/capnext_20261024/results/20261024T094717.782996Z/`，独立复算见其中 `root_numeric_check.json`。
+
+该机8个登记任务已全领：5完成、3运行，原3个学生保留，实查出现2张空卡。其它24个capnext任务仍按冻结host排队，未擅自移动或改claim。已准备未派发的[下一批无qkn四臂提案](plans/capnonq-proposal-20261024.json)，与seed45四臂严格配对，新增4.08B token；本轮heartbeat不得扩大已登记预算，已向用户请求确认，未部署、未claim、未启动。
+
+### §153 第二种子完成收割（2026-10-24 18:17，北京）
+
+capnext在a100_t1的seed46 exact每阶6k/12k/25k三个新完成项均为6918/6918步、rc=0，配置和预算校验通过。该机两种子的8臂全部完成。root重新核对全部8份小日志的字节数、SHA、所有记录loss有限，并独立复算六个同机完整配对的末60共同点6330–6918。
+
+| 每阶行数 | seed45 Δ mnat/token | seed46 Δ mnat/token | seed46 加表/无表平均val |
+|---|---:|---:|---:|
+| 6k | −3.470 | −19.251 | 3.104657120 / 3.123907831 |
+| 12k | −5.860 | −15.451 | 3.108456394 / 3.123907831 |
+| 25k | +10.278 | −11.702 | 3.112205476 / 3.123907831 |
+
+负数表示加表更好。6k/12k在这两颗种子的登记末窗均优于无表；25k的符号随种子反转，不能沿用单seed的“25k变差”作为跨种子结论，也不能认定最优容量。末窗绝对val约3.10–3.13，所有臂末值接近全程最小值。尚无归一化机制或教师蒸馏收益结论，第三种子尚未完成。证据：`outputs/capnext_20261024/results/20261024T101650.330555Z/`，独立复算`root_numeric_check.json`。
+
+cap24在a100_t1_4的35M seed45/46 qkn无表亦新增完成，均14,241步、rc=0，末值2.831222455/2.822977066；加表臂在此次收割快照尚未结束，暂不计算35M收益。证据：`outputs/daytime_20261024/results/20261024T101650.311293Z/`，已保留SHA与独立检查。该机释放的两张卡已由既定capnext dispatcher自然接续35M seed47无表和6k臂，无人工恢复。
+
+### §153 35M两种子配对完整收割（2026-10-24 18:32，北京）
+
+cap24在a100_t1_4新增6条35M exact完成项：seed45/46各每阶6k/12k/25k。两种子的8臂现全部14,241/14,241步、rc=0，配置/预算/文件SHA通过；所有记录loss有限，root独立复算末60共同验证点13,660–14,241。统一qkn、D/N20、TLS0.5、3遍，不与17M的TLS1跨设置直接合并。
+
+| 每阶行数 | seed45 Δ mnat/token | seed46 Δ mnat/token | seed45 加表/无表平均val | seed46 加表/无表平均val |
+|---|---:|---:|---:|---:|
+| 6k | −4.549 | +6.147 | 2.828378829 / 2.832928204 | 2.832243473 / 2.826096592 |
+| 12k | −1.377 | +26.929 | 2.831551157 / 2.832928204 | 2.853025553 / 2.826096592 |
+| 25k | +11.940 | +19.024 | 2.844867752 / 2.832928204 | 2.845120672 / 2.826096592 |
+
+负值为加表更好。35M的6k/12k在两种子间方向不同，25k在这两种子的登记末窗均更差；**17M两种子的小表收益不能直接外推到35M**。末窗绝对val约2.82–2.86，末值接近各自全程最小值；这组退化不等于训练发散，也不提供sink机制或教师蒸馏判决。第三种子已开始，尚未完成。完整run_id、日志与独立复算见 `outputs/daytime_20261024/results/20261024T103200.058516Z/`。
+
+a100_t1_4释放的6卡已由原capnext清单自然接续，本机8条seed47任务均active；没有手工恢复或新建实验。a100_t1的5张空卡较前次仍空，本机追加提案尚未获回复，不重复claim或增加预算。
+
+### §153 17M第三种子完成（2026-10-24 19:02，北京）
+
+capnext在a100_t1_4新增seed47的17M qkn无表与exact每阶6k/12k/25k四臂完成，均6918/6918步、rc=0。三个种子的12臂已完整结束；本次重新收割后全部文件字节/SHA、配置/预算和loss有限性通过，root独立复算9个配对。每个配对都在同机内，seed45/46位于a100_t1，seed47位于a100_t1_4；不做跨机原始loss相减。
+
+共同登记窗口6330–6918的60个验证点，Δ=加表−无表，单位mnat/token：
+
+| 每阶行数 | seed45 Δ | seed46 Δ | seed47 Δ | seed47加表/无表平均val |
+|---|---:|---:|---:|---:|
+| 6k | −3.470 | −19.251 | −21.751 | 3.105725138 / 3.127476434 |
+| 12k | −5.860 | −15.451 | −15.043 | 3.112433002 / 3.127476434 |
+| 25k | +10.278 | −11.702 | −14.288 | 3.113188591 / 3.127476434 |
+
+6k/12k在这三颗种子的同机末窗均改善，25k为两好一坏。它支持本17M、dn20、qkn、TLS1、E3设定下的小表效应方向复现，仍不证明最优容量、sink机制或蒸馏有效，也不能覆盖35M已观察到的种子反转。seed47末窗val约3.10–3.14、各臂末值接近全程最低值。完整run_id、SHA、原始日志和独立复算见 `outputs/capnext_20261024/results/20261024T110217.508259Z/`。
+
+19:01实查该机GPU3/5/6/7新释放，无本机ready待领；余4个35M seed47继续原预算。其它两台capnext仍各8臂待领；不移动冻结host或追加预算。
+
+### §153 50M原版无表两种子收尾（2026-10-24 19:39，北京）
+
+新增完整完成：perm的`v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_fixed`与a100_t1_2的`v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_fixed`。均20,345步E3、rc=0，配置/预算、文件字节与SHA通过，全部记录loss有限。末值分别2.691236258/2.689702868，末60点均值2.692446918/2.692111185。对应加表及qkn臂尚未完成，不计算50M加表效应或qkn效应。
+
+收割与独立检查：`outputs/daytime_20261024/results/20261024T113942.031247Z/`、其中`root_harvest_check.json`。两卡已按既定capnext队列自然接续，19:39快照perm、t1_2各1active/7queued，无手工恢复、新配置或预算增加。
+
+### §153 50M原版25k表两种子完整配对（2026-10-24 19:51，北京）
+
+新增完成：perm的`v27_50m_exact_r25k_dn20_tls1_s45_e3_cap24_fixed`与a100_t1_2的`v27_50m_exact_r25k_dn20_tls1_s46_e3_cap24_fixed`。均20,345/20,345步E3、rc=0，与此前同机同seed的`v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_fixed`、`v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_fixed`分别配对。设置为无qkn、D/N20、TLS1、DB18；exact每阶25k行、四阶宽768，总表参数76.8M。无表run_id中的r400k不代表实际存在表参数。
+
+末60共同验证点19,760–20,345，Δ为加表−无表，正数更差：
+
+| Seed / 同机 | 加表平均val | 无表平均val | Δ val mnat/token | Δ train mnat/token | 末点Δ val mnat/token |
+|---|---:|---:|---:|---:|---:|
+| 45 / perm | 2.721927823 | 2.692446918 | +29.481 | +25.988 | +35.039 |
+| 46 / a100_t1_2 | 2.715357507 | 2.692111185 | +23.246 | +18.439 | +26.043 |
+
+两种子该小表在登记末窗均劣于无表，训练loss也更高。所有记录loss有限；seed45加表末窗val范围2.717644–2.751305，波动比seed46的2.712665–2.718817大，不能仅凭rc=0或有限loss宣称稳定性已解决。qkn对应臂仍未结束，暂不比较归一化干预；这不是attention sink因果证据或教师蒸馏结果。
+
+收割：`outputs/daytime_20261024/results/20261024T115055.498656Z/`，含原始小日志、summary及SHA。root独立复核本次12份完整run的字节数/SHA、步数唯一性、全曲线loss有限性，并重新计算8个完整同机配对（含此前6个35M配对）；见`root_numeric_check.json`。19:51两张卡已由原capnext自动接续，实测步数继续增长，未人工恢复或增加预算。
+
+### §153 35M第三种子无表与6k表完成（2026-10-24 20:18，北京）
+
+a100_t1_4新增两条完整E3完成：`v27_35m_nogram_r280k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed`、`v27_35m_exact_r6k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed`。均14,241/14,241步、rc=0，统一qkn、D/N20、TLS0.5、DB18，配置/预算校验通过。同机末60共同验证点13,660–14,241，加表平均val **2.847727443**、无表 **2.838692419**，Δ=加表−无表为 **+9.035 mnat/token**；train差值+9.410，最终单点val差值+9.429。
+
+35M每阶6k表的seed45/46/47末窗差值现为 **−4.549 / +6.147 / +9.035 mnat/token**，一好两坏，未表现跨种子一致收益，不能外推17M的三种子同方向结果。新两臂全部记录loss有限，末值分别2.835698128/2.845127364，接近各自全程最小值；这些信息不证明attention sink因果机制或教师蒸馏有效。35M seed47的12k/25k仍运行，尚无完整第三种子配对。
+
+证据：`outputs/capnext_20261024/results/20261024T121806.366362Z/`，包含小日志、summary与SHA。本次14份完整run的文件字节/SHA、步数唯一性、loss有限性均经root复核，10个完整同机配对独立复算一致，见`root_numeric_check.json`。新释放两卡本机没有已登记ready接续，保留claim与原预算；未重启、迁移或新增实验。
+
+### §153 35M第三种子完整收尾（2026-10-24 20:31，北京）
+
+a100_t1_4新增完整E3完成：`v27_35m_exact_r12k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed`及`v27_35m_exact_r25k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed`，均14,241/14,241步、rc=0。与本机同seed无表`v27_35m_nogram_r280k_dn20_tls0.5_s47_e3_capnext24_qkn_fixed`配对，统一qkn、D/N20、TLS0.5、DB18。三种子的12条35M登记任务至此完整结束。
+
+末60共同验证点13,660–14,241，Δ=加表−无表，mnat/token，负数更好：
+
+| 每阶行数 | seed45 Δ | seed46 Δ | seed47 Δ | seed47加表/无表平均val |
+|---|---:|---:|---:|---:|
+| 6k | −4.549 | +6.147 | +9.035 | 2.847727443 / 2.838692419 |
+| 12k | −1.377 | +26.929 | −11.007 | 2.827685479 / 2.838692419 |
+| 25k | +11.940 | +19.024 | +5.800 | 2.844492666 / 2.838692419 |
+
+6k/12k方向随种子变化；25k在这三颗种子的登记末窗均更差。35M未复现17M的6k/12k三种子同方向收益，不能跨规模/表学习率设置外推。seed47新增12k/25k的末点val为2.825923463/2.842715224，末60点train差值为−13.580/+1.519 mnat/token；全部记录loss有限，末值接近全曲线最小值。该容量结果不证明sink机制，也不是教师语义蒸馏比较。
+
+收割证据：`outputs/capnext_20261024/results/20261024T123137.399390Z/`。root独立核对本次16份完整capnext run的文件字节/SHA、步数唯一性及loss有限性，并复算12个同机完整配对，见`root_numeric_check.json`。a100_t1_4登记清单已全部结束，本机无ready接续；保留旧STOP和所有claim，未迁移、重跑或增加预算。
+
+### §153 50M归一化无表与小表两种子完成（2026-10-24 20:47，北京）
+
+本轮新增7条完整20,345步E3、rc=0；统一D/N20、TLS1、DB18，配置/预算校验通过：
+
+| Host | run_id |
+|---|---|
+| perm | `v27_50m_nogram_r400k_dn20_tls1_s45_e3_cap24_qkn_fixed` |
+| perm | `v27_50m_exact_r6k_dn20_tls1_s45_e3_cap24_qkn_fixed` |
+| perm | `v27_50m_exact_r12k_dn20_tls1_s45_e3_cap24_qkn_fixed` |
+| perm | `v27_50m_exact_r25k_dn20_tls1_s45_e3_cap24_qkn_fixed` |
+| a100_t1_2 | `v27_50m_nogram_r400k_dn20_tls1_s46_e3_cap24_qkn_fixed` |
+| a100_t1_2 | `v27_50m_exact_r6k_dn20_tls1_s46_e3_cap24_qkn_fixed` |
+| a100_t1_2 | `v27_50m_exact_r12k_dn20_tls1_s46_e3_cap24_qkn_fixed` |
+
+以下均为严格同机、同seed、完整预算末60共同验证点19,760–20,345。Δ=处理组−对照组，mnat/token，负数更好；每一行只改变所列干预。
+
+| 比较 | seed45 Δ | seed46 Δ | seed45处理/对照平均val | seed46处理/对照平均val |
+|---|---:|---:|---:|---:|
+| 无表：qkn−原版 | −24.312 | −11.319 | 2.668134476 / 2.692446918 | 2.680792403 / 2.692111185 |
+| qkn：6k表−无表 | +0.512 | −12.575 | 2.668646372 / 2.668134476 | 2.668217077 / 2.680792403 |
+| qkn：12k表−无表 | +13.207 | −10.105 | 2.681341832 / 2.668134476 | 2.670687527 / 2.680792403 |
+| qkn：25k表−无表 | +9.493 | 未完成 | 2.677627478 / 2.668134476 | — |
+| 25k表：qkn−原版 | −44.300 | 未完成 | 2.677627478 / 2.721927823 | — |
+
+无表上的qkn干预在两种子均改善；6k/12k表相对qkn无表的方向随seed变化，尚无两种子一致收益。seed45的6k差值仅+0.512，不能写成明显劣化；12k则在两颗种子方向相反。seed45 25k表虽因qkn改善，相对同样qkn的无表仍更差，不能把−44.300当作加表收益。以上是本设定的完整终点干预/容量结果，不是attention sink因果证据，也不是第二版教师蒸馏。第三种子仍在跑，50k/100k本轮未齐。
+
+全部收割loss有限，新增臂末点接近全程最小值；有限loss与正常退出本身不能证明稳定机制。最终证据：`outputs/daytime_20261024/results/20261024T124732.883737Z/`，19份完整run字节/SHA、步数唯一性及loss有限性经root复核，16个完整同机配对独立重算一致，见`root_numeric_check.json`。更早本轮收割`20261024T124459.455886Z`保留，不删除。独立复算使用显式`treatment`−`control`，不把候选排序`left/right`当处理方向；原collector数值正确。
+
+释放卡按原capnext队列自动接续；20:46为perm6运行/2待领、t1_2 5运行/3待领，八条此前运行项均实测推进，新三臂已有实际训练步数。未手工恢复、改配置、迁移或追加预算。
+
+### §153 cap24全部完成：50M两种子容量曲线齐（2026-10-24 21:09，北京）
+
+新增5条完整20,345步E3、rc=0，统一D/N20、TLS1、DB18、qkn；cap24共24条登记任务全部结束：
+
+| Host | run_id |
+|---|---|
+| perm | `v27_50m_exact_r50k_dn20_tls1_s45_e3_cap24_qkn_fixed` |
+| perm | `v27_50m_exact_r100k_dn20_tls1_s45_e3_cap24_qkn_fixed` |
+| a100_t1_2 | `v27_50m_exact_r25k_dn20_tls1_s46_e3_cap24_qkn_fixed` |
+| a100_t1_2 | `v27_50m_exact_r50k_dn20_tls1_s46_e3_cap24_qkn_fixed` |
+| a100_t1_2 | `v27_50m_exact_r100k_dn20_tls1_s46_e3_cap24_qkn_fixed` |
+
+以下为每对同机、同seed、同qkn设置的完整末60共同验证点19,760–20,345；Δ=加表−无表，mnat/token，负数更好。seed45/46的qkn无表均值分别2.668134476/2.680792403。
+
+| 每阶行数R | 四阶总表参数 | 表/实际无表主干参数 | seed45 Δ | seed46 Δ | seed45/46加表平均val |
+|---|---:|---:|---:|---:|---:|
+| 6k | 18.432M | 0.285 | +0.512 | −12.575 | 2.668646372 / 2.668217077 |
+| 12k | 36.864M | 0.571 | +13.207 | −10.105 | 2.681341832 / 2.670687527 |
+| 25k | 76.800M | 1.189 | +9.493 | −5.278 | 2.677627478 / 2.675514104 |
+| 50k | 153.600M | 2.379 | −2.203 | −9.404 | 2.665931602 / 2.671388573 |
+| 100k | 307.200M | 4.757 | −14.325 | −20.050 | 2.653809891 / 2.660742751 |
+
+在这两颗种子中，50k/100k方向一致改善；但其表参数分别为实际64.573M无表主干的约2.38/4.76倍，**不能写成“参数不大于主干的小表已获得一致收益”**。6k/12k/25k方向仍随seed变化；第三种子在跑，当前曲线不证明最优容量或统计显著性。R是每阶行数，总表参数=4×R×768；表参数比不等于R/N行数比。
+
+seed46的25k表qkn−原版末窗差值为−39.843 mnat/token（2.675514104−2.715357507）；结合seed45的−44.300，25k表上的qkn干预两种子均改善。相对各自qkn无表，加表效果却是+9.493/−5.278，仍须分开这两个问题。全部新增记录loss有限，末值接近全曲线最小值；seed46的100k末窗曾到2.707014，随后末值回到2.658796，保留该波动，不能仅凭完成或末值声称全程无波动。结果不构成attention sink因果机制或教师蒸馏证据。
+
+收割：`outputs/daytime_20261024/results/20261024T130853.233272Z/`。24份完整run的文件字节/SHA、配置/预算、步数唯一性及loss有限性通过；22个完整同机配对按显式`treatment`−`control`由原始日志独立复算，见`root_numeric_check.json`。
+
+21:08资源快照：pro5k29运行/1待领；capnext在perm、t1_2各8运行、全32臂均已领取，本批0待领。剩余45个登记训练继续原预算；原先有快照的40条均推进，另5条新接续已有实际训练步数。a100_t1额外释放GPU1/5（首次空卡快照，未作间隔5分钟确认），原旧任务未动。整体50/80卡有计算进程、30卡低显存空闲快照。perm最快一臂按差分步速约118分钟结束，本机无ready接续，需提前记录新的两小时内接续缺口。未恢复、迁移、新增实验或延长预算。
+
+21:10追加复核：capnext全部16个活跃任务在123.4秒间隔中均增长100–220步，含新接续5条；结合pro5k29条跨轮推进，45个登记训练均有实际步数推进证据。a100_t1的GPU1/5仍为空，但与首次快照仅隔约2分钟，尚不宣称已通过5分钟空卡确认。
+
+
+## NIGHTFILL58_20261024 · 58臂E3接续登记
+
+用户2026-10-24本轮授权直接补队列。完整逐臂section/命令/输入和验收见`docs/handoff/nightfill-20261024.md`、`docs/plans/nightfill-20261024.json`与`.jobs`。延续§153 v27协议，原因是同设置配对检验QKN/表LR/U/第三seed，而非重新解释早期v5极简基线。所有新臂增加确定性uniform fixed-train probe16批、间隔500；原online-gap主指标不变。
+
+| ID | Host | run_id | Steps | 状态 |
+|---|---|---|---:|---|
+
+| R01 | a100_t1 | `v27_17m_nogram_r136k_dn20_tls1_s45_e3_nightfill24_fixed` | 6918 | planned |
+| R02 | a100_t1 | `v27_17m_exact_r6k_dn20_tls1_s45_e3_nightfill24_fixed` | 6918 | planned |
+| R03 | a100_t1 | `v27_17m_exact_r12k_dn20_tls1_s45_e3_nightfill24_fixed` | 6918 | planned |
+| R04 | a100_t1 | `v27_17m_exact_r25k_dn20_tls1_s45_e3_nightfill24_fixed` | 6918 | planned |
+| R05 | a100_t1 | `v27_17m_nogram_r136k_dn20_tls1_s46_e3_nightfill24_fixed` | 6918 | planned |
+| R06 | a100_t1 | `v27_17m_exact_r6k_dn20_tls1_s46_e3_nightfill24_fixed` | 6918 | planned |
+| R07 | a100_t1 | `v27_17m_exact_r12k_dn20_tls1_s46_e3_nightfill24_fixed` | 6918 | planned |
+| R08 | a100_t1 | `v27_17m_exact_r25k_dn20_tls1_s46_e3_nightfill24_fixed` | 6918 | planned |
+| R09 | a100_t1_4 | `v27_17m_nogram_r136k_dn20_tls1_s47_e3_nightfill24_fixed` | 6918 | planned |
+| R10 | a100_t1_4 | `v27_17m_exact_r6k_dn20_tls1_s47_e3_nightfill24_fixed` | 6918 | planned |
+| R11 | a100_t1_4 | `v27_17m_exact_r12k_dn20_tls1_s47_e3_nightfill24_fixed` | 6918 | planned |
+| R12 | a100_t1_4 | `v27_17m_exact_r25k_dn20_tls1_s47_e3_nightfill24_fixed` | 6918 | planned |
+| R13 | a100_t1_4 | `v27_35m_exact_r6k_dn20_tls1_s45_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R14 | a100_t1_4 | `v27_35m_exact_r12k_dn20_tls1_s45_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R15 | a100_t1_4 | `v27_35m_exact_r25k_dn20_tls1_s45_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R16 | a100_t1_4 | `v27_35m_exact_r6k_dn20_tls1_s46_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R17 | a100_t1_4 | `v27_35m_exact_r12k_dn20_tls1_s46_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R18 | a100_t1_4 | `v27_35m_exact_r25k_dn20_tls1_s46_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R19 | a100_t1_4 | `v27_35m_exact_r6k_dn20_tls1_s47_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R20 | a100_t1_4 | `v27_35m_exact_r12k_dn20_tls1_s47_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R21 | a100_t1_4 | `v27_35m_exact_r25k_dn20_tls1_s47_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R22 | a100_t1_4 | `v27_35m_exact_r6k_dn20_tls0.25_s45_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R23 | a100_t1_4 | `v27_35m_exact_r12k_dn20_tls0.25_s45_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R24 | a100_t1_4 | `v27_35m_exact_r25k_dn20_tls0.25_s45_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R25 | a100_t1_4 | `v27_35m_exact_r6k_dn20_tls0.25_s46_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R26 | a100_t1_4 | `v27_35m_exact_r12k_dn20_tls0.25_s46_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R27 | a100_t1_4 | `v27_35m_exact_r25k_dn20_tls0.25_s46_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R28 | a100_t1_4 | `v27_35m_exact_r6k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R29 | a100_t1_4 | `v27_35m_exact_r12k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R30 | a100_t1_4 | `v27_35m_exact_r25k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed` | 14241 | planned |
+| R31 | a100_t1 | `v27_17m_nogram_r136k_dn10_tls1_s45_e3_nightfill24_qkn_fixed` | 3459 | planned |
+| R32 | a100_t1 | `v27_17m_exact_r12k_dn10_tls1_s45_e3_nightfill24_qkn_fixed` | 3459 | planned |
+| R33 | a100_t1 | `v27_17m_nogram_r136k_dn40_tls1_s45_e3_nightfill24_qkn_fixed` | 13835 | planned |
+| R34 | a100_t1 | `v27_17m_exact_r12k_dn40_tls1_s45_e3_nightfill24_qkn_fixed` | 13835 | planned |
+| R35 | a100_t1 | `v27_17m_nogram_r136k_dn10_tls1_s46_e3_nightfill24_qkn_fixed` | 3459 | planned |
+| R36 | a100_t1 | `v27_17m_exact_r12k_dn10_tls1_s46_e3_nightfill24_qkn_fixed` | 3459 | planned |
+| R37 | a100_t1 | `v27_17m_nogram_r136k_dn40_tls1_s46_e3_nightfill24_qkn_fixed` | 13835 | planned |
+| R38 | a100_t1 | `v27_17m_exact_r12k_dn40_tls1_s46_e3_nightfill24_qkn_fixed` | 13835 | planned |
+| R39 | a100_t1_4 | `v27_17m_nogram_r136k_dn10_tls1_s47_e3_nightfill24_qkn_fixed` | 3459 | planned |
+| R40 | a100_t1_4 | `v27_17m_exact_r12k_dn10_tls1_s47_e3_nightfill24_qkn_fixed` | 3459 | planned |
+| R41 | a100_t1_4 | `v27_17m_nogram_r136k_dn40_tls1_s47_e3_nightfill24_qkn_fixed` | 13835 | planned |
+| R42 | a100_t1_4 | `v27_17m_exact_r12k_dn40_tls1_s47_e3_nightfill24_qkn_fixed` | 13835 | planned |
+| R43 | perm | `v27_50m_exact_r6k_dn20_tls1_s45_e3_nightfill24_fixed` | 20345 | planned |
+| R44 | perm | `v27_50m_exact_r12k_dn20_tls1_s45_e3_nightfill24_fixed` | 20345 | planned |
+| R45 | perm | `v27_50m_exact_r50k_dn20_tls1_s45_e3_nightfill24_fixed` | 20345 | planned |
+| R46 | perm | `v27_50m_exact_r100k_dn20_tls1_s45_e3_nightfill24_fixed` | 20345 | planned |
+| R47 | a100_t1_2 | `v27_50m_exact_r6k_dn20_tls1_s46_e3_nightfill24_fixed` | 20345 | planned |
+| R48 | a100_t1_2 | `v27_50m_exact_r12k_dn20_tls1_s46_e3_nightfill24_fixed` | 20345 | planned |
+| R49 | a100_t1_2 | `v27_50m_exact_r50k_dn20_tls1_s46_e3_nightfill24_fixed` | 20345 | planned |
+| R50 | a100_t1_2 | `v27_50m_exact_r100k_dn20_tls1_s46_e3_nightfill24_fixed` | 20345 | planned |
+| R51 | perm | `v27_50m_exact_r6k_dn20_tls1_s47_e3_nightfill24_fixed` | 20345 | planned |
+| R52 | perm | `v27_50m_exact_r12k_dn20_tls1_s47_e3_nightfill24_fixed` | 20345 | planned |
+| R53 | perm | `v27_50m_exact_r50k_dn20_tls1_s47_e3_nightfill24_fixed` | 20345 | planned |
+| R54 | perm | `v27_50m_exact_r100k_dn20_tls1_s47_e3_nightfill24_fixed` | 20345 | planned |
+| R55 | a100_t1_2 | `v27_104m_nogram_r832k_dn20_tls1_s47_e3_nightfill24_qkn_fixed` | 42318 | planned |
+| R56 | a100_t1_2 | `v27_104m_exact_r12k_dn20_tls1_s47_e3_nightfill24_qkn_fixed` | 42318 | planned |
+| R57 | a100_t1_2 | `v27_104m_exact_r25k_dn20_tls1_s47_e3_nightfill24_qkn_fixed` | 42318 | planned |
+| R58 | a100_t1_2 | `v27_104m_exact_r50k_dn20_tls1_s47_e3_nightfill24_qkn_fixed` | 42318 | planned |
+
+
+### 2026-10-25 00:49 · nightfill17M D/N40 qkn两种子完整E3
+
+同机a100_t1，17M档（4层、宽512）、D/N40、680M名义独立token、实际pool679,993,344、E3共13,835步。exact每阶12,000行、四阶共48,000行；LR6e-4、TLS1、qkn=true，主干/数据/评估配置逐项一致，只有表相关字段及输出路径不同。四臂rc0、完整预算通过，小日志SHA已复核。
+
+| seed | exact末60点val | nogram末60点val | exact−nogram，mnat/token |
+|---|---:|---:|---:|
+| 45 | 3.0095727285 | 3.0091674149 | +0.405314 |
+| 46 | 2.9905743947 | 3.0221193549 | −31.544960 |
+
+共同末窗step13250…13830、13835，共60点。seed45近零，seed46改善；不将60个时间点当独立种子，不宣布跨种子稳定收益。这是随机初始化exact容量控制，不是教师蒸馏结果。
+
+run_id逐对：
+- seed45：`v27_17m_exact_r12k_dn40_tls1_s45_e3_nightfill24_qkn_fixed` / `v27_17m_nogram_r136k_dn40_tls1_s45_e3_nightfill24_qkn_fixed`。
+- seed46：`v27_17m_exact_r12k_dn40_tls1_s46_e3_nightfill24_qkn_fixed` / `v27_17m_nogram_r136k_dn40_tls1_s46_e3_nightfill24_qkn_fixed`。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T164434Z/nightfill_dn40_completed_pairs.json`。原始小日志在本仓`outputs/nightfill_20261024/collected/a100_t1/`；收割清单保留远端SHA。未push或发布。
+
+
+### 10-25 01:06 · capnext seed47 50M exact6k及nightfill35M完成查收
+
+- `a100_perm/v27_50m_exact_r6k_dn20_tls1_s47_e3_capnext24_qkn_fixed` 完整20,345步E3，与同机 `v27_50m_nogram_r400k_dn20_tls1_s47_e3_capnext24_qkn_fixed` 严格同训练/评估配置（仅表处理不同）；末60共同step19760…20340、20345，val均值2.680007178585/2.679259133339，exact−nogram=+0.748045mnat/token。只此seed，近零略差；非蒸馏。60个收割小文件SHA全部通过。
+- `a100_t1_4/v27_35m_exact_r{6,12,25}k_dn20_tls1_s45_e3_nightfill24_qkn_fixed` 三臂及 `v27_35m_exact_r6k_dn20_tls1_s46_e3_nightfill24_qkn_fixed` 均14,241步E3、rc0、SHA/有限性通过。既定表学习率干预对照均已存在，但新诊断fixed_train_probe_batches=16（旧0）、probe_eval_interval=500（旧10）；本轮保留其可比性待根核验，不公布跨诊断设置的干预效果。训练未中断，不新增重跑。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T170140Z/completion_audit.json`。
+
+
+### 10-25 01:20 · capnext50M seed47 qkn容量三臂E3查收
+
+同机perm，D/N20、qkn、seed47、固定E3/20,345步。新完成 `v27_50m_exact_r{12,25,50}k_dn20_tls1_s47_e3_capnext24_qkn_fixed`，对同机 `v27_50m_nogram_r400k_dn20_tls1_s47_e3_capnext24_qkn_fixed`。训练及评估配置逐项相同（仅表处理/输出路径不同），完整预算与69个小文件SHA通过；共同末窗19760…20340、20345，共60点。
+
+| 每阶表行数 | exact末60点val | nogram末60点val | exact−nogram，mnat/token |
+|---|---:|---:|---:|
+| 12k | 2.675280735 | 2.679259133 | −3.978399 |
+| 25k | 2.689232807 | 2.679259133 | +9.973674 |
+| 50k | 2.670853269 | 2.679259133 | −8.405864 |
+
+单种子，不能把时间点当重复，也不能宣称容量越大必然越好；这是随机初始化exact容量对照，非教师蒸馏。100k本轮尚未结束。证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T171541Z/completion_audit.json`。
+
+
+### 2026-10-25 01:35：capnext seed47 100k与4个nightfill TLS1完整E3收割
+
+capnext同机perm，固定3epoch、20,345步；共同末60点19760…20340、20345，配置仅表处理字段/output不同，诊断元信息匹配。
+
+| run_id | val均值（共同末60点） | 表−无表 mnat/token |
+|---|---:|---:|
+| `v27_50m_exact_r100k_dn20_tls1_s47_e3_capnext24_qkn_fixed` | 2.656234966384 | -23.024167 |
+| `v27_50m_nogram_r400k_dn20_tls1_s47_e3_capnext24_qkn_fixed` | 2.679259133339 | 对照 |
+
+这是随机初始化exact表容量实验，不是教师蒸馏；不将单种子结果外推普适规律。新增nightfill完成均为a100_t1_4、14,241步、rc0，配置/预算/训练及验证损失有限性检查通过：
+
+- `v27_35m_exact_r12k_dn20_tls1_s46_e3_nightfill24_qkn_fixed`
+- `v27_35m_exact_r25k_dn20_tls1_s46_e3_nightfill24_qkn_fixed`
+- `v27_35m_exact_r6k_dn20_tls1_s47_e3_nightfill24_qkn_fixed`
+- `v27_35m_exact_r12k_dn20_tls1_s47_e3_nightfill24_qkn_fixed`
+
+TLS1新臂比旧TLS0.5多固定train探针，暂不发布纯TLS因果对比。116个小文件SHA及独立复算见 `../forking_v2/outputs/fleet_20261024/heartbeats/20261024T172944Z/completion_audit.json` 与 `root_acceptance.json`；收割目录 `outputs/capnext_20261024/results/20261024T173236.216427Z/`。无恢复、无新训练或预算变更。
+
+
+### 2026-10-25 02:36：pro5k6旧学生三臂完整E3收割（比较暂缓）
+
+- `stu_trainable_9_16_ctr_r072_clip1_s43_e3`：trainable、seed43、固定3epoch/22,065步，全部训练及验证记录有限。
+- `stu_frozen_9_16_ctr_r072_clip1_s42_e3`：frozen、seed42、固定3epoch/22,065步，全部训练及验证记录有限。
+- `stu_nogram_clip1_s43_e3`：nogram、seed43、固定3epoch/22,065步，全部训练及验证记录有限。
+
+旧 `/data/student/student_train.py` 为零基日志：原始步22064对应完成22065；原始验证步14999…21999、22064统一+1得到第三遍16点15000…22000、22065。源码行289/315/317与SHA证据、6个小文件SHA见 `../forking_v2/outputs/fleet_20261024/heartbeats/20261024T183105Z/legacy_completion_audit.json` 和 `legacy_root_acceptance.json`。
+
+旧summary缺完整模型配置、输入列表SHA及启动trainer SHA，配对状态 `held_missing_historical_identity`；本次不采用/发布蒸馏收益。两条名称r072表臂实际target_rms=0.723，不能从名字推断成0.072。冻结臂释放GPU已自然接原qkn控制臂；无重新启动、预算扩展或旧任务修改。
+
+
+### 2026-10-25 02:51：nightfill50M原版6k与最后pro5k旧臂完成
+
+- `v27_50m_exact_r6k_dn20_tls1_s45_e3_nightfill24_fixed`：perm，E3/20,345步、rc0；seed45、qkn=false、每阶6000行、LR6e-4/TLS1、输入池999,972,864 token、全部训练/验证记录有限，登记配置通过。它新增fixed_train_probe_batches=16、probe_eval_interval=500；原cap24同机对照分别0/10，配对比较待诊断协议审查，本次不计算收益。随机表容量实验，不是蒸馏。
+- `stu_trainable_1_8_ctr_r072_clip1_s42_e3`：pro5k6，E3/22,065步，原始最后step22064按+1归一化；第三遍16点完整有限、meta与summary一致。4个旧学生全部结束。本次只验收完成，历史身份缺失的配对hold延续。
+
+本次19个收割小文件SHA全部通过，见 `../forking_v2/outputs/fleet_20261024/heartbeats/20261024T184705Z/{a100_completion_audit,legacy_completion_audit,completion_root_acceptance}.json`；没有恢复、修改训练预算或重跑。
+
+
+### 2026-10-25 03:21：1B全维母库验收与5个E3完成
+
+VPC v2于03:05:36完成原五片1B归并。四段×2560维，24数组816,301,308,400B；五源身份、连续1B输入、四阶逐key计数、事件守恒及最终receipt绑定通过。全数组SHA和有限性来自已审查且现场SHA匹配的冻结merger成功执行，未另外重复全量扫描。最终manifest SHA：`b13a4cf164b42b2f5d0272025baf5be1e73afb306b9d40eb4f0ab193da59b39d`。母库仍基于legacy 10B候选的1B观测，不是在线语义压缩词表；剩余全维9B累计745.324M，完整10B未完成，新学生未启动。
+
+新增完成run_id：
+
+- `v27_35m_exact_r25k_dn20_tls1_s47_e3_nightfill24_qkn_fixed`
+- `v27_35m_exact_r6k_dn20_tls0.25_s45_e3_nightfill24_qkn_fixed`
+- `v27_35m_exact_r12k_dn20_tls0.25_s45_e3_nightfill24_qkn_fixed`
+- `v27_35m_exact_r25k_dn20_tls0.25_s45_e3_nightfill24_qkn_fixed`
+- `v27_35m_nogram_r280k_dn40_tls0.5_s45_e3_bridge25_fixed`
+
+前四臂同机t1_4、固定E3/14,241步；bridge同机t1、E3/28,483步。预算与有限性通过，81个收割小文件SHA复核。bridge末行epoch标签4是边界标签，summary train_epochs=3与登记28,483更新步一致，不是四遍；配对等待其余同种子臂完整结束。
+
+35M、D/N20、qkn、seed45的TLS0.25 vs TLS1均同机完整E3；配置仅table_lr_scale/out_dir不同，固定探针SHA `1d533c2cfa4a3e35`、16batch/500间隔、启动输入与源码身份一致。末60共同step13660…14240、14241：
+
+| 每阶行数 | TLS0.25 val均值 | TLS1 val均值 | Δval(0.25−1) mnat/token |
+|---|---:|---:|---:|
+| 6k | 2.836052609815 | 2.826927255922 | +9.125354 |
+| 12k | 2.832488650084 | 2.837277507451 | −4.788857 |
+| 25k | 2.847715067863 | 2.842103579972 | +5.611488 |
+
+对应TLS1对照run_id为上述三条seed45将`tls0.25`替换为`tls1`。单种子结果混合，不能宣称统一降表学习率有益；随机初始化exact表对照，非教师蒸馏。旧TLS0.5探针不一致的比较继续hold。证据：`../forking_v2/outputs/fleet_20261024/heartbeats/20261024T191703Z/{a100_completion_audit,bridge_completion_audit,completion_root_acceptance,vpc_root_acceptance}.json`。
+
+
+### 2026-10-25 03:35：bridge非qkn小表稳定性失败（预算完成不等于健康）
+
+同机a100_t1，35M（实际无表36,096,000参数）、D/N40、固定E3/28,483步、seed45、LR6e-4、TLS0.5、qkn=false，实际输入池1,399,984,128 token。exact每阶12k，4阶总48k行×640=30.72M表参数。
+
+- exact：`v27_35m_exact_r12k_dn40_tls0.5_s45_e3_bridge25_fixed`
+- nogram：`v27_35m_nogram_r280k_dn40_tls0.5_s45_e3_bridge25_fixed`
+
+两臂rc0、完整预算；同机同seed配置仅表相关字段及输出路径不同，固定探针SHA `c0dc2b8eb653a530`、16batch/500间隔一致。表侧额外freq诊断间隔1,000,000，大于28,483预算，只在末步主验证之后执行；独立迭代器与冻结源码SHA已审查。末60共同step27900…28480、28483：exact train/val均值7.005797/7.011112，nogram2.817502/2.791399，Δval=+4219.713410mnat/token。
+
+这是持续失稳，不能因损失有限或rc0称为健康。描述性定位：exact第一遍step6080 val3.03057，7180升5.67297、7500达7.33580；9000至末步1950个验证点最低仍5.59457。这不是新登记的阈值或精确变点估计。
+
+seed46对应 `v27_35m_exact_r12k_dn40_tls0.5_s46_e3_bridge25_fixed` 尚未完成，同步step25140小表/无表val5.40075/2.78911；第一遍已明显恶化，作为在途失稳记录，不计算最终末窗结论。seed45/46的四个qkn臂仍在跑，当前2.767–2.803，不提前判最终救援或attention sink机制。所有臂继续既定E3预算，未自动补跑或停掉旧任务。
+
+本轮另新增 `v27_50m_exact_r12k_dn20_tls1_s45_e3_nightfill24_fixed`（perm、E3/20,345步）与 `v27_17m_nogram_r136k_dn10_tls1_s47_e3_nightfill24_qkn_fixed`（t1_4、E3/3,459步）；前者跨旧诊断比较hold，后者等同种子表臂完成。共103个小文件SHA复核通过。证据：`../forking_v2/outputs/fleet_20261024/heartbeats/20261024T192904Z/{a100_completion_audit,bridge_completion_audit,bridge_pair_review,completion_root_acceptance}.json`。
+
+
+### 2026-10-25 03:44–03:46：nightfill五臂与bridge无表seed46完整E3验收
+
+本轮新增6个完整三遍预算、rc0，收割97个小文件并独立逐文件SHA复核（nightfill74、bridge23）；配置/输入/冻结源码及主评估身份准入通过。原TLS0.5跨诊断比较hold不变。新增run_id：
+
+- `v27_35m_exact_r6k_dn20_tls0.25_s46_e3_nightfill24_qkn_fixed`
+- `v27_35m_exact_r12k_dn20_tls0.25_s46_e3_nightfill24_qkn_fixed`
+- `v27_35m_exact_r25k_dn20_tls0.25_s46_e3_nightfill24_qkn_fixed`
+- `v27_35m_exact_r6k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed`
+- `v27_17m_exact_r12k_dn10_tls1_s47_e3_nightfill24_qkn_fixed`
+- `v27_35m_nogram_r280k_dn40_tls0.5_s46_e3_bridge25_fixed`
+
+同机a100_t1_4完整配对。35M固定E3/14,241步，共同末60点13660…14240、14241；17M D/N10固定E3/3,459步，实际池169,979,904 token，末60共同点2870…3450、3459。qkn=true，35M的TLS对照只改表学习率倍率；17M只改有/无exact表，4阶各12k行×512，共24.576M表参数。
+
+| 设定 | 处理val均值 | 对照val均值 | Δval mnat/token |
+|---|---:|---:|---:|
+| 35m seed46 6k / TLS0.25 minus TLS1 | 2.834307887488 | 2.841463468803 | -7.155581 |
+| 35m seed46 12k / TLS0.25 minus TLS1 | 2.853257371982 | 2.832746713691 | +20.510658 |
+| 35m seed46 25k / TLS0.25 minus TLS1 | 2.848914628559 | 2.838191567196 | +10.723061 |
+| 35m seed47 6k / TLS0.25 minus TLS1 | 2.840605976184 | 2.824316493670 | +16.289483 |
+| 17m seed47 12k / exact12k minus nogram at D/N10 | 3.306326537000 | 3.287393326561 | +18.933210 |
+
+35M对照run_id为对应处理将`tls0.25`替换为`tls1`；17M对照为`v27_17m_nogram_r136k_dn10_tls1_s47_e3_nightfill24_qkn_fixed`。均严格同机、同seed、同主评估，35M固定探针SHA `1d533c2cfa4a3e35`，17M `3954ee67a47d1148`。表侧额外频率诊断按冻结launcher仅末步且位于主验证之后。降表学习率效果混合；17M D/N10仅seed47差18.933mnat，不外推为跨种子规律。容量不同不能当作独立重复；这些是随机表实验，不是教师蒸馏结果。
+
+bridge seed46非qkn无表完整E3/28,483步，D/N40实际池1,399,984,128 token、LR6e-4/TLS0.5。最后val2.783212145，末60点均值2.783180735，未见尾部塌陷。对应exact12k仍未完成：收割时step27460 train5.895815、val5.835753，同步无表val2.784672。保持在途失稳记录，不计算最终配对；四条qkn臂未完成，不宣布最终救援，更不证明attention sink因果。既定预算继续，未自动停训/重跑/改配置。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T194436Z/completion_root_acceptance.json`、`a100_completion_audit.json`、`bridge_completion_audit.json`；当前不可变收割位于`a100_collected/`与`bridge_collected/`，`audit_a100_completions.py`可离线复算。队列实际空卡与接续缺口另记fleet手册。
+
+
+### 2026-10-25 04:01–04:03：bridge seed46非qkn表臂完整失稳端点；perm50M单臂收割
+
+新增：
+
+- `v27_35m_exact_r12k_dn40_tls0.5_s46_e3_bridge25_fixed`，a100_t1、E3/28,483步、rc0。
+- `v27_50m_exact_r50k_dn20_tls1_s45_e3_nightfill24_fixed`，perm、E3/20,345步、rc0。
+
+47个小文件SHA独立复核（bridge28、nightfill19），输入/启动源码/预算身份通过。bridge完整同机对照为 `v27_35m_nogram_r280k_dn40_tls0.5_s46_e3_bridge25_fixed`；35M、D/N40实际池1,399,984,128 token、LR6e-4/TLS0.5、qkn=false，4阶各12k×640，共30.72M表参数。config仅表字段/输出路径不同；probe SHA `c0dc2b8eb653a530`、16batch/500一致；表侧频率诊断仅最终主验证之后、独立迭代器，冻结源码已审查。末60共同点27900…28480、28483：
+
+| seed46同机臂 | train均值 | val均值 |
+|---|---:|---:|
+| exact12k | 6.129184258 | 6.135321805 |
+| nogram | 2.808719085 | 2.783180735 |
+
+表−无表+3352.141069mnat/token。最终单点小表6.340333184、无表2.783212145。小表第一遍3000步val3.231002，4000升7.255453；16000至末步1250个验证点最低仍5.335369，为已报告持续失稳的完整端点，不是新runtime failure。连同seed45，两个种子的非qkn小表均严重恶化；qkn各臂尚未完成，不能宣布最终救援、attention sink因果或蒸馏收益。固定三遍继续执行，无自动停训/改配置/重跑。
+
+perm50M单臂实际池999,972,864 token、4阶各50k×768=153.6M表参数、qkn=false、TLS1。末60点19760…20340、20345，val均值2.715308972，范围2.711583495–2.719850043；最终val2.713119070。完整日志有限，分四段的train/val均值均下降；2250步短尖峰2270步已恢复，未见类似bridge的持续损失崩坏；此描述不替代形式化稳定性证明。旧cap24对照主探针不同，继续hold，不计算表效应或归一化效应。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T200147Z/completion_root_acceptance.json`、`bridge_root_acceptance.json`、`bridge_pair_review.json`、`a100_completion_audit.json`及不可变`bridge_collected/`、`a100_collected/`。
+
+
+### 2026-10-25 04:16：bridge seed45无表qkn干预完整E3配对
+
+新增完成 `v27_35m_nogram_r280k_dn40_tls0.5_s45_e3_bridge25_qkn_fixed`，a100_t1、rc0、固定3epoch/28,483步；对照 `v27_35m_nogram_r280k_dn40_tls0.5_s45_e3_bridge25_fixed`。29个小文件SHA独立复核。35M、D/N40实际池1,399,984,128 token、LR6e-4/TLS0.5、seed45。两臂配置仅qk_norm及输出路径不同，probe SHA `c0dc2b8eb653a530`、16batch/500一致，无freq_index；输入和启动源码SHA一致。qkn归一化额外3,072参数（36,099,072 vs 36,096,000），属于所测归一化干预本身，不声称参数量完全相等。
+
+| 同机无表臂 | 末60 train均值 | 末60 val均值 |
+|---|---:|---:|
+| qkn | 2.779515517 | 2.753389833 |
+| 非qkn | 2.817501703 | 2.791399054 |
+
+共同末60 step27900…28480、28483，Δval(qkn−非qkn)=−38.009221686mnat/token。qkn末60 val范围2.751281401–2.755980651，最终2.753544887；完整日志有限，抽样长期验证损失下降，未见末段崩坏。这是单种子无表归一化效果；未完成的qkn加表臂不能用于最终小表效应/交互结论，也不证明attention sink因果或蒸馏收益。收割时该加表臂28110步、val2.759902、无summary；严格hold，未等待或重启。seed45/46非qkn小表既有失稳结论保持。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T201633Z/completion_root_acceptance.json`、`bridge_pair_review.json`、`bridge_completion_audit.json`，不可变收割和逐文件SHA在`bridge_collected/`及`bridge_collected_SHA256.json`。
+
+
+### 2026-10-25 04:29：bridge seed45完整2×2，qkn避免表臂崩坏但无小表收益
+
+新增完成 `v27_35m_exact_r12k_dn40_tls0.5_s45_e3_bridge25_qkn_fixed`，a100_t1、rc0、固定3epoch/28,483步。30个小文件SHA独立复核，四格输入、启动源码、配置及主probe准入一致；每对只改所测table/qk_norm与输出字段。35M、D/N40实际池1,399,984,128 token、seed45、LR6e-4/TLS0.5；exact四阶各12k行×640，共30.72M表参数，qkn额外3,072归一化参数。probe SHA `c0dc2b8eb653a530`、16batch/500；表侧频率诊断仅末步主验证之后、独立迭代器，原冻结源码已验收。
+
+| 四格（run_id） | 末60 train均值 | 末60 val均值 |
+|---|---:|---:|
+| `v27_35m_nogram_r280k_dn40_tls0.5_s45_e3_bridge25_fixed` | 2.817501703 | 2.791399054 |
+| `v27_35m_exact_r12k_dn40_tls0.5_s45_e3_bridge25_fixed` | 7.005796516 | 7.011112465 |
+| `v27_35m_nogram_r280k_dn40_tls0.5_s45_e3_bridge25_qkn_fixed` | 2.779515517 | 2.753389833 |
+| `v27_35m_exact_r12k_dn40_tls0.5_s45_e3_bridge25_qkn_fixed` | 2.784563117 | 2.759500420 |
+
+四格末60共同step27900…28480、28483。qkn下表−无表+6.110588mnat/token；表臂qkn−非qkn为−4251.612044；无表臂qkn−非qkn为−38.009222；非qkn下表−无表+4219.713410。描述性交互−4213.602823mnat受崩坏格主导，不能作为稳定容量/scaling关系，更不能把60个验证点当60次独立重复或宣布统计显著。
+
+稳定性与收益分开：从头启用qkn的表臂健康跑完此预算，9000…28483的1950验证点val范围2.757431–2.909383，末60范围2.757431–2.764489，最终val2.757641673；原非qkn表同期5.594574–9.510300。该seed/configuration/E3内未复现原发散，但qkn表相对qkn无表仍略差6.111mnat，不能把“避免发散”说成“保住小表收益”。这是配置干预，不是恢复已失败checkpoint。结论只限seed45；seed46/47 qkn配对尚未完整，不能外推普适零发散、attention sink机制或教师蒸馏收益。未新增阈值、置信区间、预算或重跑。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T202904Z/bridge_pair_review.json`、`bridge_completion_audit.json`、`completion_root_acceptance.json`及`bridge_collected_SHA256.json`。
+
+
+### 2026-10-25 04:43–04:45：四臂完整E3；seed46无表qkn效应与50M可恢复波动
+
+新增4条完整E3、rc0，127个小文件SHA独立复核（nightfill96、bridge31）：
+
+- `v27_50m_exact_r6k_dn20_tls1_s47_e3_nightfill24_fixed`
+- `v27_50m_exact_r100k_dn20_tls1_s45_e3_nightfill24_fixed`
+- `v27_17m_nogram_r136k_dn40_tls1_s47_e3_nightfill24_qkn_fixed`
+- `v27_35m_nogram_r280k_dn40_tls0.5_s46_e3_bridge25_qkn_fixed`
+
+bridge35M、D/N40、LR6e-4/TLS0.5、seed46，实际池1,399,984,128 token、28,483步。qkn无表对同机完整 `v27_35m_nogram_r280k_dn40_tls0.5_s46_e3_bridge25_fixed`；配置仅qk_norm/out_dir，主probe SHA `c0dc2b8eb653a530`、16batch/500、输入与启动源码一致。末60共同点27900…28480、28483，qkn train/val2.781998222/2.756112937，非qkn2.808719085/2.783180735；Δval=−27.067798376mnat/token。qkn末段val范围2.753213–2.759067，未见末段崩坏。与seed45无表归一化−38.009方向一致，仅限这两个seed与配置，不是小表收益。seed46 qkn exact收割仍27750步、val2.762946、无summary，最终table×qkn结论hold。
+
+nightfill本轮只验收单臂，不计算不匹配或未完成配对：
+
+| 主机/设定 | 步数 | 末60 val均值 | 最终val |
+|---|---:|---:|---:|
+| perm 50M D/N20 exact6k 非qkn s47 | 20345 | 2.739315102 | 2.734603743 |
+| perm 50M D/N20 exact100k 非qkn s45 | 20345 | 2.678145713 | 2.675597608 |
+| t1_4 17M D/N40 nogram qkn s47 | 13835 | 3.025568948 | 3.024094999 |
+
+50M共同协议实际池999,972,864 token，末60单臂点19760…20340、20345；17M实际池679,993,344，末60点13250…13830、13835。50M随机exact表每阶6k/100k，各4阶×768，共18.432M/307.2M表参数。旧cap主probe不匹配，保持比较hold；17M对应exact本次collection无summary，未提前算收益。全部是固定E3随机表实验，不是教师蒸馏。
+
+50M r6k seed47不可标成“全程平稳”：回顾性60点滚动均值从16390–16980的2.753848902，升到17000–17590的2.772741793（+18.892891mnat），至18530–19120恢复为2.753800647，最终2.734603743。17420单点val2.818356931，之后恢复。未见bridge式持续损失崩坏，此处只是保留可恢复波动，未新设发散阈值或形式化稳定性证明。另两臂分段均值持续下降；rc0/finite与健康轨迹分别记录。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T204335Z/completion_root_acceptance.json`、`bridge_root_acceptance.json`、`bridge_pair_review.json`、`a100_completion_audit.json`及不可变`a100_collected/`、`bridge_collected/`。
+
+
+### 2026-10-25 04:59–05:01：seed46四格复现qkn避免崩坏但无小表收益；17M D/N40 seed47获益
+
+新增4个完整E3、rc0，131个小文件SHA独立复核（nightfill99、bridge32），主配置/启动输入/冻结源码/探针及训练轨迹分别验收。没有新运行失败、重跑或预算变化。
+
+- `v27_50m_exact_r12k_dn20_tls1_s47_e3_nightfill24_fixed`
+- `v27_50m_exact_r50k_dn20_tls1_s47_e3_nightfill24_fixed`
+- `v27_17m_exact_r12k_dn40_tls1_s47_e3_nightfill24_qkn_fixed`
+- `v27_35m_exact_r12k_dn40_tls0.5_s46_e3_bridge25_qkn_fixed`
+
+35M bridge seed46四格全部同机a100_t1、D/N40、LR6e-4/TLS0.5，固定3epoch/28,483步，实际池1,399,984,128 token。四阶各12k行×640，共30.72M表参数；qkn另加3,072参数。主probe SHA `c0dc2b8eb653a530`、16batch/500，输入/冻结源码一致，每对仅预登记table/qk_norm与输出字段不同；频率诊断仅末步主验证后、独立迭代器。末60共同step27900…28480、28483：
+
+| 四格run_id | train均值 | val均值 |
+|---|---:|---:|
+| `v27_35m_nogram_r280k_dn40_tls0.5_s46_e3_bridge25_fixed` | 2.808719085 | 2.783180735 |
+| `v27_35m_exact_r12k_dn40_tls0.5_s46_e3_bridge25_fixed` | 6.129184258 | 6.135321805 |
+| `v27_35m_nogram_r280k_dn40_tls0.5_s46_e3_bridge25_qkn_fixed` | 2.781998222 | 2.756112937 |
+| `v27_35m_exact_r12k_dn40_tls0.5_s46_e3_bridge25_qkn_fixed` | 2.786186583 | 2.761390185 |
+
+qkn下表−无表 **+5.277247892mnat/token**；归一化对有表−3373.931619856、对无表−27.067798376；非qkn表−无表+3352.141069372。描述性交互−3346.863821480受崩坏格主导，不是稳定容量/scaling关系。qkn表在16000…28483的1250验证点val2.758744–2.826199、末60范围2.758744–2.764541；非qkn表同期5.335369–8.574036。与已验收seed45一致：从头qkn避免了本配置三遍预算中的表臂崩坏，表相对同样qkn无表却仍略差（seed45 +6.110588、seed46 +5.277248）。不能称作保住小表收益、修复失败checkpoint、attention sink机制证明或普适零发散。seed47尚未完成，不提前判决；不把验证点当独立重复，不声明显著性。
+
+17M D/N40、qkn、seed47，同机a100_t1_4完整配对：表run见上，无表为 `v27_17m_nogram_r136k_dn40_tls1_s47_e3_nightfill24_qkn_fixed`。LR6e-4/TLS1、实际池679,993,344、E3/13,835步；四阶各12k×512，共24.576M表参数。probe SHA `b9d62babbb3e7a1b`、16batch/500，主配置仅表干预/输出路径不同，输入/源码身份和末步额外诊断时序准入通过。末60共同step13250…13830、13835，表train/val3.024642702/2.990216640，无表3.062601441/3.025568948，表−无表 **−35.352308220mnat/token**。此前同设定seed45 +0.405314、seed46 −31.544960（各自在同机配对）；三个seed不是全同方向，不能外推普适收益，更不是教师蒸馏结果。
+
+perm50M D/N20、非qkn、TLS1、seed47的新12k/50k均E3/20,345步，实际池999,972,864；末60单臂val2.720693881/2.706123406，最终val2.721423030/2.704342465。逐段主loss与末段检查未见bridge式持续崩坏，rc0/finite不单独作为健康证明。旧cap固定探针不匹配，表效应比较继续hold；没有借跨协议对照给出收益。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T205907Z/completion_root_acceptance.json`、`bridge_pair_review.json`、`a100_pair_evidence.json`、两份completion_audit与不可变小日志SHA清单。所有新增运行、配对和局限已同步fleet接管文件。
+
+
+### 2026-10-25 05:16：35M seed47表学习率三容量配对齐；perm与t1_4队列跑完
+
+新增3条固定E3/rc0，102个不可变小文件SHA独立复核，另核验完整对照；没有新增实验、预算或恢复。
+
+- `v27_50m_exact_r100k_dn20_tls1_s47_e3_nightfill24_fixed`
+- `v27_35m_exact_r12k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed`
+- `v27_35m_exact_r25k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed`
+
+35M D/N20、seed47、qkn、a100_t1_4同机随机exact表，LR6e-4，仅比较表学习率倍率TLS0.25与TLS1。实际池699,973,632 token，固定三遍/14,241步，末60共同step13660…14240、14241。主probe SHA `1d533c2cfa4a3e35`、16batch/500，全部非结果诊断元信息一致，输入/启动源码SHA匹配。每对配置只差table_lr_scale和out_dir，数据、epoch、qkn、表容量不变。
+
+| 每阶行数 | TLS0.25 val均值 | TLS1 val均值 | Δval mnat/token | 本轮 |
+|---:|---:|---:|---:|---|
+| 6k | 2.840605976 | 2.824316494 | +16.289483 | 历史6k重新复核，不计新完成 |
+| 12k | 2.834635633 | 2.832202011 | +2.433622 | 新增完整配对 |
+| 25k | 2.852582912 | 2.841172052 | +11.410860 | 新增完整配对 |
+
+完整run_id按容量配对：
+
+- `v27_35m_exact_r6k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed` 对 `v27_35m_exact_r6k_dn20_tls1_s47_e3_nightfill24_qkn_fixed`。
+- `v27_35m_exact_r12k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed` 对 `v27_35m_exact_r12k_dn20_tls1_s47_e3_nightfill24_qkn_fixed`。
+- `v27_35m_exact_r25k_dn20_tls0.25_s47_e3_nightfill24_qkn_fixed` 对 `v27_35m_exact_r25k_dn20_tls1_s47_e3_nightfill24_qkn_fixed`。
+
+三种容量是同一个seed的不同条件，不是三个独立seed；本seed三个差值均为正，即降到0.25没有改善注册端点。此前其他seed有正有负，不能据此宣布统一最佳学习率、统计显著性或scaling关系。全部为随机初始化表，不是教师蒸馏；旧TLS0.5诊断不匹配对照继续hold。主损失均有限，分段和末段轨迹未见bridge式持续崩坏，运行成功与稳定性分开记录。
+
+perm的50M D/N20、exact100k、TLS1、非qkn、seed47完成20,345步，实际池999,972,864 token。四阶各100k×768，共307.2M表参数。末60单臂val2.682778537，最终val2.681202372；该单臂未见持续损失崩坏，但与旧cap对照的主probe不匹配，仍不计算跨诊断表效应。
+
+资源快照：perm8/8和t1_4 26/26登记任务均完成，本机无ready接续；仍待领的8条nightfill属于t1_2，不能跨机冒充ready。所有调度器正常，未重启、重复claim或扩预算。全维9B处理进度1,390,367,284 token，不当作完成receipt；固定预算未变。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T211617Z/completion_root_acceptance.json`、`a100_completion_audit.json`、`a100_pair_evidence.json`、`a100_SHA256.json`及不可变`a100_collected/`。
+
+
+### 2026-10-25 06:30：bridge seed47非qkn无表完整三遍；配对尚未齐
+
+新增完成 `v27_35m_nogram_r280k_dn40_tls0.5_s47_e3_bridge25_fixed`，a100_t1同机35M、D/N40、seed47、无表、无qk-norm，LR6e-4、登记TLS0.5（无表时不构成表干预）。实际输入池1,399,984,128 token，固定3epoch/28,483步，rc0、summary完整；33个不可变小文件SHA已独立复核，配置、启动输入、冻结源码与probe身份匹配。主probe SHA `c0dc2b8eb653a530`，16batch/500。
+
+仅记录单臂描述：末60验证点step27900…28480、28483，train均值2.804620161、val均值2.779545386，val范围2.775761366–2.782604833，最终val2.779273629。step16000至28483的1250验证点范围2.775761366–2.842050334，未观察到末段持续损失崩坏；rc0/有限值本身不构成形式化稳定性证明。同seed的非qkn表、qkn无表、qkn表在本次收割时仍无summary，严格hold，不计算未完成配对的末60共同点，也不提前报告表收益或seed47的qkn救援。此无表对照不属于教师蒸馏结果。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T223009Z/completion_root_acceptance.json`、`bridge_completion_audit.json`、`bridge_collected_SHA256.json`和不可变`bridge_collected/`。没有新增实验、恢复、配置或预算变化。
+
+
+### 2026-10-25 07:02：bridge seed47非qkn小表无持续崩坏，但完整配对劣于无表
+
+新完成 `v27_35m_exact_r12k_dn40_tls0.5_s47_e3_bridge25_fixed`；完整对照 `v27_35m_nogram_r280k_dn40_tls0.5_s47_e3_bridge25_fixed` 为上轮已验收，不重复计完成。两臂同机a100_t1，35M、D/N40、seed47、无qk-norm、LR6e-4/TLS0.5，实际池1,399,984,128 token，固定三遍/28,483步、rc0。随机exact表为四阶各12k行；配置仅表干预及输出路径不同，主probe SHA `c0dc2b8eb653a530`、16batch/500，主诊断/数据/冻结源码匹配。冻结trainer与launcher SHA复核，额外频率诊断只在末步主验证后执行，使用独立迭代器，不改变本配对主训练流。34个不可变小文件SHA独立验收。
+
+共同末60点step27900…28480、28483：
+
+| 条件 | train均值 | val均值 | 最终val |
+|---|---:|---:|---:|
+| exact12k | 2.849316528 | 2.823943037 | 2.822720230 |
+| 无表 | 2.804620161 | 2.779545386 | 2.779273629 |
+
+表−无表Δval **+44.397651156mnat/token**，Δtrain **+44.696367780mnat/token**；小表在此seed的固定三遍端点更差。末60范围：表2.821083963–2.828292290，无表2.775761366–2.782604833。不能把这60个验证点当独立seed或宣称显著性。
+
+两臂均有恢复的瞬态而非全程绝对平稳：表16720步val3.440028866，16730回到3.069094598、17220至2.888148050；无表13750步4.043277403，13760回到2.947856128、13800至2.860081573。表24000至末步450验证点范围2.821083963–2.866429826，无表同期2.775761366–2.796622654。该seed没有前两seed持续到末尾的损失崩坏，故不得把seed45/46失稳外推成所有seed必现；表的端点负收益仍存在。seed47的qkn两臂尚未完成，不计算最终归一化配对，不提前判决救援/表收益。这里是随机初始化表对照，不是教师蒸馏，不证明attention sink因果、普适稳定性或scaling关系。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T230207Z/completion_root_acceptance.json`（独立复算）、`bridge_pair_review.json`、`bridge_pair_common60.json`、`bridge_collected_SHA256.json`、冻结`source_evidence/`及不可变小日志。没有新增实验、恢复、配置或预算变更。
+
+
+### 2026-10-25 07:44：bridge seed47无表qkn改善17.387mnat，小表qkn仍未完成
+
+新完成 `v27_35m_nogram_r280k_dn40_tls0.5_s47_e3_bridge25_qkn_fixed`；完整对照 `v27_35m_nogram_r280k_dn40_tls0.5_s47_e3_bridge25_fixed` 为历史已完成，不重复计完成。两臂同机a100_t1、35M、D/N40、seed47、无表、LR6e-4、登记TLS0.5，实际池1,399,984,128 token，固定3epoch/28,483步，rc0。配置仅qk_norm和out_dir不同；主probe SHA `c0dc2b8eb653a530`、16batch/500，主诊断、数据与冻结源码一致。参数量36,099,072对36,096,000，新增3,072为注册qkn干预内生的6层×Q/K两组×weight/bias两向量×head_dim128，不是额外表。35个不可变小文件SHA、输入/源码链独立复核；无表对照的summary/log/rc与前轮不变。
+
+共同末60点step27900…28480、28483：
+
+| 条件 | train均值 | val均值 | 最终val |
+|---|---:|---:|---:|
+| qkn无表 | 2.787867554 | 2.762158504 | 2.760278781 |
+| 非qkn无表 | 2.804620161 | 2.779545386 | 2.779273629 |
+
+qkn−非qknΔval **−17.386881842mnat/token**，Δtrain **−16.752606630mnat/token**。qkn末60范围2.759443343–2.765804927，step16000至末步1250点范围2.759443343–2.819218119，未见持续劣化。非qkn原13750步val4.043277尖峰已在13800步恢复2.860082，不能描述其全程没有波动；末60范围2.775761366–2.782604833。
+
+此前相同无表归一化比较seed45/46分别−38.009222/−27.067798mnat，三个已完成seed方向一致，结论仍限同配置、同机各自配对和固定三遍，不把60验证点当独立重复或宣布统计显著性。seed47 qkn小表 `v27_35m_exact_r12k_dn40_tls0.5_s47_e3_bridge25_qkn_fixed` 本轮收割仅26,510步、无summary，最终表效应与四格继续hold。无表归一化收益不等于教师蒸馏、小表收益、attention sink因果或普适零发散。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261024T234436Z/completion_root_acceptance.json`、`bridge_pair_review.json`、`bridge_pair_common60.json`、`bridge_collected_SHA256.json`、冻结源码与不可变小日志。没有新增实验、恢复、配置或预算变更。
+
+
+### 2026-10-25 08:14：bridge12完整三遍；qkn小表收益三seed方向混合
+
+新增且仅新增最后一臂 `v27_35m_exact_r12k_dn40_tls0.5_s47_e3_bridge25_qkn_fixed`。bridge12/12均完整3epoch、28,483步、rc0；前11臂不重复计完成。所有实验a100_t1同机、35M、D/N40、seeds45/46/47，LR6e-4、TLS0.5，实际输入池1,399,984,128 token，固定三遍。随机exact表四阶（2–5）各12k行×640宽，共30.72M表参数；不是教师蒸馏。qkn增加3,072参数，来自Q/K的LayerNorm仿射项。
+
+36个不可变小文件SHA及所有12臂配置/输入/冻结源码/主probe独立复核。主probe `c0dc2b8eb653a530`、16batch/500；只允许注册表或qkn干预及out_dir不同。表额外频率诊断间隔1,000,000，超过全程，只在最终主验证写出后使用独立迭代器；不能把此最终附加诊断当训练中额外干预。全部配对仅取双方完整共同末60点：27900…28480、28483。
+
+| seed47条件 | train均值 | val均值 | 最终val |
+|---|---:|---:|---:|
+| 非qkn无表 | 2.804620161 | 2.779545386 | 2.779273629 |
+| 非qkn exact12k | 2.849316528 | 2.823943037 | 2.822720230 |
+| qkn无表 | 2.787867554 | 2.762158504 | 2.760278781 |
+| qkn exact12k | 2.772990604 | 2.750276627 | 2.749195536 |
+
+差值统一为处理−对照，单位mnat/token，负值更好。seed47表效应：非qkn +44.397651156、qkn **−11.881876985**；qkn效应：无表−17.386881842、有表−73.666409983；描述交互−56.279528141。qkn表末60 val范围2.746975740–2.752866228，最终2.749195536。原非qkn有表的16720步尖峰已恢复，无持续末段崩坏；不能把此seed的归一化改善称“救援已崩模型”，各臂均从头训练。
+
+| seed | qkn表−无表 Δval | 非qkn表−无表 Δval | qkn−非qkn（无表） | qkn−非qkn（有表） |
+|---:|---:|---:|---:|---:|
+| 45 | +6.110588 | +4219.713410 | -38.009222 | -4251.612044 |
+| 46 | +5.277248 | +3352.141069 | -27.067798 | -3373.931620 |
+| 47 | -11.881877 | +44.397651 | -17.386882 | -73.666410 |
+
+qkn下三个独立seed的小表效应为+6.110588、+5.277248、−11.881877，描述均值 **−0.164680mnat/token**，样本SD **10.155941**；方向混合，不能宣称稳定收益或统计显著。60个验证点是端点平均，不是独立重复。seed45/46原表持续崩坏、qkn从头对应臂避免该现象的证据保留；seed47原表没有持续崩坏，不能把失稳归因推广到所有seed。无表qkn在三seed均改善，但仍不等于小表增益、教师蒸馏或attention sink因果，也不建立普适scaling law。
+
+完整run_id（同一seed内四格；本轮仅s47 qkn exact为新完成）：
+
+- `v27_35m_nogram_r280k_dn40_tls0.5_s45_e3_bridge25_fixed`
+- `v27_35m_exact_r12k_dn40_tls0.5_s45_e3_bridge25_fixed`
+- `v27_35m_nogram_r280k_dn40_tls0.5_s45_e3_bridge25_qkn_fixed`
+- `v27_35m_exact_r12k_dn40_tls0.5_s45_e3_bridge25_qkn_fixed`
+- `v27_35m_nogram_r280k_dn40_tls0.5_s46_e3_bridge25_fixed`
+- `v27_35m_exact_r12k_dn40_tls0.5_s46_e3_bridge25_fixed`
+- `v27_35m_nogram_r280k_dn40_tls0.5_s46_e3_bridge25_qkn_fixed`
+- `v27_35m_exact_r12k_dn40_tls0.5_s46_e3_bridge25_qkn_fixed`
+- `v27_35m_nogram_r280k_dn40_tls0.5_s47_e3_bridge25_fixed`
+- `v27_35m_exact_r12k_dn40_tls0.5_s47_e3_bridge25_fixed`
+- `v27_35m_nogram_r280k_dn40_tls0.5_s47_e3_bridge25_qkn_fixed`
+- `v27_35m_exact_r12k_dn40_tls0.5_s47_e3_bridge25_qkn_fixed`
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261025T001438Z/completion_root_acceptance.json`、`independent_results_agreement.json`、`bridge_pair_review.json`、`bridge_three_seed_common60.json`、`bridge_collected_SHA256.json`、冻结源码与不可变小日志。主线程独立复算全部三seed四个contrast，与收割审计一致。资源快照53/80卡有进程，27空卡对应本机ready0；未改任何预算、配置、STOP、claim，未恢复或新增实验。
+
+
+### 2026-10-25 09:01：104M qkn无表seed45完整三遍；表臂未完，不算配对
+
+新增 `v27_104m_nogram_r832k_dn20_tls1_s45_e3_capnext24_qkn_fixed`，a100_t1_2、104M名义规模、D/N20、seed45、qk-norm、无表、LR6e-4，登记TLS1对无表不构成表干预。实际架构10层/896宽/7头，参数105,636,352，seq2048、device_batch18、effective_batch147,456 token，验证12批×24、每10步及末步。实际池2,079,977,472 token，固定3epoch/42,318步、rc0、summary齐；没有扩到6epoch。
+
+仅执行一次单host单run既定collect，3个远端小日志及receipt留SHA；主线程独立重算与收割审计一致。45项配置所需输入的历史long_prefix预检与注册指纹相符，但本轮未重读大输入，也没有新增每run输入hash回执；7项当前远端训练/队列源码hash与冻结计划相符。fixed-train probe关闭（batches0、SHA null、配置interval10），其unused final_fixed_* NaN为禁用时保留初值，不是主损失发散；主train/val/gap均有限。
+
+单臂末60验证点为41730…42310、42318：train均值 **2.557821401954**，val均值 **2.522662644254**，val范围2.520362019539–2.524592280388，最终val **2.521873593330**。step28000至末步val范围2.520362019539–2.557509084543；描述轨迹未见持续崩坏，rc0或有限性本身不等于形式化稳定证明。该seed的exact12k/25k/50k仍在跑，严格hold最终同机表效应；不跨seed、跨机或跨probe借对照，不宣称教师蒸馏收益、attention sink因果或普适稳定性。
+
+GPU1已自然接续注册的 `v27_50m_exact_r6k_dn20_tls1_s46_e3_nightfill24_fixed`；实际进程/冻结源码、原未claim及当前步数推进已核验，固定3epoch/20,345步。该任务的16/500 probe与本次capnext无表不同，未来不可直接当同协议配对。此次只有既有调度器自然领取，没有手动恢复、新预算、旧STOP或claim修改。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261025T010108Z/completion_root_acceptance.json`、`capnext_completion_audit.json`、`independent_results_agreement.json`、`capnext_last60.json`、`capnext_collected_SHA256.json`、不可变收割日志、历史输入指纹副本与`natural_queue_handoff.json`。母库9B后段进度2,233,958,426 token仍不是全10B完成receipt。
+
+
+## 2026-10-25 09:46：104M qkn seed45 exact12k 与无表完成配对（观测差值）
+
+- a100_t1_2；新完成`v27_104m_exact_r12k_dn20_tls1_s45_e3_capnext24_qkn_fixed`，对照`v27_104m_nogram_r832k_dn20_tls1_s45_e3_capnext24_qkn_fixed`复用09:01验收；两臂E3/42,318步、rc0，主train/val有限。10层、宽896、7头，qk-norm，D/N20，固定池2,079,977,472 token，LR6e-4、TLS1、batch147456、序列2048、验证12×24每10步；probe禁用0/null/10。
+- 随机初始化2–5阶各12,000行、896维，表参数43,008,000；总参数148,644,352，无表105,636,352。不是教师蒸馏表、不是64维压缩对照。
+- 末60共同验证点为41,730至42,310每10步，加最终42,318；表train2.568127160、val2.531770827；无表train2.557821402、val2.522662644。表−无表val **+9.1081828 mnat/token**，train+10.3057583；这是该seed的观测劣化。表最终val2.531071027，末60范围2.530327519–2.533123076；分段均值持续下降，未见持续崩坏，不把rc0当稳定性证明。
+- 同配置除注册表与输出差异；输入采用同机历史47/45文件指纹，未重新扫描大输入。6个小日志SHA独立核验，7项注册源码SHA匹配当前远端。每步return_token_losses只影响返回；额外诊断前向只在最终主val之后，独立数据迭代器。历史diag_worker.py未列入冻结源码，当前本地实现不能补历史身份：严格因果表效应暂hold，完成和描述性对比仍有效；单种子不作普遍规律或蒸馏结论。
+- GPU7由既有nightfill50M exact12k seed46自然接续；无新预算/手动恢复/重复claim。完整证据在`../forking_v2/outputs/fleet_20261024/heartbeats/20261025T014609Z/`：completion_root_acceptance、capnext_pair_review、independent_results_agreement及SHA256。
+
+
+### 2026-10-25 10:15：104M qkn无表seed46完整三遍；同seed表臂未完
+
+新增`v27_104m_nogram_r832k_dn20_tls1_s46_e3_capnext24_qkn_fixed`，a100_t1_2；固定3epoch/42,318步、rc0、summary齐。10层/896宽/7头，实际参数105,636,352，qk-norm，无表，seed46，名义D/N20，实际固定池2,079,977,472 token；LR6e-4、有效batch147456、device_batch18、seq2048，主验证12批×24每10步及末步。登记TLS1对无表不构成表干预。
+
+主probe关闭（0/null/配置interval10），unused final_fixed_* NaN是禁用初值，主损失有限。末60点41730…42310与42318：train 2.555101199945、val 2.520126979219；末60val范围2.517477452755–2.522783756256，最终val 2.519079923630。28000步后val范围2.517477452755–2.550068815549，未见持续崩坏；描述性轨迹不等于形式化稳定证明。同seed exact12k/25k/50k仍未完成，暂不计算表效应，不跨seed或probe配对。
+
+仅一次既定scoped collect，3小日志及回执SHA通过，根线程独立配置/预算/末60复算与审计一致；45项实际输入采用同机历史预检SHA链，本轮未重新扫描大输入，7项当前远端源码SHA匹配冻结计划。无教师蒸馏、attention sink因果或普适规律结论。
+
+GPU3自然接续`v27_50m_exact_r50k_dn20_tls1_s46_e3_nightfill24_fixed`，固定3epoch/20,345步，实查320步。该50M任务另有16/500主probe，不能直接当本次capnext的同协议对照；既有调度器自行领取，无手动恢复/新预算/claim改动。证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261025T021507Z/completion_root_acceptance.json`、`capnext_completion_audit.json`、`independent_results_agreement.json`、`natural_queue_handoff.json`及小日志/SHA。
+
+
+### 2026-10-25 10:29：104M qkn两条随机表完成，同seed同机观测配对
+
+- seed45，新`v27_104m_exact_r25k_dn20_tls1_s45_e3_capnext24_qkn_fixed`，复用无表`v27_104m_nogram_r832k_dn20_tls1_s45_e3_capnext24_qkn_fixed`；a100_t1_2、E3/42,318步、D/N20、固定池2,079,977,472 token；10层/宽896/7头、qkn、LR6e-4/TLS1、batch147456/seq2048、主验证12×24每10步，probe0/null/10。2–5阶各25,000行，表参数89,600,000，总参数195,236,352对无表105,636,352。
+  末60共同点41730…42310、42318：表train2.548677215974/val2.516930850678，无表train2.557821401954/val2.522662644254；表−无表val **-5.731793576 mnat/token**、train-9.144185980。表最终val2.517100671927，末60val范围[2.515007575352987, 2.5198896725972495]，四分段train/val均下降，未见持续崩坏。
+- seed46，新`v27_104m_exact_r12k_dn20_tls1_s46_e3_capnext24_qkn_fixed`，复用无表`v27_104m_nogram_r832k_dn20_tls1_s46_e3_capnext24_qkn_fixed`；a100_t1_2、E3/42,318步、D/N20、固定池2,079,977,472 token；10层/宽896/7头、qkn、LR6e-4/TLS1、batch147456/seq2048、主验证12×24每10步，probe0/null/10。2–5阶各12,000行，表参数43,008,000，总参数148,644,352对无表105,636,352。
+  末60共同点41730…42310、42318：表train2.557122469942/val2.524224412110，无表train2.555101199945/val2.520126979219；表−无表val **+4.097432892 mnat/token**、train+2.021269997。表最终val2.523410181204，末60val范围[2.521665553251902, 2.5270484487215676]，四分段train/val均下降，未见持续崩坏。
+
+6新小文件+6复用基线文件SHA通过，两独立复算一致；配置除表/输出一致，历史输入47/45文件链和当前冻结7项源码核验，本轮未重扫大输入。历史diag_worker身份缺口沿用09:46记录，没有新证据消除；只描述同机同seed完成差值，未作因果收益、跨seed最终结论或教师蒸馏结论。源证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261025T022938Z/completion_root_acceptance.json`、`capnext_pair_review.json`、`capnext_pair_common60.json`、`independent_results_agreement.json`、小日志与SHA256。
+
+两GPU按既定300秒空闲准入自然接续50M exact100k seed46、104M nogram seed47，无手动恢复或新预算。唯一ready库存核算显示，3条待领覆盖前三次capnext释放，约12:24第四次释放额外缺1条ready，已记录新增缺口；不重复计算pending，不新增未批准实验。
+
+
+### 2026-10-25 10:45：104M qkn seed45每阶50k完成，三容量观测齐备
+
+新增`v27_104m_exact_r50k_dn20_tls1_s45_e3_capnext24_qkn_fixed`，对照复用`v27_104m_nogram_r832k_dn20_tls1_s45_e3_capnext24_qkn_fixed`，a100_t1_2、seed45、D/N20、固定3epoch/42,318步，实际池2,079,977,472 token，10层/宽896/7头、qkn、LR6e-4/TLS1、batch147456/seq2048，主验证12×24每10步，probe禁用0/null/10。2–5阶各50,000行×896，表179,200,000参数，总284,836,352对无表105,636,352，随机初始化。
+
+末60共同点41730…42310与42318：表train2.545720637838/val2.517133610116，无表train2.557821401954/val2.522662644254。表−无表val **-5.529034138 mnat/token**，train-12.100764116；表最终val2.517537871997，四分段train/val下降、无持续崩坏迹象，非形式化稳定证明。
+
+同一seed45、同机、同probe的每阶12k/25k/50k相对无表val差依次+9.108182788/−5.731793576/−5.529034138 mnat；50k比25k val高约0.202759mnat而train更低。只描述一个seed的容量曲线，不宣称25k最优或普适scaling；本实验不是教师蒸馏。
+
+3新小文件和3复用无表文件SHA独立复核，47/45历史输入指纹匹配计划，当前7项源码链核验；未重读大输入，旧diag_worker历史身份缺口保留，不作严格因果收益。根与独立容量汇总一致，未跨seed配对。GPU2自然接续登记104M exact12k seed47，200/230步已核，无手动恢复/新预算；其16/500 probe不能直接与本次0/null/10配对。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261025T024540Z/completion_root_acceptance.json`、`capnext_completion_audit.json`、`independent_results_agreement.json`、`seed45_capacity_root_summary.json`、`capnext_seed45_capacity_summary.json`、`natural_queue_handoffs.json`及SHA256。
+
+
+### 2026-10-25 11:02：104M qkn seed46每阶25k/50k完成，capnext32全完成
+
+新两臂均a100_t1_2、seed46、D/N20、固定3epoch/42,318步；实际池2,079,977,472 token，10层/宽896/7头、qkn、LR6e-4/TLS1、batch147456/seq2048，主验证12×24每10步，probe禁用0/null/10。2–5阶分别各25k或50k行×896维，总行数100k/200k，总模型参数195,236,352/284,836,352；无表105,636,352。表为随机初始化，不是教师蒸馏。
+
+复用同seed无表`v27_104m_nogram_r832k_dn20_tls1_s46_e3_capnext24_qkn_fixed`，末60共同点41730…42310及42318，无表train2.555101199945/val2.520126979219：
+
+- `v27_104m_exact_r25k_dn20_tls1_s46_e3_capnext24_qkn_fixed`：表train 2.551529536645、val 2.519466716713；表−无表train -3.571663300、val -0.660262505 mnat/token。表参数89,600,000。
+- `v27_104m_exact_r50k_dn20_tls1_s46_e3_capnext24_qkn_fixed`：表train 2.537933967511、val 2.508969471521；表−无表train -17.167232434、val -11.157507698 mnat/token。表参数179,200,000。
+
+seed46每阶12k/25k/50k的val差+4.097432892/−0.660262505/−11.157507698 mnat；seed45为+9.108182788/−5.731793576/−5.529034138；两seed描述均值+6.602807840/−3.196028041/−8.343270918。每条差值先同机同seed配对，再做描述均值，60点不当独立重复，不作最优容量、显著性或普遍scaling主张。
+
+25k seed46在2250步val3.565383017曾出现短暂尖峰，2230为3.092097461，2280回3.090445340；两臂四分段train/val下降，未见持续末段崩坏。根线程直接核日志确认恢复瞬态，不能表述全程无失稳。6新小文件、3复用无表文件和3复用12k文件SHA均通过；47/45历史输入指纹和当前7项源码链一致，未重扫大输入；diag_worker历史身份缺口保留，只报告观测对照。
+
+capnext登记32臂均完整E3/rc0，之前30条验收保留，仅收割新2条。GPU4/6自然接续seed47同容量nightfill臂，实际600/560步；其probe16/500不同，不能无条件混并到本次容量对照。原预算、STOP、claim保持。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261025T030208Z/completion_root_acceptance.json`、`capnext_completion_audit.json`、`independent_results_agreement.json`、`seed46_capacity_root_summary.json`、`capnext_seed46_capacity_summary.json`、`two_seed_capacity_descriptive.json`、`capnext_queue_completion.json`、`root_trajectory_verification.json`、`natural_queue_handoffs.json`及SHA256。
+
+
+### 2026-10-25 12:30：50M seed46每阶6k非qkn完整E3，旧cap配对继续hold
+
+`v27_50m_exact_r6k_dn20_tls1_s46_e3_nightfill24_fixed`，a100_t1_2、D/N20、seed46、非qkn、3epoch/20,345步、实际池999,972,864 token，8层/768宽/6头、LR6e-4/TLS1、batch147456/seq2048、主val12×24每10步。2–5阶各6,000行×768随机表，总24,000行、18,432,000表参数，summary实际总参数83,000,832；不把名义50M当实际总参数。
+
+末60单臂点19,760…20,340及20,345：train 2.737899601460、val 2.708099048999；最终train 2.782547235489、val 2.707370738188。四分段均值下降，2580步短暂相邻val升幅在2590回落，rolling60最大上升约1.454mnat在2600恢复；未见持续末段崩坏，不声称全程无波动。最终epoch标签4是步数边界显示，既定训练预算E3/20345未变。
+
+probe16/500、SHA53afd8f4bfcbf76b，与旧cap24登记的同机同seed无表/带qkn表对照诊断设置不同，正式配对保持hold，未计算表收益或qkn效应。9项当前源码匹配注册、25项历史输入指纹匹配，未重扫大输入；3小文件/receipt SHA和单臂统计由根与独立审计核验。GPU1首次空闲，本机ready0，未自动恢复/改预算。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261025T043009Z/completion_root_acceptance.json`、`independent_results_agreement.json`、`nightfill_collection_review.json`、独立审计及SHA256。
+
+
+### 2026-10-25 13:00：50M非qkn每阶12k新失稳（运行中，非完成）
+
+- run：`v27_50m_exact_r12k_dn20_tls1_s46_e3_nightfill24_fixed`，a100_t1_2 GPU7，seed46，D/N20，TLS1，LR6e-4，固定E3/20,345步。随机初始化2–5阶各12k行×768维，共36,864,000表参数；不是教师蒸馏。
+- 13:01有界活跃日志前缀至19,750步，rc空、summary不存在，wrapper PID3869/run身份仍匹配；9项源码SHA与登记一致，三份小文件SHA已存，未重扫大输入。19,000–19,280步val均值2.856806；19,290升至3.642650，19,300达7.366807；峰19,390=7.403529。19,290–19,750连续47验证点val>3.5，约286秒；最新4.886572，尚未恢复。
+- 这是当前窗口内的持续科学失稳，不是进程异常退出、非有限loss或已完成终态。此前18,080尖峰已恢复，区分两段；不计算正式完成末60指标，不跨probe借对照，不推断归一化或attention sink因果。继续原E3，不自动停训、改配置、重跑或延长。
+- 根与独立审计一致。证据：`../forking_v2/outputs/fleet_20261024/heartbeats/20261025T050010Z/active_anomaly_root_acceptance.json`、`active_anomaly_independent.json`、`active_anomaly_agreement.json`与有界日志SHA。完成后另验收终态。
+
+
+### 2026-10-25 13:17：50M seed46每阶12k非qkn完成E3，末段失稳未恢复
+
+`v27_50m_exact_r12k_dn20_tls1_s46_e3_nightfill24_fixed`，a100_t1_2 GPU7、D/N20、seed46、非qkn、固定3epoch/20,345步、实际池999,972,864 token，8层/768宽/6头、LR6e-4/TLS1、batch147456/seq2048、主val12×24每10步。2–5阶各12,000行×768随机表，共48,000行、36,864,000表参数，summary实际总参数101,432,832；非教师蒸馏。
+
+末60单臂验证点19,760…20,340及20,345：train 4.468270270030、val 4.430100562175；最终train 5.045077204704、val 5.028774976730。rc0、summary/DONE与目标步数齐全。原活跃日志前缀与终态逐字节一致；从19,290到20,345共107点，val最低3.2764457，仍高于之前19,000–19,280均值2.8568058。19,810降回3.64265以下不能当恢复到原基线，20,130再升至5.65758，最终5.02877。末段损失升高持续到既定终点，不把正常退出当健康训练。最终epoch标签4是边界显示，注册E3预算未变。
+
+probe16/500、SHA53afd8f4bfcbf76b；旧cap24同机同seed无表/带qkn表对照probe0/null/10，正式配对保持hold，未计算表收益或qkn效应。9项源码匹配注册、25项历史输入指纹匹配，未重扫大输入；3小文件/receipt SHA和单臂指标由根与独立审计核验。GPU7首次空闲、GPU1已确认，本机ready0，未自动恢复或新增预算。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261025T051711Z/completion_root_acceptance.json`、`terminal_anomaly_root_acceptance.json`、`independent_results_agreement.json`、`pair_hold_root_verification.json`、独立审计及SHA256。
+
+
+### 2026-10-25 13:49：50M seed46每阶50k非qkn完成E3
+
+`v27_50m_exact_r50k_dn20_tls1_s46_e3_nightfill24_fixed`，a100_t1_2 GPU3、D/N20、seed46、非qkn、固定3epoch/20,345步，池999,972,864 token；8层/768宽/6头、LR6e-4/TLS1、batch147456/seq2048、主val12×24每10步。2–5阶各50,000行×768随机表，表153,600,000参数，实际总218,168,832；非教师蒸馏。
+
+末60单臂点19,760…20,340及20,345：train 2.728030080597、val 2.708604950044，最终train 2.775965452194、val 2.706341981888。rc0、summary/DONE与固定目标齐全；四分段均下降，3560短暂峰3.30177、3590恢复，rolling60最大增幅0.00354456、3610恢复，未见持续末段崩坏。最终epoch标签4为边界显示，预算未扩。
+
+probe16/500、SHA53afd8f4bfcbf76b；两个登记旧cap24对照probe0/null/10，正式配对hold，未计算表/qkn效果。9源码匹配注册、25历史输入指纹一致，未重扫大输入；单次3小文件/receipt SHA、完整配置和末60由根与独立审计核验。GPU3首次空闲、GPU1/7已确认，ready0，无恢复/新预算。此前12k终态失稳记录保持。
+
+证据：`/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261025T054442Z/completion_root_acceptance.json`、`independent_results_agreement.json`、`a100_pair_admission.json`、独立审计与SHA256。
+
+
+### 2026-10-25：bridgetail8 批准登记（seed48/49，固定E3）
+
+14:22启动验收：调度器PID93439于14:14:31单次启动，连续300秒空卡门后，14:19:39–45自然领取全部8臂。14:20/14:21相隔78.9秒，全部推进160–210步、主loss有限；9项源码、33项启动前输入SHA、实际命令和E3/28,483协议通过，旧队列小文件及三个调度器未变。证据 `outputs/bridgetail_20261025/root_launch_acceptance.json`。GPU占用为8/8；NVML PID不在当前/proc视野，未猜映射，trainer身份由run专属argv/环境/claim及日志推进核实；四个表臂的诊断子进程不另算实验。当前仅启动验收，无完成指标；监控已加入a100 heartbeat，16:56:48领取截止、原监控期限均不变。
+
+
+用户明确批准追加8臂、33.6B名义训练token；授权回执 `outputs/bridgetail_20261025/authorization.json`。负责人为本聊天，单机a100_t1，GPU0–7由共享锁和连续300秒空闲门分配；新namespace独立，旧任务/STOP/claim保留。科学问题：把原bridge12三seed的有无exact12k表×有无qk-norm四格扩到五seed，检验表收益、归一化效应及交互的种子间波动；不预设收益方向，不作教师蒸馏或attention-sink因果结论。
+
+沿用已批准bridge12的v27变体，区别于主线默认SSOT且不偷偷改回：6层/5头/640宽、vocab8192、seq2048、learned position、LayerNorm、bf16；无表或2–5阶各12,000行640宽exact随机表，表30,720,000参数。backbone AdamW LR6e-4、betas0.8/0.95；表AdamW betas0.9/0.95、TLS0.5、表clip1.0；warmup_constant100（0.25→1倍），不cosine，不backbone clip；DB18、VDB24、batch147456。D/N40名义unique1.4B、实际池1,399,984,128，E3/28,483步，每臂实际4,199,989,248，总33,599,913,984训练token。主val固定shard2、288chunks/12batches每10步；train用manifest.train_order的1.4B最短前缀，必须无shard2，与原bridge一样的已去泄漏v27池。固定train probe16/500（diagnostic），stability100；online gap仍是同step的val减online train。
+
+源码固定9项SHA与bridge12相同、当前git HEAD `57eeac0f000bb83db544dd49508b8115186100aa`；完整SHA/数据路径在计划JSON，精确命令在同名.jobs，训练代码未更改。领取截止2026-10-25 16:56:48北京；已领取继续固定E3，不自动重试。只有同机、同配置、同seed完整四格且身份/源码/输入/结果SHA通过后，以末60共同验证点27,900…28,480及28,483计算对照；60点不是独立样本，seed才是复本。缺失或失败逐臂报告，不以启动/短测冒充完成。
+
+| run_id | seed | table | qkn | status | target_steps |
+|---|---:|---|---|---|---:|
+| `v27_35m_nogram_r280k_dn40_tls0.5_s48_e3_bridgetail25_fixed` | 48 | nogram | False | running | 28483 |
+| `v27_35m_exact_r12k_dn40_tls0.5_s48_e3_bridgetail25_fixed` | 48 | exact | False | running | 28483 |
+| `v27_35m_nogram_r280k_dn40_tls0.5_s48_e3_bridgetail25_qkn_fixed` | 48 | nogram | True | running | 28483 |
+| `v27_35m_exact_r12k_dn40_tls0.5_s48_e3_bridgetail25_qkn_fixed` | 48 | exact | True | running | 28483 |
+| `v27_35m_nogram_r280k_dn40_tls0.5_s49_e3_bridgetail25_fixed` | 49 | nogram | False | running | 28483 |
+| `v27_35m_exact_r12k_dn40_tls0.5_s49_e3_bridgetail25_fixed` | 49 | exact | False | running | 28483 |
+| `v27_35m_nogram_r280k_dn40_tls0.5_s49_e3_bridgetail25_qkn_fixed` | 49 | nogram | True | running | 28483 |
+| `v27_35m_exact_r12k_dn40_tls0.5_s49_e3_bridgetail25_qkn_fixed` | 49 | exact | True | running | 28483 |
+
+#### v27_35m_nogram_r280k_dn40_tls0.5_s48_e3_bridgetail25_fixed
+
+running；a100_t1 GPU0，2026-10-25 14:19:39领取；wrapper 94126、trainer 94152；14:21快照300步（前后窗口+210）。相对同格bridge原配置只改seed为48及输出namespace。输出 `/home/tione/guoshaoyang/ngram-gap-lab/data/runs_fixed/v27_35m_nogram_r280k_dn40_tls0.5_s48_e3_bridgetail25_fixed/`；验收summary、train_log、train.log、stability、源码/输入/claim SHA、rc0及28,483步。配对引用见JSON control_refs。
+
+```sh
+FLEET_TARGET=a100_t1 FLEET_RUN_ID=v27_35m_nogram_r280k_dn40_tls0.5_s48_e3_bridgetail25_fixed NGLAB_DN=40 NGLAB_RK=280 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_bridgetail25 NGLAB_DATA_DIR_V27=/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27 NGLAB_FREQ_INDEX=/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz NGLAB_ASSIGN_DIR=/home/tione/guoshaoyang/ngram-gap-lab/data/assignments NGLAB_ROOT=/home/tione/guoshaoyang/ngram-gap-lab NGLAB_PY=/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python bash code/cluster/run_nightfill_20261024.sh 0 35m nogram 48
+```
+
+#### v27_35m_exact_r12k_dn40_tls0.5_s48_e3_bridgetail25_fixed
+
+running；a100_t1 GPU1，2026-10-25 14:19:39领取；wrapper 94155、trainer 94181；14:21快照280步（前后窗口+200）。相对同格bridge原配置只改seed为48及输出namespace。输出 `/home/tione/guoshaoyang/ngram-gap-lab/data/runs_fixed/v27_35m_exact_r12k_dn40_tls0.5_s48_e3_bridgetail25_fixed/`；验收summary、train_log、train.log、stability、源码/输入/claim SHA、rc0及28,483步。配对引用见JSON control_refs。
+
+```sh
+FLEET_TARGET=a100_t1 FLEET_RUN_ID=v27_35m_exact_r12k_dn40_tls0.5_s48_e3_bridgetail25_fixed NGLAB_DN=40 NGLAB_RK=12 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_bridgetail25 NGLAB_DATA_DIR_V27=/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27 NGLAB_FREQ_INDEX=/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz NGLAB_ASSIGN_DIR=/home/tione/guoshaoyang/ngram-gap-lab/data/assignments NGLAB_ROOT=/home/tione/guoshaoyang/ngram-gap-lab NGLAB_PY=/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python bash code/cluster/run_nightfill_20261024.sh 1 35m exact 48
+```
+
+#### v27_35m_nogram_r280k_dn40_tls0.5_s48_e3_bridgetail25_qkn_fixed
+
+running；a100_t1 GPU2，2026-10-25 14:19:39领取；wrapper 94184、trainer 94210；14:21快照230步（前后窗口+160）。相对同格bridge原配置只改seed为48及输出namespace。输出 `/home/tione/guoshaoyang/ngram-gap-lab/data/runs_fixed/v27_35m_nogram_r280k_dn40_tls0.5_s48_e3_bridgetail25_qkn_fixed/`；验收summary、train_log、train.log、stability、源码/输入/claim SHA、rc0及28,483步。配对引用见JSON control_refs。
+
+```sh
+FLEET_TARGET=a100_t1 FLEET_RUN_ID=v27_35m_nogram_r280k_dn40_tls0.5_s48_e3_bridgetail25_qkn_fixed NGLAB_DN=40 NGLAB_RK=280 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_bridgetail25 NGLAB_DATA_DIR_V27=/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27 NGLAB_FREQ_INDEX=/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz NGLAB_ASSIGN_DIR=/home/tione/guoshaoyang/ngram-gap-lab/data/assignments NGLAB_QKN=1 NGLAB_ROOT=/home/tione/guoshaoyang/ngram-gap-lab NGLAB_PY=/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python bash code/cluster/run_nightfill_20261024.sh 2 35m nogram 48
+```
+
+#### v27_35m_exact_r12k_dn40_tls0.5_s48_e3_bridgetail25_qkn_fixed
+
+running；a100_t1 GPU3，2026-10-25 14:19:40领取；wrapper 94213、trainer 94239；14:21快照220步（前后窗口+160）。相对同格bridge原配置只改seed为48及输出namespace。输出 `/home/tione/guoshaoyang/ngram-gap-lab/data/runs_fixed/v27_35m_exact_r12k_dn40_tls0.5_s48_e3_bridgetail25_qkn_fixed/`；验收summary、train_log、train.log、stability、源码/输入/claim SHA、rc0及28,483步。配对引用见JSON control_refs。
+
+```sh
+FLEET_TARGET=a100_t1 FLEET_RUN_ID=v27_35m_exact_r12k_dn40_tls0.5_s48_e3_bridgetail25_qkn_fixed NGLAB_DN=40 NGLAB_RK=12 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_bridgetail25 NGLAB_DATA_DIR_V27=/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27 NGLAB_FREQ_INDEX=/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz NGLAB_ASSIGN_DIR=/home/tione/guoshaoyang/ngram-gap-lab/data/assignments NGLAB_QKN=1 NGLAB_ROOT=/home/tione/guoshaoyang/ngram-gap-lab NGLAB_PY=/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python bash code/cluster/run_nightfill_20261024.sh 3 35m exact 48
+```
+
+#### v27_35m_nogram_r280k_dn40_tls0.5_s49_e3_bridgetail25_fixed
+
+running；a100_t1 GPU4，2026-10-25 14:19:41领取；wrapper 94244、trainer 94270；14:21快照290步（前后窗口+200）。相对同格bridge原配置只改seed为49及输出namespace。输出 `/home/tione/guoshaoyang/ngram-gap-lab/data/runs_fixed/v27_35m_nogram_r280k_dn40_tls0.5_s49_e3_bridgetail25_fixed/`；验收summary、train_log、train.log、stability、源码/输入/claim SHA、rc0及28,483步。配对引用见JSON control_refs。
+
+```sh
+FLEET_TARGET=a100_t1 FLEET_RUN_ID=v27_35m_nogram_r280k_dn40_tls0.5_s49_e3_bridgetail25_fixed NGLAB_DN=40 NGLAB_RK=280 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_bridgetail25 NGLAB_DATA_DIR_V27=/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27 NGLAB_FREQ_INDEX=/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz NGLAB_ASSIGN_DIR=/home/tione/guoshaoyang/ngram-gap-lab/data/assignments NGLAB_ROOT=/home/tione/guoshaoyang/ngram-gap-lab NGLAB_PY=/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python bash code/cluster/run_nightfill_20261024.sh 4 35m nogram 49
+```
+
+#### v27_35m_exact_r12k_dn40_tls0.5_s49_e3_bridgetail25_fixed
+
+running；a100_t1 GPU5，2026-10-25 14:19:43领取；wrapper 94279、trainer 94305；14:21快照270步（前后窗口+190）。相对同格bridge原配置只改seed为49及输出namespace。输出 `/home/tione/guoshaoyang/ngram-gap-lab/data/runs_fixed/v27_35m_exact_r12k_dn40_tls0.5_s49_e3_bridgetail25_fixed/`；验收summary、train_log、train.log、stability、源码/输入/claim SHA、rc0及28,483步。配对引用见JSON control_refs。
+
+```sh
+FLEET_TARGET=a100_t1 FLEET_RUN_ID=v27_35m_exact_r12k_dn40_tls0.5_s49_e3_bridgetail25_fixed NGLAB_DN=40 NGLAB_RK=12 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_bridgetail25 NGLAB_DATA_DIR_V27=/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27 NGLAB_FREQ_INDEX=/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz NGLAB_ASSIGN_DIR=/home/tione/guoshaoyang/ngram-gap-lab/data/assignments NGLAB_ROOT=/home/tione/guoshaoyang/ngram-gap-lab NGLAB_PY=/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python bash code/cluster/run_nightfill_20261024.sh 5 35m exact 49
+```
+
+#### v27_35m_nogram_r280k_dn40_tls0.5_s49_e3_bridgetail25_qkn_fixed
+
+running；a100_t1 GPU6，2026-10-25 14:19:44领取；wrapper 94314、trainer 94340；14:21快照220步（前后窗口+160）。相对同格bridge原配置只改seed为49及输出namespace。输出 `/home/tione/guoshaoyang/ngram-gap-lab/data/runs_fixed/v27_35m_nogram_r280k_dn40_tls0.5_s49_e3_bridgetail25_qkn_fixed/`；验收summary、train_log、train.log、stability、源码/输入/claim SHA、rc0及28,483步。配对引用见JSON control_refs。
+
+```sh
+FLEET_TARGET=a100_t1 FLEET_RUN_ID=v27_35m_nogram_r280k_dn40_tls0.5_s49_e3_bridgetail25_qkn_fixed NGLAB_DN=40 NGLAB_RK=280 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_bridgetail25 NGLAB_DATA_DIR_V27=/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27 NGLAB_FREQ_INDEX=/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz NGLAB_ASSIGN_DIR=/home/tione/guoshaoyang/ngram-gap-lab/data/assignments NGLAB_QKN=1 NGLAB_ROOT=/home/tione/guoshaoyang/ngram-gap-lab NGLAB_PY=/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python bash code/cluster/run_nightfill_20261024.sh 6 35m nogram 49
+```
+
+#### v27_35m_exact_r12k_dn40_tls0.5_s49_e3_bridgetail25_qkn_fixed
+
+running；a100_t1 GPU7，2026-10-25 14:19:45领取；wrapper 94348、trainer 94373；14:21快照210步（前后窗口+160）。相对同格bridge原配置只改seed为49及输出namespace。输出 `/home/tione/guoshaoyang/ngram-gap-lab/data/runs_fixed/v27_35m_exact_r12k_dn40_tls0.5_s49_e3_bridgetail25_qkn_fixed/`；验收summary、train_log、train.log、stability、源码/输入/claim SHA、rc0及28,483步。配对引用见JSON control_refs。
+
+```sh
+FLEET_TARGET=a100_t1 FLEET_RUN_ID=v27_35m_exact_r12k_dn40_tls0.5_s49_e3_bridgetail25_qkn_fixed NGLAB_DN=40 NGLAB_RK=12 NGLAB_TLS=0.5 NGLAB_EPOCHS=3 NGLAB_DB=18 NGLAB_VDB=24 NGLAB_STAB=100 NGLAB_TAG=_bridgetail25 NGLAB_DATA_DIR_V27=/home/tione/guoshaoyang/ngram-gap-lab/data/tokenized_v27 NGLAB_FREQ_INDEX=/home/tione/guoshaoyang/ngram-gap-lab/data/freq_index_o2to5_1b_f30.npz NGLAB_ASSIGN_DIR=/home/tione/guoshaoyang/ngram-gap-lab/data/assignments NGLAB_QKN=1 NGLAB_ROOT=/home/tione/guoshaoyang/ngram-gap-lab NGLAB_PY=/home/tione/guoshaoyang/ngram-gap-lab/.venv/bin/python bash code/cluster/run_nightfill_20261024.sh 7 35m exact 49
+```
+
+
+### 2026-10-25 14:38：nightfill 50M seed46 每阶100k完整三遍
+
+`v27_50m_exact_r100k_dn20_tls1_s46_e3_nightfill24_fixed`（a100_t1_2 GPU5）于14:10:31结束，E3/20,345步、rc0、wrapper退出、summary/DONE一致。仅收割此新臂5个小文件及claim终态SHA；9源码SHA匹配，25输入沿用已验收历史指纹，本轮未重扫大数据。根独立复算与子审计一致：末60共同定义点19,760…20,340及20,345，单臂train **2.6872374107**、val **2.6791599075**，最终val **2.6779084404**。
+
+全2,035个主验证点和213条stability检查；四段主loss均值下降。最大相邻val升幅1710→1720为0.080117，1730恢复；未见持续末段崩坏。注意力集中仍存在，不能宣称sink消失或机制修复。表2–5阶各100,000行×768，随机初始化表307,200,000参数、实际总371,768,832，50M为登记模型名。probe16/500、身份53afd8f4bfcbf76b；登记旧cap24对照probe0/null/10不同，正式配对继续hold，不计算表/qkn收益或Scaling结论。原12k末段失稳记录保留，不被此臂健康覆盖。证据 `/Users/guoshaoyang/Desktop/workdir/forking_v2/outputs/fleet_20261024/heartbeats/20261025T063048Z/completion_root_acceptance.json`、`a100_completion_audit.json`、`independent_results_agreement.json`及小文件SHA。
+
+
+### §77 更新（2026-10-25）：6/7 臂完成；联合臂在 A100-40GB 上不可行
+
+**结果**（seed 42，2000 步，final online gap；dict 为 §73 已完成臂，keephash 为本节）：
+
+| arm | hash（§73，A100） | keephash（本节） | dict（§73） | 覆盖效应 keephash−hash | 碰撞效应 dict−keephash | 覆盖率 |
+|---|---|---|---|---|---|---|
+| n2 | 2.7354 | 1.8916 | 2.2694 | −0.84* | +0.38 | 0.931 |
+| n3 | 5.5713 | 1.6709 | 2.1234 | −3.90* | +0.45 | 0.493 |
+| n4 | 6.3380 | 1.1946 | 1.5836 | −5.14 | +0.39 | 0.225 |
+| n5 | 6.5342 | 0.9304 | 1.1764 | −5.60 | +0.25 | 0.117 |
+| 2,3 | 5.8006 | 3.0852 | 3.5593 | −2.72* | +0.47 | — |
+| 2,3,4 | 7.7193 | 3.6549 | 4.2083 | −4.07* | +0.55 | — |
+| 2,3,4,5 | 见 H200 hash：8.2453（不同硬件） | 未完成 | 未完成 | — | — | — |
+
+keephash 的 val loss 与 dict 相同量级（如 n5：keephash 3.801，dict 3.905）。
+
+*注：n2、n3、2-3、2-3-4 的 hash 臂在 §73 中走 legacy bigram/trigram 哈希，而 keephash 与 dict 对所有 order 走通用哈希，因此这几列的“覆盖效应”混有哈希函数差异。干净的配对是 n4 与 n5（两者都走通用哈希，只差掩码）。
+
+**判读（单 seed，无显著性断言）**：
+1. 覆盖效应（掩码）解释了 hash→dict 之间几乎全部的 gap 下降：n4、n5 中 keephash 比 hash 低 5.1–5.6 nats。
+2. 碰撞效应为正：去掉碰撞（dict）反而使 gap 高 0.25–0.55 nats。即在相同覆盖下，kept 上下文之间的碰撞使 gap 更低。这与“无碰撞表降低 gap”的直觉相反，需要多 seed 确认。
+3. 因此 dict 的低 gap 主要来自覆盖，不来自消除碰撞。
+
+**联合臂 2,3,4,5 在 A100-40GB 上不可行**：4 张 R=2^20 表的参数 + RMSProp 状态 + 梯度约 38.7 GB，与 39.39 GB 容量几乎相等，mb 12 无法再降低这部分。OOM 显示为本进程自身（38.70 GB 已分配），不是租户占用。§73 的 dict 2,3,4,5 与 hash 2,3,4,5 也因同一原因无法在 A100 上跑。keephash 联合臂已从作业文件移除，未重排。可行方案是 H200（141 GB）；当前 360-1 不可达，360-2 被其他任务占用（99%，约 10 GB/卡）。H200 上的 hash 联合臂已存在（v2ord_n2-3-4-5_s42，final gap 8.2453）。
+
+**队列问题（已修复一处，另有一处未修）**：
+- 已修复 `e791987`：OOM 分类曾匹配同一作业的所有历史失败目录，导致非 OOM 失败被误判为 OOM 而无限重试，并在 keep 根 `logs/failed_launch/` 产生约 7,500 个目录（只含失败日志，不在 runs_fixed 中）。这些目录尚未清理，需要确认后处理。
+- 未修：联合臂自身的 OOM 仍被当成租户 OOM 而无限重排。需要区分“本进程显存不足”与“其他进程占用”（例如解析 `Process <pid> has` 中的 pid 是否为自身）。当前已手动停止，作业文件已清空。
+
+**代码/部署**：`2877beb`（keep 标志与测试）、`62f7bda`（OOM 不退役 GPU）、`e791987`（分类只看本次尝试）；keep 根 `a100_t1_3:/home/tione/guoshaoyang/ngram-gap-lab-keep`，队列脚本 md5 与 `e791987` 一致。
