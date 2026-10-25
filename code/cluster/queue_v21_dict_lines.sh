@@ -53,10 +53,14 @@ gpu_loop() {
       fi
       run_dir="${NGLAB_OUT_DIR:-$ROOT/data/runs_fixed}/v21_${j_tag}_s${j_seed}_${j_steps:-2000}_fd_fixed"
       mkdir -p "$LOG_DIR/failed_launch"
-      [[ -d "$run_dir" && ! -s "$run_dir/summary.json" ]] \
-        && mv "$run_dir" "$LOG_DIR/failed_launch/$(basename "$run_dir").gpu$gpu.$(date +%s)"
+      moved=""
+      if [[ -d "$run_dir" && ! -s "$run_dir/summary.json" ]]; then
+        moved="$LOG_DIR/failed_launch/$(basename "$run_dir").gpu$gpu.$(date +%s)"
+        mv "$run_dir" "$moved"
+      fi
       requeue "$line"
-      if grep -qs "OutOfMemoryError" "$LOG_DIR/failed_launch/$(basename "$run_dir").gpu$gpu."*/train.log 2>/dev/null; then
+      # classify only THIS attempt's log (earlier attempts of the same job must not count)
+      if [[ -n "$moved" ]] && grep -qs "OutOfMemoryError" "$moved/train.log"; then
         # another tenant holds the card's memory: not a GPU fault, keep the GPU in the loop
         echo "[queue] $(date '+%F %T') gpu $gpu launch OOM (tenant memory), requeued '$line', waiting"
         sleep 300
