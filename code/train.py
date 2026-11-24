@@ -1257,15 +1257,14 @@ class TokenizedShardDataset:
         self._batch_in_epoch = 0
         # total tokens per shard (lazy)
         self._shard_lens = {}
-        # yielded batches per full epoch (drop_last per shard), for epoch-anchored LR
+        # yielded batches per full epoch (drop_last at epoch end), for epoch-anchored LR
         if epoch_batches > 0:
             # Nested-prefix epoch length: the first `epoch_batches` device
             # batches from the shard prefix form one epoch; all epoch lengths
             # are strict prefixes of the same data stream.
             self._batches_per_epoch = epoch_batches
         else:
-            self._batches_per_epoch = sum(
-                self.shard_chunks(sid) // self.device_batch_size for sid in self.shard_ids)
+            self._batches_per_epoch = self.total_chunks() // self.device_batch_size
 
     def _load_shard(self, sid):
         if sid not in self._buffers:
@@ -1371,6 +1370,9 @@ class TokenizedShardDataset:
                            torch.stack(batch_tgt).to(device))
                     batch_inp, batch_tgt = [], []
                     self._batch_in_epoch += 1
+            # drop the incomplete last batch so every epoch replays the same
+            # batches and stays _batches_per_epoch long
+            batch_inp, batch_tgt = [], []
             self._epoch += 1
             self._batch_in_epoch = 0
             # fixed mode: no shuffle, deterministic replay

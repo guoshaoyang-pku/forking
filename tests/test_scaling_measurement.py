@@ -109,6 +109,24 @@ def test_epoch_batches_full_shard_when_zero():
     assert ds._epoch == 1, "after full epoch, counter advances"
 
 
+def test_fixed_replay_drops_partial_batch_at_epoch_end():
+    """When chunks do not fill the last batch, each epoch replays the same batches.
+
+    10 chunks / batch size 4 = 2 full batches; the 2 leftover chunks must not
+    be carried into the next epoch's first batch.
+    """
+    d = _make_small_shard_dir(n_chunks=10, chunk_size=5, vocab_size=16, seed=6)
+    ds = TokenizedShardDataset(d, [1], sequence_len=4, device_batch_size=4,
+                               seed=42, epoch_batches=0)
+    assert ds._batches_per_epoch == 2
+    it = ds.iter_batches(torch.device("cpu"))
+    seen = [(next(it)[0], ds._epoch) for _ in range(6)]
+    assert [e for _, e in seen] == [0, 0, 1, 1, 2, 2]
+    for k in range(2):
+        assert torch.equal(seen[k][0], seen[k + 2][0])
+        assert torch.equal(seen[k][0], seen[k + 4][0])
+
+
 # ---------------------------------------------------------------------------
 # fixed train probe safety
 # ---------------------------------------------------------------------------
